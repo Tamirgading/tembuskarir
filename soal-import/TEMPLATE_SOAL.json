@@ -1,0 +1,50 @@
+{
+  "package_slug": "tryout-cpns-skd-seri-1",
+  "soal": [
+    {
+      "nomor": 1,
+      "kategori": "TWK",
+      "kesulitan": "easy",
+      "konten": "Tulis pertanyaan di sini...",
+      "pilihan": {
+        "A": "Pilihan A",
+        "B": "Pilihan B",
+        "C": "Pilihan C",
+        "D": "Pilihan D",
+        "E": "Pilihan E"
+      },
+      "jawaban_benar": "A",
+      "pembahasan": "Tulis pembahasan/penjelasan di sini..."
+    },
+    {
+      "nomor": 2,
+      "kategori": "TIU",
+      "kesulitan": "medium",
+      "konten": "Pertanyaan nomor 2...",
+      "pilihan": {
+        "A": "Pilihan A",
+        "B": "Pilihan B",
+        "C": "Pilihan C",
+        "D": "Pilihan D",
+        "E": "Pilihan E"
+      },
+      "jawaban_benar": "C",
+      "pembahasan": "Pembahasan soal nomor 2..."
+    },
+    {
+      "nomor": 3,
+      "kategori": "TKP",
+      "kesulitan": "hard",
+      "konten": "Pertanyaan nomor 3...",
+      "pilihan": {
+        "A": "Pilihan A",
+        "B": "Pilihan B",
+        "C": "Pilihan C",
+        "D": "Pilihan D",
+        "E": "Pilihan E"
+      },
+      "jawaban_benar": "B",
+      "pembahasan": "Pembahasan soal nomor 3..."
+    }
+  ]
+}
