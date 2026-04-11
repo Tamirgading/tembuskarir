@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { verifyMidtransSignature, getTransactionStatus } from '@/lib/midtrans'
 import { sendPaymentSuccessEmail } from '@/lib/resend'
 import type { UserRow, SubscriptionRow } from '@/lib/utils'
@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
       console.warn('[Webhook] Could not verify via Midtrans API, using payload status:', err)
     }
 
-    const supabase = await createClient()
+    // Service client — bypass RLS untuk semua operasi webhook
+    const supabase = createServiceClient()
 
     // 3. Cari subscription record
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

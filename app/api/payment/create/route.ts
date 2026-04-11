@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { createSnapTransaction } from '@/lib/midtrans'
 import { rateLimit, getClientIp } from '@/lib/rateLimit'
 import type { UserRow, SubscriptionRow } from '@/lib/utils'
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Auth check pakai anon client (cookie-based session)
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json() as { planType?: string; amount?: number }
+    const body = await req.json() as { planType?: string }
     const planType = body.planType
 
     if (planType !== 'monthly' && planType !== 'yearly') {
@@ -38,9 +39,10 @@ export async function POST(req: NextRequest) {
     // Validasi harga di server — jangan percaya harga dari client
     const expectedAmount = PLAN_PRICES[planType]
 
-    // Ambil profil user untuk nama
-    const { data: profileData } = await supabase
-      .from('users')
+    // Ambil profil user (service client untuk bypass RLS jika perlu)
+    const service = createServiceClient()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: profileData } = await (service.from('users') as any)
       .select('full_name, email')
       .eq('id', user.id)
       .single()
@@ -52,9 +54,9 @@ export async function POST(req: NextRequest) {
     // Buat order ID unik
     const orderId = `ORDER-${user.id.slice(0, 8)}-${planType.toUpperCase()}-${Date.now()}`
 
-    // Simpan subscription record ke DB (status: pending)
+    // Simpan subscription record ke DB — service client bypass RLS
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: subData, error: subErr } = await (supabase.from('subscriptions') as any)
+    const { data: subData, error: subErr } = await (service.from('subscriptions') as any)
       .insert({
         user_id: user.id,
         midtrans_order_id: orderId,
@@ -67,7 +69,7 @@ export async function POST(req: NextRequest) {
 
     if (subErr) {
       console.error('[Payment Create] DB error:', subErr)
-      return NextResponse.json({ error: 'Gagal membuat transaksi.' }, { status: 500 })
+      return NextResponse.json({ error: 'Gagal menyimpan data transaksi.' }, { status: 500 })
     }
 
     const sub = subData as Pick<SubscriptionRow, 'id'>
