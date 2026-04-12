@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { LatexContent } from '@/components/ui/LatexContent'
 
 interface Option {
   key: string
@@ -99,7 +100,7 @@ export function QuestionList({ questions, packageId }: QuestionListProps) {
               {/* Konten */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-800 leading-snug line-clamp-2">
-                  {q.content}
+                  <LatexContent content={q.content} />
                 </p>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   {q.category && (
@@ -141,6 +142,16 @@ export function QuestionList({ questions, packageId }: QuestionListProps) {
             {/* Expanded detail */}
             {isExpanded && (
               <div className="border-t border-gray-100 px-4 py-3 space-y-2 bg-gray-50">
+                {/* Gambar soal */}
+                {(q as Question & { image_url?: string | null }).image_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={(q as Question & { image_url?: string | null }).image_url!}
+                    alt="Gambar soal"
+                    className="max-h-40 rounded-lg border border-gray-200 object-contain"
+                  />
+                )}
+
                 {/* Opsi */}
                 <div className="grid grid-cols-1 gap-1">
                   {opts.map((opt) => (
@@ -153,7 +164,7 @@ export function QuestionList({ questions, packageId }: QuestionListProps) {
                       }`}
                     >
                       <span className="font-bold shrink-0">{opt.key}.</span>
-                      <span>{opt.text}</span>
+                      <span><LatexContent content={opt.text} /></span>
                       {opt.key === q.correct_answer && (
                         <span className="ml-auto shrink-0 text-green-600">✓</span>
                       )}
@@ -165,7 +176,7 @@ export function QuestionList({ questions, packageId }: QuestionListProps) {
                 {q.explanation && (
                   <div className="bg-blue-50 rounded-lg px-3 py-2 text-xs text-blue-800">
                     <span className="font-semibold">Pembahasan: </span>
-                    {q.explanation}
+                    <LatexContent content={q.explanation} />
                   </div>
                 )}
               </div>

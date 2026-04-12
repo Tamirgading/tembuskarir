@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { PackageRow } from '@/lib/utils'
+import { LatexContent } from '@/components/ui/LatexContent'
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface QuestionOption {
@@ -303,8 +304,8 @@ export default function UjianPage() {
           </div>
 
           {/* Konten soal */}
-          <div className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-            {currentQuestion.content}
+          <div className="text-gray-900 leading-relaxed">
+            <LatexContent content={currentQuestion.content} />
           </div>
 
           {/* Gambar soal (jika ada) */}
@@ -337,7 +338,7 @@ export default function UjianPage() {
                   }`}>
                     {opt.key}
                   </span>
-                  <span className="leading-relaxed">{opt.text}</span>
+                  <span className="leading-relaxed"><LatexContent content={opt.text} /></span>
                 </button>
               )
             })}
