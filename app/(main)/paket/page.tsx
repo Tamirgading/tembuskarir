@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: 'Pilih paket soal try out CPNS SKD — TWK, TIU, TKP. Ada paket gratis dan premium dengan ribuan soal berkualitas.',
 }
 
+const CPNS_TARGET = 110
+
 export default async function PaketPage() {
   const supabase = await createClient()
 
@@ -27,9 +29,27 @@ export default async function PaketPage() {
     .eq('is_published', true)
     .order('created_at', { ascending: true })
 
+  // Hitung jumlah soal per paket
+  const { data: questionCounts } = await supabase
+    .from('questions')
+    .select('package_id')
+
   const profile = profileData as Pick<UserRow, 'plan'> | null
   const packages = (packagesData ?? []) as PackageRow[]
   const userPlan = profile?.plan ?? 'free'
+
+  // Buat map packageId → jumlah soal
+  const countMap: Record<string, number> = {}
+  for (const row of (questionCounts ?? [])) {
+    const r = row as { package_id: string }
+    countMap[r.package_id] = (countMap[r.package_id] ?? 0) + 1
+  }
+
+  function isComingSoon(pkg: PackageRow): boolean {
+    if (pkg.category !== 'CPNS') return false
+    const count = countMap[pkg.id] ?? 0
+    return count < CPNS_TARGET
+  }
 
   return (
     <div className="space-y-6">
@@ -46,11 +66,16 @@ export default async function PaketPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {packages.map((pkg) => {
             const canAccess = pkg.is_free || userPlan === 'premium'
+            const comingSoon = isComingSoon(pkg)
 
             return (
               <div
                 key={pkg.id}
-                className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col gap-4 hover:border-blue-300 transition-colors"
+                className={`bg-white rounded-xl border p-6 flex flex-col gap-4 transition-colors ${
+                  comingSoon
+                    ? 'border-gray-200 opacity-75'
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
               >
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2">
@@ -60,15 +85,22 @@ export default async function PaketPage() {
                     </span>
                     <h2 className="font-semibold text-gray-900 leading-snug">{pkg.name}</h2>
                   </div>
-                  <span
-                    className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${
-                      pkg.is_free
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-amber-100 text-amber-700'
-                    }`}
-                  >
-                    {pkg.is_free ? 'GRATIS' : 'PREMIUM'}
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    {comingSoon && (
+                      <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
+                        🔒 Coming Soon
+                      </span>
+                    )}
+                    <span
+                      className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${
+                        pkg.is_free
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-amber-100 text-amber-700'
+                      }`}
+                    >
+                      {pkg.is_free ? 'GRATIS' : 'PREMIUM'}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Deskripsi */}
@@ -84,7 +116,11 @@ export default async function PaketPage() {
 
                 {/* CTA */}
                 <div className="mt-auto space-y-2">
-                  {canAccess ? (
+                  {comingSoon ? (
+                    <div className="w-full text-center py-2.5 bg-gray-100 text-gray-400 text-sm font-medium rounded-lg cursor-not-allowed">
+                      Segera Hadir
+                    </div>
+                  ) : canAccess ? (
                     <Link
                       href={`/ujian/${pkg.id}`}
                       className="block w-full text-center py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
@@ -99,12 +135,14 @@ export default async function PaketPage() {
                       Upgrade Premium
                     </Link>
                   )}
-                  <Link
-                    href={`/paket/${pkg.id}/leaderboard`}
-                    className="block w-full text-center py-2 text-gray-500 text-xs hover:text-blue-600 transition-colors"
-                  >
-                    🏆 Lihat Leaderboard
-                  </Link>
+                  {!comingSoon && (
+                    <Link
+                      href={`/paket/${pkg.id}/leaderboard`}
+                      className="block w-full text-center py-2 text-gray-500 text-xs hover:text-blue-600 transition-colors"
+                    >
+                      🏆 Lihat Leaderboard
+                    </Link>
+                  )}
                 </div>
               </div>
             )

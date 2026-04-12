@@ -73,7 +73,15 @@ export default async function AdminPackagesPage() {
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right">
-                    <PackageActions packageId={pkg.id} isPublished={pkg.is_published} />
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/admin/packages/${pkg.id}/questions`}
+                        className="text-xs text-blue-600 hover:underline font-medium"
+                      >
+                        Kelola Soal
+                      </Link>
+                      <PackageActions packageId={pkg.id} isPublished={pkg.is_published} />
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -82,12 +90,10 @@ export default async function AdminPackagesPage() {
         )}
       </div>
 
-      {/* Info import soal */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-sm text-blue-700 space-y-1">
-        <p className="font-semibold">💡 Cara menambah soal ke paket:</p>
-        <p>1. Buat soal menggunakan format JSON (lihat <code className="bg-blue-100 px-1 rounded">soal-import/TEMPLATE_SOAL.json</code>)</p>
-        <p>2. Jalankan <code className="bg-blue-100 px-1 rounded">node scripts/import-soal.js namafile.json</code></p>
-        <p>3. Paste SQL yang dihasilkan ke Supabase Studio → SQL Editor → Run</p>
+      {/* Info kelola soal */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-sm text-blue-700">
+        <p className="font-semibold mb-1">💡 Cara menambah soal ke paket:</p>
+        <p>Klik <strong>Kelola Soal</strong> di baris paket yang ingin diisi, lalu gunakan form input soal yang tersedia. Paket CPNS membutuhkan tepat <strong>110 soal</strong> (TWK: 30, TIU: 35, TKP: 45) agar tampil penuh di website.</p>
       </div>
     </div>
   )
