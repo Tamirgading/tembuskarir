@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, QuestionRow } from '@/lib/utils'
 import { AddQuestionForm } from '@/components/admin/AddQuestionForm'
 import { QuestionList } from '@/components/admin/QuestionList'
+import { ImportButton } from '@/components/admin/ImportButton'
 
 const CPNS_TARGET = 110
 
@@ -123,17 +124,20 @@ export default async function AdminQuestionsPage({
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6 items-start">
         {/* Daftar soal */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="font-semibold text-gray-900">Daftar Soal ({total})</h2>
-            {Object.keys(byCategory).length > 0 && (
-              <div className="flex gap-2 text-xs">
-                {Object.entries(byCategory).map(([cat, cnt]) => (
-                  <span key={cat} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
-                    {cat}: {cnt}
-                  </span>
-                ))}
-              </div>
-            )}
+            <div className="flex items-center gap-2 flex-wrap">
+              {Object.keys(byCategory).length > 0 && (
+                <div className="flex gap-2 text-xs">
+                  {Object.entries(byCategory).map(([cat, cnt]) => (
+                    <span key={cat} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                      {cat}: {cnt}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <ImportButton packageId={packageId} startIndex={total + 1} />
+            </div>
           </div>
           <QuestionList questions={questions} packageId={packageId} />
         </div>
