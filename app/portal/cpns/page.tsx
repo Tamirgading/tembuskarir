@@ -6,6 +6,19 @@ import CpnsPackageCard from '@/components/portal/CpnsPackageCard'
 // Passing grade SKD resmi 2024
 const PASSING_GRADE = { TWK: 65, TIU: 80, TKP: 166, total: 311 }
 
+const SKD_SUBTESTS = [
+  { name: 'TWK', full: 'Tes Wawasan Kebangsaan', soal: 30, max: 150, color: 'blue' },
+  { name: 'TIU', full: 'Tes Intelegensia Umum',  soal: 35, max: 175, color: 'purple' },
+  { name: 'TKP', full: 'Tes Karakteristik Pribadi', soal: 45, max: 225, color: 'green' },
+]
+
+type ColorKey = 'blue' | 'purple' | 'green'
+const COLOR_MAP: Record<ColorKey, { badge: string; bar: string; dot: string }> = {
+  blue:   { badge: 'bg-blue-100 text-blue-700 border-blue-200',   bar: 'bg-blue-500',   dot: 'bg-blue-500' },
+  purple: { badge: 'bg-purple-100 text-purple-700 border-purple-200', bar: 'bg-purple-500', dot: 'bg-purple-500' },
+  green:  { badge: 'bg-green-100 text-green-700 border-green-200', bar: 'bg-green-500',  dot: 'bg-green-500' },
+}
+
 export default async function CpnsPortalPage() {
   let packages: PackageRow[] = []
   let isLoggedIn = false
@@ -35,94 +48,135 @@ export default async function CpnsPortalPage() {
     packages = (pkgData ?? []) as PackageRow[]
   } catch { /* Supabase not configured */ }
 
-  const skdPackages = packages // semua CPNS = SKD untuk sekarang
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <Link href="/" className="hover:text-blue-600">Beranda</Link>
+
+      {/* ── Breadcrumb ── */}
+      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-5">
+        <Link href="/" className="hover:text-blue-600 transition-colors">Beranda</Link>
         <span>›</span>
-        <Link href="/" className="hover:text-blue-600">Seleksi</Link>
-        <span>›</span>
-        <span className="text-gray-900 font-medium">CPNS</span>
+        <span className="text-gray-900 font-semibold">Portal CPNS</span>
       </nav>
 
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-1">
-          <span className="text-3xl">🏛️</span>
-          <h1 className="text-2xl font-bold text-gray-900">Portal CPNS</h1>
-          <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">2025</span>
+      {/* ── Page header ── */}
+      <div className="flex items-center gap-4 mb-7">
+        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-200">
+          🏛️
         </div>
-        <p className="text-gray-500 text-sm ml-12">Calon Pegawai Negeri Sipil — Simulasi SKD & SKB Resmi</p>
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-extrabold text-gray-900">Portal CPNS</h1>
+            <span className="px-2.5 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">2025</span>
+          </div>
+          <p className="text-gray-500 text-sm mt-0.5">Simulasi Seleksi Kompetensi Dasar (SKD) · 110 soal · 90 menit</p>
+        </div>
       </div>
 
-      {/* 3-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_280px] gap-6">
+      {/* ── 3-column layout ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_272px] gap-6 items-start">
 
-        {/* ── LEFT SIDEBAR ────────────────────────────────── */}
-        <aside className="space-y-4">
-          {/* Tahapan seleksi */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tahapan Seleksi</p>
-            </div>
-            <div className="p-2 space-y-1">
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-semibold">
-                <span className="w-2 h-2 bg-blue-600 rounded-full shrink-0"></span>
-                SKD
-                <span className="ml-auto text-xs bg-blue-100 px-2 py-0.5 rounded-full">Aktif</span>
-              </button>
-              <div className="flex items-center gap-3 px-3 py-2.5 text-gray-400 rounded-lg text-sm cursor-not-allowed">
-                <span className="w-2 h-2 bg-gray-300 rounded-full shrink-0"></span>
-                SKB
-                <span className="ml-auto text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">Segera</span>
-              </div>
-            </div>
-          </div>
+        {/* ════════════════════ LEFT SIDEBAR ════════════════════ */}
+        <aside className="space-y-4 sticky top-6">
 
-          {/* Sub-tes SKD info */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sub-tes SKD</p>
+          {/* Navigasi Tahapan */}
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600">
+              <p className="text-xs font-bold text-blue-100 uppercase tracking-widest">Tahapan Seleksi CPNS</p>
             </div>
-            <div className="p-4 space-y-3">
-              {[
-                { name: 'TWK', full: 'Tes Wawasan Kebangsaan', soal: 30, color: 'bg-blue-100 text-blue-700' },
-                { name: 'TIU', full: 'Tes Intelegensia Umum', soal: 35, color: 'bg-purple-100 text-purple-700' },
-                { name: 'TKP', full: 'Tes Karakteristik Pribadi', soal: 45, color: 'bg-green-100 text-green-700' },
-              ].map((sub) => (
-                <div key={sub.name} className="flex items-start gap-2.5">
-                  <span className={`shrink-0 text-xs font-bold px-2 py-0.5 rounded-full mt-0.5 ${sub.color}`}>
-                    {sub.name}
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium text-gray-700">{sub.full}</p>
-                    <p className="text-xs text-gray-400">{sub.soal} soal</p>
+
+            {/* SKD — Aktif */}
+            <div className="p-3">
+              <div className="bg-blue-600 rounded-xl p-3.5 shadow-md shadow-blue-200 mb-2">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-black">01</span>
+                    </div>
+                    <div>
+                      <p className="text-white font-extrabold text-sm leading-none">SKD</p>
+                      <p className="text-blue-200 text-[10px] mt-0.5 leading-none">Seleksi Kompetensi Dasar</p>
+                    </div>
                   </div>
+                  <span className="flex items-center gap-1 px-2 py-0.5 bg-green-400 text-white text-[10px] font-bold rounded-full">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse inline-block" />
+                    AKTIF
+                  </span>
                 </div>
-              ))}
-              <div className="pt-2 border-t border-gray-100 text-xs text-gray-500">
-                Total: <strong>110 soal</strong> · <strong>90 menit</strong>
+                {/* Sub-tes di dalam SKD box */}
+                <div className="flex gap-1.5 mt-2.5">
+                  {SKD_SUBTESTS.map((s) => (
+                    <div key={s.name} className="flex-1 bg-white/15 rounded-lg px-2 py-1.5 text-center">
+                      <p className="text-white font-bold text-xs">{s.name}</p>
+                      <p className="text-blue-200 text-[10px]">{s.soal} soal</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SKB — Locked */}
+              <div className="rounded-xl border border-dashed border-gray-200 p-3.5 bg-gray-50 opacity-60">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <span className="text-gray-400 text-xs font-black">02</span>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 font-bold text-sm leading-none">SKB</p>
+                      <p className="text-gray-400 text-[10px] mt-0.5 leading-none">Seleksi Kompetensi Bidang</p>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 bg-gray-200 text-gray-400 text-[10px] font-bold rounded-full">
+                    SEGERA
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Login prompt jika belum login */}
+          {/* Info Sub-tes SKD */}
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Materi SKD</p>
+            </div>
+            <div className="p-3 space-y-2">
+              {SKD_SUBTESTS.map((sub) => {
+                const c = COLOR_MAP[sub.color as ColorKey]
+                const pgVal = PASSING_GRADE[sub.name as keyof typeof PASSING_GRADE] as number
+                return (
+                  <div key={sub.name} className="rounded-xl border p-3" style={{}}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${c.dot}`} />
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md border ${c.badge}`}>{sub.name}</span>
+                        <span className="text-xs text-gray-500 font-medium">{sub.soal} soal</span>
+                      </div>
+                      <span className="text-[10px] text-gray-400">max {sub.max}</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mb-1.5 leading-relaxed">{sub.full}</p>
+                    <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+                      <div className={`h-full ${c.bar} rounded-full`} style={{ width: `${(pgVal / sub.max) * 100}%` }} />
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-1">Passing grade: <strong className="text-gray-600">{pgVal}</strong></p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Login prompt (guest only) */}
           {!isLoggedIn && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-blue-800 mb-1">Mulai Berlatih</p>
-              <p className="text-xs text-blue-600 mb-3">Daftar gratis untuk akses soal SKD CPNS</p>
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 shadow-lg shadow-blue-200">
+              <p className="text-white font-bold text-sm mb-1">Mulai Latihan Gratis</p>
+              <p className="text-blue-200 text-xs mb-4 leading-relaxed">Daftar sekarang dan akses soal SKD CPNS tanpa biaya</p>
               <Link
                 href="/register"
-                className="block w-full text-center py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                className="block w-full text-center py-2.5 bg-white text-blue-700 text-sm font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-sm"
               >
-                Daftar Sekarang
+                Daftar Gratis →
               </Link>
               <Link
                 href="/login"
-                className="block w-full text-center py-1.5 text-blue-600 text-xs hover:underline mt-1"
+                className="block w-full text-center py-2 text-blue-200 text-xs hover:text-white transition-colors mt-2"
               >
                 Sudah punya akun? Masuk
               </Link>
@@ -130,137 +184,152 @@ export default async function CpnsPortalPage() {
           )}
         </aside>
 
-        {/* ── MAIN CONTENT ─────────────────────────────────── */}
-        <main className="space-y-4">
+        {/* ════════════════════ MAIN CONTENT ════════════════════ */}
+        <main className="space-y-4 min-w-0">
           {/* Section header */}
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-bold text-gray-900">Paket Simulasi SKD</h2>
-              <p className="text-xs text-gray-500 mt-0.5">{skdPackages.length} paket tersedia</p>
+              <h2 className="font-extrabold text-gray-900">Paket Simulasi SKD</h2>
+              <p className="text-xs text-gray-400 mt-0.5">{packages.length} paket tersedia</p>
             </div>
-            <div className="flex gap-2 text-xs">
-              <span className="px-3 py-1 bg-blue-600 text-white rounded-full font-medium">Semua</span>
-            </div>
+            {userPlan !== 'premium' && isLoggedIn && (
+              <Link
+                href="/harga"
+                className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors"
+              >
+                ✦ Upgrade Premium
+              </Link>
+            )}
           </div>
 
-          {/* Package grid */}
-          {skdPackages.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
-              <p className="text-3xl mb-3">📦</p>
-              <p>Belum ada paket soal tersedia.</p>
+          {/* Package list — vertikal */}
+          {packages.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center text-gray-400">
+              <p className="text-4xl mb-3">📦</p>
+              <p className="font-medium">Belum ada paket soal tersedia</p>
+              <p className="text-sm mt-1 text-gray-300">Pantau terus untuk update paket baru</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {skdPackages.map((pkg) => (
+            <div className="space-y-3">
+              {packages.map((pkg, i) => (
                 <CpnsPackageCard
                   key={pkg.id}
                   pkg={pkg}
                   isLoggedIn={isLoggedIn}
                   userPlan={userPlan as 'free' | 'premium'}
+                  index={i}
                 />
               ))}
             </div>
           )}
 
           {/* SKB coming soon */}
-          <div className="bg-gray-50 border border-gray-200 border-dashed rounded-xl p-6 text-center">
-            <p className="text-2xl mb-2">🔒</p>
-            <p className="font-medium text-gray-700 text-sm">Paket SKB — Segera Hadir</p>
-            <p className="text-xs text-gray-400 mt-1">Seleksi Kompetensi Bidang akan tersedia setelah SKD selesai</p>
+          <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-dashed border-gray-300 rounded-2xl p-6 text-center mt-2">
+            <div className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center text-xl mx-auto mb-3">🔒</div>
+            <p className="font-bold text-gray-600 text-sm">Paket SKB — Segera Hadir</p>
+            <p className="text-xs text-gray-400 mt-1 max-w-xs mx-auto">Seleksi Kompetensi Bidang akan tersedia setelah SKD. Pantau terus perkembangannya.</p>
           </div>
         </main>
 
-        {/* ── RIGHT SIDEBAR ───────────────────────────────── */}
-        <aside className="space-y-4">
-          {/* Standar nilai */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 bg-blue-600">
-              <p className="text-xs font-semibold text-white uppercase tracking-wide">Passing Grade SKD 2024</p>
+        {/* ════════════════════ RIGHT SIDEBAR ════════════════════ */}
+        <aside className="space-y-4 sticky top-6">
+
+          {/* Standar nilai — card utama */}
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="px-4 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600">
+              <p className="text-xs font-bold text-white uppercase tracking-widest">Passing Grade SKD 2024</p>
+              <p className="text-blue-200 text-[10px] mt-0.5">Sumber: BKN Resmi</p>
             </div>
-            <div className="p-4 space-y-3">
-              {[
-                { label: 'TWK', min: PASSING_GRADE.TWK, max: 150, color: 'bg-blue-100 text-blue-700' },
-                { label: 'TIU', min: PASSING_GRADE.TIU, max: 175, color: 'bg-purple-100 text-purple-700' },
-                { label: 'TKP', min: PASSING_GRADE.TKP, max: 225, color: 'bg-green-100 text-green-700' },
-              ].map((item) => (
-                <div key={item.label}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${item.color}`}>{item.label}</span>
-                    <span className="text-xs font-semibold text-gray-700">≥ {item.min} <span className="text-gray-400 font-normal">/ {item.max}</span></span>
+            <div className="p-4 space-y-4">
+              {SKD_SUBTESTS.map((item) => {
+                const c = COLOR_MAP[item.color as ColorKey]
+                const pgVal = PASSING_GRADE[item.name as keyof typeof PASSING_GRADE] as number
+                const pct = (pgVal / item.max) * 100
+                return (
+                  <div key={item.name}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md border ${c.badge}`}>{item.name}</span>
+                      <div className="text-right">
+                        <span className="text-sm font-extrabold text-gray-900">≥ {pgVal}</span>
+                        <span className="text-gray-400 text-xs ml-1">/ {item.max}</span>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className={`h-full ${c.bar} rounded-full`} style={{ width: `${pct}%` }} />
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-400 rounded-full"
-                      style={{ width: `${(item.min / item.max) * 100}%` }}
-                    />
-                  </div>
+                )
+              })}
+              <div className="pt-3 mt-1 border-t-2 border-dashed border-gray-100 flex justify-between items-center">
+                <span className="text-xs font-semibold text-gray-500">Total minimum</span>
+                <div className="text-right">
+                  <span className="text-xl font-extrabold text-gray-900">≥ {PASSING_GRADE.total}</span>
+                  <span className="text-gray-400 text-sm ml-1">/ 550</span>
                 </div>
-              ))}
-              <div className="pt-2 border-t border-gray-100 flex justify-between items-center">
-                <span className="text-xs text-gray-500">Total minimum</span>
-                <span className="text-sm font-bold text-gray-900">≥ {PASSING_GRADE.total} <span className="text-xs text-gray-400 font-normal">/ 550</span></span>
               </div>
             </div>
           </div>
 
           {/* Sistem penilaian */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sistem Penilaian</p>
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Sistem Penilaian</p>
             </div>
-            <div className="p-4 space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-gray-600">TWK & TIU — Benar</span>
-                <span className="font-bold text-green-600">+5</span>
+            <div className="p-4 space-y-3 text-xs">
+              <div className="bg-blue-50 rounded-xl p-3 space-y-1.5">
+                <p className="font-bold text-blue-700 text-[11px] uppercase tracking-wide mb-2">TWK & TIU</p>
+                <div className="flex justify-between"><span className="text-gray-600">Benar</span><span className="font-bold text-green-600">+5</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Salah</span><span className="font-bold text-red-500">−1,67</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Tidak dijawab</span><span className="font-bold text-gray-400">0</span></div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">TWK & TIU — Salah</span>
-                <span className="font-bold text-red-500">−1,67</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">TWK & TIU — Kosong</span>
-                <span className="font-bold text-gray-400">0</span>
-              </div>
-              <div className="border-t border-gray-100 pt-2 mt-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">TKP — Benar</span>
-                  <span className="font-bold text-green-600">+5</span>
-                </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-gray-600">TKP — Salah / Kosong</span>
-                  <span className="font-bold text-gray-400">0</span>
+              <div className="bg-green-50 rounded-xl p-3 space-y-1.5">
+                <p className="font-bold text-green-700 text-[11px] uppercase tracking-wide mb-2">TKP</p>
+                <div className="flex justify-between"><span className="text-gray-600">Benar</span><span className="font-bold text-green-600">+5</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Salah / Kosong</span><span className="font-bold text-gray-400">0</span></div>
+                <div className="mt-1 pt-1 border-t border-green-100">
+                  <p className="text-[10px] text-green-600 font-semibold">💡 Tidak ada penalti! Isi semua soal TKP.</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Tips */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <p className="text-xs font-semibold text-amber-800 mb-2">💡 Tips Sukses SKD</p>
-            <ul className="space-y-1.5 text-xs text-amber-700">
-              <li>✓ Prioritaskan TKP — tidak ada penalti salah</li>
-              <li>✓ Kalau ragu soal TWK/TIU, lebih baik lewati</li>
-              <li>✓ Kerjakan soal yang yakin dulu</li>
-              <li>✓ Latihan rutin meningkatkan kecepatan</li>
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+            <p className="text-xs font-bold text-amber-800 mb-3 uppercase tracking-wide">💡 Tips Sukses SKD</p>
+            <ul className="space-y-2">
+              {[
+                'Prioritaskan TKP — tidak ada penalti salah',
+                'Ragu di TWK/TIU? Lewati dulu',
+                'Kerjakan soal yakin dulu, kembali ke yang ragu',
+                'Latihan rutin tingkatkan kecepatan & akurasi',
+              ].map((tip) => (
+                <li key={tip} className="flex items-start gap-2 text-xs text-amber-700">
+                  <span className="text-amber-400 mt-0.5 shrink-0">✓</span>
+                  {tip}
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Info jadwal */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Info CPNS 2025</p>
-            <div className="space-y-2 text-xs text-gray-600">
+          <div className="bg-white rounded-2xl border border-gray-200 p-4">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Info CPNS 2025</p>
+            <div className="space-y-2.5 text-xs text-gray-600">
               <div className="flex items-start gap-2">
                 <span className="text-blue-500 shrink-0 mt-0.5">📅</span>
-                <p>Pantau terus pengumuman resmi di <span className="font-medium">sscasn.bkn.go.id</span></p>
+                <p>Pantau pengumuman resmi di <span className="font-semibold text-blue-600">sscasn.bkn.go.id</span></p>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-blue-500 shrink-0 mt-0.5">📌</span>
-                <p>Formasi CPNS 2025 mencakup seluruh K/L Pusat dan Daerah</p>
+                <p>Formasi 2025 mencakup seluruh K/L Pusat & Daerah</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-blue-500 shrink-0 mt-0.5">🎯</span>
+                <p>SKD diselenggarakan di seluruh wilayah Indonesia</p>
               </div>
             </div>
           </div>
         </aside>
-
       </div>
     </div>
   )
