@@ -24,7 +24,7 @@ export default function CpnsPackageCard({ pkg, isLoggedIn, userPlan, index }: Cp
       router.push('/harga')
       return
     }
-    router.push(`/ujian/${pkg.id}`)
+    router.push(`/persiapan/${pkg.id}`)
   }
 
   return (

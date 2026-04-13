@@ -122,7 +122,7 @@ export default async function PaketPage() {
                     </div>
                   ) : canAccess ? (
                     <Link
-                      href={`/ujian/${pkg.id}`}
+                      href={`/persiapan/${pkg.id}`}
                       className="block w-full text-center py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       Mulai Try Out

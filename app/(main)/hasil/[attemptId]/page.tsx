@@ -129,7 +129,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
           {/* Aksi */}
           <div className="flex flex-col gap-2 shrink-0">
             <Link
-              href={`/ujian/${attempt.package_id}`}
+              href={`/persiapan/${attempt.package_id}`}
               className="px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
             >
               Coba Lagi
