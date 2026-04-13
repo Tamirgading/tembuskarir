@@ -74,19 +74,13 @@ async function parseFile(file: File): Promise<ParsedQuestion[]> {
     throw new Error('Format file tidak didukung. Gunakan .csv atau .xlsx')
   }
 
-  // Pakai XLSX untuk semua format — lebih robust dari parser CSV manual
+  // Pakai XLSX untuk semua format — gunakan ArrayBuffer agar format CSV terdeteksi benar
+  // CATATAN: type:'string' bukan untuk CSV, harus pakai type:'array' + ArrayBuffer
   const XLSX = await import('xlsx')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let wb: any
 
-  if (ext === 'csv') {
-    // Baca sebagai teks dulu agar encoding ditangani browser
-    const text = await file.text()
-    wb = XLSX.read(text, { type: 'string', raw: false })
-  } else {
-    const buffer = await file.arrayBuffer()
-    wb = XLSX.read(buffer, { type: 'array', raw: false })
-  }
+  const buffer = await file.arrayBuffer()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const wb: any = XLSX.read(buffer, { type: 'array', raw: false })
 
   const ws = wb.Sheets[wb.SheetNames[0]]
   // header:1 → array per baris, defval:'' → sel kosong jadi string kosong
