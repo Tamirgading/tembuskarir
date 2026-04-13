@@ -67,54 +67,30 @@ function downloadTemplate() {
   URL.revokeObjectURL(url)
 }
 
-function parseCSV(text: string): string[][] {
-  const rows: string[][] = []
-  const lines = text.split(/\r?\n/)
-  for (const line of lines) {
-    if (!line.trim()) continue
-    const cells: string[] = []
-    let inQuote = false
-    let cell = ''
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i]
-      if (ch === '"') {
-        if (inQuote && line[i + 1] === '"') {
-          cell += '"'
-          i++
-        } else {
-          inQuote = !inQuote
-        }
-      } else if (ch === ',' && !inQuote) {
-        cells.push(cell)
-        cell = ''
-      } else {
-        cell += ch
-      }
-    }
-    cells.push(cell)
-    rows.push(cells)
-  }
-  return rows
-}
-
 async function parseFile(file: File): Promise<ParsedQuestion[]> {
   const ext = file.name.split('.').pop()?.toLowerCase()
 
-  let rawRows: string[][]
-
-  if (ext === 'csv') {
-    const text = await file.text()
-    rawRows = parseCSV(text)
-  } else if (ext === 'xlsx' || ext === 'xls') {
-    // Dynamic import agar tidak membengkakkan bundle halaman lain
-    const XLSX = await import('xlsx')
-    const buffer = await file.arrayBuffer()
-    const wb = XLSX.read(buffer, { type: 'array' })
-    const ws = wb.Sheets[wb.SheetNames[0]]
-    rawRows = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1, defval: '' }) as string[][]
-  } else {
+  if (ext !== 'csv' && ext !== 'xlsx' && ext !== 'xls') {
     throw new Error('Format file tidak didukung. Gunakan .csv atau .xlsx')
   }
+
+  // Pakai XLSX untuk semua format — lebih robust dari parser CSV manual
+  const XLSX = await import('xlsx')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let wb: any
+
+  if (ext === 'csv') {
+    // Baca sebagai teks dulu agar encoding ditangani browser
+    const text = await file.text()
+    wb = XLSX.read(text, { type: 'string', raw: false })
+  } else {
+    const buffer = await file.arrayBuffer()
+    wb = XLSX.read(buffer, { type: 'array', raw: false })
+  }
+
+  const ws = wb.Sheets[wb.SheetNames[0]]
+  // header:1 → array per baris, defval:'' → sel kosong jadi string kosong
+  const rawRows = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, defval: '' })
 
   if (rawRows.length < 2) throw new Error('File kosong atau hanya berisi header.')
 
@@ -123,32 +99,32 @@ async function parseFile(file: File): Promise<ParsedQuestion[]> {
 
   return dataRows
     .map((row, i): ParsedQuestion => {
-      const [content, A, B, C, D, E, correct_answer, category, explanation] = row.map((c) =>
-        String(c ?? '').trim()
-      )
+      // Pastikan setiap sel jadi string bersih
+      const cells = (row as unknown[]).map((c) => String(c ?? '').trim())
+      const [content = '', A = '', B = '', C = '', D = '', E = '', correct_answer = '', category = '', explanation = ''] = cells
 
       const errors: string[] = []
       if (!content) errors.push('Pertanyaan kosong')
       if (!A || !B || !C || !D || !E) errors.push('Ada opsi yang kosong')
       const validAnswer = ['A', 'B', 'C', 'D', 'E']
-      if (!validAnswer.includes((correct_answer ?? '').toUpperCase()))
+      if (!validAnswer.includes(correct_answer.toUpperCase()))
         errors.push(`Jawaban benar "${correct_answer}" tidak valid (harus A–E)`)
 
       return {
         rowNum: i + 2, // +2 karena baris pertama header, i mulai dari 0
-        content: content ?? '',
-        A: A ?? '',
-        B: B ?? '',
-        C: C ?? '',
-        D: D ?? '',
-        E: E ?? '',
-        correct_answer: (correct_answer ?? '').toUpperCase(),
-        category: category ?? '',
-        explanation: explanation ?? '',
+        content,
+        A,
+        B,
+        C,
+        D,
+        E,
+        correct_answer: correct_answer.toUpperCase(),
+        category,
+        explanation,
         error: errors.length > 0 ? errors.join(', ') : undefined,
       }
     })
-    .filter((q) => q.content || q.A) // buang baris kosong total
+    .filter((q) => q.content || q.A) // buang baris yang benar-benar kosong total
 }
 
 export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportModalProps) {
