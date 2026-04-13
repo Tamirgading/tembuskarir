@@ -51,20 +51,27 @@ function createAnonClient() {
 }
 
 // ── SKD CPNS Scoring Constants ───────────────────────────────────────────────
-const SKD_SCORING: Record<string, { correct: number; wrong: number; empty: number }> = {
-  TWK: { correct: 5, wrong: -(5 / 3), empty: 0 }, // -1.6667
-  TIU: { correct: 5, wrong: -(5 / 3), empty: 0 }, // -1.6667
-  TKP: { correct: 5, wrong: 0, empty: 0 },         // no penalty
+// TWK & TIU: benar +5, salah 0, kosong 0 (TIDAK ADA penalti)
+// TKP: nilai per opsi 1–5 (tidak ada benar/salah), kosong = 0
+const SKD_SCORING: Record<string, { correct: number; wrong: number }> = {
+  TWK: { correct: 5, wrong: 0 },
+  TIU: { correct: 5, wrong: 0 },
 }
 
 // Passing grade SKD 2024 (resmi BKN)
 const SKD_PASSING_GRADE = { TWK: 65, TIU: 80, TKP: 166, total: 311 }
 
 interface CategoryStats {
-  correct: number
-  wrong: number
-  empty: number
-  rawScore: number
+  correct: number   // TWK/TIU: jawaban benar | TKP: jumlah soal dijawab
+  wrong: number     // TWK/TIU: jawaban salah | TKP: selalu 0
+  empty: number     // semua kategori: tidak dijawab
+  rawScore: number  // total poin kategori ini
+}
+
+interface QuestionOption {
+  key: string
+  text: string
+  point?: number // TKP: nilai 1–5
 }
 
 export async function POST(request: NextRequest) {
@@ -92,7 +99,7 @@ export async function POST(request: NextRequest) {
 
     const serviceClient = createServiceClient()
 
-    // 2. Ambil attempt + package category
+    // 2. Ambil attempt
     const { data: attemptData, error: attemptErr } = await serviceClient
       .from('attempts')
       .select('id, user_id, package_id, status, started_at')
@@ -113,7 +120,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Already processed' }, { status: 200 })
     }
 
-    // 3. Ambil package category untuk tentukan skema penilaian
+    // 3. Ambil package category
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pkgData } = await (serviceClient.from('packages') as any)
       .select('category')
@@ -122,17 +129,23 @@ export async function POST(request: NextRequest) {
 
     const isCpns = (pkgData as { category: string } | null)?.category === 'CPNS'
 
-    // 4. Ambil soal dengan correct_answer (dan category untuk CPNS)
+    // 4. Ambil soal — CPNS butuh options untuk TKP point lookup
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: questionsData, error: qErr } = await (serviceClient.from('questions') as any)
-      .select(isCpns ? 'id, correct_answer, category' : 'id, correct_answer')
+      .select(isCpns ? 'id, correct_answer, category, options' : 'id, correct_answer')
       .eq('package_id', attempt.package_id)
 
     if (qErr || !questionsData) {
       return NextResponse.json({ error: 'Gagal mengambil data soal.' }, { status: 500 })
     }
 
-    const questions = questionsData as { id: string; correct_answer: string; category?: string }[]
+    const questions = questionsData as {
+      id: string
+      correct_answer: string
+      category?: string
+      options?: QuestionOption[]
+    }[]
+
     const totalQuestions = questions.length
 
     // 5. Hitung skor
@@ -144,36 +157,47 @@ export async function POST(request: NextRequest) {
     let scoreDetails: any = {}
 
     if (isCpns) {
-      // ── SKD CPNS Scoring ──────────────────────────────────
+      // ── SKD CPNS Scoring ──────────────────────────────────────────────────
       const catStats: Record<string, CategoryStats> = {}
 
       for (const q of questions) {
         const cat = (q.category ?? 'TWK').toUpperCase()
-        const scoring = SKD_SCORING[cat] ?? SKD_SCORING.TWK
 
         if (!catStats[cat]) {
           catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
         }
 
         const userAnswer = answers[q.id]
+
         if (!userAnswer) {
+          // Tidak dijawab → 0 poin untuk semua kategori
           emptyCount++
           catStats[cat].empty++
-          catStats[cat].rawScore += scoring.empty
-        } else if (userAnswer === q.correct_answer) {
-          correctCount++
-          catStats[cat].correct++
-          catStats[cat].rawScore += scoring.correct
+        } else if (cat === 'TKP') {
+          // TKP: ambil point dari opsi yang dipilih (1–5)
+          const opts = (q.options ?? []) as QuestionOption[]
+          const selectedOpt = opts.find((o) => o.key === userAnswer)
+          const point = selectedOpt?.point ?? 0
+          catStats[cat].correct++ // "dijawab" dihitung di correct
+          catStats[cat].rawScore += point
+          correctCount++ // dihitung sebagai "soal dijawab"
         } else {
-          wrongCount++
-          catStats[cat].wrong++
-          catStats[cat].rawScore += scoring.wrong
+          // TWK / TIU: benar +5, salah +0 (tidak ada penalti)
+          const scoring = SKD_SCORING[cat] ?? { correct: 5, wrong: 0 }
+          if (userAnswer === q.correct_answer) {
+            correctCount++
+            catStats[cat].correct++
+            catStats[cat].rawScore += scoring.correct // +5
+          } else {
+            wrongCount++
+            catStats[cat].wrong++
+            catStats[cat].rawScore += scoring.wrong   // +0
+          }
         }
       }
 
-      // Raw total score SKD (bisa 0–550)
+      // Total skor raw SKD (0–550)
       const totalRaw = Object.values(catStats).reduce((sum, c) => sum + c.rawScore, 0)
-      score = Math.max(0, Math.round(totalRaw * 100) / 100) // simpan dengan 2 desimal tapi sebagai float, lalu round ke int
 
       // Cek passing grade per kategori
       const twkScore = catStats.TWK?.rawScore ?? 0
@@ -183,7 +207,9 @@ export async function POST(request: NextRequest) {
         twkScore >= SKD_PASSING_GRADE.TWK &&
         tiuScore >= SKD_PASSING_GRADE.TIU &&
         tkpScore >= SKD_PASSING_GRADE.TKP &&
-        score >= SKD_PASSING_GRADE.total
+        totalRaw >= SKD_PASSING_GRADE.total
+
+      score = Math.max(0, Math.round(totalRaw))
 
       scoreDetails = {
         type: 'SKD',
@@ -192,11 +218,8 @@ export async function POST(request: NextRequest) {
         passingGrade: SKD_PASSING_GRADE,
         lulus: isLulus,
       }
-
-      // Round score to integer for storage
-      score = Math.max(0, Math.round(totalRaw))
     } else {
-      // ── Simple Scoring (non-CPNS) ─────────────────────────
+      // ── Simple Scoring (non-CPNS) ─────────────────────────────────────────
       for (const q of questions) {
         const userAnswer = answers[q.id]
         if (!userAnswer) emptyCount++
@@ -226,7 +249,6 @@ export async function POST(request: NextRequest) {
       finished_at: new Date().toISOString(),
     }
 
-    // Tambahkan score_details jika kolom ada (akan error gracefully jika belum ada)
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: updateErr } = await (serviceClient.from('attempts') as any)

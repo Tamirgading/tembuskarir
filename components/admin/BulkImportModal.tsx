@@ -14,6 +14,12 @@ interface ParsedQuestion {
   correct_answer: string
   category: string
   explanation: string
+  // TKP: nilai per opsi (1–5)
+  point_a?: number
+  point_b?: number
+  point_c?: number
+  point_d?: number
+  point_e?: number
   error?: string
 }
 
@@ -24,7 +30,8 @@ interface BulkImportModalProps {
 }
 
 const TEMPLATE_ROWS = [
-  ['content', 'A', 'B', 'C', 'D', 'E', 'correct_answer', 'category', 'explanation'],
+  ['content', 'A', 'B', 'C', 'D', 'E', 'correct_answer', 'category', 'explanation', 'point_a', 'point_b', 'point_c', 'point_d', 'point_e'],
+  // TWK example
   [
     'Pancasila sebagai dasar negara Indonesia terdapat dalam...',
     'Batang Tubuh UUD 1945',
@@ -34,22 +41,27 @@ const TEMPLATE_ROWS = [
     'Ketetapan BPUPKI',
     'B', 'TWK',
     'Pancasila sebagai dasar negara tercantum dalam Pembukaan UUD 1945 alinea keempat',
+    '', '', '', '', '',
   ],
+  // TIU example
   [
     'Jika $2x + 3 = 11$, maka nilai $x$ adalah...',
     '3', '4', '5', '6', '7',
     'B', 'TIU',
     '$2x = 11 - 3 = 8$, maka $x = 4$',
+    '', '', '', '', '',
   ],
+  // TKP example — gunakan point_a–e, correct_answer dikosongkan
   [
     'Rekan kerja Anda melakukan kesalahan yang merugikan tim. Sikap Anda adalah...',
+    'Mengajak bicara empat mata dan membantu mencari solusi',
     'Menegur secara langsung di depan orang banyak',
     'Melaporkan langsung ke atasan tanpa bicara dengannya',
-    'Mengajak bicara empat mata dan membantu mencari solusi',
     'Membiarkan saja karena bukan urusan Anda',
     'Menceritakan kepada rekan kerja lain',
-    'C', 'TKP',
+    '', 'TKP',
     'Sikap profesional adalah menyelesaikan masalah secara konstruktif dan personal',
+    '5', '2', '3', '1', '1',
   ],
 ]
 
@@ -67,10 +79,6 @@ function downloadTemplate() {
   URL.revokeObjectURL(url)
 }
 
-/**
- * Parse satu baris CSV (string) menjadi array cell.
- * Menangani: quoted values, commas dalam quotes, escaped quotes ("").
- */
 function parseCSVRow(line: string): string[] {
   const cells: string[] = []
   let inQuote = false
@@ -78,11 +86,8 @@ function parseCSVRow(line: string): string[] {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i]
     if (ch === '"') {
-      if (inQuote && line[i + 1] === '"') {
-        cell += '"'; i++ // escaped quote
-      } else {
-        inQuote = !inQuote
-      }
+      if (inQuote && line[i + 1] === '"') { cell += '"'; i++ }
+      else { inQuote = !inQuote }
     } else if (ch === ',' && !inQuote) {
       cells.push(cell); cell = ''
     } else {
@@ -94,29 +99,61 @@ function parseCSVRow(line: string): string[] {
 }
 
 function buildQuestion(cells: string[], rowNum: number): ParsedQuestion {
-  const [content = '', A = '', B = '', C = '', D = '', E = '', correct_answer = '', category = '', explanation = ''] = cells
+  const [
+    content = '', A = '', B = '', C = '', D = '', E = '',
+    correct_answer = '', category = '', explanation = '',
+    pa = '', pb = '', pc = '', pd = '', pe = '',
+  ] = cells
 
   const errors: string[] = []
   if (!content) errors.push('Pertanyaan kosong')
   if (!A || !B || !C || !D || !E) errors.push('Ada opsi yang kosong')
-  const validAnswer = ['A', 'B', 'C', 'D', 'E']
-  if (!validAnswer.includes(correct_answer.toUpperCase()))
-    errors.push(`Jawaban benar "${correct_answer}" tidak valid (harus A–E)`)
+
+  const isTkp = category.toUpperCase() === 'TKP'
+
+  let pointA: number | undefined
+  let pointB: number | undefined
+  let pointC: number | undefined
+  let pointD: number | undefined
+  let pointE: number | undefined
+
+  if (isTkp) {
+    pointA = pa !== '' ? parseInt(pa) : undefined
+    pointB = pb !== '' ? parseInt(pb) : undefined
+    pointC = pc !== '' ? parseInt(pc) : undefined
+    pointD = pd !== '' ? parseInt(pd) : undefined
+    pointE = pe !== '' ? parseInt(pe) : undefined
+
+    const pts = [pointA, pointB, pointC, pointD, pointE]
+    if (pts.some((p) => p === undefined || isNaN(p as number) || (p as number) < 1 || (p as number) > 5)) {
+      errors.push('Soal TKP: kolom point_a–point_e wajib diisi dengan nilai 1–5')
+    } else if (new Set(pts).size < 3) {
+      errors.push('Soal TKP: nilai point harus bervariasi (minimal 3 nilai berbeda)')
+    }
+  } else {
+    const validAnswer = ['A', 'B', 'C', 'D', 'E']
+    if (!validAnswer.includes(correct_answer.toUpperCase())) {
+      errors.push(`Jawaban benar "${correct_answer}" tidak valid (harus A–E)`)
+    }
+  }
 
   return {
     rowNum,
-    content,
-    A, B, C, D, E,
-    correct_answer: correct_answer.toUpperCase(),
+    content, A, B, C, D, E,
+    correct_answer: isTkp ? '' : correct_answer.toUpperCase(),
     category,
     explanation,
+    point_a: pointA,
+    point_b: pointB,
+    point_c: pointC,
+    point_d: pointD,
+    point_e: pointE,
     error: errors.length > 0 ? errors.join(', ') : undefined,
   }
 }
 
 async function parseFile(file: File): Promise<ParsedQuestion[]> {
   const ext = file.name.split('.').pop()?.toLowerCase()
-
   if (ext !== 'csv' && ext !== 'xlsx' && ext !== 'xls') {
     throw new Error('Format file tidak didukung. Gunakan .csv atau .xlsx')
   }
@@ -125,14 +162,11 @@ async function parseFile(file: File): Promise<ParsedQuestion[]> {
   const buffer = await file.arrayBuffer()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wb: any = XLSX.read(buffer, { type: 'array', raw: false })
-
   const ws = wb.Sheets[wb.SheetNames[0]]
   const rawRows = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, defval: '' })
 
   if (rawRows.length < 2) throw new Error('File kosong atau hanya berisi header.')
 
-  // Deteksi apakah setiap baris hanya 1 kolom (format: seluruh baris dibungkus satu sel)
-  // Ini terjadi ketika pengguna menyimpan data per baris sebagai satu cell di Excel/Notepad
   const dataRowsRaw = rawRows.slice(1).filter((r) => {
     const row = r as unknown[]
     return row.some((c) => String(c ?? '').trim() !== '')
@@ -140,20 +174,16 @@ async function parseFile(file: File): Promise<ParsedQuestion[]> {
 
   const isSingleColumn = dataRowsRaw.every((r) => {
     const row = r as unknown[]
-    const nonEmpty = row.filter((c) => String(c ?? '').trim() !== '')
-    return nonEmpty.length === 1
+    return row.filter((c) => String(c ?? '').trim() !== '').length === 1
   })
 
   if (isSingleColumn) {
-    // Fallback: tiap cell berisi seluruh baris CSV → parse ulang isinya
     return dataRowsRaw.map((row, i) => {
       const cellValue = String((row as unknown[])[0] ?? '').trim()
-      const cells = parseCSVRow(cellValue)
-      return buildQuestion(cells, i + 2)
+      return buildQuestion(parseCSVRow(cellValue), i + 2)
     }).filter((q) => q.content || q.A)
   }
 
-  // Format normal: setiap baris sudah punya banyak kolom
   return dataRowsRaw.map((row, i) => {
     const cells = (row as unknown[]).map((c) => String(c ?? '').trim())
     return buildQuestion(cells, i + 2)
@@ -175,15 +205,12 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-
     setParseError(null)
     setParsedQuestions(null)
     setImportResult(null)
     setIsParsing(true)
-
     try {
-      const parsed = await parseFile(file)
-      setParsedQuestions(parsed)
+      setParsedQuestions(await parseFile(file))
     } catch (err) {
       setParseError(err instanceof Error ? err.message : 'Gagal membaca file.')
     } finally {
@@ -194,20 +221,36 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
   async function handleImport() {
     if (validQuestions.length === 0) return
 
-    const questions = validQuestions.map((q, i) => ({
-      content: q.content,
-      options: [
-        { key: 'A', text: q.A },
-        { key: 'B', text: q.B },
-        { key: 'C', text: q.C },
-        { key: 'D', text: q.D },
-        { key: 'E', text: q.E },
-      ],
-      correctAnswer: q.correct_answer,
-      category: q.category || null,
-      explanation: q.explanation || null,
-      orderIndex: startIndex + i,
-    }))
+    const questions = validQuestions.map((q, i) => {
+      const isTkp = q.category.toUpperCase() === 'TKP'
+      const pointMap: Record<string, number> = {
+        A: q.point_a ?? 1,
+        B: q.point_b ?? 1,
+        C: q.point_c ?? 1,
+        D: q.point_d ?? 1,
+        E: q.point_e ?? 1,
+      }
+
+      // Untuk TKP: correct_answer = opsi dengan point tertinggi
+      let correctAnswer = q.correct_answer
+      if (isTkp) {
+        correctAnswer = (['A', 'B', 'C', 'D', 'E'] as const)
+          .reduce((best, key) => pointMap[key] > pointMap[best] ? key : best, 'A' as string)
+      }
+
+      return {
+        content: q.content,
+        options: (['A', 'B', 'C', 'D', 'E'] as const).map((key) => ({
+          key,
+          text: q[key],
+          ...(isTkp ? { point: pointMap[key] } : {}),
+        })),
+        correctAnswer,
+        category: q.category || null,
+        explanation: q.explanation || null,
+        orderIndex: startIndex + i,
+      }
+    })
 
     const res = await fetch('/api/admin/questions/bulk-import', {
       method: 'POST',
@@ -216,12 +259,10 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
     })
 
     const data = await res.json() as { imported?: number; errors?: string[]; error?: string }
-
     if (!res.ok) {
       setImportResult({ imported: 0, errors: [data.error ?? 'Import gagal.'] })
       return
     }
-
     setImportResult({ imported: data.imported ?? 0, errors: data.errors ?? [] })
     startTransition(() => { router.refresh() })
   }
@@ -235,32 +276,25 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
             <h2 className="text-lg font-bold text-gray-900">📥 Import Soal Massal</h2>
             <p className="text-xs text-gray-500 mt-0.5">Upload file Excel atau CSV berisi banyak soal sekaligus</p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl font-light"
-          >
-            ×
-          </button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl font-light">×</button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          {/* Langkah 1: Download template */}
+          {/* Langkah 1 */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <p className="text-sm font-semibold text-blue-800 mb-2">Langkah 1 — Download template</p>
-            <p className="text-xs text-blue-700 mb-3">
-              Isi template CSV/Excel ini dengan soal-soal kamu, lalu upload di bawah.
-              Kolom wajib: <strong>content, A, B, C, D, E, correct_answer</strong>.
-              Kolom opsional: <strong>category</strong> (TWK/TIU/TKP), <strong>explanation</strong>.
-            </p>
-            <button
-              onClick={downloadTemplate}
-              className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-            >
+            <div className="text-xs text-blue-700 mb-3 space-y-1">
+              <p>Kolom wajib: <strong>content, A, B, C, D, E, category, explanation</strong></p>
+              <p>• <strong>TWK & TIU</strong>: isi <code className="bg-white/60 px-1 rounded">correct_answer</code> (A–E), biarkan kolom point kosong</p>
+              <p>• <strong>TKP</strong>: kosongkan <code className="bg-white/60 px-1 rounded">correct_answer</code>, isi <code className="bg-white/60 px-1 rounded">point_a</code>–<code className="bg-white/60 px-1 rounded">point_e</code> dengan nilai 1–5 (5=paling tepat)</p>
+            </div>
+            <button onClick={downloadTemplate}
+              className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors">
               ⬇️ Download template_soal.csv
             </button>
           </div>
 
-          {/* Langkah 2: Upload file */}
+          {/* Langkah 2 */}
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">Langkah 2 — Upload file yang sudah diisi</p>
             <label className="flex items-center gap-3 border-2 border-dashed border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors">
@@ -269,17 +303,10 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
                 <p className="text-sm text-gray-700 font-medium">Klik untuk pilih file</p>
                 <p className="text-xs text-gray-400">Format: .csv atau .xlsx · Maks. 10 MB</p>
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                onChange={handleFileChange}
-                className="hidden"
-              />
+              <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} className="hidden" />
             </label>
           </div>
 
-          {/* Parsing */}
           {isParsing && (
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -288,62 +315,53 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
           )}
 
           {parseError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3">
-              ❌ {parseError}
-            </div>
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3">❌ {parseError}</div>
           )}
 
-          {/* Preview hasil parse */}
           {parsedQuestions && !importResult && (
             <div className="space-y-3">
-              {/* Summary */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
                   <p className="text-2xl font-bold text-green-700">{validQuestions.length}</p>
                   <p className="text-xs text-green-600">Soal valid, siap diimport</p>
                 </div>
                 <div className={`rounded-xl p-3 text-center border ${invalidQuestions.length > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}>
-                  <p className={`text-2xl font-bold ${invalidQuestions.length > 0 ? 'text-red-700' : 'text-gray-400'}`}>
-                    {invalidQuestions.length}
-                  </p>
-                  <p className={`text-xs ${invalidQuestions.length > 0 ? 'text-red-600' : 'text-gray-400'}`}>
-                    Soal error (dilewati)
-                  </p>
+                  <p className={`text-2xl font-bold ${invalidQuestions.length > 0 ? 'text-red-700' : 'text-gray-400'}`}>{invalidQuestions.length}</p>
+                  <p className={`text-xs ${invalidQuestions.length > 0 ? 'text-red-600' : 'text-gray-400'}`}>Soal error (dilewati)</p>
                 </div>
               </div>
 
-              {/* Error list */}
               {invalidQuestions.length > 0 && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 space-y-1 max-h-32 overflow-y-auto">
                   <p className="text-xs font-semibold text-red-700 mb-1">Baris bermasalah:</p>
                   {invalidQuestions.map((q) => (
-                    <p key={q.rowNum} className="text-xs text-red-600">
-                      Baris {q.rowNum}: {q.error}
-                    </p>
+                    <p key={q.rowNum} className="text-xs text-red-600">Baris {q.rowNum}: {q.error}</p>
                   ))}
                 </div>
               )}
 
-              {/* Preview tabel */}
               {validQuestions.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-gray-600 mb-2">
-                    Preview {Math.min(3, validQuestions.length)} soal pertama:
-                  </p>
+                  <p className="text-xs font-semibold text-gray-600 mb-2">Preview {Math.min(3, validQuestions.length)} soal pertama:</p>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {validQuestions.slice(0, 3).map((q, i) => (
-                      <div key={i} className="bg-gray-50 rounded-lg p-2.5 text-xs border border-gray-200">
-                        <p className="font-medium text-gray-800 line-clamp-1">{i + 1}. {q.content}</p>
-                        <div className="flex gap-3 mt-1 text-gray-500">
-                          <span>Jawaban: <strong className="text-green-600">{q.correct_answer}</strong></span>
-                          {q.category && <span>Kategori: {q.category}</span>}
+                    {validQuestions.slice(0, 3).map((q, i) => {
+                      const isTkp = q.category.toUpperCase() === 'TKP'
+                      return (
+                        <div key={i} className="bg-gray-50 rounded-lg p-2.5 text-xs border border-gray-200">
+                          <p className="font-medium text-gray-800 line-clamp-1">{i + 1}. {q.content}</p>
+                          <div className="flex gap-3 mt-1 text-gray-500 flex-wrap">
+                            {isTkp ? (
+                              <span className="text-green-700">TKP · Nilai: A={q.point_a} B={q.point_b} C={q.point_c} D={q.point_d} E={q.point_e}</span>
+                            ) : (
+                              <span>Jawaban: <strong className="text-green-600">{q.correct_answer}</strong></span>
+                            )}
+                            {q.category && <span>Kategori: <strong>{q.category}</strong></span>}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                     {validQuestions.length > 3 && (
-                      <p className="text-xs text-gray-400 text-center">
-                        ... dan {validQuestions.length - 3} soal lainnya
-                      </p>
+                      <p className="text-xs text-gray-400 text-center">... dan {validQuestions.length - 3} soal lainnya</p>
                     )}
                   </div>
                 </div>
@@ -351,52 +369,29 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
             </div>
           )}
 
-          {/* Hasil import */}
           {importResult && (
             <div className={`rounded-xl border p-4 ${importResult.imported > 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
               {importResult.imported > 0 && (
-                <p className="text-green-800 font-semibold text-sm">
-                  ✅ Berhasil mengimport {importResult.imported} soal!
-                </p>
+                <p className="text-green-800 font-semibold text-sm">✅ Berhasil mengimport {importResult.imported} soal!</p>
               )}
               {importResult.errors.length > 0 && (
                 <div className="mt-2 space-y-1">
-                  {importResult.errors.map((e, i) => (
-                    <p key={i} className="text-red-600 text-xs">{e}</p>
-                  ))}
+                  {importResult.errors.map((e, i) => <p key={i} className="text-red-600 text-xs">{e}</p>)}
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-100 flex gap-3 justify-end">
           {importResult ? (
-            <button
-              onClick={onClose}
-              className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
-            >
-              Selesai
-            </button>
+            <button onClick={onClose} className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">Selesai</button>
           ) : (
             <>
-              <button
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleImport}
-                disabled={validQuestions.length === 0 || isPending}
-                className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isPending
-                  ? 'Mengimport...'
-                  : validQuestions.length > 0
-                  ? `⬆️ Import ${validQuestions.length} Soal`
-                  : 'Pilih file dulu'}
+              <button onClick={onClose} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">Batal</button>
+              <button onClick={handleImport} disabled={validQuestions.length === 0 || isPending}
+                className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                {isPending ? 'Mengimport...' : validQuestions.length > 0 ? `⬆️ Import ${validQuestions.length} Soal` : 'Pilih file dulu'}
               </button>
             </>
           )}
