@@ -67,6 +67,53 @@ function downloadTemplate() {
   URL.revokeObjectURL(url)
 }
 
+/**
+ * Parse satu baris CSV (string) menjadi array cell.
+ * Menangani: quoted values, commas dalam quotes, escaped quotes ("").
+ */
+function parseCSVRow(line: string): string[] {
+  const cells: string[] = []
+  let inQuote = false
+  let cell = ''
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i]
+    if (ch === '"') {
+      if (inQuote && line[i + 1] === '"') {
+        cell += '"'; i++ // escaped quote
+      } else {
+        inQuote = !inQuote
+      }
+    } else if (ch === ',' && !inQuote) {
+      cells.push(cell); cell = ''
+    } else {
+      cell += ch
+    }
+  }
+  cells.push(cell)
+  return cells.map((c) => c.trim())
+}
+
+function buildQuestion(cells: string[], rowNum: number): ParsedQuestion {
+  const [content = '', A = '', B = '', C = '', D = '', E = '', correct_answer = '', category = '', explanation = ''] = cells
+
+  const errors: string[] = []
+  if (!content) errors.push('Pertanyaan kosong')
+  if (!A || !B || !C || !D || !E) errors.push('Ada opsi yang kosong')
+  const validAnswer = ['A', 'B', 'C', 'D', 'E']
+  if (!validAnswer.includes(correct_answer.toUpperCase()))
+    errors.push(`Jawaban benar "${correct_answer}" tidak valid (harus A–E)`)
+
+  return {
+    rowNum,
+    content,
+    A, B, C, D, E,
+    correct_answer: correct_answer.toUpperCase(),
+    category,
+    explanation,
+    error: errors.length > 0 ? errors.join(', ') : undefined,
+  }
+}
+
 async function parseFile(file: File): Promise<ParsedQuestion[]> {
   const ext = file.name.split('.').pop()?.toLowerCase()
 
@@ -74,51 +121,43 @@ async function parseFile(file: File): Promise<ParsedQuestion[]> {
     throw new Error('Format file tidak didukung. Gunakan .csv atau .xlsx')
   }
 
-  // Pakai XLSX untuk semua format — gunakan ArrayBuffer agar format CSV terdeteksi benar
-  // CATATAN: type:'string' bukan untuk CSV, harus pakai type:'array' + ArrayBuffer
   const XLSX = await import('xlsx')
-
   const buffer = await file.arrayBuffer()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wb: any = XLSX.read(buffer, { type: 'array', raw: false })
 
   const ws = wb.Sheets[wb.SheetNames[0]]
-  // header:1 → array per baris, defval:'' → sel kosong jadi string kosong
   const rawRows = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, defval: '' })
 
   if (rawRows.length < 2) throw new Error('File kosong atau hanya berisi header.')
 
-  // Skip baris header (baris pertama)
-  const dataRows = rawRows.slice(1)
+  // Deteksi apakah setiap baris hanya 1 kolom (format: seluruh baris dibungkus satu sel)
+  // Ini terjadi ketika pengguna menyimpan data per baris sebagai satu cell di Excel/Notepad
+  const dataRowsRaw = rawRows.slice(1).filter((r) => {
+    const row = r as unknown[]
+    return row.some((c) => String(c ?? '').trim() !== '')
+  })
 
-  return dataRows
-    .map((row, i): ParsedQuestion => {
-      // Pastikan setiap sel jadi string bersih
-      const cells = (row as unknown[]).map((c) => String(c ?? '').trim())
-      const [content = '', A = '', B = '', C = '', D = '', E = '', correct_answer = '', category = '', explanation = ''] = cells
+  const isSingleColumn = dataRowsRaw.every((r) => {
+    const row = r as unknown[]
+    const nonEmpty = row.filter((c) => String(c ?? '').trim() !== '')
+    return nonEmpty.length === 1
+  })
 
-      const errors: string[] = []
-      if (!content) errors.push('Pertanyaan kosong')
-      if (!A || !B || !C || !D || !E) errors.push('Ada opsi yang kosong')
-      const validAnswer = ['A', 'B', 'C', 'D', 'E']
-      if (!validAnswer.includes(correct_answer.toUpperCase()))
-        errors.push(`Jawaban benar "${correct_answer}" tidak valid (harus A–E)`)
+  if (isSingleColumn) {
+    // Fallback: tiap cell berisi seluruh baris CSV → parse ulang isinya
+    return dataRowsRaw.map((row, i) => {
+      const cellValue = String((row as unknown[])[0] ?? '').trim()
+      const cells = parseCSVRow(cellValue)
+      return buildQuestion(cells, i + 2)
+    }).filter((q) => q.content || q.A)
+  }
 
-      return {
-        rowNum: i + 2, // +2 karena baris pertama header, i mulai dari 0
-        content,
-        A,
-        B,
-        C,
-        D,
-        E,
-        correct_answer: correct_answer.toUpperCase(),
-        category,
-        explanation,
-        error: errors.length > 0 ? errors.join(', ') : undefined,
-      }
-    })
-    .filter((q) => q.content || q.A) // buang baris yang benar-benar kosong total
+  // Format normal: setiap baris sudah punya banyak kolom
+  return dataRowsRaw.map((row, i) => {
+    const cells = (row as unknown[]).map((c) => String(c ?? '').trim())
+    return buildQuestion(cells, i + 2)
+  }).filter((q) => q.content || q.A)
 }
 
 export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportModalProps) {
