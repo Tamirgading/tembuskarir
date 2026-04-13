@@ -33,6 +33,17 @@ export default async function DashboardPage({
 
   const attempts = (attemptsData ?? []) as Pick<AttemptRow, 'id' | 'score' | 'correct_count' | 'wrong_count' | 'empty_count' | 'started_at' | 'package_id'>[]
 
+  // Fetch nama paket untuk semua attempt
+  const packageIds = Array.from(new Set(attempts.map((a) => a.package_id).filter(Boolean)))
+  const { data: packagesData } = packageIds.length > 0
+    ? await supabase.from('packages').select('id, name').in('id', packageIds)
+    : { data: [] }
+  const packageMap: Record<string, string> = {}
+  for (const pkg of (packagesData ?? [])) {
+    const p = pkg as { id: string; name: string }
+    packageMap[p.id] = p.name
+  }
+
   const totalAttempts = attempts.length
   const avgScore = totalAttempts > 0
     ? Math.round(attempts.reduce((sum, a) => sum + (a.score ?? 0), 0) / totalAttempts)
@@ -131,34 +142,40 @@ export default async function DashboardPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-gray-500 border-b border-gray-100">
+                  <th className="px-6 py-3 font-medium">Paket Ujian</th>
                   <th className="px-6 py-3 font-medium">Tanggal</th>
-                  <th className="px-6 py-3 font-medium">Skor</th>
-                  <th className="px-6 py-3 font-medium">B / S / K</th>
+                  <th className="px-6 py-3 font-medium text-center">Skor</th>
+                  <th className="px-6 py-3 font-medium text-center">B / S / K</th>
                   <th className="px-6 py-3 font-medium"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {attempts.map((attempt) => (
                   <tr key={attempt.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 text-gray-600">
+                    <td className="px-6 py-3">
+                      <p className="font-medium text-gray-800 text-sm">
+                        {packageMap[attempt.package_id] ?? 'Paket Tidak Diketahui'}
+                      </p>
+                    </td>
+                    <td className="px-6 py-3 text-gray-500 text-sm">
                       {formatDate(attempt.started_at)}
                     </td>
-                    <td className="px-6 py-3">
-                      <span className={`font-bold ${(attempt.score ?? 0) >= 75 ? 'text-green-600' : 'text-red-500'}`}>
+                    <td className="px-6 py-3 text-center">
+                      <span className={`font-bold text-lg ${(attempt.score ?? 0) >= 75 ? 'text-green-600' : 'text-red-500'}`}>
                         {attempt.score ?? '-'}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-gray-500">
-                      <span className="text-green-600">{attempt.correct_count ?? 0}</span>
+                    <td className="px-6 py-3 text-center text-sm text-gray-500">
+                      <span className="text-green-600 font-medium">{attempt.correct_count ?? 0}</span>
                       {' / '}
-                      <span className="text-red-500">{attempt.wrong_count ?? 0}</span>
+                      <span className="text-red-500 font-medium">{attempt.wrong_count ?? 0}</span>
                       {' / '}
                       <span>{attempt.empty_count ?? 0}</span>
                     </td>
                     <td className="px-6 py-3">
                       <Link
                         href={`/hasil/${attempt.id}`}
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-600 hover:underline text-sm"
                       >
                         Lihat Hasil
                       </Link>

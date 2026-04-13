@@ -50,6 +50,7 @@ export default function UjianPage() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [bookmarked, setBookmarked] = useState<Set<string>>(new Set())
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoSubmitRef = useRef(false)
@@ -229,10 +230,20 @@ export default function UjianPage() {
     }
   }
 
+  function toggleBookmark(questionId: string) {
+    setBookmarked((prev) => {
+      const next = new Set(prev)
+      if (next.has(questionId)) next.delete(questionId)
+      else next.add(questionId)
+      return next
+    })
+  }
+
   const currentQuestion = questions[currentIndex]
   const answeredCount = Object.keys(answers).length
   const unansweredCount = questions.length - answeredCount
   const isUrgent = timeLeft > 0 && timeLeft <= 300 // 5 menit
+  const isLastQuestion = currentIndex === questions.length - 1
 
   // ─── Loading / Error State ───────────────────────────────────────────────
   if (isLoading) {
@@ -291,9 +302,9 @@ export default function UjianPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-4">
         {/* ── Card Soal ── */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
-          {/* Nomor + kategori */}
+          {/* Nomor + kategori + bookmark */}
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+            <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
               {currentIndex + 1}
             </span>
             {currentQuestion.category && (
@@ -301,6 +312,19 @@ export default function UjianPage() {
                 {currentQuestion.category}
               </span>
             )}
+            <button
+              type="button"
+              onClick={() => toggleBookmark(currentQuestion.id)}
+              title={bookmarked.has(currentQuestion.id) ? 'Hapus tanda' : 'Tandai soal ini'}
+              className={`ml-auto flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border transition-colors ${
+                bookmarked.has(currentQuestion.id)
+                  ? 'bg-amber-100 border-amber-300 text-amber-700'
+                  : 'bg-white border-gray-200 text-gray-400 hover:border-amber-300 hover:text-amber-500'
+              }`}
+            >
+              <span>{bookmarked.has(currentQuestion.id) ? '🔖' : '🏳️'}</span>
+              <span>{bookmarked.has(currentQuestion.id) ? 'Ditandai' : 'Tandai'}</span>
+            </button>
           </div>
 
           {/* Konten soal */}
@@ -353,13 +377,23 @@ export default function UjianPage() {
             >
               ← Sebelumnya
             </button>
-            <button
-              onClick={() => setCurrentIndex((i) => Math.min(questions.length - 1, i + 1))}
-              disabled={currentIndex === questions.length - 1 || isSubmitting}
-              className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Berikutnya →
-            </button>
+            {isLastQuestion ? (
+              <button
+                onClick={() => setShowConfirm(true)}
+                disabled={isSubmitting}
+                className="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg text-sm hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Selesaikan Soal ✓
+              </button>
+            ) : (
+              <button
+                onClick={() => setCurrentIndex((i) => Math.min(questions.length - 1, i + 1))}
+                disabled={isSubmitting}
+                className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Berikutnya →
+              </button>
+            )}
           </div>
         </div>
 
@@ -370,21 +404,25 @@ export default function UjianPage() {
             {questions.map((q, idx) => {
               const isAnswered = !!answers[q.id]
               const isCurrent = idx === currentIndex
+              const isMarked = bookmarked.has(q.id)
+              let cls = 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              if (isAnswered) cls = 'bg-green-100 text-green-700 hover:bg-green-200'
+              if (isMarked && !isAnswered) cls = 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+              if (isMarked && isAnswered) cls = 'bg-green-100 text-green-700 ring-2 ring-amber-400'
+              if (isCurrent) cls = 'bg-blue-600 text-white ring-2 ring-blue-300'
+
               return (
                 <button
                   key={q.id}
                   onClick={() => setCurrentIndex(idx)}
                   disabled={isSubmitting}
-                  title={`Soal ${idx + 1}${isAnswered ? ' (dijawab)' : ''}`}
-                  className={`w-full aspect-square rounded-md text-xs font-semibold transition-all ${
-                    isCurrent
-                      ? 'bg-blue-600 text-white ring-2 ring-blue-300'
-                      : isAnswered
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  } disabled:cursor-not-allowed`}
+                  title={`Soal ${idx + 1}${isAnswered ? ' (dijawab)' : ''}${isMarked ? ' 🔖' : ''}`}
+                  className={`relative w-full aspect-square rounded-md text-xs font-semibold transition-all ${cls} disabled:cursor-not-allowed`}
                 >
                   {idx + 1}
+                  {isMarked && !isCurrent && (
+                    <span className="absolute -top-1 -right-1 text-[8px] leading-none">🔖</span>
+                  )}
                 </button>
               )
             })}
@@ -395,10 +433,11 @@ export default function UjianPage() {
             {[
               { color: 'bg-green-100', label: `Dijawab (${answeredCount})` },
               { color: 'bg-gray-100', label: `Belum (${unansweredCount})` },
+              { color: 'bg-amber-100', label: `Ditandai (${bookmarked.size})` },
               { color: 'bg-blue-600', label: 'Soal aktif' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2 text-xs text-gray-500">
-                <span className={`w-3.5 h-3.5 rounded-sm ${item.color}`} />
+                <span className={`w-3.5 h-3.5 rounded-sm shrink-0 ${item.color}`} />
                 {item.label}
               </div>
             ))}

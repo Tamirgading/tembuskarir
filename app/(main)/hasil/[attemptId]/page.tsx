@@ -3,15 +3,16 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
+import { HasilReview } from '@/components/hasil/HasilReview'
 
-interface QuestionOption { key: string; text: string }
 interface QuestionWithAnswer {
   id: string
   content: string
-  options: QuestionOption[]
+  options: { key: string; text: string }[]
   correct_answer: string
   explanation: string | null
   category: string | null
+  image_url: string | null
   order_index: number
 }
 
@@ -21,7 +22,6 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Fetch attempt
   const { data: attemptData } = await supabase
     .from('attempts')
     .select('*')
@@ -29,11 +29,9 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     .single()
 
   const attempt = attemptData as AttemptRow | null
-
   if (!attempt || attempt.user_id !== user.id) redirect('/dashboard')
   if (attempt.status === 'ongoing') redirect(`/ujian/${attempt.package_id}`)
 
-  // Fetch paket
   const { data: pkgData } = await supabase
     .from('packages')
     .select('name, total_questions')
@@ -42,10 +40,9 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
   const pkg = pkgData as { name: string; total_questions: number } | null
 
-  // Fetch soal + correct_answer + explanation (aman di Server Component)
   const { data: questionsData } = await supabase
     .from('questions')
-    .select('id, content, options, correct_answer, explanation, category, order_index')
+    .select('id, content, options, correct_answer, explanation, category, image_url, order_index')
     .eq('package_id', attempt.package_id)
     .order('order_index', { ascending: true })
 
@@ -55,96 +52,70 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const lulus = score >= 75
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      {/* ── Ringkasan ── */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center space-y-4">
-        <p className="text-sm text-gray-500 font-medium">{pkg?.name}</p>
-        <div className={`w-28 h-28 rounded-full flex items-center justify-center mx-auto ${lulus ? 'bg-green-100' : 'bg-red-100'}`}>
-          <span className={`text-4xl font-bold ${lulus ? 'text-green-600' : 'text-red-500'}`}>{score}</span>
-        </div>
-        <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold ${lulus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-          {lulus ? '✓ LULUS' : '✗ BELUM LULUS'}
-        </span>
-        <div className="flex justify-center gap-6 text-sm pt-2">
-          <div className="text-center">
-            <p className="text-xl font-bold text-green-600">{attempt.correct_count ?? 0}</p>
-            <p className="text-gray-500">Benar</p>
+    <div className="max-w-5xl mx-auto space-y-6">
+      {/* ── Ringkasan Skor ── */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          {/* Lingkaran skor */}
+          <div className={`w-28 h-28 shrink-0 rounded-full flex flex-col items-center justify-center ${lulus ? 'bg-green-100' : 'bg-red-100'}`}>
+            <span className={`text-4xl font-bold leading-none ${lulus ? 'text-green-600' : 'text-red-500'}`}>{score}</span>
+            <span className="text-xs text-gray-500 mt-0.5">/ 100</span>
           </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-red-500">{attempt.wrong_count ?? 0}</p>
-            <p className="text-gray-500">Salah</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-gray-400">{attempt.empty_count ?? 0}</p>
-            <p className="text-gray-500">Kosong</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-blue-600">{attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'}</p>
-            <p className="text-gray-500">Durasi</p>
-          </div>
-        </div>
-      </div>
 
-      {/* ── Aksi ── */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        <Link href={`/ujian/${attempt.package_id}`} className="px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
-          Coba Lagi
-        </Link>
-        <Link href="/paket" className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors">
-          Kembali ke Paket
-        </Link>
-        <Link href="/dashboard" className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors">
-          Dashboard
-        </Link>
-      </div>
-
-      {/* ── Review Soal ── */}
-      <div className="space-y-4">
-        <h2 className="font-semibold text-gray-900 text-lg">Review Pembahasan</h2>
-        {questions.map((q, idx) => {
-          const userAnswer = userAnswers[q.id]
-          const isCorrect = userAnswer === q.correct_answer
-          const isEmpty = !userAnswer
-
-          return (
-            <div key={q.id} className={`bg-white rounded-xl border-2 p-5 space-y-3 ${isCorrect ? 'border-green-200' : isEmpty ? 'border-gray-200' : 'border-red-200'}`}>
-              {/* Header soal */}
-              <div className="flex items-start gap-2">
-                <span className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${isCorrect ? 'bg-green-100 text-green-600' : isEmpty ? 'bg-gray-100 text-gray-500' : 'bg-red-100 text-red-600'}`}>
-                  {idx + 1}
-                </span>
-                <div className="flex-1">
-                  {q.category && <span className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded mr-2">{q.category}</span>}
-                  <span className="text-sm text-gray-900 leading-relaxed">{q.content}</span>
-                </div>
+          {/* Detail */}
+          <div className="flex-1 text-center md:text-left space-y-2">
+            <p className="text-gray-500 text-sm">{pkg?.name}</p>
+            <span className={`inline-block px-4 py-1 rounded-full text-sm font-bold ${lulus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+              {lulus ? '✓ LULUS' : '✗ BELUM LULUS'}
+            </span>
+            <div className="flex justify-center md:justify-start gap-6 text-sm pt-1">
+              <div className="text-center">
+                <p className="text-lg font-bold text-green-600">{attempt.correct_count ?? 0}</p>
+                <p className="text-gray-400 text-xs">Benar</p>
               </div>
-
-              {/* Pilihan */}
-              <div className="space-y-1.5 ml-9">
-                {q.options.map((opt) => {
-                  const isUserChoice = userAnswer === opt.key
-                  const isRightAnswer = q.correct_answer === opt.key
-                  return (
-                    <div key={opt.key} className={`flex items-start gap-2 px-3 py-2 rounded-lg text-sm ${isRightAnswer ? 'bg-green-50 text-green-800' : isUserChoice && !isRightAnswer ? 'bg-red-50 text-red-800' : 'text-gray-600'}`}>
-                      <span className={`font-bold shrink-0 ${isRightAnswer ? 'text-green-600' : isUserChoice ? 'text-red-500' : 'text-gray-400'}`}>{opt.key}.</span>
-                      <span>{opt.text}</span>
-                      {isRightAnswer && <span className="ml-auto text-green-600 text-xs font-semibold shrink-0">✓ Benar</span>}
-                      {isUserChoice && !isRightAnswer && <span className="ml-auto text-red-500 text-xs font-semibold shrink-0">✗ Pilihanmu</span>}
-                    </div>
-                  )
-                })}
+              <div className="text-center">
+                <p className="text-lg font-bold text-red-500">{attempt.wrong_count ?? 0}</p>
+                <p className="text-gray-400 text-xs">Salah</p>
               </div>
-
-              {/* Penjelasan */}
-              {q.explanation && (
-                <details className="ml-9">
-                  <summary className="text-xs text-blue-600 cursor-pointer hover:underline">Lihat pembahasan</summary>
-                  <p className="mt-2 text-sm text-gray-600 leading-relaxed bg-blue-50 rounded-lg p-3">{q.explanation}</p>
-                </details>
-              )}
+              <div className="text-center">
+                <p className="text-lg font-bold text-gray-400">{attempt.empty_count ?? 0}</p>
+                <p className="text-gray-400 text-xs">Kosong</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-bold text-blue-600">{attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'}</p>
+                <p className="text-gray-400 text-xs">Durasi</p>
+              </div>
             </div>
-          )
-        })}
+          </div>
+
+          {/* Aksi */}
+          <div className="flex flex-col gap-2 shrink-0">
+            <Link
+              href={`/ujian/${attempt.package_id}`}
+              className="px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
+            >
+              Coba Lagi
+            </Link>
+            <Link
+              href="/paket"
+              className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              Pilih Paket Lain
+            </Link>
+            <Link
+              href="/dashboard"
+              className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Review Pembahasan (navigasi per soal) ── */}
+      <div className="space-y-3">
+        <h2 className="font-semibold text-gray-900 text-lg">Review Pembahasan</h2>
+        <HasilReview questions={questions} userAnswers={userAnswers} />
       </div>
     </div>
   )
