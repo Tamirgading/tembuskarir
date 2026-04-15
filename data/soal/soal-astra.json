@@ -1,0 +1,1322 @@
+[
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun",
+    "order_index": 1,
+    "content": "Cerdas >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bodoh"
+      },
+      {
+        "key": "B",
+        "text": "Cerdik"
+      },
+      {
+        "key": "C",
+        "text": "Intelek"
+      },
+      {
+        "key": "D",
+        "text": "Pandai"
+      },
+      {
+        "key": "E",
+        "text": "Genius"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun",
+    "order_index": 2,
+    "content": "Stagnan >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Progresif"
+      },
+      {
+        "key": "B",
+        "text": "Mandek"
+      },
+      {
+        "key": "C",
+        "text": "Statis"
+      },
+      {
+        "key": "D",
+        "text": "Tetap"
+      },
+      {
+        "key": "E",
+        "text": "Beku"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun",
+    "order_index": 3,
+    "content": "Duka >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Gelisah"
+      },
+      {
+        "key": "B",
+        "text": "Gundah"
+      },
+      {
+        "key": "C",
+        "text": "Malang"
+      },
+      {
+        "key": "D",
+        "text": "Nestapa"
+      },
+      {
+        "key": "E",
+        "text": "Suka Sumber: Tribun Pekanbaru 1 2 3 4 Link copied! Tags ##### contoh soal psikotes Astra ##### PT Astra Internasional ##### soal tes Astra ##### Evergreen Rekomendasi untukAnda Kunjungi Kami. [](https://shopping.tribunnews.com/2026/04/13/terupdate-cek-27-daftar-harga-hp-oppo-periode-april-2026-oppo-a6t-pro-5g-hingga-reno15-pro-max?utmsource=pekanbaru&utmmedium=widget&referral=shopping \"Terupdate, Cek 27 Daftar Harga HP OPPO Periode April 2026: OPPO A6t Pro 5G hingga Reno15 Pro Max\") Produk Handp"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p2",
+    "order_index": 1,
+    "content": "Abadi >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Awet"
+      },
+      {
+        "key": "B",
+        "text": "Kekal"
+      },
+      {
+        "key": "C",
+        "text": "Langgeng"
+      },
+      {
+        "key": "D",
+        "text": "Baka"
+      },
+      {
+        "key": "E",
+        "text": "Sementara"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p2",
+    "order_index": 2,
+    "content": "Fakta >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bukti"
+      },
+      {
+        "key": "B",
+        "text": "Data"
+      },
+      {
+        "key": "C",
+        "text": "Fiksi"
+      },
+      {
+        "key": "D",
+        "text": "Kebenaran"
+      },
+      {
+        "key": "E",
+        "text": "Hakikat"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p2",
+    "order_index": 3,
+    "content": "Pakar >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Awam"
+      },
+      {
+        "key": "B",
+        "text": "Ahli"
+      },
+      {
+        "key": "C",
+        "text": "Juru"
+      },
+      {
+        "key": "D",
+        "text": "Tukang"
+      },
+      {
+        "key": "E",
+        "text": "Empu"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p2",
+    "order_index": 4,
+    "content": "Netral >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Adil"
+      },
+      {
+        "key": "B",
+        "text": "Objektif"
+      },
+      {
+        "key": "C",
+        "text": "Berpihak"
+      },
+      {
+        "key": "D",
+        "text": "Bebas"
+      },
+      {
+        "key": "E",
+        "text": "Hambar"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p2",
+    "order_index": 5,
+    "content": "Gemuk >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Gendut"
+      },
+      {
+        "key": "B",
+        "text": "Kurus"
+      },
+      {
+        "key": "C",
+        "text": "Gempal"
+      },
+      {
+        "key": "D",
+        "text": "Tambun"
+      },
+      {
+        "key": "E",
+        "text": "Subur Sumber: Tribun Pekanbaru 1 2 3 4 Link copied! Tags ##### contoh soal psikotes Astra ##### PT Astra Internasional ##### soal tes Astra ##### Evergreen Rekomendasi untukAnda Kunjungi Kami. [](https://shopping.tribunnews.com/2026/04/13/terupdate-cek-27-daftar-harga-hp-oppo-periode-april-2026-oppo-a6t-pro-5g-hingga-reno15-pro-max?utmsource=pekanbaru&utmmedium=widget&referral=shopping \"Terupdate, Cek 27 Daftar Harga HP OPPO Periode April 2026: OPPO A6t Pro 5G hingga Reno15 Pro Max\") Produk Hand"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p3",
+    "order_index": 1,
+    "content": "Paradoksal >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bentrok"
+      },
+      {
+        "key": "B",
+        "text": "Bertentangan"
+      },
+      {
+        "key": "C",
+        "text": "Bertubrukan"
+      },
+      {
+        "key": "D",
+        "text": "Sejalan"
+      },
+      {
+        "key": "E",
+        "text": "Konsisten"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p3",
+    "order_index": 2,
+    "content": "Nisbi >< ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Relatif"
+      },
+      {
+        "key": "B",
+        "text": "Mutlak"
+      },
+      {
+        "key": "C",
+        "text": "Rasio"
+      },
+      {
+        "key": "D",
+        "text": "Demokratis"
+      },
+      {
+        "key": "E",
+        "text": "Proporsi"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p3",
+    "order_index": 3,
+    "content": "3, 9, 12, ...., ...., 117",
+    "options": [
+      {
+        "key": "A",
+        "text": "15, 39"
+      },
+      {
+        "key": "B",
+        "text": "15, 57"
+      },
+      {
+        "key": "C",
+        "text": "26, 39"
+      },
+      {
+        "key": "D",
+        "text": "39, 56"
+      },
+      {
+        "key": "E",
+        "text": "39, 63"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Verbal",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p3",
+    "order_index": 4,
+    "content": "1, 1, 2, 3, 5, 8, 13,....",
+    "options": [
+      {
+        "key": "A",
+        "text": "21"
+      },
+      {
+        "key": "B",
+        "text": "22"
+      },
+      {
+        "key": "C",
+        "text": "23"
+      },
+      {
+        "key": "D",
+        "text": "24"
+      },
+      {
+        "key": "E",
+        "text": "25"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 1,
+    "content": "11, 22, 44, ...., ....., 352, 704",
+    "options": [
+      {
+        "key": "A",
+        "text": "66, 88"
+      },
+      {
+        "key": "B",
+        "text": "88, 176"
+      },
+      {
+        "key": "C",
+        "text": "66, 77"
+      },
+      {
+        "key": "D",
+        "text": "88, 99"
+      },
+      {
+        "key": "E",
+        "text": "77, 88"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 2,
+    "content": "13, 18, 25, 34, 35,....",
+    "options": [
+      {
+        "key": "A",
+        "text": "56"
+      },
+      {
+        "key": "B",
+        "text": "57"
+      },
+      {
+        "key": "C",
+        "text": "58"
+      },
+      {
+        "key": "D",
+        "text": "59"
+      },
+      {
+        "key": "E",
+        "text": "60"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 3,
+    "content": "26, 23, 30, 27,...., 31",
+    "options": [
+      {
+        "key": "A",
+        "text": "32"
+      },
+      {
+        "key": "B",
+        "text": "33"
+      },
+      {
+        "key": "C",
+        "text": "34"
+      },
+      {
+        "key": "D",
+        "text": "35"
+      },
+      {
+        "key": "E",
+        "text": "36"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 4,
+    "content": "5, 10, 17, 26, 37,....",
+    "options": [
+      {
+        "key": "A",
+        "text": "41"
+      },
+      {
+        "key": "B",
+        "text": "42"
+      },
+      {
+        "key": "C",
+        "text": "45"
+      },
+      {
+        "key": "D",
+        "text": "50"
+      },
+      {
+        "key": "E",
+        "text": "53"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 5,
+    "content": "95, 90, 80, 65,....",
+    "options": [
+      {
+        "key": "A",
+        "text": "60"
+      },
+      {
+        "key": "B",
+        "text": "55"
+      },
+      {
+        "key": "C",
+        "text": "40"
+      },
+      {
+        "key": "D",
+        "text": "35"
+      },
+      {
+        "key": "E",
+        "text": "45"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 6,
+    "content": "2, 1, 3, 2, 5, 3, 8, 5, ...,...",
+    "options": [
+      {
+        "key": "A",
+        "text": "13, 8"
+      },
+      {
+        "key": "B",
+        "text": "4, 6"
+      },
+      {
+        "key": "C",
+        "text": "11, 7"
+      },
+      {
+        "key": "D",
+        "text": "4, 13"
+      },
+      {
+        "key": "E",
+        "text": "12, 9"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 7,
+    "content": "248, 246, 242 ...., ...., 218, 206",
+    "options": [
+      {
+        "key": "A",
+        "text": "226, 234"
+      },
+      {
+        "key": "B",
+        "text": "228, 236"
+      },
+      {
+        "key": "C",
+        "text": "236, 228"
+      },
+      {
+        "key": "D",
+        "text": "238, 228"
+      },
+      {
+        "key": "E",
+        "text": "238, 230"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 8,
+    "content": "Sekolah - Siswa = Perusahaan - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Karyawan"
+      },
+      {
+        "key": "B",
+        "text": "Aktor"
+      },
+      {
+        "key": "C",
+        "text": "Penyanyi"
+      },
+      {
+        "key": "D",
+        "text": "Pelancong"
+      },
+      {
+        "key": "E",
+        "text": "Penyair"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 9,
+    "content": "Siang - Matahari = Malam - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Awan"
+      },
+      {
+        "key": "B",
+        "text": "Gelap"
+      },
+      {
+        "key": "C",
+        "text": "Kunang-kunang"
+      },
+      {
+        "key": "D",
+        "text": "Bulan"
+      },
+      {
+        "key": "E",
+        "text": "Bintang"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 10,
+    "content": "Apel - Buah = Kucing - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Gemuk"
+      },
+      {
+        "key": "B",
+        "text": "Binatang"
+      },
+      {
+        "key": "C",
+        "text": "Kumis"
+      },
+      {
+        "key": "D",
+        "text": "Kambing"
+      },
+      {
+        "key": "E",
+        "text": "Nabati"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 11,
+    "content": "Televisi - Gambar = Radio - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Siaran"
+      },
+      {
+        "key": "B",
+        "text": "Suara"
+      },
+      {
+        "key": "C",
+        "text": "Listrik"
+      },
+      {
+        "key": "D",
+        "text": "Robot"
+      },
+      {
+        "key": "E",
+        "text": "Penyiar"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 12,
+    "content": "Motor - Bensin = Pelari - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Makanan"
+      },
+      {
+        "key": "B",
+        "text": "Sepatu"
+      },
+      {
+        "key": "C",
+        "text": "Baju"
+      },
+      {
+        "key": "D",
+        "text": "Jalan"
+      },
+      {
+        "key": "E",
+        "text": "Lintasan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 13,
+    "content": "Semir - Sepatu = Sikat - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kuku"
+      },
+      {
+        "key": "B",
+        "text": "Tangan"
+      },
+      {
+        "key": "C",
+        "text": "Kaki"
+      },
+      {
+        "key": "D",
+        "text": "Gigi"
+      },
+      {
+        "key": "E",
+        "text": "Gusi"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 14,
+    "content": "Kaki - Sepatu = Kepala - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Baju"
+      },
+      {
+        "key": "B",
+        "text": "Dasi"
+      },
+      {
+        "key": "C",
+        "text": "Topi"
+      },
+      {
+        "key": "D",
+        "text": "Celana"
+      },
+      {
+        "key": "E",
+        "text": "Sabuk"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 15,
+    "content": "Lampu - Gelap = Makanan - .....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Haus"
+      },
+      {
+        "key": "B",
+        "text": "Enak"
+      },
+      {
+        "key": "C",
+        "text": "Mengantuk"
+      },
+      {
+        "key": "D",
+        "text": "Kenyang"
+      },
+      {
+        "key": "E",
+        "text": "Lapar"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 16,
+    "content": "Belalai - Gajah = Kumis - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Ular"
+      },
+      {
+        "key": "B",
+        "text": "Ayam"
+      },
+      {
+        "key": "C",
+        "text": "Kucing"
+      },
+      {
+        "key": "D",
+        "text": "Beruang"
+      },
+      {
+        "key": "E",
+        "text": "Belalang"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 17,
+    "content": "Handphone - Komunikasi = Motor - ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Transportasi"
+      },
+      {
+        "key": "B",
+        "text": "Kendaraan"
+      },
+      {
+        "key": "C",
+        "text": "Roda"
+      },
+      {
+        "key": "D",
+        "text": "Laju"
+      },
+      {
+        "key": "E",
+        "text": "Bensin"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 18,
+    "content": "Gerak = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Statis"
+      },
+      {
+        "key": "B",
+        "text": "Kaku"
+      },
+      {
+        "key": "C",
+        "text": "Mobilitas"
+      },
+      {
+        "key": "D",
+        "text": "Ajeg"
+      },
+      {
+        "key": "E",
+        "text": "Pasif"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 19,
+    "content": "Perlindungan = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Proteksi"
+      },
+      {
+        "key": "B",
+        "text": "Eksposur"
+      },
+      {
+        "key": "C",
+        "text": "Bahaya"
+      },
+      {
+        "key": "D",
+        "text": "Pengawasan"
+      },
+      {
+        "key": "E",
+        "text": "Penjualan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 20,
+    "content": "Ahli = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Perdamaian"
+      },
+      {
+        "key": "B",
+        "text": "Pakar"
+      },
+      {
+        "key": "C",
+        "text": "Ilmuwan"
+      },
+      {
+        "key": "D",
+        "text": "Pulih"
+      },
+      {
+        "key": "E",
+        "text": "Licin"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 21,
+    "content": "Cermat = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Hasil"
+      },
+      {
+        "key": "B",
+        "text": "Ralat"
+      },
+      {
+        "key": "C",
+        "text": "Limit"
+      },
+      {
+        "key": "D",
+        "text": "Salah"
+      },
+      {
+        "key": "E",
+        "text": "Akurat"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 22,
+    "content": "eksklusif = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Terkini"
+      },
+      {
+        "key": "B",
+        "text": "Jarang"
+      },
+      {
+        "key": "C",
+        "text": "Proses"
+      },
+      {
+        "key": "D",
+        "text": "Khusus"
+      },
+      {
+        "key": "E",
+        "text": "Terbaru"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 23,
+    "content": "Galat = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Benar"
+      },
+      {
+        "key": "B",
+        "text": "Alat"
+      },
+      {
+        "key": "C",
+        "text": "Keliru"
+      },
+      {
+        "key": "D",
+        "text": "Rusak"
+      },
+      {
+        "key": "E",
+        "text": "Kodrati"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 24,
+    "content": "Asumsi = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Anggapan"
+      },
+      {
+        "key": "B",
+        "text": "Ramalan"
+      },
+      {
+        "key": "C",
+        "text": "Akalan"
+      },
+      {
+        "key": "D",
+        "text": "Acara"
+      },
+      {
+        "key": "E",
+        "text": "Rekaan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Core Values",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 25,
+    "content": "Harmonis = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Keserasian"
+      },
+      {
+        "key": "B",
+        "text": "Kemantapan"
+      },
+      {
+        "key": "C",
+        "text": "Keselamatan"
+      },
+      {
+        "key": "D",
+        "text": "Kesahihan"
+      },
+      {
+        "key": "E",
+        "text": "Kematangan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 26,
+    "content": "Insinuasi = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mandiri"
+      },
+      {
+        "key": "B",
+        "text": "Insting"
+      },
+      {
+        "key": "C",
+        "text": "Bebas"
+      },
+      {
+        "key": "D",
+        "text": "Sindiran"
+      },
+      {
+        "key": "E",
+        "text": "Privat"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 27,
+    "content": "Angkuh = ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Salah"
+      },
+      {
+        "key": "B",
+        "text": "Agunan"
+      },
+      {
+        "key": "C",
+        "text": "Darma"
+      },
+      {
+        "key": "D",
+        "text": "Defleksi"
+      },
+      {
+        "key": "E",
+        "text": "Jemawa"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": "Total pembelian tertinggi adalah Rp6.100.000, yang dimiliki oleh Rina Kartikasari Soal 2 (untuk jawabannya bisa lihat di bagian akhir) !Contoh Soal Psikotes ASTRA 2025Contoh Soal Psikotes ASTRA 2025 (Youtube)"
+  },
+  {
+    "institusi": "Astra",
+    "paket": "Psikotes Astra",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "astra-tribun-p4",
+    "order_index": 28,
+    "content": "Siapakah nama ibu dari pelamar Dian Kartika Sari?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Siti Aminah"
+      },
+      {
+        "key": "B",
+        "text": "Nurhayati"
+      },
+      {
+        "key": "C",
+        "text": "Sri Rahayu"
+      },
+      {
+        "key": "D",
+        "text": "Florentina Rossy"
+      },
+      {
+        "key": "E",
+        "text": "Maria Oktarina"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  }
+]

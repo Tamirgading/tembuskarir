@@ -1,0 +1,1882 @@
+[
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "hard",
+    "sumber": "ojk-mamikos",
+    "order_index": 1,
+    "content": "Lembaga yang dibentuk berdasarkan UU No. 21 Tahun 2011 untuk mengatur serta mengawasi aktivitas lembaga keuangan di Indonesia adalah ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Lembaga Penjamin Simpanan"
+      },
+      {
+        "key": "B",
+        "text": "Otoritas Jasa Keuangan"
+      },
+      {
+        "key": "C",
+        "text": "Kementerian Keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Badan Usaha Milik Negara"
+      },
+      {
+        "key": "E",
+        "text": "Bank Indonesia"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "medium",
+    "sumber": "ojk-mamikos",
+    "order_index": 2,
+    "content": "Manakah sektor yang secara langsung berada dalam ruang lingkup pengawasan OJK? (1) Asuransi (2) Pasar Modal (3) Penyedia bantuan sosial (4) Lembaga Pembiayaan Pilih jawaban yang benar:",
+    "options": [
+      {
+        "key": "A",
+        "text": "(1) dan (3)"
+      },
+      {
+        "key": "B",
+        "text": "(2) dan (3)"
+      },
+      {
+        "key": "C",
+        "text": "(1), (2), dan (4)"
+      },
+      {
+        "key": "D",
+        "text": "(3) dan (4)"
+      },
+      {
+        "key": "E",
+        "text": "Semua benar"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos",
+    "order_index": 3,
+    "content": "Salah satu tujuan utama pembentukan Otoritas Jasa Keuangan yaitu ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengatur arus barang antarwilayah"
+      },
+      {
+        "key": "B",
+        "text": "Menjamin harga komoditas tetap stabil"
+      },
+      {
+        "key": "C",
+        "text": "Menjaga keandalan sistem keuangan nasional"
+      },
+      {
+        "key": "D",
+        "text": "Mengelola aset negara"
+      },
+      {
+        "key": "E",
+        "text": "Mengawasi seluruh kebijakan fiskal"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos",
+    "order_index": 4,
+    "content": "Dalam menjalankan kewenangannya, OJK memiliki fungsi antara lain….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Menetapkan suku bunga acuan nasional"
+      },
+      {
+        "key": "B",
+        "text": "Mengawasi kegiatan sektor perbankan"
+      },
+      {
+        "key": "C",
+        "text": "Menentukan tarif pajak lembaga keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Mengelola cadangan devisa nasional"
+      },
+      {
+        "key": "E",
+        "text": "Menentukan standar akuntansi pemerintah"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "medium",
+    "sumber": "ojk-mamikos",
+    "order_index": 5,
+    "content": "Yang termasuk fungsi Otoritas Jasa Keuangan adalah.… (1) Mengawasi lembaga keuangan non-bank (2) Mengatur perilaku pelaku usaha jasa keuangan (3) Menetapkan kebijakan moneter (4) Menjaga stabilitas sistem keuangan Pilih kombinasi yang tepat:",
+    "options": [
+      {
+        "key": "A",
+        "text": "(1) dan (3)"
+      },
+      {
+        "key": "B",
+        "text": "(2) dan (3)"
+      },
+      {
+        "key": "C",
+        "text": "(1), (2), dan (4)"
+      },
+      {
+        "key": "D",
+        "text": "(1), (3), dan (4)"
+      },
+      {
+        "key": "E",
+        "text": "Semua benar"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos",
+    "order_index": 6,
+    "content": "Dalam pengawasan OJK, aspek yang terkait dengan pendirian bank baru, perubahan kepemilikan, penggabungan usaha, serta pencabutan izin termasuk ke dalam pengaturan mengenai ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Struktur kelembagaan bank"
+      },
+      {
+        "key": "B",
+        "text": "Prinsip manajemen risiko"
+      },
+      {
+        "key": "C",
+        "text": "Kecukupan modal"
+      },
+      {
+        "key": "D",
+        "text": "Kualitas aset"
+      },
+      {
+        "key": "E",
+        "text": "Stabilitas internal bank"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos",
+    "order_index": 7,
+    "content": "Dewan Komisioner OJK menjalankan tugas secara kolektif. Penetapan anggota Dewan Komisioner dilakukan oleh ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Presiden Republik Indonesia"
+      },
+      {
+        "key": "B",
+        "text": "Mahkamah Agung"
+      },
+      {
+        "key": "C",
+        "text": "Komisi Yudisial"
+      },
+      {
+        "key": "D",
+        "text": "Kementerian BUMN"
+      },
+      {
+        "key": "E",
+        "text": "Menteri Koordinator Perekonomian"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "medium",
+    "sumber": "ojk-mamikos",
+    "order_index": 8,
+    "content": "Yang termasuk unsur dalam struktur Dewan Komisioner OJK adalah… (1) Kepala Eksekutif Pengawas Perbankan (2) Kepala Eksekutif Pengawas Pasar Modal (3) Ketua Badan Supervisi Keuangan (4) Anggota Ex-Officio dari Kementerian Keuangan Pilih jawaban yang benar:",
+    "options": [
+      {
+        "key": "A",
+        "text": "(1) dan (2)"
+      },
+      {
+        "key": "B",
+        "text": "(2) dan (3)"
+      },
+      {
+        "key": "C",
+        "text": "(1) dan (4)"
+      },
+      {
+        "key": "D",
+        "text": "(3) dan (4)"
+      },
+      {
+        "key": "E",
+        "text": "(2) dan (4)"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos",
+    "order_index": 9,
+    "content": "Dalam rangka meningkatkan perlindungan terhadap masyarakat, OJK memiliki kewenangan memberikan ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Penyusunan kebijakan fiskal tahunan"
+      },
+      {
+        "key": "B",
+        "text": "Penetapan suku bunga pembiayaan"
+      },
+      {
+        "key": "C",
+        "text": "Pengelolaan dana cadangan pemerintah"
+      },
+      {
+        "key": "D",
+        "text": "Informasi edukatif mengenai produk jasa keuangan"
+      },
+      {
+        "key": "E",
+        "text": "Fasilitas kredit dengan skema khusus"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos",
+    "order_index": 10,
+    "content": "Dalam proses penentuan bank yang memiliki dampak signifikan terhadap stabilitas keuangan nasional, OJK bekerja sama dengan lembaga lain, yaitu ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kementerian BUMN"
+      },
+      {
+        "key": "B",
+        "text": "Badan Pemeriksa Keuangan"
+      },
+      {
+        "key": "C",
+        "text": "LPS"
+      },
+      {
+        "key": "D",
+        "text": "Dewan Perwakilan Daerah"
+      },
+      {
+        "key": "E",
+        "text": "Bank Indonesia"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TPD",
+    "difficulty": "medium",
+    "sumber": "ojk-tribun",
+    "order_index": 1,
+    "content": "840 - 265 =",
+    "options": [
+      {
+        "key": "A",
+        "text": "565"
+      },
+      {
+        "key": "B",
+        "text": "575"
+      },
+      {
+        "key": "C",
+        "text": "585"
+      },
+      {
+        "key": "D",
+        "text": "595 Sumber: Tribun Pekanbaru 1 2 3 4 Link copied! Tags ##### Meaningful ##### Evergreen ##### Contoh Soal Tes Potensi Dasar OJK ##### Contoh Soal Tes Potensi Dasar OJK dan Jawaban ##### Tribunpekanbaru.com ##### kunci jawaban Kunjungi Kami. [](https://shopping.tribunnews.com/2026/04/13/terupdate-cek-27-daftar-harga-hp-oppo-periode-april-2026-oppo-a6t-pro-5g-hingga-reno15-pro-max?utmsource=pekanbaru&utmmedium=widget&referral=shopping \"Terupdate, Cek 27 Daftar Harga HP OPPO Periode April 2026: OPP"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 1,
+    "content": "Apa tujuan utama dari OJK dalam pengawasan sektor keuangan?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Menyediakan hiburan keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Meningkatkan daya saing industri pariwisata"
+      },
+      {
+        "key": "C",
+        "text": "Melindungi kepentingan konsumen dan stabilitas sistem keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Menyediakan layanan Pendidikan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 2,
+    "content": "Apa yang termasuk dalam lingkup pengawasan OJK terhadap lembaga keuangan?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Hanya bank konvensional"
+      },
+      {
+        "key": "B",
+        "text": "Bank dan lembaga keuangan non-bank"
+      },
+      {
+        "key": "C",
+        "text": "Hanya asuransi jiwa"
+      },
+      {
+        "key": "D",
+        "text": "Hanya pasar modal"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 3,
+    "content": "Apa yang dimaksud dengan \"Otoritas Jasa Keuangan Syariah\" di Indonesia?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Badan usaha yang bergerak di bidang jasa keuangan konvensional"
+      },
+      {
+        "key": "B",
+        "text": "Lembaga yang mengelola pariwisata berbasis syariah"
+      },
+      {
+        "key": "C",
+        "text": "Bagian dari OJK yang fokus pada pengawasan sektor keuangan syariah"
+      },
+      {
+        "key": "D",
+        "text": "Bank syariah yang beroperasi secara mandiri"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 4,
+    "content": "Bagaimana OJK berkontribusi dalam meningkatkan literasi keuangan di masyarakat?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Melalui regulasi yang ketat"
+      },
+      {
+        "key": "B",
+        "text": "Hanya melalui pelatihan internal untuk pegawai bank"
+      },
+      {
+        "key": "C",
+        "text": "Program-program edukasi dan kampanye literasi keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Tidak terlibat dalam literasi keuangan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 5,
+    "content": "Pada masa sebelum dibentuk OJK, pengawasan lembaga jasa keuangan di industri pasar modal dilakukan oleh...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Badan Pengawas Pasar Modal dan Lembaga Keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Pusat Pelaporan dan Analisis Transaksi Keuangan (PPATK)"
+      },
+      {
+        "key": "C",
+        "text": "Kementerian Perdagangan"
+      },
+      {
+        "key": "D",
+        "text": "Bank Indonesia"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 6,
+    "content": "Lembaga negara yang mengatur dan mengawasi seluruh kegiatan jasa keuangan adalah...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kementerian Keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Otoritas Jasa Keuangan"
+      },
+      {
+        "key": "C",
+        "text": "Lembaga Penjaminan Simpanan"
+      },
+      {
+        "key": "D",
+        "text": "Bank Indonesia"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "hard",
+    "sumber": "ojk-detik",
+    "order_index": 7,
+    "content": "Manfaat menabung di bank adalah, kecuali ...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Aman (uang disimpan aman di bank)"
+      },
+      {
+        "key": "B",
+        "text": "Terjamin (tabungan dijamin oleh Lembaga Penjamin Simpanan)"
+      },
+      {
+        "key": "C",
+        "text": "Berkembang (bank memberikan bunga/bagi hasil yang dihitung berdasarkan saldo tabungan)"
+      },
+      {
+        "key": "D",
+        "text": "Terdapat pengalihan risiko (misalnya risiko kecelakaan)"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 8,
+    "content": "Produk bank yang membantu masyarakat memiliki rumah tinggal adalah ...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kredit Tanpa Agunan (KTA)"
+      },
+      {
+        "key": "B",
+        "text": "Kartu Kredit (KK)"
+      },
+      {
+        "key": "C",
+        "text": "Pinjaman Perumahan (PR)"
+      },
+      {
+        "key": "D",
+        "text": "Kredit Pemilikan Rumah (KPR)"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 9,
+    "content": "Sebagian besar industri jasa keuangan telah memasarkan produk dan jasa keuangan syariah. Industri jasa keuangan tersebut adalah sebagai berikut...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Perbankan, Perasuransian, Pasar Modal"
+      },
+      {
+        "key": "B",
+        "text": "Perbankan, Perasuransian, Dana Pensiun"
+      },
+      {
+        "key": "C",
+        "text": "Pembiayaan, Pasar Modal, Dana Pensiun"
+      },
+      {
+        "key": "D",
+        "text": "Perasuransian, Pembiayaan, Dana Pensiun"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 10,
+    "content": "Perjanjian antara nasabah dengan bank dan perusahaan keuangan lainnya dalam ekonomi syariah disebut...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Hukum"
+      },
+      {
+        "key": "B",
+        "text": "Muamalah"
+      },
+      {
+        "key": "C",
+        "text": "Akad"
+      },
+      {
+        "key": "D",
+        "text": "Tidak ada jawaban yang benar"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "hard",
+    "sumber": "ojk-detik",
+    "order_index": 11,
+    "content": "Tugas dan wewenang OJK adalah sebagai berikut, kecuali ...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengatur kegiatan jasa keuangan di sektor perbankan, pasar modal, perasuransian, dana pensiun, lembaga pembiayaan, dan lembaga jasa keuangan lainnya"
+      },
+      {
+        "key": "B",
+        "text": "Mengawasi kegiatan jasa keuangan di sektor perbankan"
+      },
+      {
+        "key": "C",
+        "text": "Mengatur kegiatan perdagangan barang dan jasa"
+      },
+      {
+        "key": "D",
+        "text": "Melakukan perlindungan konsumen dan masyarakat"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-detik",
+    "order_index": 12,
+    "content": "Apa asas OJK?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Asas independensi"
+      },
+      {
+        "key": "B",
+        "text": "Asas kepastian hukum"
+      },
+      {
+        "key": "C",
+        "text": "Asas kepentingan umum"
+      },
+      {
+        "key": "D",
+        "text": "Semuanya benar"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "hard",
+    "sumber": "ojk-tirto",
+    "order_index": 1,
+    "content": "Otoritas Jasa Keuangan mengatur tentang beberapa hal, kecuali",
+    "options": [
+      {
+        "key": "A",
+        "text": "Industri mikro"
+      },
+      {
+        "key": "B",
+        "text": "Pasar Modal"
+      },
+      {
+        "key": "C",
+        "text": "Dana subsidi"
+      },
+      {
+        "key": "D",
+        "text": "Dana pensiun"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tirto",
+    "order_index": 2,
+    "content": "Dengan terbentuknya Otoritas Jasa Keuangan, keseluruhan kegiatan di dalam sektor jasa keuangan dapat ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Terselenggara secara tertutup"
+      },
+      {
+        "key": "B",
+        "text": "Menciptakan produk perbankan lebih efisien"
+      },
+      {
+        "key": "C",
+        "text": "Membuka lapangan usaha baru"
+      },
+      {
+        "key": "D",
+        "text": "Menciptakan sistem transfer yang lebih cepat"
+      },
+      {
+        "key": "E",
+        "text": "Mewujudkan sistem keuangan secara stabil dan berkelanjutan"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tirto",
+    "order_index": 3,
+    "content": "Fungsi Otoritas Jasa Keuangan diantaranya ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Melakukan pengawasan non-bank"
+      },
+      {
+        "key": "B",
+        "text": "Melakukan pengawasan perbankan"
+      },
+      {
+        "key": "C",
+        "text": "Menjaga stabilitas sistem perbankan"
+      },
+      {
+        "key": "D",
+        "text": "Mengatur jalannya aliran uang luar negeri"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tirto",
+    "order_index": 4,
+    "content": "Siapa yang memimpin Otoritas Jasa Keuangan?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kepala Menteri Keuangan"
+      },
+      {
+        "key": "B",
+        "text": "DPR"
+      },
+      {
+        "key": "C",
+        "text": "Dewan Komisioner"
+      },
+      {
+        "key": "D",
+        "text": "MPR"
+      },
+      {
+        "key": "E",
+        "text": "Presiden"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tirto",
+    "order_index": 5,
+    "content": "Otoritas Jasa Keuangan dipimpin oleh Dewan Komisioner yang bersifat kolektif dan kolegial. Dewan Komisioner ini dipilih oleh ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Presiden"
+      },
+      {
+        "key": "B",
+        "text": "DPR"
+      },
+      {
+        "key": "C",
+        "text": "MPR"
+      },
+      {
+        "key": "D",
+        "text": "Kepala Menteri Keuangan"
+      },
+      {
+        "key": "E",
+        "text": "Direktur Keuangan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "hard",
+    "sumber": "ojk-tirto",
+    "order_index": 6,
+    "content": "Fungsi dari OJK berikut, kecuali",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengawasi aturan main dan forum stabilitas keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Mengawasi bank bersamaan dengan bank sentral"
+      },
+      {
+        "key": "C",
+        "text": "Menjaga stabilitas sistem keuangan"
+      },
+      {
+        "key": "D",
+        "text": "MengawasI bank di luar otoritas bank sentral"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "medium",
+    "sumber": "ojk-tirto",
+    "order_index": 7,
+    "content": "Otoritas Jasa Keuangan mengatur dan mengawasi laporan kinerja bank, standar akuntansi bank, dan sistem informasi debitur. Dalam hal ini, OJK mengatur dan mengawasi perbankan mengenai aspek ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Prinsip kehati-hatian"
+      },
+      {
+        "key": "B",
+        "text": "Kelembagaan bank"
+      },
+      {
+        "key": "C",
+        "text": "Struktur perbankan"
+      },
+      {
+        "key": "D",
+        "text": "Kesehatan bank"
+      },
+      {
+        "key": "E",
+        "text": "Validasi bank"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tirto",
+    "order_index": 8,
+    "content": "Untuk menjaga stabilitas sistem keuangan, OJK berkoordinasi dengan BI membentuk Forum Koordinasi Stabilitas Sistem Keuangan yang salah satunya beranggotakan ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Gubernur Bank Indonesia selaku anggota"
+      },
+      {
+        "key": "B",
+        "text": "Ketua menteri keuangan"
+      },
+      {
+        "key": "C",
+        "text": "Dewan Perwakilan Rakyat"
+      },
+      {
+        "key": "D",
+        "text": "Ketua Dewan Komisioner Lembaga Syariah"
+      },
+      {
+        "key": "E",
+        "text": "Kepala Koperasi"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "hard",
+    "sumber": "ojk-tirto",
+    "order_index": 9,
+    "content": "UU No. 21 Tahun 2011 untuk mengatur serta mengawasi aktivitas lembaga keuangan di Indonesia",
+    "options": [
+      {
+        "key": "A",
+        "text": "Lembaga Penjamin Simpanan"
+      },
+      {
+        "key": "B",
+        "text": "Kementerian Keuangan"
+      },
+      {
+        "key": "C",
+        "text": "Badan Usaha Milik Negara"
+      },
+      {
+        "key": "D",
+        "text": "Otoritas Jasa Keuangan"
+      },
+      {
+        "key": "E",
+        "text": "Bank Indonesia"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tirto",
+    "order_index": 10,
+    "content": "Aspek yang terkait dengan pendirian bank baru, perubahan kepemilikan, penggabungan usaha, serta pencabutan izin termasuk ke dalam pengawasan OJK, mengenai ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Prinsip manajemen risiko"
+      },
+      {
+        "key": "B",
+        "text": "Kecukupan modal"
+      },
+      {
+        "key": "C",
+        "text": "Struktur kelembagaan bank"
+      },
+      {
+        "key": "D",
+        "text": "Kualitas aset"
+      },
+      {
+        "key": "E",
+        "text": "Stabilitas internal bank"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tirto",
+    "order_index": 12,
+    "content": "Forum yang dibentuk untuk memperkuat koordinasi antarotoritas dalam menjaga stabilitas sistem keuangan nasional diisi antara lain oleh ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Gubernur Bank Indonesia"
+      },
+      {
+        "key": "B",
+        "text": "Ketua MPR"
+      },
+      {
+        "key": "C",
+        "text": "Kepala Badan Pusat Statistik"
+      },
+      {
+        "key": "D",
+        "text": "Ketua KPK"
+      },
+      {
+        "key": "E",
+        "text": "Ketua Mahkamah Konstitusi"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "medium",
+    "sumber": "ojk-tirto",
+    "order_index": 13,
+    "content": "Otoritas Jasa Keuangan mengatur dan mengawasi perizinan untuk anggaran dasar, pencabutan izin usaha, merger, dan sumber daya manusia. Dalam hal ini OJK mengatur dan mengawasi perbankan mengenai aspek ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kelembagaan bank"
+      },
+      {
+        "key": "B",
+        "text": "Validasi bank"
+      },
+      {
+        "key": "C",
+        "text": "Prinsip kehati-hatian"
+      },
+      {
+        "key": "D",
+        "text": "Stabilisasi bank"
+      },
+      {
+        "key": "E",
+        "text": "Kesehatan bank"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "medium",
+    "sumber": "ojk-tirto",
+    "order_index": 14,
+    "content": "Otoritas Jasa Keuangan mengatur dan mengawasi tata kelola bank, manajemen resiko, dan prinsip mengenal nasabah. Dalam hal ini, OJK mengatur dan mengawasi perbankan mengenai aspek ....",
+    "options": [
+      {
+        "key": "A",
+        "text": "Validasi bank"
+      },
+      {
+        "key": "B",
+        "text": "Kesehatan bank"
+      },
+      {
+        "key": "C",
+        "text": "Kelembagaan bank"
+      },
+      {
+        "key": "D",
+        "text": "Stabilisasi bank"
+      },
+      {
+        "key": "E",
+        "text": "Prinsip kehati-hatian"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 1,
+    "content": "Manakah yang bukan kewenangan OJK?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengawasi asuransi"
+      },
+      {
+        "key": "B",
+        "text": "Mengatur kegiatan perbankan"
+      },
+      {
+        "key": "C",
+        "text": "Menetapkan suku bunga BI"
+      },
+      {
+        "key": "D",
+        "text": "Mengawasi pasar modal"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 2,
+    "content": "3, 6, 12, 24, …, ?",
+    "options": [
+      {
+        "key": "A",
+        "text": "36"
+      },
+      {
+        "key": "B",
+        "text": "42"
+      },
+      {
+        "key": "C",
+        "text": "48"
+      },
+      {
+        "key": "D",
+        "text": "50"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Pola bilangan berlipat dua. Setelah 24 → 48 ================"
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 3,
+    "content": "Kalimat yang tepat untuk melengkapi: “Rapat koordinasi ini diadakan agar seluruh divisi memiliki … dalam menjalankan program kerja.”",
+    "options": [
+      {
+        "key": "A",
+        "text": "Ambisi"
+      },
+      {
+        "key": "B",
+        "text": "Perbedaan"
+      },
+      {
+        "key": "C",
+        "text": "Kesamaan persepsi"
+      },
+      {
+        "key": "D",
+        "text": "Konflik"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Konteks rapat koordinasi bertujuan menyatukan pandangan, sehingga “kesamaan persepsi” paling tepat. ================"
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 4,
+    "content": "Aktivitas administrasi memerlukan energi sebesar 20 persen dari konsumsi mesin produksi. Pertanyaan:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Hitunglah konsumsi listrik masing-masing aktivitas."
+      },
+      {
+        "key": "B",
+        "text": "Ubah semua konsumsi menjadi persentase."
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 6,
+    "content": "Standar audit yang digunakan OJK mengacu pada standar internasional yang diterbitkan oleh...",
+    "options": [
+      {
+        "key": "A",
+        "text": "The Institute of Internal Auditors (IIA)"
+      },
+      {
+        "key": "B",
+        "text": "Bank Indonesia"
+      },
+      {
+        "key": "C",
+        "text": "World Bank"
+      },
+      {
+        "key": "D",
+        "text": "Financial Sevices Authority (FSA)"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "OJK menggunakan standar audit internasional yang mengacu pada International Professional Practice Framework (IPPF) yang diterbitkan oleh The Institute of Internal Auditors (IIA). ================"
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 7,
+    "content": "Semua pegawai OJK mengenakan pakaian dinas. Budi mengenakan pakaian dinas. Kesimpulan?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Budi pasti pegawai OJK"
+      },
+      {
+        "key": "B",
+        "text": "Budi mungkin pegawai OJK"
+      },
+      {
+        "key": "C",
+        "text": "Budi bukan pegawai OJK"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Tidak semua yang mengenakan pakaian dinas adalah pegawai OJK ================"
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 8,
+    "content": "RATA : MULUS = ...",
+    "options": [
+      {
+        "key": "A",
+        "text": "segitiga : sisi"
+      },
+      {
+        "key": "B",
+        "text": "kapak : pengasah"
+      },
+      {
+        "key": "C",
+        "text": "perahu : tenggelam"
+      },
+      {
+        "key": "D",
+        "text": "bengkok : liku"
+      },
+      {
+        "key": "E",
+        "text": "jari-jari : lingkaran"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Rata memiliki makna atau sifat yang mirip dengan mulus, maka melihat sifatnya, bengkok mirip dengan liku. ================"
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "ojk-tribun2",
+    "order_index": 9,
+    "content": "Kombatan = ...",
+    "options": [
+      {
+        "key": "A",
+        "text": "Senjata"
+      },
+      {
+        "key": "B",
+        "text": "Petempur"
+      },
+      {
+        "key": "C",
+        "text": "Petinju"
+      },
+      {
+        "key": "D",
+        "text": "Pemarah"
+      },
+      {
+        "key": "E",
+        "text": "Lucutan"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 2,
+    "content": "Salah satu tujuan utama OJK dalam menjalankan pengawasan terhadap lembaga jasa keuangan adalah ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengelola penerimaan negara"
+      },
+      {
+        "key": "B",
+        "text": "Mengatur kebijakan perdagangan internasional"
+      },
+      {
+        "key": "C",
+        "text": "Menetapkan standar pendidikan nasional sistem keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Menjamin keamanan konsumen serta kestabilan"
+      },
+      {
+        "key": "E",
+        "text": "Mengawasi seluruh kegiatan ekspor"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 3,
+    "content": "Jenis layanan keuangan yang banyak menyediakan varian produk berbasis prinsip syariah antara lain ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Pasar modal, perbankan, dan pegadaian"
+      },
+      {
+        "key": "B",
+        "text": "Perasuransian, pembiayaan, dan dana pensiun"
+      },
+      {
+        "key": "C",
+        "text": "Pembiayaan, koperasi, dan perbankan"
+      },
+      {
+        "key": "D",
+        "text": "Pasar modal, dana pensiun, dan pegadaian"
+      },
+      {
+        "key": "E",
+        "text": "Pasar modal, asuransi, koperasi"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 4,
+    "content": "Dalam transaksi keuangan syariah, kesepakatan formal yang menjadi dasar sahnya suatu kegiatan disebut ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Perikatan"
+      },
+      {
+        "key": "B",
+        "text": "Ketetapan"
+      },
+      {
+        "key": "C",
+        "text": "Akad"
+      },
+      {
+        "key": "D",
+        "text": "Nisbah"
+      },
+      {
+        "key": "E",
+        "text": "Hutang"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "hard",
+    "sumber": "ojk-mamikos2",
+    "order_index": 5,
+    "content": "Berikut ini merupakan ruang lingkup kewenangan OJK, kecuali ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengatur aktivitas sektor perbankan"
+      },
+      {
+        "key": "B",
+        "text": "Mengawasi lembaga pembiayaan"
+      },
+      {
+        "key": "C",
+        "text": "Menetapkan kebijakan perdagangan barang fisik"
+      },
+      {
+        "key": "D",
+        "text": "Mengawasi sektor perasuransian"
+      },
+      {
+        "key": "E",
+        "text": "Mengatur hutang piutang"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 6,
+    "content": "Penerapan asas profesionalitas dalam tubuh OJK berarti bahwa setiap tugas harus dilaksanakan dengan cara ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Berdasarkan kompetensi, keahlian, dan standar profesional"
+      },
+      {
+        "key": "B",
+        "text": "Mengedepankan relasi personal dengan pelaku industri"
+      },
+      {
+        "key": "C",
+        "text": "Mengikuti arahan mayoritas tanpa mempertimbangkan kajian"
+      },
+      {
+        "key": "D",
+        "text": "Mengutamakan target keuntungan industri"
+      },
+      {
+        "key": "E",
+        "text": "Menyesuaikan prosedur sesuai keadaan informal"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKP",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 7,
+    "content": "Asas integritas yang dijunjung OJK bertujuan memastikan bahwa pejabatnya ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Menjaga nilai etika yang kuat dan bertindak jujur"
+      },
+      {
+        "key": "B",
+        "text": "Mengambil keputusan berdasarkan hubungan eksternal"
+      },
+      {
+        "key": "C",
+        "text": "Menghindari keputusan yang menimbulkan konflik kecil"
+      },
+      {
+        "key": "D",
+        "text": "Memprioritaskan lembaga keuangan tertentu"
+      },
+      {
+        "key": "E",
+        "text": "Memberikan ruang penuh bagi pelaku industri"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 8,
+    "content": "Penerapan manajemen risiko di lingkungan OJK dilakukan agar lembaga tersebut mampu ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Menyusun ulang fungsi pengawasan lembaga keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Menjalankan mandatnya dengan efektif, efisien, dan berkelanjutan"
+      },
+      {
+        "key": "C",
+        "text": "Memetakan seluruh transaksi keuangan nasional"
+      },
+      {
+        "key": "D",
+        "text": "Menentukan arah kebijakan bank umum"
+      },
+      {
+        "key": "E",
+        "text": "Terhindar dari inflasi"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 9,
+    "content": "Dalam kerangka pengendalian internal OJK, COSO merupakan singkatan dari ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Council of Strategic Organizational Operations"
+      },
+      {
+        "key": "B",
+        "text": "Committee of Sponsoring Organizations of the Treadway Commission"
+      },
+      {
+        "key": "C",
+        "text": "Corporate Oversight and Security Organization"
+      },
+      {
+        "key": "D",
+        "text": "Commission of Operational Standards and Oversight"
+      },
+      {
+        "key": "E",
+        "text": "Consortium for Supervisory Oversight and Compliance Optimization"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 10,
+    "content": "Pada akhir tahun 2014, evaluasi pencapaian OJK dilakukan dengan mengacu pada ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Laporan tahunan lembaga keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Tingkat kepuasan pemangku kepentingan"
+      },
+      {
+        "key": "C",
+        "text": "Perbandingan kinerja dengan regulator negara lain"
+      },
+      {
+        "key": "D",
+        "text": "Pertumbuhan sektor pasar modal"
+      },
+      {
+        "key": "E",
+        "text": "Sasaran strategis serta indikator kinerja utama"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 11,
+    "content": "Dalam konteks Destination Statement OJK 2017, istilah “dukungan strategis yang solid” merujuk pada ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Penetapan standar operasional internasional"
+      },
+      {
+        "key": "B",
+        "text": "Peningkatan kolaborasi dengan industri telekomunikasi"
+      },
+      {
+        "key": "C",
+        "text": "Penyusunan pedoman perpajakan"
+      },
+      {
+        "key": "D",
+        "text": "Pembukaan layanan baru di sektor keuangan"
+      },
+      {
+        "key": "E",
+        "text": "Penyediaan fasilitas dan sumber daya untuk memperkuat proses pengaturan dan pengawasan"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 12,
+    "content": "Arah utama yang ingin dicapai melalui Destination Statement OJK 2017 adalah ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Terciptanya peningkatan jumlah produk keuangan ritel"
+      },
+      {
+        "key": "B",
+        "text": "Terwujudnya otoritas yang mengawasi seluruh sektor jasa keuangan secara terpadu"
+      },
+      {
+        "key": "C",
+        "text": "Tumbuhnya kompetisi antar bank"
+      },
+      {
+        "key": "D",
+        "text": "Peningkatan jumlah perusahaan fintech di Indonesia"
+      },
+      {
+        "key": "E",
+        "text": "Terbukanya akses modal untuk UMKM"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 13,
+    "content": "Uraian lebih komprehensif mengenai arah tujuan OJK tahun 2017 dapat ditemukan dalam ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Rencana aksi tahunan OJK"
+      },
+      {
+        "key": "B",
+        "text": "Strategy Map OJK 2014"
+      },
+      {
+        "key": "C",
+        "text": "Dokumentasi pertanggungjawaban publik OJK"
+      },
+      {
+        "key": "D",
+        "text": "Panduan kerja sama lintas lembaga"
+      },
+      {
+        "key": "E",
+        "text": "Pedoman operasional lembaga jasa keuangan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 14,
+    "content": "Fokus utama yang ingin diwujudkan dalam Destination Statement OJK 2017 yaitu ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Stabilitas sosial masyarakat"
+      },
+      {
+        "key": "B",
+        "text": "Penguatan struktur industri perbankan saja"
+      },
+      {
+        "key": "C",
+        "text": "Penambahan variasi instrumen investasi baru"
+      },
+      {
+        "key": "D",
+        "text": "Pengelolaan sektor jasa keuangan yang terpadu serta mendorong perluasan akses keuangan"
+      },
+      {
+        "key": "E",
+        "text": "Perluasan jumlah lembaga keuangan non-bank"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 15,
+    "content": "Seorang anggota Dewan Komisioner OJK memiliki kesempatan perpanjangan masa jabatan sebanyak ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tidak ada perpanjangan"
+      },
+      {
+        "key": "B",
+        "text": "Tiga kali"
+      },
+      {
+        "key": "C",
+        "text": "Dua kali"
+      },
+      {
+        "key": "D",
+        "text": "Satu kali"
+      },
+      {
+        "key": "E",
+        "text": "Tanpa batas"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 16,
+    "content": "Landasan hukum yang menjadi dasar berdirinya Otoritas Jasa Keuangan tercantum dalam ….",
+    "options": [
+      {
+        "key": "A",
+        "text": "Undang-Undang No. 10 Tahun 1998"
+      },
+      {
+        "key": "B",
+        "text": "Undang-Undang No. 23 Tahun 2011"
+      },
+      {
+        "key": "C",
+        "text": "Undang-Undang No. 21 Tahun 2008"
+      },
+      {
+        "key": "D",
+        "text": "Undang-Undang No. 7 Tahun 2011"
+      },
+      {
+        "key": "E",
+        "text": "Undang-Undang No. 21 Tahun 2011"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "OJK",
+    "paket": "OJK PCAM",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "ojk-mamikos2",
+    "order_index": 17,
+    "content": "Dalam upaya menjaga kualitas kredit selama periode pemulihan ekonomi, OJK menerbitkan kebijakan terkait penanganan risiko kredit. Salah satu fokus kebijakannya adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Penghapusan otomatis tunggakan seluruh debitur"
+      },
+      {
+        "key": "B",
+        "text": "Relaksasi persyaratan restrukturisasi kredit bagi sektor terdampak"
+      },
+      {
+        "key": "C",
+        "text": "Penetapan subsidi bunga untuk semua pinjaman produktif"
+      },
+      {
+        "key": "D",
+        "text": "Penangguhan total seluruh kewajiban pembayaran kredit"
+      },
+      {
+        "key": "E",
+        "text": "Pemberian modal tambahan ke seluruh lembaga pembiayaan"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  }
+]
