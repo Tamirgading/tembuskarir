@@ -3,6 +3,7 @@ import { Landmark, Package, Calendar, MapPin, Target } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow } from '@/lib/utils'
 import CpnsPackageCard from '@/components/portal/CpnsPackageCard'
+import PortalLoginCard from '@/components/portal/PortalLoginCard'
 
 // Passing grade SKD resmi 2024
 const PASSING_GRADE = { TWK: 65, TIU: 80, TKP: 166, total: 311 }
@@ -155,24 +156,7 @@ export default async function CpnsPortalPage() {
           </div>
 
           {/* Login prompt (guest only) */}
-          {!isLoggedIn && (
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 shadow-lg shadow-blue-200">
-              <p className="text-white font-bold text-sm mb-1">Mulai Latihan Gratis</p>
-              <p className="text-blue-200 text-xs mb-4 leading-relaxed">Daftar sekarang dan akses soal SKD CPNS tanpa biaya</p>
-              <Link
-                href="/register"
-                className="block w-full text-center py-2.5 bg-white text-blue-700 text-sm font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-sm"
-              >
-                Daftar Gratis →
-              </Link>
-              <Link
-                href="/login"
-                className="block w-full text-center py-2 text-blue-200 text-xs hover:text-white transition-colors mt-2"
-              >
-                Sudah punya akun? Masuk
-              </Link>
-            </div>
-          )}
+          {!isLoggedIn && <PortalLoginCard />}
         </aside>
 
         {/* ════════════════════ MAIN CONTENT ════════════════════ */}
