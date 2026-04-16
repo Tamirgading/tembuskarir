@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { CheckCircle2, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, QuestionRow } from '@/lib/utils'
 import { AddQuestionForm } from '@/components/admin/AddQuestionForm'
@@ -72,9 +73,13 @@ export default async function AdminQuestionsPage({
       <div className={`rounded-xl border p-5 ${isComplete ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className={`font-semibold ${isComplete ? 'text-green-800' : 'text-amber-800'}`}>
-              {isComplete ? '✅ Soal Lengkap!' : '⚠️ Soal Belum Lengkap'}
-            </p>
+            <div className={`flex items-center gap-1.5 font-semibold ${isComplete ? 'text-green-800' : 'text-amber-800'}`}>
+              {isComplete
+                ? <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                : <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+              }
+              {isComplete ? 'Soal Lengkap!' : 'Soal Belum Lengkap'}
+            </div>
             <p className={`text-sm mt-0.5 ${isComplete ? 'text-green-600' : 'text-amber-600'}`}>
               {isComplete
                 ? `${total} soal siap — paket tampil normal di website`

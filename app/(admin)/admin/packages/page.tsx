@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { Package, Lightbulb } from 'lucide-react'
 import type { PackageRow } from '@/lib/utils'
 import { PackageActions } from '@/components/admin/PackageActions'
 
@@ -31,7 +32,7 @@ export default async function AdminPackagesPage() {
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {packages.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
-            <p className="text-4xl mb-3">📦</p>
+            <div className="flex justify-center mb-3"><Package className="w-10 h-10 text-gray-300" /></div>
             <p>Belum ada paket soal.</p>
             <Link href="/admin/packages/new" className="mt-3 inline-block text-blue-600 hover:underline text-sm">
               Buat paket pertama →
@@ -92,7 +93,10 @@ export default async function AdminPackagesPage() {
 
       {/* Info kelola soal */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-sm text-blue-700">
-        <p className="font-semibold mb-1">💡 Cara menambah soal ke paket:</p>
+        <div className="flex items-center gap-1.5 mb-1">
+          <Lightbulb className="w-4 h-4 text-blue-600 shrink-0" />
+          <p className="font-semibold">Cara menambah soal ke paket:</p>
+        </div>
         <p>Klik <strong>Kelola Soal</strong> di baris paket yang ingin diisi, lalu gunakan form input soal yang tersedia. Paket CPNS membutuhkan tepat <strong>110 soal</strong> (TWK: 30, TIU: 35, TKP: 45) agar tampil penuh di website.</p>
       </div>
     </div>

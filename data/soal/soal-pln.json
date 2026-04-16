@@ -1,0 +1,1514 @@
+[
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "medium",
+    "sumber": "pln-mamikos",
+    "order_index": 1,
+    "content": "Dalam menghadapi perubahan iklim global, perusahaan di bidang produksi plastik perlu beradaptasi dengan menerapkan inovasi teknologi pembuatan plastik yang ramah lingkungan, sehingga dapat mengurangi pencemaran. Kata “beradaptasi” pada paragraf di atas memiliki makna…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Berubah sepenuhnya"
+      },
+      {
+        "key": "B",
+        "text": "Menyesuaikan diri"
+      },
+      {
+        "key": "C",
+        "text": "Menolak perubahan"
+      },
+      {
+        "key": "D",
+        "text": "Meniru pesaing"
+      },
+      {
+        "key": "E",
+        "text": "Mengembangkan usaha"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Kata beradaptasi artinya menyesuaikan diri pada situasi baru."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "medium",
+    "sumber": "pln-mamikos",
+    "order_index": 2,
+    "content": "Premis 1: Semua calon karyawan PLN wajib mengerjakan General Aptitude Test (GAT) Premis 2: Maya adalah calon karyawan PLN. Kesimpulan yang paling logis dari premis di atas adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Maya tidak wajib mengikuti General Aptitude Test (GAT)"
+      },
+      {
+        "key": "B",
+        "text": "Maya boleh memilih ikut General Aptitude Test (GAT) atau tidak"
+      },
+      {
+        "key": "C",
+        "text": "Maya wajib mengikuti General Aptitude Test (GAT)"
+      },
+      {
+        "key": "D",
+        "text": "Maya sudah mengikuti General Aptitude Test (GAT)"
+      },
+      {
+        "key": "E",
+        "text": "Tidak ada kesimpulan yang tepat"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Dari premis pertama, semua calon karyawan PLN wajib mengikuti GAT. Premis kedua menyatakan bahwa Maya adalah calon karyawan PLN. Maka kesimpulan logisnya: Maya wajib mengikuti General Aptitude Test (GAT)."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos",
+    "order_index": 3,
+    "content": "Jika semua teknisi PLN adalah lulusan S1, dan sebagian lulusan S1 bekerja di PLN, maka dapat disimpulkan bahwa…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Semua teknisi PLN bekerja di PLN"
+      },
+      {
+        "key": "B",
+        "text": "Semua pegawai PLN adalah teknisi PLN"
+      },
+      {
+        "key": "C",
+        "text": "Sebagian teknisi PLN mungkin bekerja di PLN"
+      },
+      {
+        "key": "D",
+        "text": "Tidak ada teknisi PLN di PLN"
+      },
+      {
+        "key": "E",
+        "text": "Semua teknisi PLN bukan lulusan S1"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos2",
+    "order_index": 1,
+    "content": "Angka selanjutnya dari pola berikut ini adalah… 2, 6, 12, 20, 30, …",
+    "options": [
+      {
+        "key": "A",
+        "text": "40"
+      },
+      {
+        "key": "B",
+        "text": "42"
+      },
+      {
+        "key": "C",
+        "text": "44"
+      },
+      {
+        "key": "D",
+        "text": "50"
+      },
+      {
+        "key": "E",
+        "text": "56"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Pola angka di atas menunjukkan adanya selisih antarangka: +4, +6, +8, +10 atau pola bertambah 2 setiap langkah. Dengan demikian, selisih berikutnya adalah +12. Jadi, 30 + 12 = 42."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "medium",
+    "sumber": "pln-mamikos2",
+    "order_index": 2,
+    "content": "Jika 30% dari 600 peserta lulus tahap General Aptitude Test (GAT), kemudian 25% dari peserta yang lulus tersebut dinyatakan lolos tahap wawancara, berapa jumlah peserta yang diterima?",
+    "options": [
+      {
+        "key": "A",
+        "text": "45"
+      },
+      {
+        "key": "B",
+        "text": "60"
+      },
+      {
+        "key": "C",
+        "text": "75"
+      },
+      {
+        "key": "D",
+        "text": "90"
+      },
+      {
+        "key": "E",
+        "text": "100"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "30% × 600 = 180 peserta lulus General Aptitude Test (GAT) 25% × 180 = 45 peserta diterima. Advertisement"
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos2",
+    "order_index": 3,
+    "content": "Premis 1: Semua pegawai PLN mengerti dasar kelistrikan. Premis 2: Rama mengerti dasar kelistrikan. Kesimpulan yang paling logis adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Rama pegawai PLN"
+      },
+      {
+        "key": "B",
+        "text": "Rama bukan pegawai PLN"
+      },
+      {
+        "key": "C",
+        "text": "Semua yang mengerti kelistrikan pegawai PLN"
+      },
+      {
+        "key": "D",
+        "text": "Tidak dapat disimpulkan"
+      },
+      {
+        "key": "E",
+        "text": "Rama bekerja di PLN"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Premis 1 menyebut semua pegawai PLN mengerti listrik, tapi tidak berarti semua yang mengerti listrik adalah pegawai PLN → tidak bisa disimpulkan."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TWK",
+    "difficulty": "medium",
+    "sumber": "pln-mamikos2",
+    "order_index": 4,
+    "content": "Bayangkan jika terdapat suatu gambar dengan urutan berikut: Urutan 1: Segitiga hitam menghadap ke atas. Urutan 2: Segitiga berputar 90° ke kanan. Urutan 3: Segitiga berputar 90° lagi ke kanan. Urutan 4: Segitiga berputar 90° lagi ke kanan. Bagaimana posisi segitiga apabila berada di urutan 4?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Menghadap ke atas"
+      },
+      {
+        "key": "B",
+        "text": "Menghadap ke kanan"
+      },
+      {
+        "key": "C",
+        "text": "Menghadap ke bawah"
+      },
+      {
+        "key": "D",
+        "text": "Menghadap ke kiri"
+      },
+      {
+        "key": "E",
+        "text": "Tidak bisa ditentukan"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Setiap urutan berputar 90° ke kanan. Maka setelah 3 kali rotasi dari posisi awal (atas → kanan → bawah), posisi akhirnya akan menghadap ke bawah. [\\\\ \\\\ Baca Juga :\\\\ \\\\ 29+ Contoh Soal Nasionalisme SKD TWK CPNS dan Kunci Jawabannya untuk Bahan Belajar](https://mamikos.com/info/contoh-soal-nasionalisme-skd-twk-cpns-2024-dan-kunci-jawabannya-kry/)"
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "medium",
+    "sumber": "pln-mamikos2",
+    "order_index": 5,
+    "content": "Sebuah mesin es krim di pabrik bekerja selama 6 jam menghasilkan 120 bungkus. Apabila efisiensinya naik 25%, berapa bungkus es krim yang dihasilkan dalam 8 jam?",
+    "options": [
+      {
+        "key": "A",
+        "text": "160"
+      },
+      {
+        "key": "B",
+        "text": "180"
+      },
+      {
+        "key": "C",
+        "text": "200"
+      },
+      {
+        "key": "D",
+        "text": "240"
+      },
+      {
+        "key": "E",
+        "text": "250"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Efisiensi naik 25% maka 120 × 1,25 = 150 bungkus/6 jam → 25 bungkus/jam. Jika bekerja selama 8 jam maka 25 × 8 = 200 bungkus. Advertisement"
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos2",
+    "order_index": 6,
+    "content": "Perbandingan jumlah peserta laki-laki dan perempuan yang menjalani tes GAT adalah 3:2. Apabila diketahui total peserta adalah 250 orang, maka jumlah peserta perempuan sebanyak…",
+    "options": [
+      {
+        "key": "A",
+        "text": "100"
+      },
+      {
+        "key": "B",
+        "text": "120"
+      },
+      {
+        "key": "C",
+        "text": "150"
+      },
+      {
+        "key": "D",
+        "text": "200"
+      },
+      {
+        "key": "E",
+        "text": "250"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "Total 3+2=5 bagian 1 bagian = 250/5=50 Jumlah peserta perempuan = 2×50 = 100"
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos2",
+    "order_index": 7,
+    "content": "“Rapat dimulai pukul 07.30, namun banyak kursi yang masih kosong.” Makna tersirat dari kalimat di atas adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Rapat belum dimulai"
+      },
+      {
+        "key": "B",
+        "text": "Peserta rapat datang terlambat"
+      },
+      {
+        "key": "C",
+        "text": "Kursinya kurang"
+      },
+      {
+        "key": "D",
+        "text": "Waktu rapat diundur"
+      },
+      {
+        "key": "E",
+        "text": "Peserta rapat tidak hadir semua"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Kata “banyak kursi masih kosong” saat rapat sudah dimulai menunjukkan banyak peserta datang terlambat. [!30 Contoh Soal Tes Adaptif PLN dan Kunci Jawabannya Numerik, Abstrak dan Verbal\\\\ \\\\ Baca Juga :\\\\ \\\\ 30 Contoh Soal Tes Adaptif PLN dan Kunci Jawabannya Numerik, Abstrak dan Verbal](https://mamikos.com/info/contoh-soal-tes-adaptif-pln-dan-kunci-jawabannya-kry/)"
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "medium",
+    "sumber": "pln-mamikos2",
+    "order_index": 8,
+    "content": "Pendapatan suatu perusahaan mengalami kenaikan sebesar 10% tahun 2021, kemudian turun sebanyak 20% pada 2022. Apabila pendapatan awal perusahaan tersebut adalah 100 miliar, maka pendapatan akhirnya adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "88 miliar"
+      },
+      {
+        "key": "B",
+        "text": "90 miliar"
+      },
+      {
+        "key": "C",
+        "text": "92 miliar"
+      },
+      {
+        "key": "D",
+        "text": "94 miliar"
+      },
+      {
+        "key": "E",
+        "text": "96 miliar"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "Naik 10% maka 100 × 1,1 = 110 Turun 20% maka 110 × 0,8 = 88 Halaman: 1 2 3 Tampilkan Semua * Klik dan dapatkan info kost di dekat mu: Kost Jogja Murah Kost Jakarta Murah Kost Bandung Murah Kost Denpasar Bali Murah Kost Surabaya Murah Kost Semarang Murah Kost Malang Murah Kost Solo Murah Kost Bekasi Murah Kost Medan Murah Tags !Close"
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos3",
+    "order_index": 1,
+    "content": "Rasio umur Maya dan Nur adalah 5:7. Apabila jumlah umur mereka adalah 48 tahun, maka umur Maya adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "18"
+      },
+      {
+        "key": "B",
+        "text": "20"
+      },
+      {
+        "key": "C",
+        "text": "21"
+      },
+      {
+        "key": "D",
+        "text": "22"
+      },
+      {
+        "key": "E",
+        "text": "25"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Total perbandingan 5+7=12 bagian Jumlah umur 48/12=4 Maka, umur Maya =5×4 = 20"
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos3",
+    "order_index": 2,
+    "content": "Sinonim kata akomodatif adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kaku"
+      },
+      {
+        "key": "B",
+        "text": "Toleran"
+      },
+      {
+        "key": "C",
+        "text": "Tegas"
+      },
+      {
+        "key": "D",
+        "text": "Tertutup"
+      },
+      {
+        "key": "E",
+        "text": "Egois"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Akomodatif artinya tidak kaku; mudah menyesuaikan."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-mamikos3",
+    "order_index": 3,
+    "content": "Kesimpulan yang logis adalah… Jika cuaca mendung maka truk sampah tidak beroperasi. Sekarang truk sampah tidak beroperasi.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Cuaca cerah"
+      },
+      {
+        "key": "B",
+        "text": "Cuaca mendung"
+      },
+      {
+        "key": "C",
+        "text": "Cuaca mendung, tetapi bisa juga karena sebab lain"
+      },
+      {
+        "key": "D",
+        "text": "Cuaca sangat panas"
+      },
+      {
+        "key": "E",
+        "text": "Tidak bisa disimpulkan"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-tribun",
+    "order_index": 1,
+    "content": "TENDENSI",
+    "options": [
+      {
+        "key": "A",
+        "text": "Urat"
+      },
+      {
+        "key": "B",
+        "text": "Tekanan"
+      },
+      {
+        "key": "C",
+        "text": "Otot"
+      },
+      {
+        "key": "D",
+        "text": "Maksud"
+      },
+      {
+        "key": "E",
+        "text": "Daging Sumber: Tribun Pekanbaru 1 2 3 4 Link copied! Tags ##### contoh soal tes PLN ##### soal ujian PLN ##### soal tes akademik PLN ##### contoh soal Psikotes ##### Evergreen Rekomendasi untukAnda Kunjungi Kami. [](https://shopping.tribunnews.com/2026/04/13/terupdate-cek-27-daftar-harga-hp-oppo-periode-april-2026-oppo-a6t-pro-5g-hingga-reno15-pro-max?utmsource=pekanbaru&utmmedium=widget&referral=shopping \"Terupdate, Cek 27 Daftar Harga HP OPPO Periode April 2026: OPPO A6t Pro 5G hingga Reno15 P"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 1,
+    "content": "Saklar merupakan suatu alat yang digunakan untuk mengendalikan lampu. Sambungan kabel dari saklar adalah?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Input : Fasa – Output : Netral"
+      },
+      {
+        "key": "B",
+        "text": "Input : Fasa – Output : Fasa"
+      },
+      {
+        "key": "C",
+        "text": "Input : Netral – Ouput : Fasa"
+      },
+      {
+        "key": "D",
+        "text": "Input : Fasa – Output : Ground"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 2,
+    "content": "Pada suatu instalasi penerangan, apabila rating MCB cabang lebih besar dari rating MCB pusat apa yang akan terjadi …",
+    "options": [
+      {
+        "key": "A",
+        "text": "MCB pusat tidak bekerja"
+      },
+      {
+        "key": "B",
+        "text": "Rangkaian bekerja secara optimal"
+      },
+      {
+        "key": "C",
+        "text": "Terjadi korsleting"
+      },
+      {
+        "key": "D",
+        "text": "MCB terbakar"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 3,
+    "content": "Sesuai dengan PUIL (Panduan Umum Instalasi Listrik) warna selubung fasa adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Hitam"
+      },
+      {
+        "key": "B",
+        "text": "Biru"
+      },
+      {
+        "key": "C",
+        "text": "Hijau strip kuning"
+      },
+      {
+        "key": "D",
+        "text": "Merah"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 4,
+    "content": "Suatu diagram yang menjelaskan tentang simulasi ketika sambungan kabel ditanam dalam tembok adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Diagram PHB"
+      },
+      {
+        "key": "B",
+        "text": "Diagram pemipaan"
+      },
+      {
+        "key": "C",
+        "text": "Diagram situasi"
+      },
+      {
+        "key": "D",
+        "text": "Diagram satu garis"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 5,
+    "content": "Jenis kabel yang biasa digunakan pada instalasi penerangan adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "NYA dan NYM"
+      },
+      {
+        "key": "B",
+        "text": "AAAC"
+      },
+      {
+        "key": "C",
+        "text": "ACSR"
+      },
+      {
+        "key": "D",
+        "text": "NYBY"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 6,
+    "content": "Suatu instalasi penerangan harus memenuhi syarat ?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Aman dan handal"
+      },
+      {
+        "key": "B",
+        "text": "Bagus"
+      },
+      {
+        "key": "C",
+        "text": "Rapi"
+      },
+      {
+        "key": "D",
+        "text": "Bersih dan menawan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 7,
+    "content": "Berdasarkan PUIL tahanan grounding minimum pada suatu instalasi penerangan adalah?",
+    "options": [
+      {
+        "key": "A",
+        "text": "5 ohm"
+      },
+      {
+        "key": "B",
+        "text": "0.01 ohm"
+      },
+      {
+        "key": "C",
+        "text": "3 ohm"
+      },
+      {
+        "key": "D",
+        "text": "10 ohm"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 8,
+    "content": "MCB merupakan suatu alat yang digunakan untuk …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengamankan instalasi listrik ketika terjadi gangguan internal baik itu shortcircuit ataupun beban berlebih (overload)"
+      },
+      {
+        "key": "B",
+        "text": "Menghidupkan dan mematikan lampu"
+      },
+      {
+        "key": "C",
+        "text": "Memanaskan rangkaian"
+      },
+      {
+        "key": "D",
+        "text": "Melindungi kabel listrik ketika ditanam"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 9,
+    "content": "FaKtor yang mempengaruhi pemilihan lokasi gardu induk adalah",
+    "options": [
+      {
+        "key": "A",
+        "text": "Regulasi tegangan"
+      },
+      {
+        "key": "B",
+        "text": "Perkembangan beban"
+      },
+      {
+        "key": "C",
+        "text": "Lingkungan sekitar"
+      },
+      {
+        "key": "D",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 10,
+    "content": "Peralatan pada gardu induk yang merupakan bagian terpenting dalam power line carrier (PLC) adalah :",
+    "options": [
+      {
+        "key": "A",
+        "text": "Line trap"
+      },
+      {
+        "key": "B",
+        "text": "Shunt reactor"
+      },
+      {
+        "key": "C",
+        "text": "Coupling capasitor"
+      },
+      {
+        "key": "D",
+        "text": "Arrester"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 11,
+    "content": "Resistan pentanahan suatu GI adalah 0,35Ω. Hitung kenaikan tegangan pada struktur baja di GI bila terjadi sambaran petir 50 kA :",
+    "options": [
+      {
+        "key": "A",
+        "text": "142,9 kV"
+      },
+      {
+        "key": "B",
+        "text": "17,5 kV"
+      },
+      {
+        "key": "C",
+        "text": "71,45 kV"
+      },
+      {
+        "key": "D",
+        "text": "8,75 kV"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 12,
+    "content": "Perlengkapan yang jarang dijumpai di Gardu Induk Distribusi :",
+    "options": [
+      {
+        "key": "A",
+        "text": "CB"
+      },
+      {
+        "key": "B",
+        "text": "DS"
+      },
+      {
+        "key": "C",
+        "text": "Grounding Switch"
+      },
+      {
+        "key": "D",
+        "text": "Recloser"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 13,
+    "content": "Tegangan nominal yang diizinkan pada sisitem distribusi :",
+    "options": [
+      {
+        "key": "A",
+        "text": "500 kV"
+      },
+      {
+        "key": "B",
+        "text": "150 kV"
+      },
+      {
+        "key": "C",
+        "text": "70 kV"
+      },
+      {
+        "key": "D",
+        "text": "20 Kv"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 14,
+    "content": "Pernyataan yang salah tentang Circuit Breaker (CB) dan Disconnecting Switch (DS) :",
+    "options": [
+      {
+        "key": "A",
+        "text": "CB boleh dioperasikan saat berbeban"
+      },
+      {
+        "key": "B",
+        "text": "CB boleh dioperasikan saat terjadi gangguan hubung singkat"
+      },
+      {
+        "key": "C",
+        "text": "DS boleh dioperasikan saat berbeban"
+      },
+      {
+        "key": "D",
+        "text": "DS tidak boleh dioperasikan saat berbeban"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 15,
+    "content": "Pada umumnya factor daya dan arus beban :",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bernilai 1(satu)"
+      },
+      {
+        "key": "B",
+        "text": "Bernilai kurang dari 1(satu) dan bersifat lagging"
+      },
+      {
+        "key": "C",
+        "text": "Bernilai kurang dari 1(satu) dan bersifat leading"
+      },
+      {
+        "key": "D",
+        "text": "Lebih dari 1(satu)"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 16,
+    "content": "Arus saluran dari sumber ke beban sebelum pemasangan kapasitor pada no. 11 adalah:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Sekitar 124 A"
+      },
+      {
+        "key": "B",
+        "text": "Sekitar 69 A"
+      },
+      {
+        "key": "C",
+        "text": "Sekitar 31 A"
+      },
+      {
+        "key": "D",
+        "text": "Sekitar 19 A"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 17,
+    "content": "Diketahui demand factor suatu ssistem distribusi adalah 0,8. Apabila demand maksimum = 24 MVA, maka demand total terhubung (total connected demand) ke sistem tersebut adalah:",
+    "options": [
+      {
+        "key": "A",
+        "text": "19,2 MVA"
+      },
+      {
+        "key": "B",
+        "text": "30 MVA"
+      },
+      {
+        "key": "C",
+        "text": "38,4 MVA"
+      },
+      {
+        "key": "D",
+        "text": "60 MVA"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN TKD",
+    "kategori": "TKD",
+    "difficulty": "easy",
+    "sumber": "pln-tirto",
+    "order_index": 18,
+    "content": "Gangguan hubung singkat yang paling banyak terjadi di saluran distribusi 3 fase adalah",
+    "options": [
+      {
+        "key": "A",
+        "text": "Hubung singkat 3 fase"
+      },
+      {
+        "key": "B",
+        "text": "Hubung singkat 3 fase ke tanah"
+      },
+      {
+        "key": "C",
+        "text": "Hubung singkat 2 fase ke tanah"
+      },
+      {
+        "key": "D",
+        "text": "Hubung singkat 1 fase ke tanah"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 1,
+    "content": "Tes Verbal Soal: Panas berhubungan dengan Dingin seperti Terang berhubungan dengan …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Lampu"
+      },
+      {
+        "key": "B",
+        "text": "Gelap"
+      },
+      {
+        "key": "C",
+        "text": "Sinar"
+      },
+      {
+        "key": "D",
+        "text": "Putih"
+      },
+      {
+        "key": "E",
+        "text": "Cahaya"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Panas adalah lawan dari dingin, maka terang berlawanan dengan gelap."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 2,
+    "content": "Tes Numerik Soal: Jika 3x + 5 = 20, maka nilai x adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "3"
+      },
+      {
+        "key": "B",
+        "text": "4"
+      },
+      {
+        "key": "C",
+        "text": "5"
+      },
+      {
+        "key": "D",
+        "text": "6"
+      },
+      {
+        "key": "E",
+        "text": "7"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "3x + 5 = 20 → 3x = 15 → x = 5."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 3,
+    "content": "Tes Logika Gambar Soal: Dalam urutan bentuk: lingkaran → persegi → segitiga → lingkaran → persegi → ..., bentuk selanjutnya adalah?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Segitiga"
+      },
+      {
+        "key": "B",
+        "text": "Lingkaran"
+      },
+      {
+        "key": "C",
+        "text": "Persegi"
+      },
+      {
+        "key": "D",
+        "text": "Persegi panjang"
+      },
+      {
+        "key": "E",
+        "text": "Belah ketupat"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "Urutan berulang setiap tiga bentuk: lingkaran → persegi → segitiga."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 4,
+    "content": "Tes Logika Verbal Soal: Semua pegawai PLN memakai seragam. Budi adalah pegawai PLN. Kesimpulan yang benar adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Budi tidak memakai seragam"
+      },
+      {
+        "key": "B",
+        "text": "Semua pegawai tidak memakai seragam"
+      },
+      {
+        "key": "C",
+        "text": "Budi memakai seragam"
+      },
+      {
+        "key": "D",
+        "text": "Sebagian pegawai tidak memakai seragam"
+      },
+      {
+        "key": "E",
+        "text": "Tidak dapat disimpulkan"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Pernyataan bersifat umum (“semua”), sehingga berlaku juga untuk individu."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 5,
+    "content": "Tes Kepribadian Soal: Saya lebih suka bekerja secara individu daripada berkelompok.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Sangat setuju"
+      },
+      {
+        "key": "B",
+        "text": "Setuju"
+      },
+      {
+        "key": "C",
+        "text": "Netral"
+      },
+      {
+        "key": "D",
+        "text": "Tidak setuju"
+      },
+      {
+        "key": "E",
+        "text": "Sangat tidak setuju"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "Jawaban harus jujur sesuai kepribadian. Namun, PLN umumnya menghargai kerja sama tim, jadi jawaban “Tidak setuju” bisa dianggap positif."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 6,
+    "content": "Tes Verbal – Sinonim (Persamaan Kata) Soal: Kata “INOVATIF” memiliki arti yang paling dekat dengan …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kreatif"
+      },
+      {
+        "key": "B",
+        "text": "Pasif"
+      },
+      {
+        "key": "C",
+        "text": "Klasik"
+      },
+      {
+        "key": "D",
+        "text": "Monoton"
+      },
+      {
+        "key": "E",
+        "text": "Statis"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "“Inovatif” berarti mampu menciptakan hal baru, sinonimnya “kreatif”."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 7,
+    "content": "Tes Verbal – Antonim (Lawan Kata) Soal: Lawan kata dari “OPTIMIS” adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Aktif"
+      },
+      {
+        "key": "B",
+        "text": "Pesimis"
+      },
+      {
+        "key": "C",
+        "text": "Realistis"
+      },
+      {
+        "key": "D",
+        "text": "Antusias"
+      },
+      {
+        "key": "E",
+        "text": "Dinamis"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "“Optimis” berarti yakin akan hal baik, sedangkan “pesimis” berarti mudah putus asa."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "medium",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 8,
+    "content": "Tes Numerik – Aritmetika Sederhana Soal: Sebuah mesin menghasilkan 240 unit dalam 8 jam. Jika mesin bekerja dengan kecepatan sama, berapa unit yang dihasilkan dalam 5 jam?",
+    "options": [
+      {
+        "key": "A",
+        "text": "120"
+      },
+      {
+        "key": "B",
+        "text": "140"
+      },
+      {
+        "key": "C",
+        "text": "150"
+      },
+      {
+        "key": "D",
+        "text": "160"
+      },
+      {
+        "key": "E",
+        "text": "180"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "240 unit ÷ 8 jam = 30 unit/jam. 5 jam × 30 unit = 150 unit."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 9,
+    "content": "Tes Numerik – Deret Angka Soal: 2, 6, 12, 20, 30, … Angka selanjutnya adalah?",
+    "options": [
+      {
+        "key": "A",
+        "text": "36"
+      },
+      {
+        "key": "B",
+        "text": "40"
+      },
+      {
+        "key": "C",
+        "text": "42"
+      },
+      {
+        "key": "D",
+        "text": "44"
+      },
+      {
+        "key": "E",
+        "text": "46"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Selisih bertambah +4: (4, 6, 8, 10, 12). Jadi 30 + 12 = 42."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 10,
+    "content": "Tes Logika – Pola Hubungan Soal: Semua insinyur adalah pegawai. Sebagian pegawai adalah teknisi. Maka kesimpulannya?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Semua teknisi adalah insinyur"
+      },
+      {
+        "key": "B",
+        "text": "Semua pegawai adalah insinyur"
+      },
+      {
+        "key": "C",
+        "text": "Sebagian teknisi mungkin insinyur"
+      },
+      {
+        "key": "D",
+        "text": "Tidak ada teknisi yang insinyur"
+      },
+      {
+        "key": "E",
+        "text": "Semua insinyur adalah teknisi"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Hubungan tidak pasti, tetapi memungkinkan adanya irisan antara teknisi dan insinyur."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 11,
+    "content": "Tes Logika – Analogi Soal: Guru : Sekolah = Dokter : …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Obat"
+      },
+      {
+        "key": "B",
+        "text": "Rumah sakit"
+      },
+      {
+        "key": "C",
+        "text": "Pasien"
+      },
+      {
+        "key": "D",
+        "text": "Pemerintah"
+      },
+      {
+        "key": "E",
+        "text": "Perawat"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Guru bekerja di sekolah, dokter bekerja di rumah sakit."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "medium",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 12,
+    "content": "Tes Numerik – Logika Matematika Soal: Jika A = 2, B = 3, dan C = 4, maka nilai dari A × (B + C) adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "9"
+      },
+      {
+        "key": "B",
+        "text": "10"
+      },
+      {
+        "key": "C",
+        "text": "12"
+      },
+      {
+        "key": "D",
+        "text": "14"
+      },
+      {
+        "key": "E",
+        "text": "16"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "2 × (3 + 4) = 2 × 7 = 14."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 13,
+    "content": "Tes Verbal – Pemahaman Bacaan Teks: “PLN terus berinovasi untuk mencapai target energi hijau 2060.” Pertanyaan: Makna utama kalimat di atas adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "PLN akan menutup pembangkit listrik batu bara"
+      },
+      {
+        "key": "B",
+        "text": "PLN sedang membuat inovasi ramah lingkungan"
+      },
+      {
+        "key": "C",
+        "text": "PLN menunda pembangunan listrik"
+      },
+      {
+        "key": "D",
+        "text": "PLN menurunkan konsumsi energi"
+      },
+      {
+        "key": "E",
+        "text": "PLN hanya fokus pada tenaga surya"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Kata “energi hijau” menunjukkan inovasi menuju energi bersih."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "GAT",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 14,
+    "content": "Tes Logika Gambar – Urutan Bentuk Soal: Jika pola: kotak, segitiga, kotak, segitiga, kotak, … maka bentuk berikutnya adalah?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Lingkaran"
+      },
+      {
+        "key": "B",
+        "text": "Segitiga"
+      },
+      {
+        "key": "C",
+        "text": "Persegi panjang"
+      },
+      {
+        "key": "D",
+        "text": "Kotak kecil"
+      },
+      {
+        "key": "E",
+        "text": "Belah ketupat"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Pola bergantian: kotak – segitiga – kotak – segitiga."
+  },
+  {
+    "institusi": "PLN",
+    "paket": "PLN GAT",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "pln-pikirankrakyat",
+    "order_index": 15,
+    "content": "Tes Logika – Penalaran Syarat Soal: Jika semua karyawan wajib datang pukul 08.00, dan Rina datang pukul 08.30, maka …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Rina disiplin"
+      },
+      {
+        "key": "B",
+        "text": "Rina tidak datang"
+      },
+      {
+        "key": "C",
+        "text": "Rina melanggar aturan"
+      },
+      {
+        "key": "D",
+        "text": "Rina datang tepat waktu"
+      },
+      {
+        "key": "E",
+        "text": "Tidak ada kesimpulan"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Rina datang melewati jam yang ditetapkan. ## Strategi Menghadapi Tes GAT PLN Untuk bisa lolos, tidak cukup hanya menghafal contoh soal GAT PLN dan jawabannya, tapi juga memahami strategi pengerjaan. Berikut beberapa tips penting:"
+  }
+]

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import { Bookmark, Flag, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { PackageRow } from '@/lib/utils'
 import { LatexContent } from '@/components/ui/LatexContent'
@@ -322,7 +323,10 @@ export default function UjianPage() {
                   : 'bg-white border-gray-200 text-gray-400 hover:border-amber-300 hover:text-amber-500'
               }`}
             >
-              <span>{bookmarked.has(currentQuestion.id) ? '🔖' : '🏳️'}</span>
+              {bookmarked.has(currentQuestion.id)
+                ? <Bookmark className="w-3.5 h-3.5 fill-current" />
+                : <Flag className="w-3.5 h-3.5" />
+              }
               <span>{bookmarked.has(currentQuestion.id) ? 'Ditandai' : 'Tandai'}</span>
             </button>
           </div>
@@ -421,7 +425,7 @@ export default function UjianPage() {
                 >
                   {idx + 1}
                   {isMarked && !isCurrent && (
-                    <span className="absolute -top-1 -right-1 text-[8px] leading-none">🔖</span>
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-white" />
                   )}
                 </button>
               )
@@ -458,10 +462,16 @@ export default function UjianPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm space-y-4">
             <h2 className="text-lg font-bold text-gray-900">Konfirmasi Submit</h2>
-            <div className="space-y-1 text-sm text-gray-600">
-              <p>✅ Dijawab: <strong className="text-green-600">{answeredCount} soal</strong></p>
+            <div className="space-y-1.5 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                <p>Dijawab: <strong className="text-green-600">{answeredCount} soal</strong></p>
+              </div>
               {unansweredCount > 0 && (
-                <p>⚠️ Belum dijawab: <strong className="text-amber-600">{unansweredCount} soal</strong></p>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                  <p>Belum dijawab: <strong className="text-amber-600">{unansweredCount} soal</strong></p>
+                </div>
               )}
               <p className="pt-1 text-gray-500">
                 Setelah di-submit, jawaban tidak bisa diubah.

@@ -307,6 +307,10 @@ MIDTRANS_WEBHOOK_SECRET=xxx                 # Untuk verifikasi signature webhook
 | Sprint 4 | Rate limiter in-memory (Map) | Cukup untuk skala awal; ganti Upstash Redis saat multi-instance |
 | Sprint 5 | Admin diidentifikasi via ADMIN_EMAILS env var | Solusi simpel tanpa tambah kolom DB; ganti role-based jika perlu |
 | Sprint 5 | /harga dan /paket bisa diakses publik (tanpa login) | Agar calon user bisa lihat harga & paket sebelum daftar |
+| Sprint 6 | Firecrawl CLI untuk crawl info seleksi otomatis | WebFetch tidak reliable untuk JS-heavy sites; Firecrawl render penuh + output ke file |
+| Sprint 6 | Vercel Cron di /api/cron/crawl-seleksi, jadwal 06.00 WIB | Crawl harian dari BKN, OJK, BI, PLN, RBB, Astra ke tabel info_seleksi |
+| Sprint 6 | Dedup via url_hash (md5 generated column) + unique index | Cegah data duplikat saat cron berjalan ulang tiap hari |
+| Sprint 6 | CRON_SECRET di env var, divalidasi via Authorization header | Cegah endpoint cron dipanggil sembarangan dari luar Vercel |
 
 > Tambahkan keputusan baru di sini setiap kali ada yang diputuskan
 

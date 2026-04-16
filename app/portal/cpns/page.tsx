@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Landmark, Package, Lock, Lightbulb, Calendar, MapPin, Target } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow } from '@/lib/utils'
 import CpnsPackageCard from '@/components/portal/CpnsPackageCard'
@@ -60,8 +61,8 @@ export default async function CpnsPortalPage() {
 
       {/* ── Page header ── */}
       <div className="flex items-center gap-4 mb-7">
-        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-200">
-          🏛️
+        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+          <Landmark className="w-6 h-6" />
         </div>
         <div>
           <div className="flex items-center gap-2">
@@ -205,7 +206,7 @@ export default async function CpnsPortalPage() {
           {/* Package list — vertikal */}
           {packages.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center text-gray-400">
-              <p className="text-4xl mb-3">📦</p>
+              <div className="flex justify-center mb-3"><Package className="w-10 h-10 text-gray-300" /></div>
               <p className="font-medium">Belum ada paket soal tersedia</p>
               <p className="text-sm mt-1 text-gray-300">Pantau terus untuk update paket baru</p>
             </div>
@@ -225,7 +226,7 @@ export default async function CpnsPortalPage() {
 
           {/* SKB coming soon */}
           <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-dashed border-gray-300 rounded-2xl p-6 text-center mt-2">
-            <div className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center text-xl mx-auto mb-3">🔒</div>
+            <div className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center mx-auto mb-3"><Lock className="w-5 h-5 text-gray-400" /></div>
             <p className="font-bold text-gray-600 text-sm">Paket SKB — Segera Hadir</p>
             <p className="text-xs text-gray-400 mt-1 max-w-xs mx-auto">Seleksi Kompetensi Bidang akan tersedia setelah SKD. Pantau terus perkembangannya.</p>
           </div>
@@ -279,7 +280,7 @@ export default async function CpnsPortalPage() {
               <div className="bg-blue-50 rounded-xl p-3 space-y-1.5">
                 <p className="font-bold text-blue-700 text-[11px] uppercase tracking-wide mb-2">TWK & TIU</p>
                 <div className="flex justify-between"><span className="text-gray-600">Benar</span><span className="font-bold text-green-600">+5</span></div>
-                <div className="flex justify-between"><span className="text-gray-600">Salah</span><span className="font-bold text-red-500">−1,67</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Salah</span><span className="font-bold text-gray-400">0</span></div>
                 <div className="flex justify-between"><span className="text-gray-600">Tidak dijawab</span><span className="font-bold text-gray-400">0</span></div>
               </div>
               <div className="bg-green-50 rounded-xl p-3 space-y-1.5">
@@ -287,7 +288,10 @@ export default async function CpnsPortalPage() {
                 <div className="flex justify-between"><span className="text-gray-600">Benar</span><span className="font-bold text-green-600">+5</span></div>
                 <div className="flex justify-between"><span className="text-gray-600">Salah / Kosong</span><span className="font-bold text-gray-400">0</span></div>
                 <div className="mt-1 pt-1 border-t border-green-100">
-                  <p className="text-[10px] text-green-600 font-semibold">💡 Tidak ada penalti! Isi semua soal TKP.</p>
+                  <div className="flex items-center gap-1">
+                    <Lightbulb className="w-3 h-3 text-green-600 shrink-0" />
+                    <p className="text-[10px] text-green-600 font-semibold">Tidak ada penalti! Isi semua soal TKP.</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -295,7 +299,10 @@ export default async function CpnsPortalPage() {
 
           {/* Tips */}
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-            <p className="text-xs font-bold text-amber-800 mb-3 uppercase tracking-wide">💡 Tips Sukses SKD</p>
+            <div className="flex items-center gap-1.5 mb-3">
+              <Lightbulb className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <p className="text-xs font-bold text-amber-800 uppercase tracking-wide">Tips Sukses SKD</p>
+            </div>
             <ul className="space-y-2">
               {[
                 'Prioritaskan TKP — tidak ada penalti salah',
@@ -316,15 +323,15 @@ export default async function CpnsPortalPage() {
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Info CPNS 2025</p>
             <div className="space-y-2.5 text-xs text-gray-600">
               <div className="flex items-start gap-2">
-                <span className="text-blue-500 shrink-0 mt-0.5">📅</span>
+                <Calendar className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
                 <p>Pantau pengumuman resmi di <span className="font-semibold text-blue-600">sscasn.bkn.go.id</span></p>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-blue-500 shrink-0 mt-0.5">📌</span>
+                <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
                 <p>Formasi 2025 mencakup seluruh K/L Pusat & Daerah</p>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-blue-500 shrink-0 mt-0.5">🎯</span>
+                <Target className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
                 <p>SKD diselenggarakan di seluruh wilayah Indonesia</p>
               </div>
             </div>

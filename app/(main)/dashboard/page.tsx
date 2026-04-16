@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { CheckCircle2, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { UserRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -62,7 +63,7 @@ export default async function DashboardPage({
       {/* Payment status banners */}
       {payment === 'success' && (
         <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 flex items-center gap-3 text-green-700">
-          <span className="text-xl">🎉</span>
+          <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
           <div>
             <p className="font-semibold">Pembayaran berhasil! Selamat datang di Premium!</p>
             <p className="text-sm text-green-600">Akses semua paket soal sudah terbuka untuk kamu.</p>
@@ -71,7 +72,7 @@ export default async function DashboardPage({
       )}
       {payment === 'pending' && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-4 flex items-center gap-3 text-yellow-700">
-          <span className="text-xl">⏳</span>
+          <Clock className="w-6 h-6 text-yellow-500 shrink-0" />
           <div>
             <p className="font-semibold">Pembayaran sedang diproses</p>
             <p className="text-sm text-yellow-600">Akun akan diupgrade otomatis setelah pembayaran dikonfirmasi.</p>
@@ -82,7 +83,7 @@ export default async function DashboardPage({
       {/* Sambutan */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Halo, {name}! 👋</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Halo, {name}!</h1>
           <p className="text-gray-500 mt-1">Semangat belajar hari ini!</p>
         </div>
         <div>

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { Trophy, Flag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow } from '@/lib/utils'
 
@@ -102,7 +103,7 @@ export default async function LeaderboardPage({
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">🏆 Leaderboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Trophy className="w-6 h-6 text-amber-500" /> Leaderboard</h1>
         <p className="text-gray-500 mt-1">{pkg.name}</p>
       </div>
 
@@ -118,7 +119,7 @@ export default async function LeaderboardPage({
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {leaderboard.length === 0 ? (
           <div className="text-center py-16 text-gray-400 space-y-2">
-            <p className="text-4xl">🏁</p>
+            <div className="flex justify-center mb-2"><Flag className="w-10 h-10 text-gray-300" /></div>
             <p>Belum ada peserta. Jadilah yang pertama!</p>
             <Link href={`/ujian/${packageId}`} className="inline-block mt-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
               Mulai Try Out
@@ -138,7 +139,13 @@ export default async function LeaderboardPage({
               {leaderboard.map((entry, idx) => {
                 const rank = idx + 1
                 const isMe = entry.user_id === user.id
-                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null
+                const medalCls = rank === 1
+                  ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                  : rank === 2
+                  ? 'bg-slate-100 text-slate-600 border border-slate-300'
+                  : rank === 3
+                  ? 'bg-orange-100 text-orange-700 border border-orange-300'
+                  : null
 
                 return (
                   <tr
@@ -146,8 +153,8 @@ export default async function LeaderboardPage({
                     className={`transition-colors ${isMe ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
                   >
                     <td className="px-5 py-3">
-                      {medal ? (
-                        <span className="text-lg">{medal}</span>
+                      {medalCls ? (
+                        <span className={`inline-flex w-7 h-7 rounded-full items-center justify-center text-xs font-bold ${medalCls}`}>{rank}</span>
                       ) : (
                         <span className={`font-semibold ${isMe ? 'text-blue-600' : 'text-gray-400'}`}>
                           {rank}

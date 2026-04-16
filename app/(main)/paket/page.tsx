@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { FileText, Clock, Trophy, Lock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { UserRow, PackageRow } from '@/lib/utils'
 
@@ -87,8 +88,8 @@ export default async function PaketPage() {
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     {comingSoon && (
-                      <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
-                        🔒 Coming Soon
+                      <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 flex items-center gap-1">
+                        <Lock className="w-3 h-3" /> Coming Soon
                       </span>
                     )}
                     <span
@@ -110,8 +111,8 @@ export default async function PaketPage() {
 
                 {/* Info */}
                 <div className="flex gap-4 text-sm text-gray-500">
-                  <span>📝 {pkg.total_questions} soal</span>
-                  <span>⏱ {pkg.duration_minutes} menit</span>
+                  <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> {pkg.total_questions} soal</span>
+                  <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {pkg.duration_minutes} menit</span>
                 </div>
 
                 {/* CTA */}
@@ -138,9 +139,9 @@ export default async function PaketPage() {
                   {!comingSoon && (
                     <Link
                       href={`/paket/${pkg.id}/leaderboard`}
-                      className="block w-full text-center py-2 text-gray-500 text-xs hover:text-blue-600 transition-colors"
+                      className="flex items-center justify-center gap-1.5 w-full text-center py-2 text-gray-500 text-xs hover:text-blue-600 transition-colors"
                     >
-                      🏆 Lihat Leaderboard
+                      <Trophy className="w-3.5 h-3.5" /> Lihat Leaderboard
                     </Link>
                   )}
                 </div>

@@ -1,5 +1,7 @@
+import type React from 'react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Bookmark, Lightbulb } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
@@ -12,7 +14,7 @@ interface OngoingInfo {
 
 const SKD_SCORING_RULES = [
   { label: 'TWK & TIU — Benar', value: '+5', color: 'text-green-600' },
-  { label: 'TWK & TIU — Salah', value: '−1,67', color: 'text-red-500' },
+  { label: 'TWK & TIU — Salah', value: '0', color: 'text-gray-400' },
   { label: 'TWK & TIU — Kosong', value: '0', color: 'text-gray-400' },
   { label: 'TKP — Benar', value: '+5', color: 'text-green-600' },
   { label: 'TKP — Salah / Kosong', value: '0', color: 'text-gray-400' },
@@ -112,21 +114,21 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                 <p className="text-blue-200 text-sm mt-2 max-w-lg leading-relaxed">{pkg.description}</p>
               )}
             </div>
-            <div className="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center text-3xl shrink-0">
-              📝
+            <div className="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center shrink-0">
+              <FileText className="w-8 h-8 text-white/80" />
             </div>
           </div>
 
           {/* Stats row */}
           <div className="flex gap-4 mt-6 flex-wrap">
-            {[
-              { icon: '📋', label: 'Soal', value: `${pkg.total_questions}` },
-              { icon: '⏱', label: 'Durasi', value: `${pkg.duration_minutes} menit` },
-              { icon: '🏆', label: 'Skor Max', value: isCpns ? '550' : '100' },
-              { icon: '📊', label: 'Passing', value: isCpns ? `${SKD_PASSING_GRADE.total}` : '75' },
-            ].map((s) => (
+            {([
+              { icon: <Clipboard className="w-5 h-5 text-blue-200" />, label: 'Soal', value: `${pkg.total_questions}` },
+              { icon: <Clock className="w-5 h-5 text-blue-200" />, label: 'Durasi', value: `${pkg.duration_minutes} menit` },
+              { icon: <Trophy className="w-5 h-5 text-blue-200" />, label: 'Skor Max', value: isCpns ? '550' : '100' },
+              { icon: <BarChart2 className="w-5 h-5 text-blue-200" />, label: 'Passing', value: isCpns ? `${SKD_PASSING_GRADE.total}` : '75' },
+            ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
-                <p className="text-lg">{s.icon}</p>
+                <div className="flex justify-center mb-0.5">{s.icon}</div>
                 <p className="text-white font-bold text-sm leading-none mt-0.5">{s.value}</p>
                 <p className="text-blue-200 text-xs mt-0.5">{s.label}</p>
               </div>
@@ -190,7 +192,10 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                     </div>
                   ))}
                   <div className="mt-2 pt-2 border-t border-green-200">
-                    <p className="text-[11px] text-green-600 font-semibold">💡 Tidak ada penalti — isi semua soal TKP!</p>
+                    <div className="flex items-center gap-1">
+                    <Lightbulb className="w-3 h-3 text-green-600 shrink-0" />
+                    <p className="text-[11px] text-green-600 font-semibold">Tidak ada penalti — isi semua soal TKP!</p>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -207,17 +212,17 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           <div>
             <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Sebelum Memulai</h2>
             <div className="space-y-2">
-              {[
-                { icon: '⏱', text: `Waktu ujian ${pkg.duration_minutes} menit dan terus berjalan setelah dimulai` },
-                { icon: '🔒', text: 'Jawaban tidak bisa diubah setelah di-submit' },
-                { icon: '📶', text: 'Pastikan koneksi internet stabil selama ujian' },
-                { icon: '🔖', text: 'Gunakan fitur tandai (bookmark) untuk soal yang ingin ditinjau kembali' },
+              {([
+                { icon: <Clock className="w-4 h-4 text-blue-500" />, text: `Waktu ujian ${pkg.duration_minutes} menit dan terus berjalan setelah dimulai` },
+                { icon: <Lock className="w-4 h-4 text-gray-500" />, text: 'Jawaban tidak bisa diubah setelah di-submit' },
+                { icon: <Wifi className="w-4 h-4 text-cyan-500" />, text: 'Pastikan koneksi internet stabil selama ujian' },
+                { icon: <Bookmark className="w-4 h-4 text-amber-500" />, text: 'Gunakan fitur tandai (bookmark) untuk soal yang ingin ditinjau kembali' },
                 isCpns
-                  ? { icon: '💡', text: 'Strategi: kerjakan TKP dulu, lalu TWK dan TIU — tidak ada penalti di TKP' }
-                  : { icon: '💡', text: 'Baca soal dengan teliti sebelum menjawab' },
-              ].map((item) => (
+                  ? { icon: <Lightbulb className="w-4 h-4 text-yellow-500" />, text: 'Strategi: kerjakan TKP dulu, lalu TWK dan TIU — tidak ada penalti di TKP' }
+                  : { icon: <Lightbulb className="w-4 h-4 text-yellow-500" />, text: 'Baca soal dengan teliti sebelum menjawab' },
+              ] as { icon: React.ReactNode; text: string }[]).map((item) => (
                 <div key={item.text} className="flex items-start gap-3 bg-gray-50 rounded-xl px-4 py-3 text-sm">
-                  <span className="shrink-0 text-base">{item.icon}</span>
+                  <span className="shrink-0 mt-0.5">{item.icon}</span>
                   <p className="text-gray-600 leading-relaxed">{item.text}</p>
                 </div>
               ))}

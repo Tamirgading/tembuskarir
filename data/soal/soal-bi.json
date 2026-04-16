@@ -1,0 +1,1699 @@
+[
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 1,
+    "content": "Kapan waktu berdirinya Bank Indonesia?",
+    "options": [
+      {
+        "key": "A",
+        "text": "1 Juni 1953"
+      },
+      {
+        "key": "B",
+        "text": "1 Juli 1953"
+      },
+      {
+        "key": "C",
+        "text": "1 Juni 1954"
+      },
+      {
+        "key": "D",
+        "text": "1 Juni 1954"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 2,
+    "content": "Menjadi bank sentral digital terdepan yang berkontribusi nyata terhadap perekonomian nasional dan terbaik di antara negara emerging markets untuk Indonesia maju merupakan…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Misi Bank Indonesia"
+      },
+      {
+        "key": "B",
+        "text": "Visi Bank Indonesia"
+      },
+      {
+        "key": "C",
+        "text": "Pilar Utama Bank Indonesia"
+      },
+      {
+        "key": "D",
+        "text": "Tujuan Bank Indonesia"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 3,
+    "content": "BI berperan sebagai apa dalam teks di atas…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Regulator"
+      },
+      {
+        "key": "B",
+        "text": "Perizinan"
+      },
+      {
+        "key": "C",
+        "text": "Operator"
+      },
+      {
+        "key": "D",
+        "text": "Pengawasan"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 4,
+    "content": "Salah satu langkah untuk melihat aslinya uang adalah diterawang, maksudnya…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Ada pelanginya"
+      },
+      {
+        "key": "B",
+        "text": "Ada benang pengamannya"
+      },
+      {
+        "key": "C",
+        "text": "Nampak terang"
+      },
+      {
+        "key": "D",
+        "text": "Ada tanda airnya"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "hard",
+    "sumber": "bi-tirto",
+    "order_index": 5,
+    "content": "Berikut tiga pilar utama Bank Indonesia, kecuali…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengatur dan menjaga kelancaran sistem pembayaran"
+      },
+      {
+        "key": "B",
+        "text": "Menetapkan dan melaksanakan kebijakan moneter"
+      },
+      {
+        "key": "C",
+        "text": "Menjaga stabilitas sistem keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Mewujudkan bank sentral berbasis daring atau digital"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 6,
+    "content": "Tanda di bawah nominal uang Indonesia adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kode tuna netra"
+      },
+      {
+        "key": "B",
+        "text": "Gambar kasat mata"
+      },
+      {
+        "key": "C",
+        "text": "Nominal teks"
+      },
+      {
+        "key": "D",
+        "text": "Gambar saling isi"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 7,
+    "content": "Mata uang Indonesia dilengkapi simbol menonjol yang bisa diraba, disebut…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Gambar saling isi"
+      },
+      {
+        "key": "B",
+        "text": "Gambar kasat mata"
+      },
+      {
+        "key": "C",
+        "text": "Nominal"
+      },
+      {
+        "key": "D",
+        "text": "Kode tuna netra"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 8,
+    "content": "Uang yang berbentuk kertas dan logam disebut…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Uang kartal"
+      },
+      {
+        "key": "B",
+        "text": "Uang giral"
+      },
+      {
+        "key": "C",
+        "text": "Uang jajan"
+      },
+      {
+        "key": "D",
+        "text": "Uang domestik"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "hard",
+    "sumber": "bi-tirto",
+    "order_index": 9,
+    "content": "Berikut pengaruh jumlah uang beredar, kecuali…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tingkat suku bunga"
+      },
+      {
+        "key": "B",
+        "text": "Permintaan dan penawaran"
+      },
+      {
+        "key": "C",
+        "text": "Pendapatan masyarakat"
+      },
+      {
+        "key": "D",
+        "text": "Jumlah penduduk"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 10,
+    "content": "Fungsi sirkulasi bank sentral maksudnya…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bank sentral punya tugas mengedarkan uang kartal"
+      },
+      {
+        "key": "B",
+        "text": "Bank sentral menjadi sirkulasi bagi kegiatan ekonomi"
+      },
+      {
+        "key": "C",
+        "text": "Bank sentral berkuasa menuntaskan masalah nasabah BI"
+      },
+      {
+        "key": "D",
+        "text": "Bank sentral memutuskan tingkat suku pinjaman"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 11,
+    "content": "Jumlah uang yang beredar lebih sedikit dibanding barang dan jasa yang tersedia, disebut…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Deflasi"
+      },
+      {
+        "key": "B",
+        "text": "Inflasi"
+      },
+      {
+        "key": "C",
+        "text": "Surplus"
+      },
+      {
+        "key": "D",
+        "text": "Laba"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 12,
+    "content": "Rasio cadangan wajib minimum ditingkatkan, maka yang terjadi adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Suku bunga menurun"
+      },
+      {
+        "key": "B",
+        "text": "Cadangan devisa berkurang"
+      },
+      {
+        "key": "C",
+        "text": "Dana menganggur di bank bertambah"
+      },
+      {
+        "key": "D",
+        "text": "Bank bisa menciptakan kredit tambahan"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 13,
+    "content": "Indonesia menjalankan kebijakan fiskal dan moneter pascakrisis tahun 1998, tugas BI kala itu adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Stabilitas sistem keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Mengatur dan menjaga kelancaran sistem pembayaran"
+      },
+      {
+        "key": "C",
+        "text": "Menerima tabungan masyarakat"
+      },
+      {
+        "key": "D",
+        "text": "Menetapkan dan menjalankan kebijakan moneter"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 14,
+    "content": "BI menjamin tersedianya uang layak edar dan mendorong penggunaan pembayaran nontunai, tugas BI berarti…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Stabilitas sistem keuangan"
+      },
+      {
+        "key": "B",
+        "text": "Mengatur dan menjaga kelancaran sistem pembayaran"
+      },
+      {
+        "key": "C",
+        "text": "Menerima tabungan masyarakat"
+      },
+      {
+        "key": "D",
+        "text": "Menetapkan dan menjalankan kebijakan moneter"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 15,
+    "content": "Berikut ini salah satu investasi finansial adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Investasi kendaraan perusahaan"
+      },
+      {
+        "key": "B",
+        "text": "Investasi obligasi"
+      },
+      {
+        "key": "C",
+        "text": "Investasi persediaan perusahaan"
+      },
+      {
+        "key": "D",
+        "text": "Investasi alat produksi"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 16,
+    "content": "Berikut yang bukan pajak pemerintah pusat adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Pajak Pertambahan nilai"
+      },
+      {
+        "key": "B",
+        "text": "PBB"
+      },
+      {
+        "key": "C",
+        "text": "Cukai"
+      },
+      {
+        "key": "D",
+        "text": "Pajak Penghasilan"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "hard",
+    "sumber": "bi-tirto",
+    "order_index": 17,
+    "content": "Penerimaan negara dapat berasal dari pajak, kecuali…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Pinjaman"
+      },
+      {
+        "key": "B",
+        "text": "Keuntungan perusahaan negara"
+      },
+      {
+        "key": "C",
+        "text": "Pendapatan perseorangan"
+      },
+      {
+        "key": "D",
+        "text": "Denda"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 18,
+    "content": "Seandainya seseorang menarik depositonya dari bank umum, hal yang terjadi adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mengurangi jumlah uang beredar"
+      },
+      {
+        "key": "B",
+        "text": "Menambah jumlah uang beredar"
+      },
+      {
+        "key": "C",
+        "text": "Tidak mengurangi besarnya cadangan bank"
+      },
+      {
+        "key": "D",
+        "text": "Tidak memengaruhi jumlah uang yang beredar"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 19,
+    "content": "Kenaikan harga barang kebutuhan pokok di pasar berdampak bagi masyarakat, yakni…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Menurunkan daya beli masyarakat berpenghasilan tetap"
+      },
+      {
+        "key": "B",
+        "text": "Meningkatkan daya beli masyarakat terhadap jasa maupun barang"
+      },
+      {
+        "key": "C",
+        "text": "Meningkatkan daya saing"
+      },
+      {
+        "key": "D",
+        "text": "Meningkatkan pendapatan riil"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TKU",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 20,
+    "content": "Manfaat pasar modal bagi investor adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tidak ada beban finansial tetap"
+      },
+      {
+        "key": "B",
+        "text": "Dana yang dihimpun besar"
+      },
+      {
+        "key": "C",
+        "text": "Sumber BUMN tak lagi tergantung pemerintah"
+      },
+      {
+        "key": "D",
+        "text": "Memperoleh dividen setiap tahun"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 21,
+    "content": "Faktor yang memengaruhi perdagangan Indonesia dengan Jepang karena impor kendaraan bisa lebih murah dimaksudkan untuk…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Penghematan biaya produksi"
+      },
+      {
+        "key": "B",
+        "text": "Perbedaan sumber daya manusia"
+      },
+      {
+        "key": "C",
+        "text": "Perbedaan selera"
+      },
+      {
+        "key": "D",
+        "text": "Perbedaan bahan baku"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 22,
+    "content": "Jumlah barang impor dibatasi oleh pemerintah untuk kebijakan…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tarif"
+      },
+      {
+        "key": "B",
+        "text": "Proteksi"
+      },
+      {
+        "key": "C",
+        "text": "Kuota"
+      },
+      {
+        "key": "D",
+        "text": "Dumping"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "hard",
+    "sumber": "bi-tirto",
+    "order_index": 23,
+    "content": "Kebijakan fiskal seperti disajikan dalam daftar berikut, kecuali…",
+    "options": [
+      {
+        "key": "A",
+        "text": "menaikkan tarif pajak"
+      },
+      {
+        "key": "B",
+        "text": "Menaikkan hasil produksi"
+      },
+      {
+        "key": "C",
+        "text": "Pinjaman pemerintah"
+      },
+      {
+        "key": "D",
+        "text": "Mengatur penerimaan dan pengeluaran pemerintah"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 24,
+    "content": "Marketing mix mengandung empat unsur, di antaranya…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Quality, quantity, services, product"
+      },
+      {
+        "key": "B",
+        "text": "Product, quality, quantity, services"
+      },
+      {
+        "key": "C",
+        "text": "Product, price, promotion, distribution"
+      },
+      {
+        "key": "D",
+        "text": "Product, price, promotion, place"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 25,
+    "content": "Dalam satu periode jumlah aset bertambah Rp40 Juta dan jumlah kewajiban bertambah Rp 18 Juta. Besar modal dalam periode tersebut adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bertambah dengan Rp58 juta"
+      },
+      {
+        "key": "B",
+        "text": "Bertambah dengan Rp22 Juta"
+      },
+      {
+        "key": "C",
+        "text": "Berkurang dengan Rp58 juta"
+      },
+      {
+        "key": "D",
+        "text": "Berkurang dengan Rp22 juta"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 26,
+    "content": "Perusahaan beli barang dan menjualnya kembali tanpa mengubah bentuk, yakni perusahaan…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Jasa"
+      },
+      {
+        "key": "B",
+        "text": "Terbuka"
+      },
+      {
+        "key": "C",
+        "text": "Manufaktur"
+      },
+      {
+        "key": "D",
+        "text": "Dagang"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 27,
+    "content": "Akuntansi menyediakan informasi keuangan untuk pihak eksternal, fungsi dari bidang…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Akuntansi biaya"
+      },
+      {
+        "key": "B",
+        "text": "Akuntansi manajemen"
+      },
+      {
+        "key": "C",
+        "text": "Akuntansi keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Akuntansi biaya"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 28,
+    "content": "Pertumbuhan ekonomi suatu negara dipantau dari…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Jumlah uang yang beredar bertambah"
+      },
+      {
+        "key": "B",
+        "text": "Perkembangan harga barang dan jasa"
+      },
+      {
+        "key": "C",
+        "text": "Banyaknya kesempatan kerja"
+      },
+      {
+        "key": "D",
+        "text": "Pertambahan jumlah barang dan jasa"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 29,
+    "content": "Biaya yang bukan pengeluaran perusahaan jika tidak berproduksi adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Total"
+      },
+      {
+        "key": "B",
+        "text": "Tetap"
+      },
+      {
+        "key": "C",
+        "text": "Variabel"
+      },
+      {
+        "key": "D",
+        "text": "Marginal"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 30,
+    "content": "Nilai tukar rupiah yang semula Rp13.000 per 1 dolar jadi Rp14.000 per 1 dolar, berarti mengalami…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Apresiasi yang menyebabkan neraca perdagangan surplus"
+      },
+      {
+        "key": "B",
+        "text": "Depresiasi yang mengakibatkan neraca perdagangan defisit"
+      },
+      {
+        "key": "C",
+        "text": "Depresiasi yang mengakibatkan neraca perdagangan surplus"
+      },
+      {
+        "key": "D",
+        "text": "Apresiasi yang menyebabkan neraca perdagangan defisit"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 31,
+    "content": "Pasar yang mampu menentukan harga dengan status tertinggi adalah…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Duopoli"
+      },
+      {
+        "key": "B",
+        "text": "Persaingan sempurna"
+      },
+      {
+        "key": "C",
+        "text": "Oligopoli"
+      },
+      {
+        "key": "D",
+        "text": "Monopoli"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 32,
+    "content": "Pertumbuhan ekonomi dilihat dari Produk Domestik Bruto (PDB) sesuai harga konstan, bertujuan untuk menghilangkan pengaruh…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kebijakan pemerintah"
+      },
+      {
+        "key": "B",
+        "text": "Inflasi"
+      },
+      {
+        "key": "C",
+        "text": "Investasi"
+      },
+      {
+        "key": "D",
+        "text": "Suku bunga"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 33,
+    "content": "Dalam kapitalis, penyelesaian persoalan barang apa yang nanti diproduksi serta siapa yang mengonsumsinya dilakukan melalui…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Keputusan pemerintah"
+      },
+      {
+        "key": "B",
+        "text": "Keputusan produsen"
+      },
+      {
+        "key": "C",
+        "text": "Kesepakatan pemerintah dan swasta"
+      },
+      {
+        "key": "D",
+        "text": "Mekanisme pasar"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Numerik",
+    "difficulty": "medium",
+    "sumber": "bi-tirto",
+    "order_index": 34,
+    "content": "Perhitungan PDB menurut metode produksi dengan menjumlahkan sejumlah hal berikut, yakni…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Total bisnis yang diterima oleh faktor produksi di suatu periode"
+      },
+      {
+        "key": "B",
+        "text": "Pengeluaran agregat ekonomi dan investasi"
+      },
+      {
+        "key": "C",
+        "text": "Nilai tambah barang dan jasa yang dihasilkan oleh seluruh sektor ekonomi dalam suatu periode"
+      },
+      {
+        "key": "D",
+        "text": "Nilai barang dan jasa yang dihasilkan oleh seluruh sektor perekonomian dalam suatu periode"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-tirto",
+    "order_index": 35,
+    "content": "Jurnal disebut juga buku harian, digunakan untuk mencatat penjualan…",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kredit"
+      },
+      {
+        "key": "B",
+        "text": "Tunai"
+      },
+      {
+        "key": "C",
+        "text": "Tunai dan potongan penjualan"
+      },
+      {
+        "key": "D",
+        "text": "Tunai dan kredit"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 1,
+    "content": "Kapan Bank Indonesia resmi berdiri?",
+    "options": [
+      {
+        "key": "A",
+        "text": "1 Juni 1953"
+      },
+      {
+        "key": "B",
+        "text": "1 Juli 1953"
+      },
+      {
+        "key": "C",
+        "text": "1 Juni 1954"
+      },
+      {
+        "key": "D",
+        "text": "1 Agustus 1955"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 2,
+    "content": "“Menjadi bank sentral digital terdepan…” merupakan bagian dari …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tujuan BI"
+      },
+      {
+        "key": "B",
+        "text": "Visi BI"
+      },
+      {
+        "key": "C",
+        "text": "Misi BI"
+      },
+      {
+        "key": "D",
+        "text": "Pilar Utama BI"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Kalimat tersebut adalah visi Bank Indonesia menuju 2025."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 3,
+    "content": "BI berperan sebagai apa dalam pengelolaan akuisisi PJSP?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Regulator"
+      },
+      {
+        "key": "B",
+        "text": "Perizinan"
+      },
+      {
+        "key": "C",
+        "text": "Operator"
+      },
+      {
+        "key": "D",
+        "text": "Pengawasan"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "BI berperan sebagai regulator dan pengawas sistem pembayaran."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 4,
+    "content": "Salah satu langkah mengetahui keaslian uang adalah diterawang, maksudnya …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Ada pelanginya"
+      },
+      {
+        "key": "B",
+        "text": "Ada benang pengamannya"
+      },
+      {
+        "key": "C",
+        "text": "Nampak terang"
+      },
+      {
+        "key": "D",
+        "text": "Ada tanda airnya"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Dengan diterawang, terlihat tanda air pada uang asli."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "hard",
+    "sumber": "bi-jadipcpm",
+    "order_index": 5,
+    "content": "Berikut tiga pilar utama BI, kecuali …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kebijakan moneter"
+      },
+      {
+        "key": "B",
+        "text": "Sistem pembayaran"
+      },
+      {
+        "key": "C",
+        "text": "Stabilitas sistem keuangan"
+      },
+      {
+        "key": "D",
+        "text": "Bank sentral digital"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Bank sentral digital adalah visi, bukan pilar utama."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "hard",
+    "sumber": "bi-jadipcpm",
+    "order_index": 6,
+    "content": "Tes Pengetahuan Umum PCPM meliputi materi berikut, kecuali …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Sejarah BI"
+      },
+      {
+        "key": "B",
+        "text": "Visi & struktur BI"
+      },
+      {
+        "key": "C",
+        "text": "Isu ekonomi"
+      },
+      {
+        "key": "D",
+        "text": "Kebijakan Bahasa Indonesia"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Bahasa Indonesia tidak termasuk materi tes."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 7,
+    "content": "Instrumen kebijakan moneter BI melalui pasar adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kebijakan diskonto"
+      },
+      {
+        "key": "B",
+        "text": "Operasi pasar terbuka"
+      },
+      {
+        "key": "C",
+        "text": "Cadangan minimum"
+      },
+      {
+        "key": "D",
+        "text": "Tarif pajak"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "BI menggunakan operasi pasar terbuka untuk mengatur likuiditas."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 8,
+    "content": "Volatilitas nilai tukar artinya …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Perdagangan kaku"
+      },
+      {
+        "key": "B",
+        "text": "Perubahan mendadak nilai tukar"
+      },
+      {
+        "key": "C",
+        "text": "Stabilitas kurs"
+      },
+      {
+        "key": "D",
+        "text": "Kebijakan impor"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Volatilitas berarti fluktuasi tinggi nilai tukar."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 9,
+    "content": "Salah satu tugas Bank Indonesia adalah …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tarif listrik"
+      },
+      {
+        "key": "B",
+        "text": "Sistem pembayaran"
+      },
+      {
+        "key": "C",
+        "text": "Kurikulum pendidikan"
+      },
+      {
+        "key": "D",
+        "text": "Anggaran daerah"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "BI berwenang mengatur dan menjaga kelancaran sistem pembayaran."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Pengetahuan Umum",
+    "difficulty": "easy",
+    "sumber": "bi-jadipcpm",
+    "order_index": 10,
+    "content": "Alat pembayaran resmi yang dicetak dalam bentuk kertas maupun logam dikenal sebagai …",
+    "options": [
+      {
+        "key": "A",
+        "text": "Uang kartal"
+      },
+      {
+        "key": "B",
+        "text": "Uang giral"
+      },
+      {
+        "key": "C",
+        "text": "Uang konsumsi"
+      },
+      {
+        "key": "D",
+        "text": "Uang lokal"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "Uang kartal adalah uang resmi yang diterbitkan bank sentral dalam bentuk kertas dan logam, sedangkan uang giral berupa simpanan di bank."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "bi-kumparan",
+    "order_index": 1,
+    "content": "Tegas / Keras / Tangguh",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kuat"
+      },
+      {
+        "key": "B",
+        "text": "Lemah"
+      },
+      {
+        "key": "C",
+        "text": "Lembut"
+      },
+      {
+        "key": "D",
+        "text": "Cerdas"
+      },
+      {
+        "key": "E",
+        "text": "Bijaksana"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": "Karena kata kuat memiliki sinonim yang sama dengan kata tegas, keras, dan tangguh."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "bi-kumparan",
+    "order_index": 2,
+    "content": "Bahagia / Senang / Gembira",
+    "options": [
+      {
+        "key": "A",
+        "text": "Sedih"
+      },
+      {
+        "key": "B",
+        "text": "Marah"
+      },
+      {
+        "key": "C",
+        "text": "Riang"
+      },
+      {
+        "key": "D",
+        "text": "Galau"
+      },
+      {
+        "key": "E",
+        "text": "Lesu"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Karena kata ruang memiliki sinonim yang sama dengan kata bahagia, senang, dan gembira."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "bi-kumparan",
+    "order_index": 3,
+    "content": "Karnivora : Singa",
+    "options": [
+      {
+        "key": "A",
+        "text": "Reptilia : Buaya"
+      },
+      {
+        "key": "B",
+        "text": "Manusia : Omnivora"
+      },
+      {
+        "key": "C",
+        "text": "Herbivora : Sapi"
+      },
+      {
+        "key": "D",
+        "text": "Omnivora : Harimau"
+      },
+      {
+        "key": "E",
+        "text": "Herbivora : Omnivora"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Karena karnivora merupakan kategori pengelompokan hewan berdasarkan jenis makanan, sedangkan buaya adalah contoh dari kategori tersebut, maka jawaban yang paling tepat adalah C. ### Tes Logika"
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "bi-kumparan",
+    "order_index": 4,
+    "content": "16\\9\\10\\_5(3)",
+    "options": [
+      {
+        "key": "A",
+        "text": "(:)"
+      },
+      {
+        "key": "B",
+        "text": "(X)"
+      },
+      {
+        "key": "C",
+        "text": "(-)"
+      },
+      {
+        "key": "D",
+        "text": "(=)"
+      },
+      {
+        "key": "E",
+        "text": "(+)"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": "Dicari jawaban yang sama dari kedua sisi. Contohnya: 16 + 9 = 10 + 5 X 3 25 = 25"
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "bi-kumparan",
+    "order_index": 5,
+    "content": "Ivan lebih ringan beratnya daripada Wawan. Andika lebih berat daripada wawan.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Wawan adalah yang paling ringan dari ketiganya"
+      },
+      {
+        "key": "B",
+        "text": "Ivan mungkin saja sama beratnya dengan andika"
+      },
+      {
+        "key": "C",
+        "text": "Jika wawan memiliki berat 65 Kg. Mustahil andika memiliki berat lebih dari 65 Kg."
+      },
+      {
+        "key": "D",
+        "text": "Jika andika memiliki berat 65 Kg. Mustahil ivan memiliki berat lebih dari 65 Kg."
+      },
+      {
+        "key": "E",
+        "text": "Jika ivan memiliki berat 65Kg. Mungkin saja andika memiliki berat lebih dari 65 Kg."
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Karena Ivan lebih ringan dari Wawan, dan Wawan lebih ringan dari Andika, maka jika Andika memiliki berat 65 kg, Ivan pasti memiliki berat di bawah 65 kg. Jadi, mustahil Ivan memiliki berat lebih dari 65 kg. ### Tes Numerik"
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "bi-kumparan",
+    "order_index": 6,
+    "content": "Seri angka : 33 7 10 32 8 12 31 selanjutnya...",
+    "options": [
+      {
+        "key": "A",
+        "text": "9 30"
+      },
+      {
+        "key": "B",
+        "text": "11 30"
+      },
+      {
+        "key": "C",
+        "text": "10 30"
+      },
+      {
+        "key": "D",
+        "text": "9 14"
+      },
+      {
+        "key": "E",
+        "text": "9 13"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": "Pola terdiri dari dua deret: satu turun 1 (33, 32, 31, 30) dan satu lagi selang-seling +3, -2, +4, -3 (7, 10, 8, 12, 9), sehingga jawabannya 9 dan 30."
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TIU",
+    "difficulty": "easy",
+    "sumber": "bi-kumparan",
+    "order_index": 7,
+    "content": "Tentukan angka berikutnya: 3, 6, 12, 24, …",
+    "options": [
+      {
+        "key": "A",
+        "text": "30"
+      },
+      {
+        "key": "B",
+        "text": "36"
+      },
+      {
+        "key": "C",
+        "text": "48"
+      },
+      {
+        "key": "D",
+        "text": "60"
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": "Deret tersebut memiliki pola perkalian dua, yaitu setiap angka dikalikan 2 untuk mendapatkan angka berikutnya: 3 × 2 = 6, 6 × 2 = 12, 12 × 2 = 24, dan 24 × 2 = 48. Jadi, angka selanjutnya adalah 48. ### Tes Figural"
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "bi-tribun",
+    "order_index": 1,
+    "content": "Tak berdaya ><……",
+    "options": [
+      {
+        "key": "A",
+        "text": "Cacat"
+      },
+      {
+        "key": "B",
+        "text": "Tuna"
+      },
+      {
+        "key": "C",
+        "text": "Abnormal"
+      },
+      {
+        "key": "D",
+        "text": "Sinergi"
+      },
+      {
+        "key": "E",
+        "text": "Tidak mampu"
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "bi-tribun",
+    "order_index": 2,
+    "content": "Orator ><………",
+    "options": [
+      {
+        "key": "A",
+        "text": "Penonton"
+      },
+      {
+        "key": "B",
+        "text": "Filsuf"
+      },
+      {
+        "key": "C",
+        "text": "Pembicara"
+      },
+      {
+        "key": "D",
+        "text": "Pemateri"
+      },
+      {
+        "key": "E",
+        "text": "Pendengar"
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "bi-tribun",
+    "order_index": 3,
+    "content": "Cahaya/ kilat/ binar",
+    "options": [
+      {
+        "key": "A",
+        "text": "terang"
+      },
+      {
+        "key": "B",
+        "text": "panas"
+      },
+      {
+        "key": "C",
+        "text": "lampu"
+      },
+      {
+        "key": "D",
+        "text": "bintang"
+      },
+      {
+        "key": "E",
+        "text": "berlian Sumber: Tribun Pekanbaru 1 2 3 4 Link copied! Tags ##### contoh soal TPD PCPM BI ##### contoh soal tes potensi dasar PCPM BI ##### contoh soal PCPM BI ##### Evergreen Rekomendasi untukAnda Kunjungi Kami. [](https://shopping.tribunnews.com/2026/04/13/terupdate-cek-27-daftar-harga-hp-oppo-periode-april-2026-oppo-a6t-pro-5g-hingga-reno15-pro-max?utmsource=pekanbaru&utmmedium=widget&referral=shopping \"Terupdate, Cek 27 Daftar Harga HP OPPO Periode April 2026: OPPO A6t Pro 5G hingga Reno15 Pr"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "Numerik",
+    "difficulty": "easy",
+    "sumber": "bi-tribun2",
+    "order_index": 1,
+    "content": "Hitunglah jumlah pasangan huruf yang sesuai! K E T R U x t r e v",
+    "options": [
+      {
+        "key": "A",
+        "text": "0"
+      },
+      {
+        "key": "B",
+        "text": "1"
+      },
+      {
+        "key": "C",
+        "text": "2"
+      },
+      {
+        "key": "D",
+        "text": "3"
+      },
+      {
+        "key": "E",
+        "text": "4 Sumber: Tribun Pekanbaru 1 2 3 4 Link copied! Tags ##### contoh soal TPD PCPM BI ##### contoh soal tes potensi dasar PCPM BI ##### contoh soal PCPM BI ##### Pendidikan Calon Pegawai Muda ##### Bank Indonesia ##### Evergreen Rekomendasi untukAnda Kunjungi Kami. [](https://shopping.tribunnews.com/2026/04/13/terupdate-cek-27-daftar-harga-hp-oppo-periode-april-2026-oppo-a6t-pro-5g-hingga-reno15-pro-max?utmsource=pekanbaru&utmmedium=widget&referral=shopping \"Terupdate, Cek 27 Daftar Harga HP OPPO P"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  },
+  {
+    "institusi": "BI",
+    "paket": "PCPM BI",
+    "kategori": "TPD",
+    "difficulty": "easy",
+    "sumber": "bi-tribun3",
+    "order_index": 1,
+    "content": "Jika 3x + 5 = 14, maka nilai x adalah...",
+    "options": [
+      {
+        "key": "A",
+        "text": "1"
+      },
+      {
+        "key": "B",
+        "text": "2"
+      },
+      {
+        "key": "C",
+        "text": "3"
+      },
+      {
+        "key": "D",
+        "text": "4"
+      },
+      {
+        "key": "E",
+        "text": "5 Sumber: Tribun Pekanbaru 1 2 3 4 Link copied! Tags ##### contoh soal ##### Tes Potensi Dasar PCPM BI ##### TribunEvergreen ##### kunci jawaban Rekomendasi untukAnda Kunjungi Kami. [](https://shopping.tribunnews.com/2026/04/13/terupdate-cek-27-daftar-harga-hp-oppo-periode-april-2026-oppo-a6t-pro-5g-hingga-reno15-pro-max?utmsource=pekanbaru&utmmedium=widget&referral=shopping \"Terupdate, Cek 27 Daftar Harga HP OPPO Periode April 2026: OPPO A6t Pro 5G hingga Reno15 Pro Max\") Produk Handphone [Teru"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": null
+  }
+]

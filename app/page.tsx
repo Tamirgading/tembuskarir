@@ -1,5 +1,7 @@
+import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Landmark, GraduationCap } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 
 async function getAuthState() {
@@ -220,7 +222,7 @@ export default async function HomePage() {
 
               {/* Visual card */}
               <div className="w-full sm:w-48 h-36 sm:h-40 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 relative shadow-lg z-10 flex flex-col items-center justify-center text-white">
-                <div className="text-5xl mb-1.5">🏛️</div>
+                <Landmark className="w-12 h-12 mb-2 opacity-90" />
                 <p className="text-sm font-bold">SKD CPNS 2025</p>
                 <p className="text-[11px] text-blue-200 mt-0.5">110 soal · 90 menit</p>
                 <div className="flex gap-1.5 mt-3">
@@ -262,19 +264,31 @@ export default async function HomePage() {
 
             {/* ── Coming Soon — 2 kolom ── */}
             <div className="grid sm:grid-cols-2 gap-4">
-              {[
-                { emoji: '🏦', title: 'Seleksi OJK — PCAM & MLE', tag: 'Lembaga Negara', desc: 'Tes Potensi Dasar dan Kemampuan Umum mengikuti standar SHL Interactive Test.' },
-                { emoji: '⚡', title: 'AKDING Rekrutmen PLN', tag: 'BUMN', desc: 'Simulasi Akademik dan Bahasa Inggris (Akding) khusus rekrutmen PLN.' },
-                { emoji: '🏢', title: 'Seleksi BUMN & Swasta', tag: 'BUMN / Swasta', desc: 'BRI, Mandiri, Pertamina, dan perusahaan swasta terkemuka Indonesia.' },
-                { emoji: '🎖️', title: 'Seleksi Kedinasan', tag: 'Kedinasan', desc: 'STAN, IPDN, PKN STAN, dan sekolah kedinasan lainnya.' },
-              ].map((item) => (
+              {([
+                {
+                  visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-ojk.png" width={56} height={56} className="w-full h-full object-cover" alt="OJK" /></div>,
+                  title: 'Seleksi OJK — PCAM & MLE', tag: 'Lembaga Negara', desc: 'Tes Potensi Dasar dan Kemampuan Umum mengikuti standar SHL Interactive Test.',
+                },
+                {
+                  visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-pln.jpg" width={56} height={56} className="w-full h-full object-cover" alt="PLN" /></div>,
+                  title: 'AKDING Rekrutmen PLN', tag: 'BUMN', desc: 'Simulasi Akademik dan Bahasa Inggris (Akding) khusus rekrutmen PLN.',
+                },
+                {
+                  visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-astra.jpg" width={56} height={56} className="w-full h-full object-cover" alt="BUMN" /></div>,
+                  title: 'Seleksi BUMN & Swasta', tag: 'BUMN / Swasta', desc: 'BRI, Mandiri, Pertamina, dan perusahaan swasta terkemuka Indonesia.',
+                },
+                {
+                  visual: <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-700 flex items-center justify-center shadow-sm"><GraduationCap className="w-7 h-7 text-white" /></div>,
+                  title: 'Seleksi Kedinasan', tag: 'Kedinasan', desc: 'STAN, IPDN, PKN STAN, dan sekolah kedinasan lainnya.',
+                },
+              ] as { visual: React.ReactNode; title: string; tag: string; desc: string }[]).map((item) => (
                 <div key={item.title} className="relative bg-white rounded-3xl p-5 border border-slate-200 flex items-center gap-4 overflow-hidden opacity-70 grayscale-[30%]">
                   <div className="absolute inset-0 z-10 bg-slate-50/60 flex items-center justify-center cursor-not-allowed">
                     <span className="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold text-sm tracking-widest shadow-xl -rotate-1 border-2 border-slate-700">
                       COMING SOON
                     </span>
                   </div>
-                  <div className="w-12 h-12 shrink-0 rounded-2xl bg-slate-100 flex items-center justify-center text-2xl">{item.emoji}</div>
+                  {item.visual}
                   <div>
                     <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold uppercase">{item.tag}</span>
                     <h3 className="text-sm font-bold text-slate-800 mt-1 mb-0.5">{item.title}</h3>
