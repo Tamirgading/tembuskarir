@@ -7,10 +7,9 @@ import { createClient } from '@/lib/supabase/client'
 
 interface NavbarProps {
   userName: string | null
-  userPlan: 'free' | 'premium'
 }
 
-export default function Navbar({ userName, userPlan }: NavbarProps) {
+export default function Navbar({ userName }: NavbarProps) {
   const router = useRouter()
   const pathname = usePathname()
   const [signingOut, setSigningOut] = useState(false)
@@ -25,8 +24,7 @@ export default function Navbar({ userName, userPlan }: NavbarProps) {
 
   const navLinks = [
     { href: '/dashboard', label: 'Beranda' },
-    { href: '/paket', label: 'Paket Soal' },
-    { href: '/harga', label: 'Harga' },
+    { href: '/pembelian', label: 'Pembelian' },
   ]
 
   return (
@@ -57,18 +55,6 @@ export default function Navbar({ userName, userPlan }: NavbarProps) {
 
           {/* User info + logout */}
           <div className="flex items-center gap-3">
-            {userPlan === 'premium' ? (
-              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
-                ✦ Premium
-              </span>
-            ) : (
-              <Link
-                href="/harga"
-                className="hidden sm:inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Upgrade
-              </Link>
-            )}
 
             <Link
               href="/profil"

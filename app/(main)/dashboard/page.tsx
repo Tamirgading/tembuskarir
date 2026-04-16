@@ -26,24 +26,22 @@ export default async function DashboardPage({
   const fullName = (profileData as { full_name: string | null } | null)?.full_name ?? null
   const name = fullName ?? user.email?.split('@')[0] ?? 'Pengguna'
 
-  // Ambil status langganan CPNS
+  // Status langganan CPNS untuk badge header
   const cpnsSub = await getCpnsSubscriptionStatus(user.id)
 
-  // Ambil 8 attempt terakhir (hanya CPNS untuk sekarang)
+  // 10 attempt terakhir — semua seleksi
   const { data: attemptsData } = await supabase
     .from('attempts')
-    .select('id, score, started_at, package_id, score_details')
+    .select('id, score, started_at, package_id')
     .eq('user_id', user.id)
     .eq('status', 'finished')
     .order('started_at', { ascending: false })
-    .limit(8)
+    .limit(10)
 
-  type AttemptPreview = Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'> & {
-    score_details?: Record<string, unknown>
-  }
+  type AttemptPreview = Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>
   const attempts = (attemptsData ?? []) as AttemptPreview[]
 
-  // Fetch nama paket
+  // Nama & kategori paket
   const packageIds = Array.from(new Set(attempts.map((a) => a.package_id).filter(Boolean)))
   const { data: packagesData } = packageIds.length > 0
     ? await supabase.from('packages').select('id, name, category').in('id', packageIds)
@@ -55,17 +53,16 @@ export default async function DashboardPage({
     packageMap[p.id] = { name: p.name, category: p.category }
   }
 
-  // Hitung statistik CPNS saja
-  const cpnsAttempts = attempts.filter(
-    (a) => packageMap[a.package_id]?.category === 'CPNS'
-  )
-  const cpnsCount = cpnsAttempts.length
-  const cpnsAvg = cpnsCount > 0
-    ? Math.round(cpnsAttempts.reduce((sum, a) => sum + (a.score ?? 0), 0) / cpnsCount)
+  // Statistik umum semua seleksi
+  const totalCount = attempts.length
+  const avgScore = totalCount > 0
+    ? Math.round(attempts.reduce((sum, a) => sum + (a.score ?? 0), 0) / totalCount)
     : null
-  const cpnsHighest = cpnsCount > 0
-    ? Math.max(...cpnsAttempts.map((a) => a.score ?? 0))
+  const highestScore = totalCount > 0
+    ? Math.max(...attempts.map((a) => a.score ?? 0))
     : null
+
+  const cpnsCount = attempts.filter((a) => packageMap[a.package_id]?.category === 'CPNS').length
 
   const fmt = (d: string) =>
     new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -99,24 +96,22 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-extrabold text-gray-900">Halo, {name}!</h1>
           <p className="text-gray-500 text-sm mt-1">Selamat datang di dashboard persiapanmu.</p>
         </div>
-        {cpnsSub.active && cpnsSub.expiresAt ? (
-          <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-700 font-semibold text-xs rounded-full">
-            ✦ Langganan aktif s/d {fmt(cpnsSub.expiresAt)}
+        {cpnsSub.active && cpnsSub.expiresAt && (
+          <span className="shrink-0 inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 font-semibold text-xs rounded-full whitespace-nowrap">
+            ✦ CPNS aktif s/d {fmt(cpnsSub.expiresAt)}
           </span>
-        ) : (
-          <Link href="/harga" className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white font-semibold text-xs rounded-full hover:bg-blue-700 transition-colors">
-            Upgrade Premium →
-          </Link>
         )}
       </div>
 
       {/* Portal shortcuts */}
       <div>
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Seleksi</p>
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Pilih Seleksi</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-          {/* CPNS card */}
-          <Link href="/portal/cpns" className="group bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-md transition-all p-5 flex items-center gap-4">
+          {/* CPNS */}
+          <Link
+            href="/portal/cpns"
+            className="group bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
+          >
             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
               <FileText className="w-6 h-6 text-blue-600" />
             </div>
@@ -129,8 +124,8 @@ export default async function DashboardPage({
             <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" />
           </Link>
 
-          {/* Placeholder — coming soon */}
-          <div className="bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 p-5 flex items-center gap-4 opacity-60">
+          {/* Coming soon */}
+          <div className="bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 p-5 flex items-center gap-4 opacity-60 cursor-not-allowed">
             <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center shrink-0">
               <FileText className="w-6 h-6 text-gray-400" />
             </div>
@@ -142,30 +137,30 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      {/* CPNS stats — hanya tampil jika ada attempt */}
-      {cpnsCount > 0 && (
+      {/* Statistik umum — hanya jika ada attempt */}
+      {totalCount > 0 && (
         <div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Statistik SKD CPNS</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Statistik Keseluruhan</p>
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
               <div className="flex justify-center mb-1.5">
                 <TrendingUp className="w-4 h-4 text-blue-500" />
               </div>
-              <p className="text-2xl font-extrabold text-gray-900">{cpnsCount}</p>
+              <p className="text-2xl font-extrabold text-gray-900">{totalCount}</p>
               <p className="text-xs text-gray-400 mt-0.5">Simulasi</p>
             </div>
             <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
               <div className="flex justify-center mb-1.5">
                 <Target className="w-4 h-4 text-purple-500" />
               </div>
-              <p className="text-2xl font-extrabold text-gray-900">{cpnsAvg ?? '-'}</p>
+              <p className="text-2xl font-extrabold text-gray-900">{avgScore ?? '-'}</p>
               <p className="text-xs text-gray-400 mt-0.5">Rata-rata</p>
             </div>
             <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
               <div className="flex justify-center mb-1.5">
                 <Award className="w-4 h-4 text-amber-500" />
               </div>
-              <p className="text-2xl font-extrabold text-gray-900">{cpnsHighest ?? '-'}</p>
+              <p className="text-2xl font-extrabold text-gray-900">{highestScore ?? '-'}</p>
               <p className="text-xs text-gray-400 mt-0.5">Tertinggi</p>
             </div>
           </div>
@@ -188,7 +183,10 @@ export default async function DashboardPage({
             </div>
             <p className="font-semibold text-gray-700 text-sm">Belum ada simulasi</p>
             <p className="text-xs text-gray-400 mt-1 mb-4">Kerjakan simulasi pertamamu sekarang!</p>
-            <Link href="/portal/cpns" className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors">
+            <Link
+              href="/portal/cpns"
+              className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors"
+            >
               Ke Portal CPNS →
             </Link>
           </div>
@@ -197,24 +195,38 @@ export default async function DashboardPage({
             {attempts.map((attempt) => {
               const pkg = packageMap[attempt.package_id]
               const score = attempt.score ?? 0
-              const isPassing = score >= 311  // SKD passing grade
+              const isCpns = pkg?.category === 'CPNS'
+              const isPassing = isCpns && score >= 311
+
               return (
                 <Link
                   key={attempt.id}
                   href={`/hasil/${attempt.id}`}
                   className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition-colors"
                 >
-                  <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-xs font-extrabold ${
-                    isPassing ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                  {/* Skor bulat */}
+                  <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xs font-extrabold ${
+                    isCpns
+                      ? isPassing ? 'bg-green-100 text-green-700' : 'bg-red-50 text-red-500'
+                      : 'bg-blue-50 text-blue-700'
                   }`}>
                     {score}
                   </div>
+
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{pkg?.name ?? 'Paket'}</p>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">{pkg?.name ?? 'Paket'}</p>
+                      {pkg?.category && (
+                        <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
+                          {pkg.category}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-400 mt-0.5">{formatDate(attempt.started_at)}</p>
                   </div>
+
                   <div className="shrink-0 flex items-center gap-2">
-                    {pkg?.category === 'CPNS' && (
+                    {isCpns && (
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         isPassing ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
                       }`}>
