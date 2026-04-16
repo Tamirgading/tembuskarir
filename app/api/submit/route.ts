@@ -4,30 +4,11 @@ import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
 import type { CookieOptions } from '@supabase/ssr'
 import type { AttemptRow } from '@/lib/utils'
+import { createServiceClient } from '@/lib/supabase/server'
+import { computeScore } from '@/lib/exam-scoring'
 import { rateLimit, getClientIp } from '@/lib/rateLimit'
 
-function createServiceClient() {
-  const cookieStore = cookies()
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return (cookieStore as unknown as { getAll: () => { name: string; value: string }[] }).getAll()
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              (cookieStore as unknown as { set: (n: string, v: string, o: CookieOptions) => void }).set(name, value, options)
-            )
-          } catch { /* ignore in API route */ }
-        },
-      },
-    }
-  )
-}
-
+// Anon client tetap inline karena perlu cookies() sinkron (SSR compat)
 function createAnonClient() {
   const cookieStore = cookies()
   return createServerClient<Database>(
@@ -48,30 +29,6 @@ function createAnonClient() {
       },
     }
   )
-}
-
-// ── SKD CPNS Scoring Constants ───────────────────────────────────────────────
-// TWK & TIU: benar +5, salah 0, kosong 0 (TIDAK ADA penalti)
-// TKP: nilai per opsi 1–5 (tidak ada benar/salah), kosong = 0
-const SKD_SCORING: Record<string, { correct: number; wrong: number }> = {
-  TWK: { correct: 5, wrong: 0 },
-  TIU: { correct: 5, wrong: 0 },
-}
-
-// Passing grade SKD 2024 (resmi BKN)
-const SKD_PASSING_GRADE = { TWK: 65, TIU: 80, TKP: 166, total: 311 }
-
-interface CategoryStats {
-  correct: number   // TWK/TIU: jawaban benar | TKP: jumlah soal dijawab
-  wrong: number     // TWK/TIU: jawaban salah | TKP: selalu 0
-  empty: number     // semua kategori: tidak dijawab
-  rawScore: number  // total poin kategori ini
-}
-
-interface QuestionOption {
-  key: string
-  text: string
-  point?: number // TKP: nilai 1–5
 }
 
 export async function POST(request: NextRequest) {
@@ -120,7 +77,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Already processed' }, { status: 200 })
     }
 
-    // 3. Ambil package category
+    // 3. Ambil kategori paket
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pkgData } = await (serviceClient.from('packages') as any)
       .select('category')
@@ -129,7 +86,7 @@ export async function POST(request: NextRequest) {
 
     const isCpns = (pkgData as { category: string } | null)?.category === 'CPNS'
 
-    // 4. Ambil soal — CPNS butuh options untuk TKP point lookup
+    // 4. Ambil soal (CPNS butuh options untuk TKP point lookup)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: questionsData, error: qErr } = await (serviceClient.from('questions') as any)
       .select(isCpns ? 'id, correct_answer, category, options' : 'id, correct_answer')
@@ -139,106 +96,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Gagal mengambil data soal.' }, { status: 500 })
     }
 
-    const questions = questionsData as {
-      id: string
-      correct_answer: string
-      category?: string
-      options?: QuestionOption[]
-    }[]
-
-    const totalQuestions = questions.length
-
-    // 5. Hitung skor
-    let correctCount = 0
-    let wrongCount = 0
-    let emptyCount = 0
-    let score: number
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let scoreDetails: any = {}
-
-    if (isCpns) {
-      // ── SKD CPNS Scoring ──────────────────────────────────────────────────
-      const catStats: Record<string, CategoryStats> = {}
-
-      for (const q of questions) {
-        const cat = (q.category ?? 'TWK').toUpperCase()
-
-        if (!catStats[cat]) {
-          catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
-        }
-
-        const userAnswer = answers[q.id]
-
-        if (!userAnswer) {
-          // Tidak dijawab → 0 poin untuk semua kategori
-          emptyCount++
-          catStats[cat].empty++
-        } else if (cat === 'TKP') {
-          // TKP: ambil point dari opsi yang dipilih (1–5)
-          const opts = (q.options ?? []) as QuestionOption[]
-          const selectedOpt = opts.find((o) => o.key === userAnswer)
-          const point = selectedOpt?.point ?? 0
-          catStats[cat].correct++ // "dijawab" dihitung di correct
-          catStats[cat].rawScore += point
-          correctCount++ // dihitung sebagai "soal dijawab"
-        } else {
-          // TWK / TIU: benar +5, salah +0 (tidak ada penalti)
-          const scoring = SKD_SCORING[cat] ?? { correct: 5, wrong: 0 }
-          if (userAnswer === q.correct_answer) {
-            correctCount++
-            catStats[cat].correct++
-            catStats[cat].rawScore += scoring.correct // +5
-          } else {
-            wrongCount++
-            catStats[cat].wrong++
-            catStats[cat].rawScore += scoring.wrong   // +0
-          }
-        }
-      }
-
-      // Total skor raw SKD (0–550)
-      const totalRaw = Object.values(catStats).reduce((sum, c) => sum + c.rawScore, 0)
-
-      // Cek passing grade per kategori
-      const twkScore = catStats.TWK?.rawScore ?? 0
-      const tiuScore = catStats.TIU?.rawScore ?? 0
-      const tkpScore = catStats.TKP?.rawScore ?? 0
-      const isLulus =
-        twkScore >= SKD_PASSING_GRADE.TWK &&
-        tiuScore >= SKD_PASSING_GRADE.TIU &&
-        tkpScore >= SKD_PASSING_GRADE.TKP &&
-        totalRaw >= SKD_PASSING_GRADE.total
-
-      score = Math.max(0, Math.round(totalRaw))
-
-      scoreDetails = {
-        type: 'SKD',
-        categories: catStats,
-        totalRaw: Math.round(totalRaw * 100) / 100,
-        passingGrade: SKD_PASSING_GRADE,
-        lulus: isLulus,
-      }
-    } else {
-      // ── Simple Scoring (non-CPNS) ─────────────────────────────────────────
-      for (const q of questions) {
-        const userAnswer = answers[q.id]
-        if (!userAnswer) emptyCount++
-        else if (userAnswer === q.correct_answer) correctCount++
-        else wrongCount++
-      }
-      score = totalQuestions > 0
-        ? Math.round((correctCount / totalQuestions) * 100)
-        : 0
-      scoreDetails = { type: 'simple' }
-    }
+    // 5. Hitung skor via shared utility
+    const { score, correctCount, wrongCount, emptyCount, scoreDetails } = computeScore(
+      questionsData as { id: string; correct_answer: string; category?: string; options?: { key: string; text: string; point?: number }[] }[],
+      answers,
+      isCpns
+    )
 
     // 6. Hitung durasi
-    const startedAt = new Date(attempt.started_at).getTime()
-    const durationSeconds = Math.floor((Date.now() - startedAt) / 1000)
+    const durationSeconds = Math.floor((Date.now() - new Date(attempt.started_at).getTime()) / 1000)
 
     // 7. Update attempt
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updatePayload: any = {
+    const basePayload: Record<string, unknown> = {
       answers,
       score,
       correct_count: correctCount,
@@ -252,14 +122,14 @@ export async function POST(request: NextRequest) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: updateErr } = await (serviceClient.from('attempts') as any)
-        .update({ ...updatePayload, score_details: scoreDetails })
+        .update({ ...basePayload, score_details: scoreDetails })
         .eq('id', attemptId)
 
       if (updateErr) {
-        // Kolom score_details mungkin belum ada — fallback tanpa score_details
+        // Fallback tanpa score_details jika kolom belum ada di DB
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error: fallbackErr } = await (serviceClient.from('attempts') as any)
-          .update(updatePayload)
+          .update(basePayload)
           .eq('id', attemptId)
 
         if (fallbackErr) {

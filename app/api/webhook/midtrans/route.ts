@@ -72,10 +72,11 @@ export async function POST(req: NextRequest) {
       (verifiedStatus === 'settlement') ||
       (verifiedStatus === 'capture' && fraud_status === 'accept')
 
-    const isFailed =
-      verifiedStatus === 'cancel' ||
-      verifiedStatus === 'deny' ||
-      verifiedStatus === 'expire'
+    // cancel/deny = user membatalkan atau kartu ditolak
+    const isFailed = verifiedStatus === 'cancel' || verifiedStatus === 'deny'
+
+    // expire = batas waktu pembayaran habis (berbeda dari failed)
+    const isExpired = verifiedStatus === 'expire'
 
     if (isPaid) {
       const planType = sub.plan_type as 'monthly' | 'yearly'
@@ -132,8 +133,16 @@ export async function POST(req: NextRequest) {
         .eq('id', sub.id)
 
       console.log('[Webhook] ❌ Payment failed for order:', order_id)
+    } else if (isExpired) {
+      // Batas waktu pembayaran habis (biasanya 24 jam dari order dibuat)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase.from('subscriptions') as any)
+        .update({ status: 'expired' })
+        .eq('id', sub.id)
+
+      console.log('[Webhook] ⌛ Payment expired for order:', order_id)
     } else {
-      // pending — tidak perlu action, tunggu settlement
+      // pending — tidak perlu action, tunggu settlement dari Midtrans
       console.log('[Webhook] ⏳ Payment pending for order:', order_id)
     }
 

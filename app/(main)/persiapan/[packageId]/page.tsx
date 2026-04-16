@@ -2,8 +2,9 @@ import type React from 'react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Bookmark, Lightbulb } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
+import { computeScore, isAttemptExpired } from '@/lib/exam-scoring'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
 
 interface OngoingInfo {
@@ -69,11 +70,58 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   let ongoingInfo: OngoingInfo | null = null
   if (ongoingData) {
     const o = ongoingData as Pick<AttemptRow, 'id' | 'answers' | 'started_at'>
-    const answers = (o.answers ?? {}) as Record<string, string>
-    ongoingInfo = {
-      id: o.id,
-      answeredCount: Object.keys(answers).length,
-      startedAt: o.started_at,
+
+    // ── Guard: auto-finish jika waktu sudah habis ──────────────────────────
+    if (isAttemptExpired(o.started_at, pkg!.duration_minutes)) {
+      try {
+        const serviceClient = createServiceClient()
+        const isCpnsForScoring = pkg!.category === 'CPNS'
+
+        // Ambil soal untuk hitung skor akhir
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: questionsData } = await (serviceClient.from('questions') as any)
+          .select(isCpnsForScoring ? 'id, correct_answer, category, options' : 'id, correct_answer')
+          .eq('package_id', packageId)
+
+        const answers = (o.answers ?? {}) as Record<string, string>
+        const { score, correctCount, wrongCount, emptyCount, scoreDetails } = computeScore(
+          (questionsData ?? []) as { id: string; correct_answer: string; category?: string; options?: { key: string; text: string; point?: number }[] }[],
+          answers,
+          isCpnsForScoring
+        )
+        const durationSeconds = Math.floor(
+          (Date.now() - new Date(o.started_at).getTime()) / 1000
+        )
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (serviceClient.from('attempts') as any)
+          .update({
+            status: 'finished',
+            score,
+            correct_count: correctCount,
+            wrong_count: wrongCount,
+            empty_count: emptyCount,
+            duration_seconds: durationSeconds,
+            finished_at: new Date().toISOString(),
+            score_details: scoreDetails,
+          })
+          .eq('id', o.id)
+
+        console.log(`[Persiapan] Auto-finished expired attempt ${o.id}, score: ${score}`)
+      } catch (err) {
+        // Jangan block render jika auto-finish gagal
+        console.error('[Persiapan] Auto-finish error:', err)
+      }
+      // Sembunyikan sesi yang sudah expired — tampilkan sebagai mulai baru
+      ongoingInfo = null
+    } else {
+      // Sesi masih aktif
+      const answers = (o.answers ?? {}) as Record<string, string>
+      ongoingInfo = {
+        id: o.id,
+        answeredCount: Object.keys(answers).length,
+        startedAt: o.started_at,
+      }
     }
   }
 

@@ -14,7 +14,11 @@
   "crons": [
     {
       "path": "/api/cron/crawl-seleksi",
-      "schedule": "0 6 * * *"
+      "schedule": "0 23 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup",
+      "schedule": "0 * * * *"
     }
   ]
 }
