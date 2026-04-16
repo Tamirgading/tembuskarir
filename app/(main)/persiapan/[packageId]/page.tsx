@@ -5,6 +5,7 @@ import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Bookmark, Li
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { computeScore, isAttemptExpired } from '@/lib/exam-scoring'
+import { checkPackageAccess } from '@/lib/access'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
 
 interface OngoingInfo {
@@ -13,12 +14,10 @@ interface OngoingInfo {
   startedAt: string
 }
 
-const SKD_SCORING_RULES = [
-  { label: 'TWK & TIU — Benar', value: '+5', color: 'text-green-600' },
-  { label: 'TWK & TIU — Salah', value: '0', color: 'text-gray-400' },
-  { label: 'TWK & TIU — Kosong', value: '0', color: 'text-gray-400' },
-  { label: 'TKP — Benar', value: '+5', color: 'text-green-600' },
-  { label: 'TKP — Salah / Kosong', value: '0', color: 'text-gray-400' },
+const SKD_SCORING_RULES_TWK_TIU = [
+  { label: 'Benar', value: '+5', color: 'text-green-600' },
+  { label: 'Salah', value: '0', color: 'text-gray-400' },
+  { label: 'Kosong', value: '0', color: 'text-gray-400' },
 ]
 
 const SKD_PASSING_GRADE = { TWK: 65, TIU: 80, TKP: 166, total: 311 }
@@ -47,16 +46,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   const pkg = pkgData as PackageRow | null
   if (!pkg) redirect('/paket')
 
-  // Cek akses premium
-  if (!pkg.is_free) {
-    const { data: profileData } = await supabase
-      .from('users')
-      .select('plan')
-      .eq('id', user.id)
-      .single()
-    const plan = (profileData as { plan: string } | null)?.plan ?? 'free'
-    if (plan !== 'premium') redirect('/harga')
-  }
+  // Cek akses: gratis, langganan aktif, atau beli satuan
+  const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free, pkg.category)
+  if (accessStatus === 'locked') redirect('/harga')
 
   // Cek ongoing attempt
   const { data: ongoingData } = await supabase
@@ -223,9 +215,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                 {/* TWK & TIU */}
                 <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-2">
                   <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2.5">TWK & TIU</p>
-                  {SKD_SCORING_RULES.slice(0, 3).map((rule) => (
+                  {SKD_SCORING_RULES_TWK_TIU.map((rule) => (
                     <div key={rule.label} className="flex justify-between items-center text-xs">
-                      <span className="text-gray-600">{rule.label.replace('TWK & TIU — ', '')}</span>
+                      <span className="text-gray-600">{rule.label}</span>
                       <span className={`font-bold ${rule.color}`}>{rule.value}</span>
                     </div>
                   ))}
@@ -233,17 +225,19 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                 {/* TKP */}
                 <div className="bg-green-50 border border-green-200 rounded-2xl p-4 space-y-2">
                   <p className="text-xs font-bold text-green-700 uppercase tracking-wide mb-2.5">TKP</p>
-                  {SKD_SCORING_RULES.slice(3).map((rule) => (
-                    <div key={rule.label} className="flex justify-between items-center text-xs">
-                      <span className="text-gray-600">{rule.label.replace('TKP — ', '')}</span>
-                      <span className={`font-bold ${rule.color}`}>{rule.value}</span>
-                    </div>
-                  ))}
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-600">Nilai per opsi</span>
+                    <span className="font-bold text-green-600">1 – 5</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-600">Kosong</span>
+                    <span className="font-bold text-gray-400">0</span>
+                  </div>
                   <div className="mt-2 pt-2 border-t border-green-200">
                     <div className="flex items-center gap-1">
-                    <Lightbulb className="w-3 h-3 text-green-600 shrink-0" />
-                    <p className="text-[11px] text-green-600 font-semibold">Tidak ada penalti — isi semua soal TKP!</p>
-                  </div>
+                      <Lightbulb className="w-3 h-3 text-green-600 shrink-0" />
+                      <p className="text-[11px] text-green-600 font-semibold">Tidak ada penalti — isi semua soal TKP!</p>
+                    </div>
                   </div>
                 </div>
               </div>

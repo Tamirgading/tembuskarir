@@ -1,19 +1,18 @@
 import Link from 'next/link'
-import { Landmark, Package, Calendar, MapPin, Target } from 'lucide-react'
+import { Landmark, Package, Calendar, MapPin, Target, History, Zap } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import type { PackageRow } from '@/lib/utils'
+import type { PackageRow, AttemptRow } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import CpnsPackageCard from '@/components/portal/CpnsPackageCard'
 import PortalLoginCard from '@/components/portal/PortalLoginCard'
+import { getCpnsSubscriptionStatus, getUnlockedPackageIds } from '@/lib/access'
 
-// Passing grade SKD resmi 2024
 const PASSING_GRADE = { TWK: 65, TIU: 80, TKP: 166, total: 311 }
-
 const SKD_SUBTESTS = [
   { name: 'TWK', full: 'Tes Wawasan Kebangsaan', soal: 30, max: 150, color: 'blue' },
   { name: 'TIU', full: 'Tes Intelegensia Umum',  soal: 35, max: 175, color: 'purple' },
   { name: 'TKP', full: 'Tes Karakteristik Pribadi', soal: 45, max: 225, color: 'green' },
 ]
-
 type ColorKey = 'blue' | 'purple' | 'green'
 const COLOR_MAP: Record<ColorKey, { badge: string; bar: string; dot: string }> = {
   blue:   { badge: 'bg-blue-100 text-blue-700 border-blue-200',   bar: 'bg-blue-500',   dot: 'bg-blue-500' },
@@ -24,22 +23,17 @@ const COLOR_MAP: Record<ColorKey, { badge: string; bar: string; dot: string }> =
 export default async function CpnsPortalPage() {
   let packages: PackageRow[] = []
   let isLoggedIn = false
-  let userPlan: string = 'free'
+  let hasCpnsSubscription = false
+  let unlockedPackageIds: string[] = []
+  let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
+  let cpnsSubExpiresAt: string | null = null
 
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     isLoggedIn = !!user
 
-    if (user) {
-      const { data: profileData } = await supabase
-        .from('users')
-        .select('plan')
-        .eq('id', user.id)
-        .single()
-      userPlan = (profileData as { plan: string } | null)?.plan ?? 'free'
-    }
-
+    // Fetch packages
     const { data: pkgData } = await supabase
       .from('packages')
       .select('*')
@@ -48,36 +42,68 @@ export default async function CpnsPortalPage() {
       .order('is_free', { ascending: false })
       .order('created_at', { ascending: true })
     packages = (pkgData ?? []) as PackageRow[]
+
+    if (user) {
+      // Cek subscription + unlocked packages paralel
+      const [subStatus, unlocked] = await Promise.all([
+        getCpnsSubscriptionStatus(user.id),
+        getUnlockedPackageIds(user.id),
+      ])
+      hasCpnsSubscription = subStatus.active
+      cpnsSubExpiresAt = subStatus.expiresAt
+      unlockedPackageIds = unlocked
+
+      // Riwayat CPNS terbaru (max 5)
+      const cpnsPackageIds = packages.map((p) => p.id)
+      if (cpnsPackageIds.length > 0) {
+        const { data: attemptsData } = await supabase
+          .from('attempts')
+          .select('id, score, started_at, package_id')
+          .eq('user_id', user.id)
+          .eq('status', 'finished')
+          .in('package_id', cpnsPackageIds)
+          .order('started_at', { ascending: false })
+          .limit(5)
+        recentAttempts = (attemptsData ?? []) as Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[]
+      }
+    }
   } catch { /* Supabase not configured */ }
+
+  const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-      {/* ── Breadcrumb ── */}
+      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-400 mb-5">
         <Link href="/" className="hover:text-blue-600 transition-colors">Beranda</Link>
         <span>›</span>
         <span className="text-gray-900 font-semibold">Portal CPNS</span>
       </nav>
 
-      {/* ── Page header ── */}
+      {/* Page header */}
       <div className="flex items-center gap-4 mb-7">
         <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
           <Landmark className="w-6 h-6" />
         </div>
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-2xl font-extrabold text-gray-900">Portal CPNS</h1>
             <span className="px-2.5 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">2025</span>
+            {hasCpnsSubscription && (
+              <span className="px-2.5 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-full border border-amber-200">
+                ✦ Aktif s/d {cpnsSubExpiresAt ? new Date(cpnsSubExpiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : ''}
+              </span>
+            )}
           </div>
           <p className="text-gray-500 text-sm mt-0.5">Simulasi Seleksi Kompetensi Dasar (SKD) · 110 soal · 90 menit</p>
         </div>
       </div>
 
-      {/* ── 3-column layout ── */}
+      {/* 3-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_272px] gap-6 items-start">
 
-        {/* ════════════════════ LEFT SIDEBAR ════════════════════ */}
+        {/* ══ LEFT SIDEBAR ══ */}
         <aside className="space-y-4 sticky top-6">
 
           {/* Navigasi Tahapan */}
@@ -85,13 +111,10 @@ export default async function CpnsPortalPage() {
             <div className="px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600">
               <p className="text-xs font-bold text-blue-100 uppercase tracking-widest">Tahapan Seleksi CPNS</p>
             </div>
-
             <div className="px-4 py-5">
               <div className="relative">
-                {/* Garis timeline vertikal */}
                 <div className="absolute left-[19px] top-10 h-[calc(100%-40px)] w-0.5 bg-gray-200" />
-
-                {/* SKD — Aktif (halaman ini) */}
+                {/* SKD aktif */}
                 <div className="relative flex items-start gap-3 mb-6">
                   <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shrink-0 z-10 shadow-md shadow-blue-200 ring-4 ring-blue-100">
                     <span className="text-white text-xs font-black">01</span>
@@ -107,8 +130,7 @@ export default async function CpnsPortalPage() {
                     <p className="text-gray-400 text-[11px] mt-0.5">Seleksi Kompetensi Dasar</p>
                   </div>
                 </div>
-
-                {/* SKB — Segera, bisa diklik */}
+                {/* SKB coming soon */}
                 <Link href="/portal/skb" className="relative flex items-start gap-3 group">
                   <div className="w-10 h-10 bg-gray-100 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center shrink-0 z-10 group-hover:border-gray-400 transition-colors">
                     <span className="text-gray-400 text-xs font-black group-hover:text-gray-500 transition-colors">02</span>
@@ -125,7 +147,41 @@ export default async function CpnsPortalPage() {
             </div>
           </div>
 
-          {/* Info Sub-tes SKD */}
+          {/* Riwayat Ujian CPNS (hanya logged-in) */}
+          {isLoggedIn && (
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <History className="w-3.5 h-3.5 text-gray-400" />
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Riwayat SKD</p>
+                </div>
+              </div>
+              {recentAttempts.length === 0 ? (
+                <div className="p-4 text-center">
+                  <p className="text-xs text-gray-400">Belum ada simulasi</p>
+                  <p className="text-[10px] text-gray-300 mt-1">Mulai ujian pertamamu!</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-50">
+                  {recentAttempts.map((a) => (
+                    <Link key={a.id} href={`/hasil/${a.id}`} className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 transition-colors">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-semibold text-gray-700 truncate">
+                          {packageNameMap[a.package_id] ?? 'Paket SKD'}
+                        </p>
+                        <p className="text-[10px] text-gray-400">{formatDate(a.started_at)}</p>
+                      </div>
+                      <span className={`text-sm font-extrabold ml-2 shrink-0 ${(a.score ?? 0) >= 311 ? 'text-green-600' : 'text-gray-600'}`}>
+                        {a.score ?? '–'}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Materi SKD */}
           <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Materi SKD</p>
@@ -135,7 +191,7 @@ export default async function CpnsPortalPage() {
                 const c = COLOR_MAP[sub.color as ColorKey]
                 const pgVal = PASSING_GRADE[sub.name as keyof typeof PASSING_GRADE] as number
                 return (
-                  <div key={sub.name} className="rounded-xl border p-3" style={{}}>
+                  <div key={sub.name} className="rounded-xl border p-3">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
                         <span className={`w-2 h-2 rounded-full ${c.dot}`} />
@@ -155,29 +211,24 @@ export default async function CpnsPortalPage() {
             </div>
           </div>
 
-          {/* Login prompt (guest only) */}
+          {/* Login card (guest) */}
           {!isLoggedIn && <PortalLoginCard />}
         </aside>
 
-        {/* ════════════════════ MAIN CONTENT ════════════════════ */}
+        {/* ══ MAIN CONTENT ══ */}
         <main className="space-y-4 min-w-0">
-          {/* Section header */}
           <div className="flex items-center justify-between">
             <div>
               <h2 className="font-extrabold text-gray-900">Paket Simulasi SKD</h2>
               <p className="text-xs text-gray-400 mt-0.5">{packages.length} paket tersedia</p>
             </div>
-            {userPlan !== 'premium' && isLoggedIn && (
-              <Link
-                href="/harga"
-                className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors"
-              >
-                ✦ Upgrade Premium
+            {isLoggedIn && !hasCpnsSubscription && (
+              <Link href="/harga" className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors">
+                ✦ Lihat Paket Premium
               </Link>
             )}
           </div>
 
-          {/* Package list — vertikal */}
           {packages.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center text-gray-400">
               <div className="flex justify-center mb-3"><Package className="w-10 h-10 text-gray-300" /></div>
@@ -191,19 +242,39 @@ export default async function CpnsPortalPage() {
                   key={pkg.id}
                   pkg={pkg}
                   isLoggedIn={isLoggedIn}
-                  userPlan={userPlan as 'free' | 'premium'}
+                  hasCpnsSubscription={hasCpnsSubscription}
+                  isUnlocked={unlockedPackageIds.includes(pkg.id)}
                   index={i}
                 />
               ))}
             </div>
           )}
-
         </main>
 
-        {/* ════════════════════ RIGHT SIDEBAR ════════════════════ */}
+        {/* ══ RIGHT SIDEBAR ══ */}
         <aside className="space-y-4 sticky top-6">
 
-          {/* Standar nilai — card utama */}
+          {/* Premium offer (non-subscriber logged-in) */}
+          {isLoggedIn && !hasCpnsSubscription && (
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 shadow-lg shadow-blue-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="w-4 h-4 text-yellow-300" />
+                <p className="text-white font-bold text-sm">Akses Semua Paket</p>
+              </div>
+              <p className="text-blue-200 text-xs mb-1 leading-relaxed">
+                Mulai dari <strong className="text-white">Rp 39.000/bulan</strong> untuk semua paket SKD CPNS
+              </p>
+              <p className="text-blue-300 text-[10px] mb-4">atau Rp 10.000 per paket (akses selamanya)</p>
+              <Link
+                href="/harga"
+                className="block w-full text-center py-2.5 bg-white text-blue-700 text-sm font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-sm"
+              >
+                Lihat Paket Premium →
+              </Link>
+            </div>
+          )}
+
+          {/* Passing Grade */}
           <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
             <div className="px-4 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600">
               <p className="text-xs font-bold text-white uppercase tracking-widest">Passing Grade SKD 2024</p>
@@ -262,7 +333,7 @@ export default async function CpnsPortalPage() {
             </div>
           </div>
 
-          {/* Info jadwal */}
+          {/* Info CPNS */}
           <div className="bg-white rounded-2xl border border-gray-200 p-4">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Info CPNS 2025</p>
             <div className="space-y-2.5 text-xs text-gray-600">

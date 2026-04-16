@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { CheckCircle2, Clock } from 'lucide-react'
+import { CheckCircle2, Clock, FileText, ChevronRight, TrendingUp, Award, Target } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import type { UserRow, AttemptRow } from '@/lib/utils'
+import { getCpnsSubscriptionStatus } from '@/lib/access'
+import type { AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
 export default async function DashboardPage({
@@ -18,173 +19,213 @@ export default async function DashboardPage({
 
   const { data: profileData } = await supabase
     .from('users')
-    .select('full_name, plan, plan_expires_at')
+    .select('full_name')
     .eq('id', user.id)
     .single()
 
-  const profile = profileData as Pick<UserRow, 'full_name' | 'plan' | 'plan_expires_at'> | null
+  const fullName = (profileData as { full_name: string | null } | null)?.full_name ?? null
+  const name = fullName ?? user.email?.split('@')[0] ?? 'Pengguna'
 
+  // Ambil status langganan CPNS
+  const cpnsSub = await getCpnsSubscriptionStatus(user.id)
+
+  // Ambil 8 attempt terakhir (hanya CPNS untuk sekarang)
   const { data: attemptsData } = await supabase
     .from('attempts')
-    .select('id, score, correct_count, wrong_count, empty_count, started_at, package_id')
+    .select('id, score, started_at, package_id, score_details')
     .eq('user_id', user.id)
     .eq('status', 'finished')
     .order('started_at', { ascending: false })
-    .limit(10)
+    .limit(8)
 
-  const attempts = (attemptsData ?? []) as Pick<AttemptRow, 'id' | 'score' | 'correct_count' | 'wrong_count' | 'empty_count' | 'started_at' | 'package_id'>[]
+  type AttemptPreview = Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'> & {
+    score_details?: Record<string, unknown>
+  }
+  const attempts = (attemptsData ?? []) as AttemptPreview[]
 
-  // Fetch nama paket untuk semua attempt
+  // Fetch nama paket
   const packageIds = Array.from(new Set(attempts.map((a) => a.package_id).filter(Boolean)))
   const { data: packagesData } = packageIds.length > 0
-    ? await supabase.from('packages').select('id, name').in('id', packageIds)
+    ? await supabase.from('packages').select('id, name, category').in('id', packageIds)
     : { data: [] }
-  const packageMap: Record<string, string> = {}
+
+  const packageMap: Record<string, { name: string; category: string }> = {}
   for (const pkg of (packagesData ?? [])) {
-    const p = pkg as { id: string; name: string }
-    packageMap[p.id] = p.name
+    const p = pkg as { id: string; name: string; category: string }
+    packageMap[p.id] = { name: p.name, category: p.category }
   }
 
-  const totalAttempts = attempts.length
-  const avgScore = totalAttempts > 0
-    ? Math.round(attempts.reduce((sum, a) => sum + (a.score ?? 0), 0) / totalAttempts)
-    : 0
-  const highestScore = totalAttempts > 0
-    ? Math.max(...attempts.map((a) => a.score ?? 0))
-    : 0
-  const thisMonthCount = attempts.filter(
-    (a) => new Date(a.started_at).getMonth() === new Date().getMonth()
-  ).length
+  // Hitung statistik CPNS saja
+  const cpnsAttempts = attempts.filter(
+    (a) => packageMap[a.package_id]?.category === 'CPNS'
+  )
+  const cpnsCount = cpnsAttempts.length
+  const cpnsAvg = cpnsCount > 0
+    ? Math.round(cpnsAttempts.reduce((sum, a) => sum + (a.score ?? 0), 0) / cpnsCount)
+    : null
+  const cpnsHighest = cpnsCount > 0
+    ? Math.max(...cpnsAttempts.map((a) => a.score ?? 0))
+    : null
 
-  const name = profile?.full_name ?? user.email?.split('@')[0] ?? 'Pengguna'
+  const fmt = (d: string) =>
+    new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
 
   return (
-    <div className="space-y-8">
-      {/* Payment status banners */}
+    <div className="max-w-3xl mx-auto space-y-6">
+
+      {/* Payment banners */}
       {payment === 'success' && (
-        <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 flex items-center gap-3 text-green-700">
-          <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
+        <div className="bg-green-50 border border-green-200 rounded-2xl px-5 py-4 flex items-center gap-3">
+          <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
           <div>
-            <p className="font-semibold">Pembayaran berhasil! Selamat datang di Premium!</p>
-            <p className="text-sm text-green-600">Akses semua paket soal sudah terbuka untuk kamu.</p>
+            <p className="font-semibold text-green-800 text-sm">Pembayaran berhasil!</p>
+            <p className="text-xs text-green-600 mt-0.5">Akses kamu sudah aktif. Selamat berlatih!</p>
           </div>
         </div>
       )}
       {payment === 'pending' && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-4 flex items-center gap-3 text-yellow-700">
-          <Clock className="w-6 h-6 text-yellow-500 shrink-0" />
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl px-5 py-4 flex items-center gap-3">
+          <Clock className="w-5 h-5 text-yellow-600 shrink-0" />
           <div>
-            <p className="font-semibold">Pembayaran sedang diproses</p>
-            <p className="text-sm text-yellow-600">Akun akan diupgrade otomatis setelah pembayaran dikonfirmasi.</p>
+            <p className="font-semibold text-yellow-800 text-sm">Pembayaran sedang diproses</p>
+            <p className="text-xs text-yellow-600 mt-0.5">Akun akan diperbarui otomatis setelah dikonfirmasi.</p>
           </div>
         </div>
       )}
 
-      {/* Sambutan */}
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Halo, {name}!</h1>
-          <p className="text-gray-500 mt-1">Semangat belajar hari ini!</p>
+          <h1 className="text-2xl font-extrabold text-gray-900">Halo, {name}!</h1>
+          <p className="text-gray-500 text-sm mt-1">Selamat datang di dashboard persiapanmu.</p>
         </div>
-        <div>
-          {profile?.plan === 'premium' ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-700 font-semibold text-sm rounded-full">
-              ✦ Premium aktif
-              {profile.plan_expires_at && (
-                <span className="font-normal">
-                  s/d {formatDate(profile.plan_expires_at)}
-                </span>
-              )}
-            </span>
-          ) : (
-            <span className="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-600 font-medium text-sm rounded-full">
-              Akun Gratis
-            </span>
-          )}
+        {cpnsSub.active && cpnsSub.expiresAt ? (
+          <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-700 font-semibold text-xs rounded-full">
+            ✦ Langganan aktif s/d {fmt(cpnsSub.expiresAt)}
+          </span>
+        ) : (
+          <Link href="/harga" className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white font-semibold text-xs rounded-full hover:bg-blue-700 transition-colors">
+            Upgrade Premium →
+          </Link>
+        )}
+      </div>
+
+      {/* Portal shortcuts */}
+      <div>
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Seleksi</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+          {/* CPNS card */}
+          <Link href="/portal/cpns" className="group bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-md transition-all p-5 flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+              <FileText className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-gray-900 text-sm">SKD CPNS</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {cpnsCount > 0 ? `${cpnsCount}× simulasi dikerjakan` : 'Mulai simulasi pertamamu'}
+              </p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" />
+          </Link>
+
+          {/* Placeholder — coming soon */}
+          <div className="bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 p-5 flex items-center gap-4 opacity-60">
+            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center shrink-0">
+              <FileText className="w-6 h-6 text-gray-400" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-gray-500 text-sm">SKB & Lainnya</p>
+              <p className="text-xs text-gray-400 mt-0.5">Segera hadir</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Statistik */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Total Ujian', value: totalAttempts, unit: 'kali' },
-          { label: 'Rata-rata Skor', value: avgScore, unit: '' },
-          { label: 'Skor Tertinggi', value: highestScore, unit: '' },
-          { label: 'Ujian Bulan Ini', value: thisMonthCount, unit: 'kali' },
-        ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-5">
-            <p className="text-sm text-gray-500">{stat.label}</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1">
-              {stat.value}
-              {stat.unit && <span className="text-base font-normal text-gray-500 ml-1">{stat.unit}</span>}
-            </p>
+      {/* CPNS stats — hanya tampil jika ada attempt */}
+      {cpnsCount > 0 && (
+        <div>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Statistik SKD CPNS</p>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+              <div className="flex justify-center mb-1.5">
+                <TrendingUp className="w-4 h-4 text-blue-500" />
+              </div>
+              <p className="text-2xl font-extrabold text-gray-900">{cpnsCount}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Simulasi</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+              <div className="flex justify-center mb-1.5">
+                <Target className="w-4 h-4 text-purple-500" />
+              </div>
+              <p className="text-2xl font-extrabold text-gray-900">{cpnsAvg ?? '-'}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Rata-rata</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+              <div className="flex justify-center mb-1.5">
+                <Award className="w-4 h-4 text-amber-500" />
+              </div>
+              <p className="text-2xl font-extrabold text-gray-900">{cpnsHighest ?? '-'}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Tertinggi</p>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
       {/* Riwayat ujian */}
-      <div className="bg-white rounded-xl border border-gray-200">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Riwayat Ujian</h2>
-          <Link href="/paket" className="text-sm text-blue-600 hover:underline">
-            Mulai ujian baru →
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Riwayat Ujian</p>
+          <Link href="/portal/cpns" className="text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+            + Simulasi baru →
           </Link>
         </div>
 
         {attempts.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <p className="text-lg mb-2">Belum ada ujian yang dikerjakan</p>
-            <Link href="/paket" className="text-blue-600 hover:underline text-sm">
-              Mulai try out pertamamu →
+          <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+            <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <FileText className="w-6 h-6 text-gray-400" />
+            </div>
+            <p className="font-semibold text-gray-700 text-sm">Belum ada simulasi</p>
+            <p className="text-xs text-gray-400 mt-1 mb-4">Kerjakan simulasi pertamamu sekarang!</p>
+            <Link href="/portal/cpns" className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors">
+              Ke Portal CPNS →
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-500 border-b border-gray-100">
-                  <th className="px-6 py-3 font-medium">Paket Ujian</th>
-                  <th className="px-6 py-3 font-medium">Tanggal</th>
-                  <th className="px-6 py-3 font-medium text-center">Skor</th>
-                  <th className="px-6 py-3 font-medium text-center">B / S / K</th>
-                  <th className="px-6 py-3 font-medium"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {attempts.map((attempt) => (
-                  <tr key={attempt.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3">
-                      <p className="font-medium text-gray-800 text-sm">
-                        {packageMap[attempt.package_id] ?? 'Paket Tidak Diketahui'}
-                      </p>
-                    </td>
-                    <td className="px-6 py-3 text-gray-500 text-sm">
-                      {formatDate(attempt.started_at)}
-                    </td>
-                    <td className="px-6 py-3 text-center">
-                      <span className={`font-bold text-lg ${(attempt.score ?? 0) >= 75 ? 'text-green-600' : 'text-red-500'}`}>
-                        {attempt.score ?? '-'}
+          <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-50 overflow-hidden">
+            {attempts.map((attempt) => {
+              const pkg = packageMap[attempt.package_id]
+              const score = attempt.score ?? 0
+              const isPassing = score >= 311  // SKD passing grade
+              return (
+                <Link
+                  key={attempt.id}
+                  href={`/hasil/${attempt.id}`}
+                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition-colors"
+                >
+                  <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-xs font-extrabold ${
+                    isPassing ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {score}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 truncate">{pkg?.name ?? 'Paket'}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(attempt.started_at)}</p>
+                  </div>
+                  <div className="shrink-0 flex items-center gap-2">
+                    {pkg?.category === 'CPNS' && (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        isPassing ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {isPassing ? 'LULUS' : 'Belum Lulus'}
                       </span>
-                    </td>
-                    <td className="px-6 py-3 text-center text-sm text-gray-500">
-                      <span className="text-green-600 font-medium">{attempt.correct_count ?? 0}</span>
-                      {' / '}
-                      <span className="text-red-500 font-medium">{attempt.wrong_count ?? 0}</span>
-                      {' / '}
-                      <span>{attempt.empty_count ?? 0}</span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <Link
-                        href={`/hasil/${attempt.id}`}
-                        className="text-blue-600 hover:underline text-sm"
-                      >
-                        Lihat Hasil
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    )}
+                    <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         )}
       </div>
