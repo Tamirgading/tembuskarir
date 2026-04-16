@@ -23,8 +23,7 @@ export default function Navbar({ userName }: NavbarProps) {
   }
 
   const navLinks = [
-    { href: '/dashboard', label: 'Beranda' },
-    { href: '/pembelian', label: 'Pembelian' },
+    { href: '/dashboard', label: 'Dashboard' },
   ]
 
   return (
