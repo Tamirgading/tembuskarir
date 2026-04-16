@@ -4,10 +4,13 @@ import { verifyMidtransSignature, getTransactionStatus } from '@/lib/midtrans'
 import { sendPaymentSuccessEmail } from '@/lib/resend'
 import type { UserRow, SubscriptionRow } from '@/lib/utils'
 
-// Durasi plan dalam hari
+// Durasi plan dalam hari (0 = permanen / tidak expire)
 const PLAN_DURATION: Record<string, number> = {
-  monthly: 30,
-  yearly: 365,
+  monthly:        30,   // legacy
+  yearly:         365,  // legacy
+  cpns_monthly:   30,
+  cpns_quarterly: 90,
+  package:        0,    // per-paket: permanen, tidak ada expires_at
 }
 
 interface MidtransWebhookPayload {
@@ -79,10 +82,13 @@ export async function POST(req: NextRequest) {
     const isExpired = verifiedStatus === 'expire'
 
     if (isPaid) {
-      const planType = sub.plan_type as 'monthly' | 'yearly'
+      const planType = sub.plan_type as string
       const durationDays = PLAN_DURATION[planType] ?? 30
       const now = new Date()
-      const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000)
+      const isPackagePurchase = planType === 'package'
+      const expiresAt = isPackagePurchase
+        ? null  // per-paket: tidak expire
+        : new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000)
 
       // Update subscription → paid
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,42 +96,63 @@ export async function POST(req: NextRequest) {
         .update({
           status: 'paid',
           paid_at: now.toISOString(),
-          expires_at: expiresAt.toISOString(),
+          ...(expiresAt ? { expires_at: expiresAt.toISOString() } : {}),
         })
         .eq('id', sub.id)
 
-      // Aktifkan premium di tabel users
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from('users') as any)
-        .update({
-          plan: 'premium',
-          plan_expires_at: expiresAt.toISOString(),
-        })
-        .eq('id', sub.user_id)
-
-      // Kirim email konfirmasi
-      try {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('full_name, email')
-          .eq('id', sub.user_id)
+      if (isPackagePurchase) {
+        // Per-paket: unlock paket di unlocked_packages
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: subDetail } = await (supabase.from('subscriptions') as any)
+          .select('package_id')
+          .eq('id', sub.id)
           .single()
 
-        const user = userData as Pick<UserRow, 'full_name' | 'email'> | null
-        if (user?.email) {
-          await sendPaymentSuccessEmail(
-            user.email,
-            user.full_name ?? 'Sobat',
-            planType,
-            expiresAt.toISOString()
-          )
-        }
-      } catch (emailErr) {
-        // Email gagal tidak crash webhook
-        console.error('[Webhook] Email error:', emailErr)
-      }
+        if (subDetail?.package_id) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (supabase.from('unlocked_packages') as any)
+            .upsert({
+              user_id: sub.user_id,
+              package_id: subDetail.package_id,
+              midtrans_order_id: order_id,
+              amount: sub.amount,
+            }, { onConflict: 'user_id,package_id' })
 
-      console.log('[Webhook] ✅ Premium activated for user:', sub.user_id, 'until:', expiresAt)
+          console.log('[Webhook] 🔓 Package unlocked:', subDetail.package_id, 'for user:', sub.user_id)
+        }
+      } else {
+        // Langganan: aktifkan premium di tabel users
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase.from('users') as any)
+          .update({
+            plan: 'premium',
+            plan_expires_at: expiresAt!.toISOString(),
+          })
+          .eq('id', sub.user_id)
+
+        // Kirim email konfirmasi
+        try {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('full_name, email')
+            .eq('id', sub.user_id)
+            .single()
+
+          const user = userData as Pick<UserRow, 'full_name' | 'email'> | null
+          if (user?.email) {
+            await sendPaymentSuccessEmail(
+              user.email,
+              user.full_name ?? 'Sobat',
+              planType,
+              expiresAt!.toISOString()
+            )
+          }
+        } catch (emailErr) {
+          console.error('[Webhook] Email error:', emailErr)
+        }
+
+        console.log('[Webhook] ✅ Premium activated for user:', sub.user_id, 'until:', expiresAt)
+      }
     } else if (isFailed) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('subscriptions') as any)

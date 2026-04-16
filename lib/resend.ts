@@ -77,7 +77,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
 export async function sendPaymentSuccessEmail(
   to: string,
   name: string,
-  planType: 'monthly' | 'yearly',
+  planType: string,
   expiresAt: string
 ): Promise<void> {
   const planLabel = planType === 'monthly' ? 'Premium Monthly' : 'Premium Yearly'

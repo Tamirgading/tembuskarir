@@ -20,7 +20,7 @@ export interface SnapTransactionParams {
   amount: number
   customerName: string
   customerEmail: string
-  planType: 'monthly' | 'yearly'
+  planType: string
 }
 
 export interface SnapResponse {

@@ -2,12 +2,18 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
+
+type PlanType = 'cpns_monthly' | 'cpns_quarterly' | 'package'
 
 interface BuyButtonProps {
-  planType: 'monthly' | 'yearly'
+  planType: PlanType
   planLabel: string
   amount: number
-  highlight: boolean
+  highlight?: boolean
+  packageId?: string         // wajib jika planType === 'package'
+  className?: string
+  onSuccess?: () => void     // callback opsional (misal: tutup modal)
 }
 
 declare global {
@@ -26,7 +32,15 @@ declare global {
   }
 }
 
-export function BuyButton({ planType, planLabel, amount, highlight }: BuyButtonProps) {
+export function BuyButton({
+  planType,
+  planLabel,
+  amount,
+  highlight = false,
+  packageId,
+  className,
+  onSuccess,
+}: BuyButtonProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -36,11 +50,10 @@ export function BuyButton({ planType, planLabel, amount, highlight }: BuyButtonP
     setError('')
 
     try {
-      // Minta snap token dari server
       const res = await fetch('/api/payment/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planType, amount }),
+        body: JSON.stringify({ planType, amount, packageId }),
       })
 
       const data = await res.json() as { snapToken?: string; error?: string }
@@ -51,7 +64,6 @@ export function BuyButton({ planType, planLabel, amount, highlight }: BuyButtonP
         return
       }
 
-      // Load Midtrans Snap script jika belum ada
       await loadSnapScript()
 
       if (!window.snap) {
@@ -62,7 +74,11 @@ export function BuyButton({ planType, planLabel, amount, highlight }: BuyButtonP
 
       window.snap.pay(data.snapToken, {
         onSuccess: () => {
-          router.push('/dashboard?payment=success')
+          if (onSuccess) {
+            onSuccess()
+          } else {
+            router.push('/dashboard?payment=success')
+          }
         },
         onPending: () => {
           router.push('/dashboard?payment=pending')
@@ -81,18 +97,25 @@ export function BuyButton({ planType, planLabel, amount, highlight }: BuyButtonP
     }
   }
 
+  const defaultClass = highlight
+    ? 'bg-white text-blue-600 hover:bg-blue-50'
+    : 'bg-blue-600 text-white hover:bg-blue-700'
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       <button
         onClick={handleBuy}
         disabled={loading}
-        className={`w-full py-2.5 text-sm font-semibold rounded-lg transition-colors disabled:opacity-60 ${
-          highlight
-            ? 'bg-white text-blue-600 hover:bg-blue-50'
-            : 'bg-blue-600 text-white hover:bg-blue-700'
-        }`}
+        className={`w-full py-2.5 text-sm font-semibold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className ?? defaultClass}`}
       >
-        {loading ? 'Memproses...' : `Beli ${planLabel}`}
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Memproses...
+          </>
+        ) : (
+          planLabel
+        )}
       </button>
       {error && (
         <p className={`text-xs ${highlight ? 'text-blue-200' : 'text-red-500'}`}>{error}</p>
@@ -103,10 +126,7 @@ export function BuyButton({ planType, planLabel, amount, highlight }: BuyButtonP
 
 function loadSnapScript(): Promise<void> {
   return new Promise((resolve) => {
-    if (window.snap) {
-      resolve()
-      return
-    }
+    if (window.snap) { resolve(); return }
 
     const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
     const isProd = process.env.NODE_ENV === 'production'
@@ -115,10 +135,7 @@ function loadSnapScript(): Promise<void> {
       : 'https://app.sandbox.midtrans.com/snap/snap.js'
 
     const existing = document.querySelector(`script[src="${src}"]`)
-    if (existing) {
-      existing.addEventListener('load', () => resolve())
-      return
-    }
+    if (existing) { existing.addEventListener('load', () => resolve()); return }
 
     const script = document.createElement('script')
     script.src = src
