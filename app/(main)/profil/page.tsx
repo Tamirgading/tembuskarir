@@ -8,7 +8,7 @@ import { EditNamaForm, UploadAvatarForm, GantiPasswordForm } from '@/components/
 export default async function ProfilPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect('/')
 
   const { data } = await supabase
     .from('users')

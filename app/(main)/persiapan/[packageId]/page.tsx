@@ -34,7 +34,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   const { packageId } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/login?redirect=/persiapan/${packageId}`)
+  if (!user) redirect('/')
 
   // Fetch package
   const { data: pkgData } = await supabase

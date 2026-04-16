@@ -29,13 +29,12 @@ export async function middleware(request: NextRequest) {
 
   if (isMainRoute && !user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/'
     return NextResponse.redirect(url)
   }
 
   // Sudah login tapi akses halaman auth — redirect ke dashboard
   const isAuthRoute =
-    pathname === '/login' ||
     pathname === '/register' ||
     pathname === '/lupa-password'
 

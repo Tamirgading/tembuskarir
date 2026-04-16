@@ -86,7 +86,7 @@ export default function UjianPage() {
     async function load() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push('/login'); return }
+      if (!user) { router.push('/'); return }
 
       // Fetch package
       const { data: pkgData, error: pkgErr } = await supabase

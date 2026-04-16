@@ -125,7 +125,9 @@
       "Bash(cp \"/d/Soal/website-TK/filestatis/card-pln.jpg\" \"/d/Soal/ClaudeProject-web/public/card-pln.jpg\")",
       "Bash(cp \"/d/Soal/website-TK/filestatis/card-astra.jpg\" \"/d/Soal/ClaudeProject-web/public/card-astra.jpg\")",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)"
+      "Bash(git commit -m ':*)",
+      "Bash(vercel --version)",
+      "Bash(grep -rln \"redirect\\('/login'\\)\\\\|redirect\\(\\\\`/login\" app/ --include=\"*.tsx\" --include=\"*.ts\")"
     ]
   }
 }

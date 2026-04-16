@@ -38,7 +38,7 @@ export default function LupaPasswordPage() {
               Jika email terdaftar, link reset password sudah dikirim ke <strong>{email}</strong>.
             </p>
             <Link
-              href="/login"
+              href="/"
               className="inline-block w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               Kembali ke Login
@@ -89,7 +89,7 @@ export default function LupaPasswordPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             Ingat password?{' '}
-            <Link href="/login" className="text-blue-600 font-medium hover:underline">
+            <Link href="/" className="text-blue-600 font-medium hover:underline">
               Kembali ke Login
             </Link>
           </p>

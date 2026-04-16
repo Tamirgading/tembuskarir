@@ -16,7 +16,7 @@ export default async function PaketPage() {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect('/')
 
   const { data: profileData } = await supabase
     .from('users')

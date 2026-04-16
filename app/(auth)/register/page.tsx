@@ -79,7 +79,7 @@ export default function RegisterPage() {
               Klik link tersebut untuk mengaktifkan akunmu.
             </p>
             <Link
-              href="/login"
+              href="/"
               className="inline-block w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               Kembali ke Login
@@ -181,7 +181,7 @@ export default function RegisterPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             Sudah punya akun?{' '}
-            <Link href="/login" className="text-blue-600 font-medium hover:underline">
+            <Link href="/" className="text-blue-600 font-medium hover:underline">
               Masuk di sini
             </Link>
           </p>
