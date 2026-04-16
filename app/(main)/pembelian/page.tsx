@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle2, Package, ShoppingBag, CalendarDays } from 'lucide-react'
+import BackButton from '@/components/ui/BackButton'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 
@@ -92,6 +93,7 @@ export default async function PembelianPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
+      <BackButton fallbackHref="/dashboard" label="Kembali" />
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900">Pembelian</h1>
         <p className="text-gray-500 text-sm mt-1">Riwayat langganan dan paket yang kamu beli.</p>
