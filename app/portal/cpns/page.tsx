@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Landmark, Package, Lock, Lightbulb, Calendar, MapPin, Target } from 'lucide-react'
+import { Landmark, Package, Calendar, MapPin, Target } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow } from '@/lib/utils'
 import CpnsPackageCard from '@/components/portal/CpnsPackageCard'
@@ -85,51 +85,41 @@ export default async function CpnsPortalPage() {
               <p className="text-xs font-bold text-blue-100 uppercase tracking-widest">Tahapan Seleksi CPNS</p>
             </div>
 
-            {/* SKD — Aktif */}
-            <div className="p-3">
-              <div className="bg-blue-600 rounded-xl p-3.5 shadow-md shadow-blue-200 mb-2">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-black">01</span>
-                    </div>
-                    <div>
-                      <p className="text-white font-extrabold text-sm leading-none">SKD</p>
-                      <p className="text-blue-200 text-[10px] mt-0.5 leading-none">Seleksi Kompetensi Dasar</p>
-                    </div>
-                  </div>
-                  <span className="flex items-center gap-1 px-2 py-0.5 bg-green-400 text-white text-[10px] font-bold rounded-full">
-                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse inline-block" />
-                    AKTIF
-                  </span>
-                </div>
-                {/* Sub-tes di dalam SKD box */}
-                <div className="flex gap-1.5 mt-2.5">
-                  {SKD_SUBTESTS.map((s) => (
-                    <div key={s.name} className="flex-1 bg-white/15 rounded-lg px-2 py-1.5 text-center">
-                      <p className="text-white font-bold text-xs">{s.name}</p>
-                      <p className="text-blue-200 text-[10px]">{s.soal} soal</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="px-4 py-5">
+              <div className="relative">
+                {/* Garis timeline vertikal */}
+                <div className="absolute left-[19px] top-10 h-[calc(100%-40px)] w-0.5 bg-gray-200" />
 
-              {/* SKB — Locked */}
-              <div className="rounded-xl border border-dashed border-gray-200 p-3.5 bg-gray-50 opacity-60">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <span className="text-gray-400 text-xs font-black">02</span>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 font-bold text-sm leading-none">SKB</p>
-                      <p className="text-gray-400 text-[10px] mt-0.5 leading-none">Seleksi Kompetensi Bidang</p>
-                    </div>
+                {/* SKD — Aktif (halaman ini) */}
+                <div className="relative flex items-start gap-3 mb-6">
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shrink-0 z-10 shadow-md shadow-blue-200 ring-4 ring-blue-100">
+                    <span className="text-white text-xs font-black">01</span>
                   </div>
-                  <span className="px-2 py-0.5 bg-gray-200 text-gray-400 text-[10px] font-bold rounded-full">
-                    SEGERA
-                  </span>
+                  <div className="flex-1 pt-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-extrabold text-blue-700 text-sm leading-none">SKD</p>
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded-full border border-green-200">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block" />
+                        AKTIF
+                      </span>
+                    </div>
+                    <p className="text-gray-400 text-[11px] mt-0.5">Seleksi Kompetensi Dasar</p>
+                  </div>
                 </div>
+
+                {/* SKB — Segera, bisa diklik */}
+                <Link href="/portal/skb" className="relative flex items-start gap-3 group">
+                  <div className="w-10 h-10 bg-gray-100 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center shrink-0 z-10 group-hover:border-gray-400 transition-colors">
+                    <span className="text-gray-400 text-xs font-black group-hover:text-gray-500 transition-colors">02</span>
+                  </div>
+                  <div className="flex-1 pt-1.5">
+                    <div className="flex items-center gap-2">
+                      <p className="font-extrabold text-gray-400 text-sm leading-none group-hover:text-gray-500 transition-colors">SKB</p>
+                      <span className="px-2 py-0.5 bg-gray-100 text-gray-400 text-[10px] font-bold rounded-full border border-gray-200">SEGERA</span>
+                    </div>
+                    <p className="text-gray-300 text-[11px] mt-0.5">Seleksi Kompetensi Bidang</p>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -224,12 +214,6 @@ export default async function CpnsPortalPage() {
             </div>
           )}
 
-          {/* SKB coming soon */}
-          <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-dashed border-gray-300 rounded-2xl p-6 text-center mt-2">
-            <div className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center mx-auto mb-3"><Lock className="w-5 h-5 text-gray-400" /></div>
-            <p className="font-bold text-gray-600 text-sm">Paket SKB — Segera Hadir</p>
-            <p className="text-xs text-gray-400 mt-1 max-w-xs mx-auto">Seleksi Kompetensi Bidang akan tersedia setelah SKD. Pantau terus perkembangannya.</p>
-          </div>
         </main>
 
         {/* ════════════════════ RIGHT SIDEBAR ════════════════════ */}
@@ -285,37 +269,13 @@ export default async function CpnsPortalPage() {
               </div>
               <div className="bg-green-50 rounded-xl p-3 space-y-1.5">
                 <p className="font-bold text-green-700 text-[11px] uppercase tracking-wide mb-2">TKP</p>
-                <div className="flex justify-between"><span className="text-gray-600">Benar</span><span className="font-bold text-green-600">+5</span></div>
-                <div className="flex justify-between"><span className="text-gray-600">Salah / Kosong</span><span className="font-bold text-gray-400">0</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Nilai per opsi</span><span className="font-bold text-green-600">1 – 5</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Tidak dijawab</span><span className="font-bold text-gray-400">0</span></div>
                 <div className="mt-1 pt-1 border-t border-green-100">
-                  <div className="flex items-center gap-1">
-                    <Lightbulb className="w-3 h-3 text-green-600 shrink-0" />
-                    <p className="text-[10px] text-green-600 font-semibold">Tidak ada penalti! Isi semua soal TKP.</p>
-                  </div>
+                  <p className="text-[10px] text-green-600 font-semibold">Setiap opsi punya nilai berbeda (1–5). Selalu isi!</p>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Tips */}
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-            <div className="flex items-center gap-1.5 mb-3">
-              <Lightbulb className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <p className="text-xs font-bold text-amber-800 uppercase tracking-wide">Tips Sukses SKD</p>
-            </div>
-            <ul className="space-y-2">
-              {[
-                'Prioritaskan TKP — tidak ada penalti salah',
-                'Ragu di TWK/TIU? Lewati dulu',
-                'Kerjakan soal yakin dulu, kembali ke yang ragu',
-                'Latihan rutin tingkatkan kecepatan & akurasi',
-              ].map((tip) => (
-                <li key={tip} className="flex items-start gap-2 text-xs text-amber-700">
-                  <span className="text-amber-400 mt-0.5 shrink-0">✓</span>
-                  {tip}
-                </li>
-              ))}
-            </ul>
           </div>
 
           {/* Info jadwal */}
