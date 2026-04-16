@@ -71,12 +71,12 @@ export async function GET(request: NextRequest) {
       for (const attempt of expired) {
         try {
           const pkg = packageMap.get(attempt.package_id)
-          const isCpns = pkg?.category === 'CPNS'
+          const pkgCategory = pkg?.category ?? 'OTHER'
 
-          // Fetch soal untuk hitung skor
+          // Fetch soal untuk hitung skor (selalu ambil category + options)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const { data: questionsData } = await (supabase.from('questions') as any)
-            .select(isCpns ? 'id, correct_answer, category, options' : 'id, correct_answer')
+            .select('id, correct_answer, category, options')
             .eq('package_id', attempt.package_id)
 
           const questions = (questionsData ?? []) as {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
 
           const answers = (attempt.answers as Record<string, string>) ?? {}
           const { score, correctCount, wrongCount, emptyCount, scoreDetails } =
-            computeScore(questions, answers, isCpns)
+            computeScore(questions, answers, pkgCategory)
 
           const durationSeconds = Math.floor(
             (Date.now() - new Date(attempt.started_at).getTime()) / 1000

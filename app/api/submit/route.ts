@@ -84,12 +84,12 @@ export async function POST(request: NextRequest) {
       .eq('id', attempt.package_id)
       .single()
 
-    const isCpns = (pkgData as { category: string } | null)?.category === 'CPNS'
+    const pkgCategory = (pkgData as { category: string } | null)?.category ?? 'OTHER'
 
-    // 4. Ambil soal (CPNS butuh options untuk TKP point lookup)
+    // 4. Ambil soal (selalu ambil category + options untuk semua tipe scoring)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: questionsData, error: qErr } = await (serviceClient.from('questions') as any)
-      .select(isCpns ? 'id, correct_answer, category, options' : 'id, correct_answer')
+      .select('id, correct_answer, category, options')
       .eq('package_id', attempt.package_id)
 
     if (qErr || !questionsData) {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     const { score, correctCount, wrongCount, emptyCount, scoreDetails } = computeScore(
       questionsData as { id: string; correct_answer: string; category?: string; options?: { key: string; text: string; point?: number }[] }[],
       answers,
-      isCpns
+      pkgCategory
     )
 
     // 6. Hitung durasi

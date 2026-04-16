@@ -61,7 +61,7 @@ export default async function DashboardPage({
   // ── Data: Beranda ──────────────────────────────────────────────────────────
   let attempts: AttemptPreview[] = []
   const packageMap: Record<string, { name: string; category: string }> = {}
-  let totalCount = 0, avgScore: number | null = null, highestScore: number | null = null, cpnsCount = 0
+  let totalCount = 0, avgScore: number | null = null, highestScore: number | null = null, cpnsCount = 0, astraCount = 0
 
   if (activeTab === 'beranda') {
     const { data: attemptsData } = await supabase
@@ -87,6 +87,7 @@ export default async function DashboardPage({
       ? Math.round(attempts.reduce((s, a) => s + (a.score ?? 0), 0) / totalCount) : null
     highestScore = totalCount > 0 ? Math.max(...attempts.map((a) => a.score ?? 0)) : null
     cpnsCount = attempts.filter((a) => packageMap[a.package_id]?.category === 'CPNS').length
+    astraCount = attempts.filter((a) => packageMap[a.package_id]?.category === 'ASTRA').length
   }
 
   // ── Data: Pembelian ────────────────────────────────────────────────────────
@@ -210,15 +211,21 @@ export default async function DashboardPage({
                 <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" />
               </Link>
 
-              <div className="bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 p-5 flex items-center gap-4 opacity-60 cursor-not-allowed">
-                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center shrink-0">
-                  <FileText className="w-6 h-6 text-gray-400" />
+              <Link
+                href="/portal/astra"
+                className="group bg-white rounded-2xl border-2 border-gray-200 hover:border-orange-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
+              >
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
+                  <FileText className="w-6 h-6 text-orange-600" />
                 </div>
-                <div className="flex-1">
-                  <p className="font-bold text-gray-500 text-sm">SKB & Lainnya</p>
-                  <p className="text-xs text-gray-400 mt-0.5">Segera hadir</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-gray-900 text-sm">Psikotes ASTRA</p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {astraCount > 0 ? `${astraCount}× simulasi dikerjakan` : 'Mulai simulasi pertamamu'}
+                  </p>
                 </div>
-              </div>
+                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-400 transition-colors shrink-0" />
+              </Link>
             </div>
           </div>
 

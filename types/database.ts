@@ -44,7 +44,7 @@ export type Database = {
           id: string
           name: string
           slug: string
-          category: 'CPNS' | 'UTBK' | 'KEDINASAN' | 'LAINNYA'
+          category: 'CPNS' | 'UTBK' | 'KEDINASAN' | 'ASTRA' | 'LAINNYA'
           description: string | null
           duration_minutes: number
           total_questions: number
@@ -56,7 +56,7 @@ export type Database = {
           id?: string
           name: string
           slug: string
-          category: 'CPNS' | 'UTBK' | 'KEDINASAN' | 'LAINNYA'
+          category: 'CPNS' | 'UTBK' | 'KEDINASAN' | 'ASTRA' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions: number

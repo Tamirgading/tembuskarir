@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Bookmark, Lightbulb } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
-import { computeScore, isAttemptExpired } from '@/lib/exam-scoring'
+import { computeScore, isAttemptExpired, ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 import { checkPackageAccess } from '@/lib/access'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
 
@@ -48,7 +48,10 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
   // Cek akses: gratis, langganan aktif, atau beli satuan
   const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free, pkg.category)
-  if (accessStatus === 'locked') redirect('/harga')
+  if (accessStatus === 'locked') {
+    if (pkg.category === 'ASTRA') redirect('/portal/astra')
+    else redirect('/harga')
+  }
 
   // Cek ongoing attempt
   const { data: ongoingData } = await supabase
@@ -67,19 +70,19 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
     if (isAttemptExpired(o.started_at, pkg!.duration_minutes)) {
       try {
         const serviceClient = createServiceClient()
-        const isCpnsForScoring = pkg!.category === 'CPNS'
+        const pkgCategory = pkg!.category
 
         // Ambil soal untuk hitung skor akhir
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: questionsData } = await (serviceClient.from('questions') as any)
-          .select(isCpnsForScoring ? 'id, correct_answer, category, options' : 'id, correct_answer')
+          .select('id, correct_answer, category, options')
           .eq('package_id', packageId)
 
         const answers = (o.answers ?? {}) as Record<string, string>
         const { score, correctCount, wrongCount, emptyCount, scoreDetails } = computeScore(
           (questionsData ?? []) as { id: string; correct_answer: string; category?: string; options?: { key: string; text: string; point?: number }[] }[],
           answers,
-          isCpnsForScoring
+          pkgCategory
         )
         const durationSeconds = Math.floor(
           (Date.now() - new Date(o.started_at).getTime()) / 1000
@@ -118,8 +121,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   }
 
   const isCpns = pkg.category === 'CPNS'
-  const backHref = isCpns ? '/portal/cpns' : '/paket'
-  const backLabel = isCpns ? 'Portal CPNS' : 'Paket Soal'
+  const isAstra = pkg.category === 'ASTRA'
+  const backHref = isCpns ? '/portal/cpns' : isAstra ? '/portal/astra' : '/paket'
+  const backLabel = isCpns ? 'Portal CPNS' : isAstra ? 'Portal ASTRA' : 'Paket Soal'
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
@@ -143,6 +147,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                 {isCpns && (
                   <span className="px-2.5 py-0.5 bg-white/20 text-white text-xs font-bold rounded-full">SKD CPNS</span>
                 )}
+                {isAstra && (
+                  <span className="px-2.5 py-0.5 bg-white/20 text-white text-xs font-bold rounded-full">Psikotes ASTRA</span>
+                )}
                 <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${
                   pkg.is_free ? 'bg-green-400 text-white' : 'bg-amber-400 text-gray-900'
                 }`}>
@@ -164,8 +171,8 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             {([
               { icon: <Clipboard className="w-5 h-5 text-blue-200" />, label: 'Soal', value: `${pkg.total_questions}` },
               { icon: <Clock className="w-5 h-5 text-blue-200" />, label: 'Durasi', value: `${pkg.duration_minutes} menit` },
-              { icon: <Trophy className="w-5 h-5 text-blue-200" />, label: 'Skor Max', value: isCpns ? '550' : '100' },
-              { icon: <BarChart2 className="w-5 h-5 text-blue-200" />, label: 'Passing', value: isCpns ? `${SKD_PASSING_GRADE.total}` : '75' },
+              { icon: <Trophy className="w-5 h-5 text-blue-200" />, label: 'Skor Max', value: isCpns ? '550' : `${pkg.total_questions}` },
+              { icon: <BarChart2 className="w-5 h-5 text-blue-200" />, label: isCpns ? 'Passing' : 'Subtes', value: isCpns ? `${SKD_PASSING_GRADE.total}` : isAstra ? '7' : '-' },
             ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
                 <div className="flex justify-center mb-0.5">{s.icon}</div>
@@ -178,6 +185,25 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
         {/* Body */}
         <div className="px-7 py-6 space-y-6">
+
+          {/* Sub-tes breakdown (ASTRA) */}
+          {isAstra && (
+            <div>
+              <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Pembagian Sub-tes</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {Object.entries(ASTRA_SUBTESTS).map(([key, sub]) => (
+                  <div key={key} className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-center">
+                    <span className="inline-block text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200 mb-1.5">
+                      {key}
+                    </span>
+                    <p className="text-lg font-extrabold text-gray-900">{sub.soal}</p>
+                    <p className="text-[10px] text-gray-400">soal · {sub.minutes} mnt</p>
+                    <p className="text-[10px] text-gray-500 mt-1 leading-tight">{sub.full}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Sub-tes breakdown (CPNS only) */}
           {isCpns && (
@@ -238,6 +264,28 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                       <Lightbulb className="w-3 h-3 text-green-600 shrink-0" />
                       <p className="text-[11px] text-green-600 font-semibold">Tidak ada penalti — isi semua soal TKP!</p>
                     </div>
+                  </div>
+                </div>
+              </div>
+            ) : isAstra ? (
+              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 space-y-2">
+                <p className="text-xs font-bold text-orange-700 uppercase tracking-wide mb-2.5">Semua Sub-tes</p>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-600">Benar</span>
+                  <span className="font-bold text-green-600">+1</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-600">Salah</span>
+                  <span className="font-bold text-gray-400">0</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-600">Kosong</span>
+                  <span className="font-bold text-gray-400">0</span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-orange-200">
+                  <div className="flex items-center gap-1">
+                    <Lightbulb className="w-3 h-3 text-orange-600 shrink-0" />
+                    <p className="text-[11px] text-orange-600 font-semibold">Tidak ada penalti — jawab semua soal!</p>
                   </div>
                 </div>
               </div>

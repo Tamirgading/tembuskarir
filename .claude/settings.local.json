@@ -127,7 +127,13 @@
       "Bash(git add:*)",
       "Bash(git commit -m ':*)",
       "Bash(vercel --version)",
-      "Bash(grep -rln \"redirect\\('/login'\\)\\\\|redirect\\(\\\\`/login\" app/ --include=\"*.tsx\" --include=\"*.ts\")"
+      "Bash(grep -rln \"redirect\\('/login'\\)\\\\|redirect\\(\\\\`/login\" app/ --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(pandoc --track-changes=all \"Materi Latihan Psikotes ASTRA.docx\" -o /tmp/astra_output.md)",
+      "Bash(python3 -c \"import zipfile, os; z = zipfile.ZipFile\\('/d/Soal/ASTRA/Materi Latihan Psikotes ASTRA.docx'\\); z.extractall\\('/tmp/astra_unpacked'\\); print\\('Done'\\); print\\(os.listdir\\('/tmp/astra_unpacked'\\)\\)\")",
+      "Bash(ls /c/Python* /c/Users/Lenovo/AppData/Local/Programs/Python*)",
+      "Read(//usr/**)",
+      "Read(//mingw64/**)",
+      "Bash(/c/Users/Lenovo/AppData/Local/Programs/Python/Python38/python.exe -c ':*)"
     ]
   }
 }
