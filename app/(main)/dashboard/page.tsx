@@ -8,6 +8,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getCpnsSubscriptionStatus } from '@/lib/access'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
+import BackButton from '@/components/ui/BackButton'
 
 // ── Tipe ────────────────────────────────────────────────────────────────────
 type AttemptPreview = Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>
@@ -129,6 +130,9 @@ export default async function DashboardPage({
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+
+      {/* Tombol kembali */}
+      <BackButton fallbackHref="/" label="Kembali" />
 
       {/* Payment banners */}
       {payment === 'success' && (
