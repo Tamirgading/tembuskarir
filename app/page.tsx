@@ -1,7 +1,7 @@
 import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Landmark, GraduationCap } from 'lucide-react'
+import { Landmark, GraduationCap, BriefcaseBusiness } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
 
@@ -206,8 +206,66 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* ── Coming Soon — 2 kolom ── */}
-            <div className="grid sm:grid-cols-2 gap-4">
+            {/* ── ASTRA — AKTIF ── */}
+            <div className="relative bg-white rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(234,88,12,0.10)] hover:shadow-[0_25px_60px_rgba(234,88,12,0.20)] transition-all duration-300 border border-orange-100 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-orange-500 to-amber-400 rounded-l-3xl" />
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-orange-50 rounded-full blur-3xl opacity-60 group-hover:bg-orange-100 transition-colors" />
+
+              {/* Badge aktif */}
+              <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500" />
+                </span>
+                <div className="bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                  Tersedia
+                </div>
+              </div>
+
+              {/* Visual card */}
+              <div className="w-full sm:w-48 h-36 sm:h-40 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 relative shadow-lg z-10 flex flex-col items-center justify-center text-white">
+                <BriefcaseBusiness className="w-12 h-12 mb-2 opacity-90" />
+                <p className="text-sm font-bold">Psikotes ASTRA</p>
+                <p className="text-[11px] text-orange-100 mt-0.5">60 soal · terbagi per subtes</p>
+                <div className="flex flex-wrap gap-1 mt-3 justify-center px-2">
+                  {['QR', 'DR', 'RC', 'PS'].map((s) => (
+                    <span key={s} className="text-[10px] font-bold px-2 py-0.5 bg-white/20 rounded-full">{s}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Konten */}
+              <div className="flex-1 text-center sm:text-left w-full z-10">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                  <span className="px-2.5 py-0.5 rounded-md bg-orange-100 text-orange-700 text-xs font-bold uppercase">Swasta / BUMN</span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-green-100 text-green-700 text-xs font-bold uppercase">Gratis & Premium</span>
+                </div>
+                <h3 className="text-2xl font-bold font-heading text-slate-900 mb-3 group-hover:text-orange-600 transition-colors">
+                  Persiapan Psikotes ASTRA & BUMN
+                </h3>
+                <p className="text-slate-600 text-sm mb-4 leading-relaxed max-w-xl">
+                  Simulasi psikotes ASTRA dengan format subtes berurutan dan waktu terpisah per subtes — persis seperti tes aslinya. Meliputi Quantitative Reasoning, Deductive Reasoning, Reading Comprehension, dan Perceptual Speed.
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-5 text-xs text-slate-500">
+                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-orange-500 rounded-full" />QR · DR · RC · IR · VIZ · PS · WM</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-amber-500 rounded-full" />Waktu per subtes</span>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link href="/portal/astra"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold hover:shadow-lg hover:shadow-orange-500/30 transition-all hover:-translate-y-0.5 w-full sm:w-auto">
+                    Latihan Sekarang
+                    <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </Link>
+                  <Link href="/harga"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:border-orange-300 hover:text-orange-600 transition-all w-full sm:w-auto text-sm">
+                    Lihat Paket Harga
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Coming Soon — 3 kartu ── */}
+            <div className="grid sm:grid-cols-3 gap-4">
               {([
                 {
                   visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-ojk.png" width={56} height={56} className="w-full h-full object-cover" alt="OJK" /></div>,
@@ -216,10 +274,6 @@ export default async function HomePage() {
                 {
                   visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-pln.jpg" width={56} height={56} className="w-full h-full object-cover" alt="PLN" /></div>,
                   title: 'AKDING Rekrutmen PLN', tag: 'BUMN', desc: 'Simulasi Akademik dan Bahasa Inggris (Akding) khusus rekrutmen PLN.',
-                },
-                {
-                  visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-astra.jpg" width={56} height={56} className="w-full h-full object-cover" alt="BUMN" /></div>,
-                  title: 'Seleksi BUMN & Swasta', tag: 'BUMN / Swasta', desc: 'BRI, Mandiri, Pertamina, dan perusahaan swasta terkemuka Indonesia.',
                 },
                 {
                   visual: <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-700 flex items-center justify-center shadow-sm"><GraduationCap className="w-7 h-7 text-white" /></div>,
