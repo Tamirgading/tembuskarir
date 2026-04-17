@@ -101,17 +101,16 @@ export default function UjianPage() {
         return
       }
 
-      // Cek akses premium
+      // Cek akses paket (subscription atau unlock satuan)
       const pkgTyped = pkgData as { name: string; duration_minutes: number; total_questions: number; is_free: boolean }
       if (!pkgTyped.is_free) {
-        const { data: profile } = await supabase
-          .from('users')
-          .select('plan')
-          .eq('id', user.id)
-          .single()
-        const userProfile = profile as { plan: string } | null
-        if (userProfile?.plan !== 'premium') {
-          router.push('/paket')
+        const accessRes = await fetch(`/api/access?packageId=${packageId}`)
+        const accessJson = await accessRes.json() as { canAccess?: boolean; category?: string }
+        if (!accessJson.canAccess) {
+          const cat = accessJson.category ?? ''
+          if (cat === 'ASTRA') router.push('/portal/astra')
+          else if (cat === 'CPNS') router.push('/portal/cpns')
+          else router.push('/paket')
           return
         }
       }
@@ -271,7 +270,20 @@ export default function UjianPage() {
     )
   }
 
-  if (!currentQuestion || !pkg) return null
+  if (!pkg || questions.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-gray-500 font-medium">Soal untuk paket ini belum tersedia.</p>
+          <button onClick={() => router.back()} className="text-blue-600 hover:underline text-sm">
+            ← Kembali
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!currentQuestion) return null
 
   return (
     <div className="max-w-5xl mx-auto space-y-4">
