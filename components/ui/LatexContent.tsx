@@ -6,13 +6,14 @@ import 'katex/dist/katex.min.css'
 // ─── Parser ─────────────────────────────────────────────────────────────────
 type Part =
   | { t: 'text'; v: string }
+  | { t: 'bold'; v: string }
   | { t: 'inline'; v: string }
   | { t: 'block'; v: string }
 
 function parse(text: string): Part[] {
   const parts: Part[] = []
-  // Cocokkan $$...$$ (blok) lalu $...$ (inline) — urutan penting!
-  const re = /(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g
+  // Urutan penting: $$...$$ → $...$ → **...** → teks biasa
+  const re = /(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$|\*\*[^*]+?\*\*)/g
   let last = 0
   let m: RegExpExecArray | null
 
@@ -23,6 +24,8 @@ function parse(text: string): Part[] {
     const matched = m[0]
     if (matched.startsWith('$$')) {
       parts.push({ t: 'block', v: matched.slice(2, -2) })
+    } else if (matched.startsWith('**')) {
+      parts.push({ t: 'bold', v: matched.slice(2, -2) })
     } else {
       parts.push({ t: 'inline', v: matched.slice(1, -1) })
     }
@@ -74,6 +77,9 @@ export function LatexContent({ content, className }: LatexContentProps) {
               {part.v}
             </span>
           )
+        }
+        if (part.t === 'bold') {
+          return <strong key={i}>{part.v}</strong>
         }
         if (part.t === 'block') {
           return (
