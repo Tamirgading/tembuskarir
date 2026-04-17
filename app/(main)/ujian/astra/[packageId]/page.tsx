@@ -408,7 +408,7 @@ export default function AstraUjianPage() {
 
             <div className="flex items-start gap-2 text-xs text-gray-500 bg-gray-50 rounded-xl px-4 py-3">
               <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <p>Timer dimulai saat kamu klik "Mulai". Soal dikerjakan satu per satu — tidak bisa kembali ke soal sebelumnya.</p>
+              <p>Timer dimulai saat kamu klik &quot;Mulai&quot;. Soal dikerjakan satu per satu &mdash; tidak bisa kembali ke soal sebelumnya.</p>
             </div>
 
             <button
