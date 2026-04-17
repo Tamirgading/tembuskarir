@@ -92,7 +92,7 @@ export default function UjianPage() {
         // Fetch package
         const { data: pkgData, error: pkgErr } = await supabase
           .from('packages')
-          .select('name, duration_minutes, total_questions, is_free')
+          .select('name, duration_minutes, total_questions, is_free, category')
           .eq('id', packageId)
           .single()
 
@@ -102,8 +102,15 @@ export default function UjianPage() {
           return
         }
 
+        const pkgTyped = pkgData as { name: string; duration_minutes: number; total_questions: number; is_free: boolean; category: string }
+
+        // Redirect ASTRA ke halaman ujian khusus ASTRA
+        if (pkgTyped.category === 'ASTRA') {
+          router.replace(`/ujian/astra/${packageId}`)
+          return
+        }
+
         // Cek akses paket (subscription atau unlock satuan)
-        const pkgTyped = pkgData as { name: string; duration_minutes: number; total_questions: number; is_free: boolean }
         if (!pkgTyped.is_free) {
           try {
             const accessRes = await fetch(`/api/access?packageId=${packageId}`)
