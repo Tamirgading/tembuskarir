@@ -5,7 +5,8 @@ import type { Database } from '@/types/database'
 import type { CookieOptions } from '@supabase/ssr'
 import type { AttemptRow } from '@/lib/utils'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore } from '@/lib/exam-scoring'
+import { computeScore, transformTkpForScoring } from '@/lib/exam-scoring'
+import type { QuestionTkpRow } from '@/lib/exam-scoring'
 import { rateLimit, getClientIp } from '@/lib/rateLimit'
 
 // Anon client tetap inline karena perlu cookies() sinkron (SSR compat)
@@ -86,19 +87,35 @@ export async function POST(request: NextRequest) {
 
     const pkgCategory = (pkgData as { category: string } | null)?.category ?? 'OTHER'
 
-    // 4. Ambil soal (selalu ambil category + options untuk semua tipe scoring)
+    // 4. Ambil soal dari tabel yang sesuai berdasarkan kategori paket
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: questionsData, error: qErr } = await (serviceClient.from('questions') as any)
+    const { data: mcqData, error: qErr } = await (serviceClient.from('questions') as any)
       .select('id, correct_answer, category, options')
       .eq('package_id', attempt.package_id)
 
-    if (qErr || !questionsData) {
+    if (qErr || !mcqData) {
       return NextResponse.json({ error: 'Gagal mengambil data soal.' }, { status: 500 })
+    }
+
+    type McqQuestion = { id: string; correct_answer: string; category?: string | null; options?: { key: string; text: string; point?: number }[] | null }
+    let allQuestions: McqQuestion[] = mcqData as McqQuestion[]
+
+    // Untuk paket CPNS: gabungkan soal TKP dari tabel terpisah
+    if (pkgCategory === 'CPNS') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: tkpData } = await (serviceClient.from('questions_tkp') as any)
+        .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e')
+        .eq('package_id', attempt.package_id)
+
+      if (tkpData && (tkpData as QuestionTkpRow[]).length > 0) {
+        const tkpQuestions = transformTkpForScoring(tkpData as QuestionTkpRow[])
+        allQuestions = [...allQuestions, ...tkpQuestions]
+      }
     }
 
     // 5. Hitung skor via shared utility
     const { score, correctCount, wrongCount, emptyCount, scoreDetails } = computeScore(
-      questionsData as { id: string; correct_answer: string; category?: string; options?: { key: string; text: string; point?: number }[] }[],
+      allQuestions,
       answers,
       pkgCategory
     )

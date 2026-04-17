@@ -11,6 +11,37 @@ export interface QuestionForScoring {
   options?: { key: string; text: string; point?: number }[] | null
 }
 
+/**
+ * Baris dari tabel questions_tkp (kolom eksplisit per opsi).
+ */
+export interface QuestionTkpRow {
+  id: string
+  opt_a: string; opt_b: string; opt_c: string; opt_d: string; opt_e: string
+  point_a: number; point_b: number; point_c: number; point_d: number; point_e: number
+}
+
+/**
+ * Konversi baris questions_tkp → format QuestionForScoring
+ * supaya bisa dipakai oleh computeScore() tanpa perubahan logika scoring.
+ */
+export function transformTkpForScoring(rows: QuestionTkpRow[]): QuestionForScoring[] {
+  return rows.map((r) => {
+    const opts = (['a', 'b', 'c', 'd', 'e'] as const).map((k) => ({
+      key: k.toUpperCase(),
+      text: r[`opt_${k}`],
+      point: r[`point_${k}`],
+    }))
+    // correct_answer = key dengan point tertinggi (konvensi)
+    const best = opts.reduce((prev, curr) => (curr.point > prev.point ? curr : prev))
+    return {
+      id: r.id,
+      correct_answer: best.key,
+      category: 'TKP',
+      options: opts,
+    }
+  })
+}
+
 export interface CategoryStats {
   correct: number  // soal yang dijawab benar (atau dijawab, untuk TKP)
   wrong: number    // soal yang dijawab salah (0 untuk TKP)

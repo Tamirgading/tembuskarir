@@ -10,7 +10,8 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore, isAttemptExpired } from '@/lib/exam-scoring'
+import { computeScore, isAttemptExpired, transformTkpForScoring } from '@/lib/exam-scoring'
+import type { QuestionTkpRow } from '@/lib/exam-scoring'
 import type { PackageRow, AttemptRow, SubscriptionRow } from '@/lib/utils'
 
 const BATCH_SIZE = 50 // proses maksimal 50 attempt per run
@@ -73,18 +74,26 @@ export async function GET(request: NextRequest) {
           const pkg = packageMap.get(attempt.package_id)
           const pkgCategory = pkg?.category ?? 'OTHER'
 
-          // Fetch soal untuk hitung skor (selalu ambil category + options)
+          // Fetch soal MCQ dari tabel questions
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data: questionsData } = await (supabase.from('questions') as any)
+          const { data: mcqData } = await (supabase.from('questions') as any)
             .select('id, correct_answer, category, options')
             .eq('package_id', attempt.package_id)
 
-          const questions = (questionsData ?? []) as {
-            id: string
-            correct_answer: string
-            category?: string
-            options?: { key: string; text: string; point?: number }[]
-          }[]
+          type McqQuestion = { id: string; correct_answer: string; category?: string | null; options?: { key: string; text: string; point?: number }[] | null }
+          let questions: McqQuestion[] = (mcqData ?? []) as McqQuestion[]
+
+          // Untuk CPNS: gabungkan soal TKP dari tabel terpisah
+          if (pkgCategory === 'CPNS') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: tkpData } = await (supabase.from('questions_tkp') as any)
+              .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e')
+              .eq('package_id', attempt.package_id)
+
+            if (tkpData && (tkpData as QuestionTkpRow[]).length > 0) {
+              questions = [...questions, ...transformTkpForScoring(tkpData as QuestionTkpRow[])]
+            }
+          }
 
           const answers = (attempt.answers as Record<string, string>) ?? {}
           const { score, correctCount, wrongCount, emptyCount, scoreDetails } =
