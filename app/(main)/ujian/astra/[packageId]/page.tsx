@@ -54,6 +54,23 @@ function TimerDisplay({ seconds, isUrgent }: { seconds: number; isUrgent: boolea
   )
 }
 
+// ─── Konten soal dengan line-break per baris ────────────────────────────────────
+function QuestionContent({ content }: { content: string }) {
+  const lines = content.split('\n').filter(l => l.trim() !== '')
+  if (lines.length <= 1) {
+    return <LatexContent content={content} />
+  }
+  return (
+    <div className="space-y-2">
+      {lines.map((line, i) => (
+        <p key={i} className="leading-relaxed">
+          <LatexContent content={line} />
+        </p>
+      ))}
+    </div>
+  )
+}
+
 // ─── Halaman Ujian ASTRA ────────────────────────────────────────────────────────
 export default function AstraUjianPage() {
   const router = useRouter()
@@ -73,6 +90,7 @@ export default function AstraUjianPage() {
   const [answers, setAnswers] = useState<Answers>({})
   const [timeLeft, setTimeLeft] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false)
 
   // Refs untuk menghindari stale closure di timer
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -272,8 +290,14 @@ export default function AstraUjianPage() {
     if (currentQIdx < questions.length - 1) {
       setCurrentQIdx(prev => prev + 1)
     } else {
-      advanceToNext(answers)
+      // Soal terakhir subtest → tampilkan konfirmasi dulu
+      setShowFinishConfirm(true)
     }
+  }
+
+  function handleConfirmFinish() {
+    setShowFinishConfirm(false)
+    advanceToNext(answersRef.current)
   }
 
   // ─── Render: Loading ──────────────────────────────────────────────────────────
@@ -490,8 +514,8 @@ export default function AstraUjianPage() {
           </div>
 
           {/* Konten soal */}
-          <div className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-            <LatexContent content={currentQ.content} />
+          <div className="text-gray-900 leading-relaxed">
+            <QuestionContent content={currentQ.content} />
           </div>
 
           {/* Gambar soal */}
@@ -550,6 +574,46 @@ export default function AstraUjianPage() {
             </button>
           </div>
         </div>
+
+        {/* ── Modal Konfirmasi Selesai Sub-tes ── */}
+        {showFinishConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+              <div className="text-center">
+                <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <AlertTriangle className="w-7 h-7 text-orange-500" />
+                </div>
+                <h3 className="text-lg font-extrabold text-gray-900 mb-1">
+                  Selesaikan Sub-tes {key}?
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {isLastSubtest
+                    ? 'Kamu akan mengirim seluruh jawaban. Tindakan ini tidak dapat dibatalkan.'
+                    : `Kamu akan berpindah ke sub-tes berikutnya. Jawaban sub-tes ${key} tidak bisa diubah lagi.`}
+                </p>
+                {timeLeft > 30 && (
+                  <p className="mt-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                    Masih ada <span className="font-bold">{Math.floor(timeLeft / 60)} menit {timeLeft % 60} detik</span> tersisa
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleConfirmFinish}
+                  className="w-full py-3 bg-orange-500 text-white font-bold rounded-2xl hover:bg-orange-600 transition-all"
+                >
+                  {isLastSubtest ? 'Ya, Kirim Jawaban' : 'Ya, Lanjut ke Sub-tes Berikutnya'}
+                </button>
+                <button
+                  onClick={() => setShowFinishConfirm(false)}
+                  className="w-full py-3 border-2 border-gray-200 text-gray-600 font-semibold rounded-2xl hover:bg-gray-50 transition-all text-sm"
+                >
+                  Kembali, Cek Jawaban Lagi
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
