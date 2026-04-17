@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 interface PersiapanActionsProps {
   packageId: string
+  pkgCategory: string
   ongoingAttemptId: string | null
   ongoingAnsweredCount: number
   ongoingStartedAt: string | null
@@ -12,10 +13,12 @@ interface PersiapanActionsProps {
 
 export function PersiapanActions({
   packageId,
+  pkgCategory,
   ongoingAttemptId,
   ongoingAnsweredCount,
   ongoingStartedAt,
 }: PersiapanActionsProps) {
+  const ujianHref = pkgCategory === 'ASTRA' ? `/ujian/astra/${packageId}` : `/ujian/${packageId}`
   const router = useRouter()
   const [isAbandonLoading, setIsAbandonLoading] = useState(false)
   const [error, setError] = useState('')
@@ -33,7 +36,7 @@ export function PersiapanActions({
 
   async function handleAbandonAndStart() {
     if (!ongoingAttemptId) {
-      router.push(`/ujian/${packageId}`)
+      router.push(ujianHref)
       return
     }
     setIsAbandonLoading(true)
@@ -48,7 +51,7 @@ export function PersiapanActions({
         const json = await res.json() as { error?: string }
         throw new Error(json.error ?? 'Gagal menutup sesi lama')
       }
-      router.push(`/ujian/${packageId}`)
+      router.push(ujianHref)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan')
       setIsAbandonLoading(false)
@@ -78,7 +81,7 @@ export function PersiapanActions({
 
         {/* CTA: Lanjutkan */}
         <button
-          onClick={() => router.push(`/ujian/${packageId}`)}
+          onClick={() => router.push(ujianHref)}
           className="w-full py-4 bg-blue-600 text-white font-bold text-base rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 active:scale-[0.98]"
         >
           ▶ Lanjutkan Ujian
@@ -110,7 +113,7 @@ export function PersiapanActions({
   // Tidak ada sesi aktif — tombol mulai biasa
   return (
     <button
-      onClick={() => router.push(`/ujian/${packageId}`)}
+      onClick={() => router.push(ujianHref)}
       className="w-full py-4 bg-blue-600 text-white font-bold text-base rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 active:scale-[0.98]"
     >
       Mulai Simulasi →
