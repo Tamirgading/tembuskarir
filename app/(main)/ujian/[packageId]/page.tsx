@@ -84,117 +84,132 @@ export default function UjianPage() {
   // ─── Load Data ───────────────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push('/'); return }
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) { router.push('/'); return }
 
-      // Fetch package
-      const { data: pkgData, error: pkgErr } = await supabase
-        .from('packages')
-        .select('name, duration_minutes, total_questions, is_free')
-        .eq('id', packageId)
-        .single()
-
-      if (pkgErr || !pkgData) {
-        setLoadError('Paket tidak ditemukan.')
-        setIsLoading(false)
-        return
-      }
-
-      // Cek akses paket (subscription atau unlock satuan)
-      const pkgTyped = pkgData as { name: string; duration_minutes: number; total_questions: number; is_free: boolean }
-      if (!pkgTyped.is_free) {
-        const accessRes = await fetch(`/api/access?packageId=${packageId}`)
-        const accessJson = await accessRes.json() as { canAccess?: boolean; category?: string }
-        if (!accessJson.canAccess) {
-          const cat = accessJson.category ?? ''
-          if (cat === 'ASTRA') router.push('/portal/astra')
-          else if (cat === 'CPNS') router.push('/portal/cpns')
-          else router.push('/paket')
-          return
-        }
-      }
-
-      setPkg(pkgTyped)
-
-      // Fetch soal — TANPA correct_answer
-      const { data: questionsData, error: qErr } = await supabase
-        .from('questions')
-        .select('id, content, options, order_index, category, image_url')
-        .eq('package_id', packageId)
-        .order('order_index', { ascending: true })
-
-      if (qErr || !questionsData) {
-        setLoadError('Gagal memuat soal.')
-        setIsLoading(false)
-        return
-      }
-
-      const typedQuestions = questionsData as Question[]
-      setQuestions(typedQuestions)
-
-      // Cek attempt ongoing
-      const { data: ongoingData } = await supabase
-        .from('attempts')
-        .select('id, answers, started_at')
-        .eq('user_id', user.id)
-        .eq('package_id', packageId)
-        .eq('status', 'ongoing')
-        .maybeSingle()
-
-      const ongoing = ongoingData as { id: string; answers: Answers; started_at: string } | null
-
-      let currentAttemptId: string
-      let savedAnswers: Answers = {}
-
-      if (ongoing) {
-        // Lanjutkan attempt yang ada
-        currentAttemptId = ongoing.id
-        savedAnswers = (ongoing.answers as Answers) ?? {}
-
-        // Hitung sisa waktu dari started_at
-        const startedAt = new Date(ongoing.started_at).getTime()
-        const durationMs = pkgTyped.duration_minutes * 60 * 1000
-        const elapsed = Date.now() - startedAt
-        const remaining = Math.max(0, Math.floor((durationMs - elapsed) / 1000))
-
-        if (remaining === 0) {
-          // Waktu habis saat loading — langsung submit
-          setAttemptId(currentAttemptId)
-          await handleSubmit(savedAnswers)
-          return
-        }
-        setTimeLeft(remaining)
-      } else {
-        // Buat attempt baru — gunakan type casting karena version mismatch @supabase/ssr vs supabase-js
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: newAttempt, error: attemptErr } = await (supabase.from('attempts') as any)
-          .insert({ user_id: user.id, package_id: packageId })
-          .select('id')
+        // Fetch package
+        const { data: pkgData, error: pkgErr } = await supabase
+          .from('packages')
+          .select('name, duration_minutes, total_questions, is_free')
+          .eq('id', packageId)
           .single()
 
-        if (attemptErr || !newAttempt) {
-          setLoadError('Gagal membuat sesi ujian.')
+        if (pkgErr || !pkgData) {
+          setLoadError('Paket tidak ditemukan.')
           setIsLoading(false)
           return
         }
 
-        const typedAttempt = newAttempt as { id: string }
-        currentAttemptId = typedAttempt.id
-        setTimeLeft(pkgTyped.duration_minutes * 60)
+        // Cek akses paket (subscription atau unlock satuan)
+        const pkgTyped = pkgData as { name: string; duration_minutes: number; total_questions: number; is_free: boolean }
+        if (!pkgTyped.is_free) {
+          try {
+            const accessRes = await fetch(`/api/access?packageId=${packageId}`)
+            if (!accessRes.ok) throw new Error(`HTTP ${accessRes.status}`)
+            const accessJson = await accessRes.json() as { canAccess?: boolean; category?: string }
+            if (!accessJson.canAccess) {
+              setIsLoading(false)
+              const cat = accessJson.category ?? ''
+              if (cat === 'ASTRA') router.push('/portal/astra')
+              else if (cat === 'CPNS') router.push('/portal/cpns')
+              else router.push('/paket')
+              return
+            }
+          } catch {
+            // Jika cek akses gagal, izinkan lanjut — persiapan page sudah guard server-side
+          }
+        }
+
+        setPkg(pkgTyped)
+
+        // Fetch soal — TANPA correct_answer
+        const { data: questionsData, error: qErr } = await supabase
+          .from('questions')
+          .select('id, content, options, order_index, category, image_url')
+          .eq('package_id', packageId)
+          .order('order_index', { ascending: true })
+
+        if (qErr || !questionsData) {
+          setLoadError('Gagal memuat soal.')
+          setIsLoading(false)
+          return
+        }
+
+        const typedQuestions = questionsData as Question[]
+        setQuestions(typedQuestions)
+
+        // Cek attempt ongoing
+        const { data: ongoingData } = await supabase
+          .from('attempts')
+          .select('id, answers, started_at')
+          .eq('user_id', user.id)
+          .eq('package_id', packageId)
+          .eq('status', 'ongoing')
+          .maybeSingle()
+
+        const ongoing = ongoingData as { id: string; answers: Answers; started_at: string } | null
+
+        let currentAttemptId: string
+        let savedAnswers: Answers = {}
+
+        if (ongoing) {
+          // Lanjutkan attempt yang ada
+          currentAttemptId = ongoing.id
+          savedAnswers = (ongoing.answers as Answers) ?? {}
+
+          // Hitung sisa waktu dari started_at
+          const startedAt = new Date(ongoing.started_at).getTime()
+          const durationMs = pkgTyped.duration_minutes * 60 * 1000
+          const elapsed = Date.now() - startedAt
+          const remaining = Math.max(0, Math.floor((durationMs - elapsed) / 1000))
+
+          if (remaining === 0) {
+            // Waktu habis saat loading — langsung submit
+            setAttemptId(currentAttemptId)
+            setIsLoading(false)
+            await handleSubmit(savedAnswers)
+            return
+          }
+          setTimeLeft(remaining)
+        } else {
+          // Buat attempt baru — gunakan type casting karena version mismatch @supabase/ssr vs supabase-js
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: newAttempt, error: attemptErr } = await (supabase.from('attempts') as any)
+            .insert({ user_id: user.id, package_id: packageId })
+            .select('id')
+            .single()
+
+          if (attemptErr || !newAttempt) {
+            setLoadError(`Gagal membuat sesi ujian. ${attemptErr?.message ?? ''}`)
+            setIsLoading(false)
+            return
+          }
+
+          const typedAttempt = newAttempt as { id: string }
+          currentAttemptId = typedAttempt.id
+          setTimeLeft(pkgTyped.duration_minutes * 60)
+        }
+
+        setAttemptId(currentAttemptId)
+        setAnswers(savedAnswers)
+
+        // Restore dari localStorage sebagai fallback
+        const lsKey = `attempt_${currentAttemptId}`
+        const lsData = localStorage.getItem(lsKey)
+        if (lsData && Object.keys(savedAnswers).length === 0) {
+          try { setAnswers(JSON.parse(lsData) as Answers) } catch { /* ignore */ }
+        }
+
+        setIsLoading(false)
+      } catch (err) {
+        // Tangkap semua error yang tidak terduga agar loading tidak abadi
+        console.error('[UjianPage] load error:', err)
+        const msg = err instanceof Error ? err.message : 'Terjadi kesalahan tidak terduga.'
+        setLoadError(msg)
+        setIsLoading(false)
       }
-
-      setAttemptId(currentAttemptId)
-      setAnswers(savedAnswers)
-
-      // Restore dari localStorage sebagai fallback
-      const lsKey = `attempt_${currentAttemptId}`
-      const lsData = localStorage.getItem(lsKey)
-      if (lsData && Object.keys(savedAnswers).length === 0) {
-        try { setAnswers(JSON.parse(lsData) as Answers) } catch { /* ignore */ }
-      }
-
-      setIsLoading(false)
     }
 
     load()
