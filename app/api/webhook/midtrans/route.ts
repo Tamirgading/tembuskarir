@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { verifyMidtransSignature, getTransactionStatus } from '@/lib/midtrans'
-import { sendPaymentSuccessEmail } from '@/lib/resend'
+import { sendPaymentSuccessEmail, sendPackagePaymentEmail, sendAdminNotificationEmail } from '@/lib/resend'
 import type { UserRow, SubscriptionRow } from '@/lib/utils'
 
 // Durasi plan dalam hari (0 = permanen / tidak expire)
@@ -100,6 +100,14 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', sub.id)
 
+      // Ambil data user untuk semua jenis pembayaran
+      const { data: userData } = await supabase
+        .from('users')
+        .select('full_name, email')
+        .eq('id', sub.user_id)
+        .single()
+      const user = userData as Pick<UserRow, 'full_name' | 'email'> | null
+
       if (isPackagePurchase) {
         // Per-paket: unlock paket di unlocked_packages
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -119,6 +127,43 @@ export async function POST(req: NextRequest) {
             }, { onConflict: 'user_id,package_id' })
 
           console.log('[Webhook] 🔓 Package unlocked:', subDetail.package_id, 'for user:', sub.user_id)
+
+          // Ambil nama paket untuk email
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: pkgData } = await (supabase.from('packages') as any)
+            .select('name')
+            .eq('id', subDetail.package_id)
+            .single()
+          const packageName = (pkgData as { name: string } | null)?.name ?? 'Paket Soal'
+
+          // Email ke user: konfirmasi pembelian paket
+          try {
+            if (user?.email) {
+              await sendPackagePaymentEmail(
+                user.email,
+                user.full_name ?? 'Sobat',
+                packageName,
+                sub.amount,
+                subDetail.package_id,
+              )
+            }
+          } catch (emailErr) {
+            console.error('[Webhook] Package email error:', emailErr)
+          }
+
+          // Email ke admin
+          try {
+            await sendAdminNotificationEmail({
+              userName: user?.full_name ?? 'Unknown',
+              userEmail: user?.email ?? '-',
+              purchaseType: 'package',
+              itemName: packageName,
+              amount: sub.amount,
+              orderId: order_id,
+            })
+          } catch (emailErr) {
+            console.error('[Webhook] Admin notify error:', emailErr)
+          }
         }
       } else {
         // Langganan: aktifkan premium di tabel users
@@ -130,25 +175,41 @@ export async function POST(req: NextRequest) {
           })
           .eq('id', sub.user_id)
 
-        // Kirim email konfirmasi
-        try {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('full_name, email')
-            .eq('id', sub.user_id)
-            .single()
+        const planLabelMap: Record<string, string> = {
+          monthly:        'Premium Bulanan',
+          yearly:         'Premium Tahunan',
+          cpns_monthly:   'Premium CPNS Bulanan',
+          cpns_quarterly: 'Premium CPNS 3 Bulan',
+        }
+        const planLabel = planLabelMap[planType] ?? planType
 
-          const user = userData as Pick<UserRow, 'full_name' | 'email'> | null
+        // Email ke user: konfirmasi langganan
+        try {
           if (user?.email) {
             await sendPaymentSuccessEmail(
               user.email,
               user.full_name ?? 'Sobat',
               planType,
-              expiresAt!.toISOString()
+              expiresAt!.toISOString(),
+              sub.amount,
             )
           }
         } catch (emailErr) {
-          console.error('[Webhook] Email error:', emailErr)
+          console.error('[Webhook] Subscription email error:', emailErr)
+        }
+
+        // Email ke admin
+        try {
+          await sendAdminNotificationEmail({
+            userName: user?.full_name ?? 'Unknown',
+            userEmail: user?.email ?? '-',
+            purchaseType: 'subscription',
+            itemName: planLabel,
+            amount: sub.amount,
+            orderId: order_id,
+          })
+        } catch (emailErr) {
+          console.error('[Webhook] Admin notify error:', emailErr)
         }
 
         console.log('[Webhook] ✅ Premium activated for user:', sub.user_id, 'until:', expiresAt)
