@@ -75,6 +75,67 @@ export const ASTRA_SUBTESTS: Record<string, { full: string; soal: number; minute
   WM:  { full: 'Working Memory',          soal: 10, minutes: 6  },
 }
 
+// ── PLN GAT subtests (General Aptitude Test) ─────────────────────────────────
+// Urutan default: tes kognitif dulu (masih fresh), baru LA & AKHLAK.
+// Total durasi: 180 menit. User bisa pilih subtes apa duluan di frontend.
+export const PLN_SUBTESTS: Record<string, { full: string; soal: number; minutes: number; kind: 'mcq' | 'akhlak' | 'la' }> = {
+  NUM:    { full: 'Numerik',                 soal: 30, minutes: 30, kind: 'mcq' },
+  VER:    { full: 'Verbal',                  soal: 30, minutes: 30, kind: 'mcq' },
+  SIL:    { full: 'Silogisme',               soal: 15, minutes: 15, kind: 'mcq' },
+  DER:    { full: 'Deret Angka',             soal: 15, minutes: 10, kind: 'mcq' },
+  FIG:    { full: 'Figural',                 soal: 20, minutes: 20, kind: 'mcq' },
+  PU:     { full: 'Pengetahuan Umum PLN',    soal: 20, minutes: 15, kind: 'mcq' },
+  LA:     { full: 'Learning Agility',        soal: 40, minutes: 30, kind: 'la' },
+  AKHLAK: { full: 'AKHLAK',                  soal: 40, minutes: 30, kind: 'akhlak' },
+}
+
+/**
+ * Konversi baris questions_pln_akhlak → format QuestionForScoring.
+ * AKHLAK scoring: key dengan point tertinggi = "best" (seperti TKP).
+ */
+export function transformPlnAkhlakForScoring(
+  rows: QuestionTkpRow[]
+): QuestionForScoring[] {
+  return rows.map((r) => {
+    const opts = (['a', 'b', 'c', 'd', 'e'] as const).map((k) => ({
+      key: k.toUpperCase(),
+      text: r[`opt_${k}`],
+      point: r[`point_${k}`],
+    }))
+    const best = opts.reduce((prev, curr) => (curr.point > prev.point ? curr : prev))
+    return {
+      id: r.id,
+      correct_answer: best.key,
+      category: 'AKHLAK',
+      options: opts,
+    }
+  })
+}
+
+/**
+ * Konversi baris questions_pln_la → format QuestionForScoring.
+ * Mirip TKP tapi perlu handle is_reverse_scored di pemanggil (bisa balik point).
+ */
+export function transformPlnLaForScoring(
+  rows: (QuestionTkpRow & { is_reverse_scored?: boolean })[]
+): QuestionForScoring[] {
+  return rows.map((r) => {
+    const reverse = r.is_reverse_scored === true
+    const opts = (['a', 'b', 'c', 'd', 'e'] as const).map((k) => ({
+      key: k.toUpperCase(),
+      text: r[`opt_${k}`],
+      point: reverse ? 6 - r[`point_${k}`] : r[`point_${k}`],
+    }))
+    const best = opts.reduce((prev, curr) => (curr.point > prev.point ? curr : prev))
+    return {
+      id: r.id,
+      correct_answer: best.key,
+      category: 'LA',
+      options: opts,
+    }
+  })
+}
+
 /**
  * Hitung skor ujian berdasarkan kategori paket.
  *
@@ -145,6 +206,46 @@ export function computeScore(
       totalRaw: Math.round(totalRaw * 100) / 100,
       passingGrade: SKD_PASSING_GRADE,
       lulus: isLulus,
+    }
+
+  } else if (pkgCategory === 'PLN') {
+    // ── PLN GAT Scoring ───────────────────────────────────────────────────────
+    // MCQ subtests (NUM/VER/SIL/DER/FIG/PU): +1 benar, 0 salah/kosong.
+    // AKHLAK & LA: ambil nilai point dari opsi yang dipilih (sudah dinormalisasi di transformer).
+    const catStats: Record<string, CategoryStats> = {}
+
+    for (const q of questions) {
+      const cat = (q.category ?? 'NUM').toUpperCase()
+      if (!catStats[cat]) catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
+
+      const userAnswer = answers[q.id]
+      const isPointBased = cat === 'AKHLAK' || cat === 'LA'
+
+      if (!userAnswer) {
+        emptyCount++
+        catStats[cat].empty++
+      } else if (isPointBased) {
+        const selectedOpt = (q.options ?? []).find((o) => o.key === userAnswer)
+        const point = selectedOpt?.point ?? 0
+        catStats[cat].correct++
+        catStats[cat].rawScore += point
+        correctCount++
+      } else if (userAnswer === q.correct_answer) {
+        correctCount++
+        catStats[cat].correct++
+        catStats[cat].rawScore++
+      } else {
+        wrongCount++
+        catStats[cat].wrong++
+      }
+    }
+
+    const totalRaw = Object.values(catStats).reduce((sum, c) => sum + c.rawScore, 0)
+    score = Math.round(totalRaw)
+    scoreDetails = {
+      type: 'PLN',
+      categories: catStats,
+      totalQuestions: questions.length,
     }
 
   } else if (pkgCategory === 'ASTRA') {

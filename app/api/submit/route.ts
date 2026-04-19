@@ -5,7 +5,7 @@ import type { Database } from '@/types/database'
 import type { CookieOptions } from '@supabase/ssr'
 import type { AttemptRow } from '@/lib/utils'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore, transformTkpForScoring } from '@/lib/exam-scoring'
+import { computeScore, transformTkpForScoring, transformPlnAkhlakForScoring, transformPlnLaForScoring } from '@/lib/exam-scoring'
 import type { QuestionTkpRow } from '@/lib/exam-scoring'
 import { rateLimit, getClientIp } from '@/lib/rateLimit'
 
@@ -110,6 +110,27 @@ export async function POST(request: NextRequest) {
       if (tkpData && (tkpData as QuestionTkpRow[]).length > 0) {
         const tkpQuestions = transformTkpForScoring(tkpData as QuestionTkpRow[])
         allQuestions = [...allQuestions, ...tkpQuestions]
+      }
+    }
+
+    // Untuk paket PLN: gabungkan soal AKHLAK & LA dari tabel terpisah
+    if (pkgCategory === 'PLN') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: akhlakData } = await (serviceClient.from('questions_pln_akhlak') as any)
+        .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e')
+        .eq('package_id', attempt.package_id)
+
+      if (akhlakData && (akhlakData as QuestionTkpRow[]).length > 0) {
+        allQuestions = [...allQuestions, ...transformPlnAkhlakForScoring(akhlakData as QuestionTkpRow[])]
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: laData } = await (serviceClient.from('questions_pln_la') as any)
+        .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e, is_reverse_scored')
+        .eq('package_id', attempt.package_id)
+
+      if (laData && (laData as (QuestionTkpRow & { is_reverse_scored?: boolean })[]).length > 0) {
+        allQuestions = [...allQuestions, ...transformPlnLaForScoring(laData as (QuestionTkpRow & { is_reverse_scored?: boolean })[])]
       }
     }
 

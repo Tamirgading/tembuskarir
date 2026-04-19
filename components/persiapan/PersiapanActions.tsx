@@ -18,7 +18,10 @@ export function PersiapanActions({
   ongoingAnsweredCount,
   ongoingStartedAt,
 }: PersiapanActionsProps) {
-  const ujianHref = pkgCategory === 'ASTRA' ? `/ujian/astra/${packageId}` : `/ujian/${packageId}`
+  const ujianHref =
+    pkgCategory === 'ASTRA' ? `/ujian/astra/${packageId}` :
+    pkgCategory === 'PLN'   ? `/ujian/pln/${packageId}` :
+    `/ujian/${packageId}`
   const router = useRouter()
   const [isAbandonLoading, setIsAbandonLoading] = useState(false)
   const [error, setError] = useState('')

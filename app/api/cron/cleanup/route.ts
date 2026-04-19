@@ -10,7 +10,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore, isAttemptExpired, transformTkpForScoring } from '@/lib/exam-scoring'
+import { computeScore, isAttemptExpired, transformTkpForScoring, transformPlnAkhlakForScoring, transformPlnLaForScoring } from '@/lib/exam-scoring'
 import type { QuestionTkpRow } from '@/lib/exam-scoring'
 import type { PackageRow, AttemptRow, SubscriptionRow } from '@/lib/utils'
 
@@ -92,6 +92,27 @@ export async function GET(request: NextRequest) {
 
             if (tkpData && (tkpData as QuestionTkpRow[]).length > 0) {
               questions = [...questions, ...transformTkpForScoring(tkpData as QuestionTkpRow[])]
+            }
+          }
+
+          // Untuk PLN: gabungkan soal AKHLAK & LA dari tabel terpisah
+          if (pkgCategory === 'PLN') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: akhlakData } = await (supabase.from('questions_pln_akhlak') as any)
+              .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e')
+              .eq('package_id', attempt.package_id)
+
+            if (akhlakData && (akhlakData as QuestionTkpRow[]).length > 0) {
+              questions = [...questions, ...transformPlnAkhlakForScoring(akhlakData as QuestionTkpRow[])]
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: laData } = await (supabase.from('questions_pln_la') as any)
+              .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e, is_reverse_scored')
+              .eq('package_id', attempt.package_id)
+
+            if (laData && (laData as (QuestionTkpRow & { is_reverse_scored?: boolean })[]).length > 0) {
+              questions = [...questions, ...transformPlnLaForScoring(laData as (QuestionTkpRow & { is_reverse_scored?: boolean })[])]
             }
           }
 

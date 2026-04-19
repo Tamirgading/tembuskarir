@@ -110,6 +110,12 @@ export default function UjianPage() {
           return
         }
 
+        // Redirect PLN ke halaman ujian khusus PLN (per-subtest flow)
+        if (pkgTyped.category === 'PLN') {
+          router.replace(`/ujian/pln/${packageId}`)
+          return
+        }
+
         // Cek akses paket (subscription atau unlock satuan)
         if (!pkgTyped.is_free) {
           try {
@@ -120,6 +126,7 @@ export default function UjianPage() {
               setIsLoading(false)
               const cat = accessJson.category ?? ''
               if (cat === 'ASTRA') router.push('/portal/astra')
+              else if (cat === 'PLN') router.push('/portal/pln')
               else if (cat === 'CPNS') router.push('/portal/cpns')
               else router.push('/paket')
               return

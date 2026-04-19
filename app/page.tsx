@@ -1,7 +1,7 @@
 import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Landmark, GraduationCap, BriefcaseBusiness } from 'lucide-react'
+import { Landmark, GraduationCap, BriefcaseBusiness, Zap } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
 
@@ -264,16 +264,103 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* ── Coming Soon — 3 kartu ── */}
-            <div className="grid sm:grid-cols-3 gap-4">
+            {/* ── PLN — AKTIF ── */}
+            <div className="relative bg-white rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(202,138,4,0.10)] hover:shadow-[0_25px_60px_rgba(202,138,4,0.20)] transition-all duration-300 border border-yellow-100 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-yellow-500 to-amber-400 rounded-l-3xl" />
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-yellow-50 rounded-full blur-3xl opacity-60 group-hover:bg-yellow-100 transition-colors" />
+
+              {/* Badge aktif + BARU */}
+              <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
+                <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-lg animate-pulse">
+                  ✦ Baru
+                </div>
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-yellow-500" />
+                </span>
+                <div className="bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                  Tersedia
+                </div>
+              </div>
+
+              {/* Visual card */}
+              <div className="w-full sm:w-48 h-36 sm:h-44 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-500 via-amber-500 to-orange-500 relative shadow-lg z-10 flex flex-col items-center justify-center text-white p-3">
+                {/* Grid pattern overlay */}
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '12px 12px' }} />
+                <Zap className="w-10 h-10 mb-1.5 opacity-95 relative z-10" />
+                <p className="text-sm font-bold relative z-10">GAT PLN 2025</p>
+                <p className="text-[10px] text-yellow-50 mt-0.5 relative z-10">Rekrutmen PT PLN (Persero)</p>
+                <div className="flex items-center gap-3 mt-2.5 relative z-10">
+                  <div className="text-center">
+                    <p className="text-lg font-extrabold leading-none">8</p>
+                    <p className="text-[9px] text-yellow-100 uppercase tracking-wider">Sub-tes</p>
+                  </div>
+                  <div className="w-px h-6 bg-white/30" />
+                  <div className="text-center">
+                    <p className="text-lg font-extrabold leading-none">180</p>
+                    <p className="text-[9px] text-yellow-100 uppercase tracking-wider">Menit</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Konten */}
+              <div className="flex-1 text-center sm:text-left w-full z-10">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-2 flex-wrap">
+                  <span className="px-2.5 py-0.5 rounded-md bg-yellow-100 text-yellow-700 text-xs font-bold uppercase">BUMN</span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 text-xs font-bold uppercase">AKHLAK Core Values</span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-green-100 text-green-700 text-xs font-bold uppercase">Gratis & Premium</span>
+                </div>
+                <h3 className="text-2xl font-bold font-heading text-slate-900 mb-2 group-hover:text-yellow-600 transition-colors">
+                  Persiapan Rekrutmen PLN — GAT
+                </h3>
+                <p className="text-slate-600 text-sm mb-3 leading-relaxed max-w-xl">
+                  Simulasi General Aptitude Test PT PLN (Persero) — format <strong>per-subtes berurutan</strong> persis tes aslinya. Dilengkapi <strong>Learning Agility</strong> dan <strong>AKHLAK</strong> — dua subtes khas BUMN yang paling membedakan dari psikotes swasta.
+                </p>
+
+                {/* Subtest chips — semua 8 */}
+                <div className="flex flex-wrap gap-1.5 justify-center sm:justify-start mb-3">
+                  {[
+                    { label: 'NUM', cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+                    { label: 'VER', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
+                    { label: 'SIL', cls: 'bg-orange-50 text-orange-700 border-orange-200' },
+                    { label: 'DER', cls: 'bg-red-50 text-red-600 border-red-200' },
+                    { label: 'FIG', cls: 'bg-rose-50 text-rose-600 border-rose-200' },
+                    { label: 'PU', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
+                    { label: 'LA', cls: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+                    { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-700 border-purple-200' },
+                  ].map((s) => (
+                    <span key={s.label} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${s.cls}`}>
+                      {s.label}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-4 text-xs text-slate-500">
+                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-yellow-500 rounded-full" />6 subtes kognitif</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-purple-500 rounded-full" />2 subtes soft-skill</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-amber-500 rounded-full" />Waktu per subtes</span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link href="/portal/pln"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-bold hover:shadow-lg hover:shadow-yellow-500/30 transition-all hover:-translate-y-0.5 w-full sm:w-auto">
+                    Latihan Sekarang
+                    <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </Link>
+                  <Link href="/harga"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:border-yellow-300 hover:text-yellow-600 transition-all w-full sm:w-auto text-sm">
+                    Lihat Paket Harga
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Coming Soon — 2 kartu (PLN sudah aktif) ── */}
+            <div className="grid sm:grid-cols-2 gap-4">
               {([
                 {
                   visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-ojk.png" width={56} height={56} className="w-full h-full object-cover" alt="OJK" /></div>,
                   title: 'Seleksi OJK — PCAM & MLE', tag: 'Lembaga Negara', desc: 'Tes Potensi Dasar dan Kemampuan Umum mengikuti standar SHL Interactive Test.',
-                },
-                {
-                  visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-pln.jpg" width={56} height={56} className="w-full h-full object-cover" alt="PLN" /></div>,
-                  title: 'AKDING Rekrutmen PLN', tag: 'BUMN', desc: 'Simulasi Akademik dan Bahasa Inggris (Akding) khusus rekrutmen PLN.',
                 },
                 {
                   visual: <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-700 flex items-center justify-center shadow-sm"><GraduationCap className="w-7 h-7 text-white" /></div>,

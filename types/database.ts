@@ -44,7 +44,7 @@ export type Database = {
           id: string
           name: string
           slug: string
-          category: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'LAINNYA'
+          category: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
           description: string | null
           duration_minutes: number
           total_questions: number
@@ -56,7 +56,7 @@ export type Database = {
           id?: string
           name: string
           slug: string
-          category: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'LAINNYA'
+          category: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions: number
@@ -68,7 +68,7 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
-          category?: 'CPNS' | 'UTBK' | 'KEDINASAN' | 'LAINNYA'
+          category?: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions?: number
@@ -249,6 +249,103 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'questions_tkp_package_id_fkey'
+            columns: ['package_id']
+            isOneToOne: false
+            referencedRelation: 'packages'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      questions_pln_akhlak: {
+        Row: {
+          id: string
+          package_id: string
+          content: string
+          opt_a: string; opt_b: string; opt_c: string; opt_d: string; opt_e: string
+          point_a: number; point_b: number; point_c: number; point_d: number; point_e: number
+          value_tag: string | null
+          explanation: string | null
+          image_url: string | null
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          package_id: string
+          content: string
+          opt_a: string; opt_b: string; opt_c: string; opt_d: string; opt_e: string
+          point_a: number; point_b: number; point_c: number; point_d: number; point_e: number
+          value_tag?: string | null
+          explanation?: string | null
+          image_url?: string | null
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          package_id?: string
+          content?: string
+          opt_a?: string; opt_b?: string; opt_c?: string; opt_d?: string; opt_e?: string
+          point_a?: number; point_b?: number; point_c?: number; point_d?: number; point_e?: number
+          value_tag?: string | null
+          explanation?: string | null
+          image_url?: string | null
+          order_index?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'questions_pln_akhlak_package_id_fkey'
+            columns: ['package_id']
+            isOneToOne: false
+            referencedRelation: 'packages'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      questions_pln_la: {
+        Row: {
+          id: string
+          package_id: string
+          content: string
+          opt_a: string; opt_b: string; opt_c: string; opt_d: string; opt_e: string
+          point_a: number; point_b: number; point_c: number; point_d: number; point_e: number
+          dimension: string | null
+          is_reverse_scored: boolean
+          explanation: string | null
+          image_url: string | null
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          package_id: string
+          content: string
+          opt_a: string; opt_b: string; opt_c: string; opt_d: string; opt_e: string
+          point_a: number; point_b: number; point_c: number; point_d: number; point_e: number
+          dimension?: string | null
+          is_reverse_scored?: boolean
+          explanation?: string | null
+          image_url?: string | null
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          package_id?: string
+          content?: string
+          opt_a?: string; opt_b?: string; opt_c?: string; opt_d?: string; opt_e?: string
+          point_a?: number; point_b?: number; point_c?: number; point_d?: number; point_e?: number
+          dimension?: string | null
+          is_reverse_scored?: boolean
+          explanation?: string | null
+          image_url?: string | null
+          order_index?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'questions_pln_la_package_id_fkey'
             columns: ['package_id']
             isOneToOne: false
             referencedRelation: 'packages'
