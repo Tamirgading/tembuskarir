@@ -1,7 +1,7 @@
 import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Landmark, GraduationCap, BriefcaseBusiness, Zap } from 'lucide-react'
+import { Landmark, Banknote, BriefcaseBusiness, Zap } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
 
@@ -360,11 +360,11 @@ export default async function HomePage() {
               {([
                 {
                   visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden shadow-sm"><Image src="/card-ojk.png" width={56} height={56} className="w-full h-full object-cover" alt="OJK" /></div>,
-                  title: 'Seleksi OJK — PCAM & MLE', tag: 'Lembaga Negara', desc: 'Tes Potensi Dasar dan Kemampuan Umum mengikuti standar SHL Interactive Test.',
+                  title: 'PCAM OJK', tag: 'Lembaga Negara', desc: 'Penerimaan Calon Analis Muda OJK — TPA, Bahasa Inggris, dan asesmen berbasis SHL.',
                 },
                 {
-                  visual: <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-700 flex items-center justify-center shadow-sm"><GraduationCap className="w-7 h-7 text-white" /></div>,
-                  title: 'Seleksi Kedinasan', tag: 'Kedinasan', desc: 'STAN, IPDN, PKN STAN, dan sekolah kedinasan lainnya.',
+                  visual: <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center shadow-sm"><Banknote className="w-7 h-7 text-white" /></div>,
+                  title: 'PCPM BI', tag: 'Bank Sentral', desc: 'Penerimaan Calon Pegawai Muda Bank Indonesia — TPA, Bahasa Inggris, dan studi kasus ekonomi.',
                 },
               ] as { visual: React.ReactNode; title: string; tag: string; desc: string }[]).map((item) => (
                 <div key={item.title} className="relative bg-white rounded-3xl p-5 border border-slate-200 flex items-center gap-4 overflow-hidden opacity-70 grayscale-[30%]">
