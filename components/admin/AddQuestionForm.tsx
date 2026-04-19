@@ -6,7 +6,36 @@ import { LatexContent } from '@/components/ui/LatexContent'
 
 interface AddQuestionFormProps {
   packageId: string
-  nextIndex: number
+  pkgCategory: string
+}
+
+// Pilihan kategori per tipe paket
+const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
+  CPNS: [
+    { value: 'TWK', label: 'TWK — Tes Wawasan Kebangsaan' },
+    { value: 'TIU', label: 'TIU — Tes Intelegensi Umum' },
+    { value: 'TKP', label: 'TKP — Tes Karakteristik Pribadi' },
+  ],
+  ASTRA: [
+    { value: 'QR',  label: 'QR — Quantitative Reasoning' },
+    { value: 'DR',  label: 'DR — Deductive Reasoning' },
+    { value: 'RC',  label: 'RC — Reading Comprehension' },
+    { value: 'IR',  label: 'IR — Inductive Reasoning' },
+    { value: 'VIZ', label: 'VIZ — Visualization' },
+    { value: 'PS',  label: 'PS — Perceptual Speed' },
+    { value: 'WM',  label: 'WM — Working Memory' },
+  ],
+  PLN: [
+    { value: 'NUM', label: 'NUM — Numerik' },
+    { value: 'VER', label: 'VER — Verbal' },
+    { value: 'SIL', label: 'SIL — Silogisme' },
+    { value: 'DER', label: 'DER — Deret Angka' },
+    { value: 'FIG', label: 'FIG — Figural' },
+    { value: 'PU',  label: 'PU — Pengetahuan Umum PLN' },
+  ],
+  DEFAULT: [
+    { value: 'LAINNYA', label: 'LAINNYA' },
+  ],
 }
 
 const OPTION_KEYS = ['A', 'B', 'C', 'D', 'E'] as const
@@ -28,7 +57,8 @@ const TKP_POINT_LABEL: Record<number, string> = {
   1: 'Tidak Tepat',
 }
 
-export function AddQuestionForm({ packageId, nextIndex }: AddQuestionFormProps) {
+export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps) {
+  const categoryOptions = CATEGORY_OPTIONS[pkgCategory] ?? CATEGORY_OPTIONS.DEFAULT
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -147,7 +177,6 @@ export function AddQuestionForm({ packageId, nextIndex }: AddQuestionFormProps) 
         explanation: explanation.trim() || null,
         category: category || null,
         difficulty,
-        orderIndex: nextIndex,
         imageUrl: finalImageUrl,
       }),
     })
@@ -270,15 +299,19 @@ export function AddQuestionForm({ packageId, nextIndex }: AddQuestionFormProps) 
           {/* Kategori & Difficulty */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Kategori / Sub-tes</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">Sub-tes</label>
               <select value={category} onChange={(e) => setCategory(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <option value="">— Pilih —</option>
-                <option value="TWK">TWK</option>
-                <option value="TIU">TIU</option>
-                <option value="TKP">TKP</option>
-                <option value="LAINNYA">LAINNYA</option>
+                <option value="">— Pilih Sub-tes —</option>
+                {categoryOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
               </select>
+              {pkgCategory === 'PLN' && (
+                <p className="text-[10px] text-gray-400 mt-1">
+                  AKHLAK & LA dikelola via SQL (tabel terpisah)
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Tingkat Kesulitan</label>

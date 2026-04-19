@@ -10,7 +10,6 @@ interface CreateQuestionBody {
   explanation?: string | null
   category?: string | null
   difficulty?: string
-  orderIndex?: number
   imageUrl?: string | null
 }
 
@@ -25,7 +24,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json() as CreateQuestionBody
-    const { packageId, content, options, correctAnswer, explanation, category, difficulty, orderIndex, imageUrl } = body
+    const { packageId, content, options, correctAnswer, explanation, category, difficulty, imageUrl } = body
 
     // Validasi
     if (!packageId || !content?.trim()) {
@@ -41,6 +40,23 @@ export async function POST(req: NextRequest) {
 
     const service = createServiceClient()
 
+    // Auto-hitung order_index = MAX(order_index per kategori ini) + 1
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let maxQuery = (service.from('questions') as any)
+      .select('order_index')
+      .eq('package_id', packageId)
+      .order('order_index', { ascending: false })
+      .limit(1)
+
+    if (category) {
+      maxQuery = maxQuery.eq('category', category)
+    } else {
+      maxQuery = maxQuery.is('category', null)
+    }
+
+    const { data: maxData } = await maxQuery.maybeSingle()
+    const computedOrderIndex = ((maxData as { order_index: number } | null)?.order_index ?? 0) + 1
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: insertErr } = await (service.from('questions') as any)
       .insert({
@@ -51,7 +67,7 @@ export async function POST(req: NextRequest) {
         explanation: explanation ?? null,
         category: category ?? null,
         difficulty: difficulty ?? 'medium',
-        order_index: orderIndex ?? 0,
+        order_index: computedOrderIndex,
         image_url: imageUrl ?? null,
       })
 

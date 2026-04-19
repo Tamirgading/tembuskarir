@@ -130,27 +130,16 @@ export default async function AdminQuestionsPage({
         {/* Daftar soal */}
         <div className="space-y-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="font-semibold text-gray-900">Daftar Soal ({total})</h2>
-            <div className="flex items-center gap-2 flex-wrap">
-              {Object.keys(byCategory).length > 0 && (
-                <div className="flex gap-2 text-xs">
-                  {Object.entries(byCategory).map(([cat, cnt]) => (
-                    <span key={cat} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
-                      {cat}: {cnt}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <ImportButton packageId={packageId} startIndex={total + 1} />
-            </div>
+            <h2 className="font-semibold text-gray-900">Daftar Soal</h2>
+            <ImportButton packageId={packageId} startIndex={total + 1} />
           </div>
-          <QuestionList questions={questions} packageId={packageId} />
+          <QuestionList questions={questions} packageId={packageId} pkgCategory={pkg.category} />
         </div>
 
         {/* Form tambah soal */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-6">
           <h2 className="font-semibold text-gray-900 mb-4">+ Tambah Soal</h2>
-          <AddQuestionForm packageId={packageId} nextIndex={total + 1} />
+          <AddQuestionForm packageId={packageId} pkgCategory={pkg.category} />
         </div>
       </div>
     </div>
