@@ -198,7 +198,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
 
           {/* Pilihan jawaban */}
           <div className="space-y-2">
-            {currentQuestion.options.map((opt) => {
+            {(Array.isArray(currentQuestion.options) ? currentQuestion.options : []).map((opt) => {
               const isUserChoice = userAnswer === opt.key
               const point = opt.point
 

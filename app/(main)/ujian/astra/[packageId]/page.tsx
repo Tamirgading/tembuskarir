@@ -526,7 +526,7 @@ export default function AstraUjianPage() {
 
           {/* Pilihan jawaban */}
           <div className="space-y-2.5">
-            {currentQ.options.map((opt) => {
+            {(Array.isArray(currentQ.options) ? currentQ.options : []).map((opt) => {
               const isSelected = answers[currentQ.id] === opt.key
               return (
                 <button

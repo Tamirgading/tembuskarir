@@ -389,7 +389,7 @@ export default function UjianPage() {
 
           {/* Pilihan jawaban */}
           <div className="space-y-2.5">
-            {currentQuestion.options.map((opt) => {
+            {(Array.isArray(currentQuestion.options) ? currentQuestion.options : []).map((opt) => {
               const isSelected = answers[currentQuestion.id] === opt.key
               return (
                 <button
