@@ -15,6 +15,7 @@ interface ReviewQuestion {
   options: QuestionOption[]
   correct_answer: string
   explanation: string | null
+  explanation_image_url: string | null
   category: string | null
   image_url: string | null
   order_index: number
@@ -185,13 +186,13 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
             <LatexContent content={currentQuestion.content} />
           </div>
 
-          {/* Gambar */}
+          {/* Gambar soal */}
           {currentQuestion.image_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={currentQuestion.image_url}
               alt="Gambar soal"
-              className="max-w-full rounded-lg border border-gray-200 max-h-56 object-contain"
+              className="max-h-64 object-contain rounded-lg border border-gray-200 mx-auto block"
             />
           )}
 
@@ -262,14 +263,24 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
           </div>
 
           {/* Pembahasan */}
-          {currentQuestion.explanation && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-xs font-semibold text-blue-700 mb-1.5">
+          {(currentQuestion.explanation || currentQuestion.explanation_image_url) && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+              <p className="text-xs font-semibold text-blue-700">
                 {isTkp ? '💡 Penjelasan' : '💡 Pembahasan'}
               </p>
-              <div className="text-sm text-blue-900 leading-relaxed">
-                <LatexContent content={currentQuestion.explanation} />
-              </div>
+              {currentQuestion.explanation && (
+                <div className="text-sm text-blue-900 leading-relaxed">
+                  <LatexContent content={currentQuestion.explanation} />
+                </div>
+              )}
+              {currentQuestion.explanation_image_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={currentQuestion.explanation_image_url}
+                  alt="Gambar pembahasan"
+                  className="max-h-72 object-contain rounded-lg border border-blue-200 mx-auto block"
+                />
+              )}
             </div>
           )}
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useRef } from 'react'
+import { useState, useTransition, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { LatexContent } from '@/components/ui/LatexContent'
 
@@ -78,6 +78,12 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
 
+  // Gambar pembahasan
+  const [explImageFile, setExplImageFile] = useState<File | null>(null)
+  const [explImagePreviewUrl, setExplImagePreviewUrl] = useState<string | null>(null)
+  const [uploadedExplImageUrl, setUploadedExplImageUrl] = useState<string | null>(null)
+  const explFileInputRef = useRef<HTMLInputElement>(null)
+
   const isTkp = category === 'TKP'
 
   function resetForm() {
@@ -94,6 +100,10 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     setImagePreviewUrl(null)
     setUploadedImageUrl(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
+    setExplImageFile(null)
+    setExplImagePreviewUrl(null)
+    setUploadedExplImageUrl(null)
+    if (explFileInputRef.current) explFileInputRef.current.value = ''
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -114,7 +124,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  async function uploadImage(file: File): Promise<string | null> {
+  const uploadImage = useCallback(async (file: File): Promise<string | null> => {
     setIsUploading(true)
     const fd = new FormData()
     fd.append('file', file)
@@ -123,7 +133,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     const data = await res.json() as { url?: string; error?: string }
     if (!res.ok) { setError(data.error ?? 'Gagal mengupload gambar.'); return null }
     return data.url ?? null
-  }
+  }, [])
 
   // Untuk TKP: correct_answer = key dengan nilai point tertinggi
   function getTkpCorrectAnswer(): string {
@@ -158,6 +168,13 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
       setUploadedImageUrl(finalImageUrl)
     }
 
+    let finalExplImageUrl: string | null = uploadedExplImageUrl
+    if (explImageFile && !uploadedExplImageUrl) {
+      finalExplImageUrl = await uploadImage(explImageFile)
+      if (explImageFile && finalExplImageUrl === null) return
+      setUploadedExplImageUrl(finalExplImageUrl)
+    }
+
     const optionsArray = OPTION_KEYS.map((key) => ({
       key,
       text: options[key].trim(),
@@ -175,6 +192,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
         options: optionsArray,
         correctAnswer: finalCorrectAnswer,
         explanation: explanation.trim() || null,
+        explanationImageUrl: finalExplImageUrl,
         category: category || null,
         difficulty,
         imageUrl: finalImageUrl,
@@ -221,7 +239,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
             </div>
             {imagePreviewUrl && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={imagePreviewUrl} alt="Preview gambar soal" className="mt-3 max-w-full rounded-lg max-h-48 object-contain border border-gray-200" />
+              <img src={imagePreviewUrl} alt="Preview gambar soal" className="mt-3 max-h-48 object-contain border border-gray-200 rounded-lg mx-auto block" />
             )}
           </div>
           <div className="space-y-1.5">
@@ -249,10 +267,14 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
               )
             })}
           </div>
-          {explanation && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              <p className="text-xs font-semibold text-amber-700 mb-1">Pembahasan:</p>
-              <div className="text-sm text-amber-800"><LatexContent content={explanation} /></div>
+          {(explanation || explImagePreviewUrl) && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 space-y-2">
+              <p className="text-xs font-semibold text-amber-700">Pembahasan:</p>
+              {explanation && <div className="text-sm text-amber-800"><LatexContent content={explanation} /></div>}
+              {explImagePreviewUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={explImagePreviewUrl} alt="Preview gambar pembahasan" className="max-h-40 rounded-lg border border-amber-300 object-contain mx-auto block" />
+              )}
             </div>
           )}
         </div>
@@ -411,8 +433,8 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
           )}
 
           {/* Pembahasan */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-gray-600">
               Pembahasan <span className="text-gray-400 font-normal">(opsional, support LaTeX)</span>
             </label>
             <textarea
@@ -424,6 +446,48 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
                 : 'Penjelasan mengapa jawaban ini benar... bisa pakai $LaTeX$'}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
+
+            {/* Gambar pembahasan */}
+            <div>
+              <p className="text-xs text-gray-500 mb-1.5">
+                Gambar Pembahasan <span className="text-gray-400">(opsional, maks. 5 MB)</span>
+              </p>
+              {explImagePreviewUrl ? (
+                <div className="relative inline-block">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={explImagePreviewUrl} alt="Preview gambar pembahasan" className="max-h-40 rounded-lg border border-amber-200 object-contain" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExplImageFile(null)
+                      setExplImagePreviewUrl(null)
+                      setUploadedExplImageUrl(null)
+                      if (explFileInputRef.current) explFileInputRef.current.value = ''
+                    }}
+                    className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 w-full border-2 border-dashed border-amber-200 rounded-lg px-3 py-3 cursor-pointer hover:border-amber-300 hover:bg-amber-50 transition-colors">
+                  <span className="text-lg">💡</span>
+                  <span className="text-gray-500 text-xs">Klik untuk pilih gambar pembahasan (JPG, PNG, WebP)</span>
+                  <input
+                    ref={explFileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] ?? null
+                      setExplImageFile(file)
+                      setUploadedExplImageUrl(null)
+                      setExplImagePreviewUrl(file ? URL.createObjectURL(file) : null)
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
           </div>
 
           {/* Feedback */}

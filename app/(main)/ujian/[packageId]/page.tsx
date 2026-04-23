@@ -383,7 +383,7 @@ export default function UjianPage() {
             <img
               src={currentQuestion.image_url}
               alt="Gambar soal"
-              className="max-w-full rounded-lg border border-gray-200"
+              className="max-h-72 object-contain rounded-lg border border-gray-200 mx-auto block"
             />
           )}
 

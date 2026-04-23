@@ -11,6 +11,7 @@ interface QuestionWithAnswer {
   options: { key: string; text: string }[]
   correct_answer: string
   explanation: string | null
+  explanation_image_url: string | null
   category: string | null
   image_url: string | null
   order_index: number
@@ -65,7 +66,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
   const { data: questionsData } = await supabase
     .from('questions')
-    .select('id, content, options, correct_answer, explanation, category, image_url, order_index')
+    .select('id, content, options, correct_answer, explanation, explanation_image_url, category, image_url, order_index')
     .eq('package_id', attempt.package_id)
     .order('order_index', { ascending: true })
 

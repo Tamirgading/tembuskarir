@@ -549,7 +549,7 @@ export default function PlnUjianPage() {
 
           {currentQ.image_url && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={currentQ.image_url} alt="Gambar soal" className="max-w-full rounded-xl border border-gray-200" />
+            <img src={currentQ.image_url} alt="Gambar soal" className="max-h-72 object-contain rounded-xl border border-gray-200 mx-auto block" />
           )}
 
           <div className="space-y-2.5">

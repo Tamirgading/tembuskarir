@@ -8,6 +8,7 @@ interface CreateQuestionBody {
   options: { key: string; text: string }[]
   correctAnswer: string
   explanation?: string | null
+  explanationImageUrl?: string | null
   category?: string | null
   difficulty?: string
   imageUrl?: string | null
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json() as CreateQuestionBody
-    const { packageId, content, options, correctAnswer, explanation, category, difficulty, imageUrl } = body
+    const { packageId, content, options, correctAnswer, explanation, explanationImageUrl, category, difficulty, imageUrl } = body
 
     // Validasi
     if (!packageId || !content?.trim()) {
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest) {
         options,
         correct_answer: correctAnswer,
         explanation: explanation ?? null,
+        explanation_image_url: explanationImageUrl ?? null,
         category: category ?? null,
         difficulty: difficulty ?? 'medium',
         order_index: computedOrderIndex,
