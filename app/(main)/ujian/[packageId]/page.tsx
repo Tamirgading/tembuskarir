@@ -151,7 +151,15 @@ export default function UjianPage() {
           return
         }
 
-        const typedQuestions = questionsData as Question[]
+        // Urutkan soal SKD: TWK → TIU → TKP, lalu order_index dalam tiap kategori
+        // (order_index dihitung per-kategori sehingga tidak bisa hanya sort by order_index global)
+        const SKD_ORDER: Record<string, number> = { TWK: 0, TIU: 1, TKP: 2 }
+        const typedQuestions = (questionsData as Question[]).sort((a, b) => {
+          const ao = SKD_ORDER[a.category ?? ''] ?? 99
+          const bo = SKD_ORDER[b.category ?? ''] ?? 99
+          if (ao !== bo) return ao - bo
+          return a.order_index - b.order_index
+        })
         setQuestions(typedQuestions)
 
         // Cek attempt ongoing

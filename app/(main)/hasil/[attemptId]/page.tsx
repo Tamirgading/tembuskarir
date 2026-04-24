@@ -70,7 +70,14 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     .eq('package_id', attempt.package_id)
     .order('order_index', { ascending: true })
 
-  const questions = (questionsData ?? []) as QuestionWithAnswer[]
+  // Urutkan soal SKD: TWK → TIU → TKP, lalu order_index dalam tiap kategori
+  const SKD_ORDER: Record<string, number> = { TWK: 0, TIU: 1, TKP: 2 }
+  const questions = ((questionsData ?? []) as QuestionWithAnswer[]).sort((a, b) => {
+    const ao = SKD_ORDER[a.category ?? ''] ?? 99
+    const bo = SKD_ORDER[b.category ?? ''] ?? 99
+    if (ao !== bo) return ao - bo
+    return a.order_index - b.order_index
+  })
   const userAnswers = (attempt.answers ?? {}) as Record<string, string>
   const score = attempt.score ?? 0
 
