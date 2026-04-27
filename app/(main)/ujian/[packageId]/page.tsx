@@ -328,12 +328,25 @@ export default function UjianPage() {
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 lg:h-16 gap-2 sm:gap-4">
 
-            {/* Logo + Label ujian */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              <Image src="/logotk.png" alt="TembusKarir" width={100} height={28} className="h-7 sm:h-8 w-auto object-contain brightness-0 invert" />
+            {/* Logo + Nama Paket */}
+            <div className="flex items-center gap-3 shrink-0">
+              {/* Mobile: icon saja */}
+              <Image
+                src="/iconlogo.png"
+                alt="TembusKarir"
+                width={36} height={36}
+                className="sm:hidden h-8 w-8 object-contain brightness-0 invert"
+              />
+              {/* Desktop: logo penuh */}
+              <Image
+                src="/logotk.png"
+                alt="TembusKarir"
+                width={110} height={32}
+                className="hidden sm:block h-8 w-auto object-contain brightness-0 invert"
+              />
+              {/* Nama paket — desktop */}
               <div className="hidden sm:block border-l border-blue-600 pl-3">
-                <p className="text-[10px] text-blue-300 uppercase tracking-widest font-medium leading-none">Simulasi CAT</p>
-                <p className="text-sm font-bold leading-tight">{pkg?.name ?? 'SKD CPNS'}</p>
+                <p className="text-sm font-bold leading-tight tracking-wide">{pkg?.name ?? 'SKD CPNS'}</p>
               </div>
             </div>
 
