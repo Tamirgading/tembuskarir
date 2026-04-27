@@ -421,7 +421,7 @@ export default function UjianPage() {
 
           {/* ── SIDEBAR KIRI: hanya desktop (lg+) ────────────────────────── */}
           <aside className="hidden lg:flex w-56 shrink-0 sticky top-[68px] flex-col gap-3">
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-md">
               <div className="bg-blue-700 px-3 py-2">
                 <p className="text-xs font-bold text-white tracking-wide uppercase">Daftar Soal</p>
               </div>
@@ -459,6 +459,9 @@ export default function UjianPage() {
 
           {/* ── KONTEN SOAL (full-width mobile, flex-1 desktop) ───────────── */}
           <div className="flex-1 min-w-0 space-y-0">
+
+            {/* Wrapper shadow untuk seluruh kartu soal */}
+            <div className="shadow-md rounded-xl">
 
             {/* Sub-header kategori + Ragu-Ragu */}
             <div className="bg-white rounded-t-xl border border-b-0 border-gray-200 px-4 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between gap-2">
@@ -578,6 +581,8 @@ export default function UjianPage() {
                 </button>
               )}
             </div>
+
+            </div>{/* end shadow wrapper */}
 
           </div>{/* end konten soal */}
         </div>{/* end flex body */}
