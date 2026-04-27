@@ -11,7 +11,7 @@ import { formatDate } from '@/lib/utils'
 import BackButton from '@/components/ui/BackButton'
 
 // ── Tipe ────────────────────────────────────────────────────────────────────
-type AttemptPreview = Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>
+type AttemptPreview = Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'finished_at' | 'package_id'>
 
 interface SubRow {
   id: string; plan_type: string; amount: number; status: string
@@ -53,6 +53,8 @@ export default async function DashboardPage({
   const cpnsSub = await getCpnsSubscriptionStatus(user.id)
   const fmt = (d: string) =>
     new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+  const fmtTime = (d: string) =>
+    new Date(d).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
   const fmtLong = (d: string | null) => d
     ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
     : '-'
@@ -66,7 +68,7 @@ export default async function DashboardPage({
   if (activeTab === 'beranda') {
     const { data: attemptsData } = await supabase
       .from('attempts')
-      .select('id, score, started_at, package_id')
+      .select('id, score, started_at, finished_at, package_id')
       .eq('user_id', user.id)
       .eq('status', 'finished')
       .order('started_at', { ascending: false })
@@ -296,7 +298,12 @@ export default async function DashboardPage({
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-400 mt-0.5">{formatDate(attempt.started_at)}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {formatDate(attempt.started_at)}
+                          {' · '}
+                          {fmtTime(attempt.started_at)}
+                          {attempt.finished_at && ` – ${fmtTime(attempt.finished_at)}`}
+                        </p>
                       </div>
                       <div className="shrink-0 flex items-center gap-2">
                         {isCpns && (
