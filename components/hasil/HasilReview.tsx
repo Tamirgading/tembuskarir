@@ -84,10 +84,10 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
     if (pos < filteredIndices.length - 1) setCurrentIndex(filteredIndices[pos + 1])
   }
 
-  const currentQuestion = questions[currentIndex]
-  const userAnswer = userAnswers[currentQuestion?.id]
-  const status = getStatus(currentQuestion)
-  const isTkp = isTkpQuestion(currentQuestion)
+  const currentQuestion = questions[currentIndex] ?? questions[0]
+  const userAnswer = userAnswers[currentQuestion?.id ?? '']
+  const status = currentQuestion ? getStatus(currentQuestion) : 'empty'
+  const isTkp = currentQuestion ? isTkpQuestion(currentQuestion) : false
 
   // Poin yang didapat user pada soal TKP saat ini
   const tkpPointEarned = isTkp && userAnswer
@@ -99,6 +99,16 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
   const emptyCount   = questions.filter((q) => getStatus(q) === 'empty').length
   // TKP yang sudah dijawab
   const tkpAnsweredCount = questions.filter((q) => isTkpQuestion(q) && getStatus(q) === 'answered').length
+
+  // Guard: jika tidak ada soal (data gagal dimuat), tampilkan pesan
+  if (!currentQuestion) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+        <p className="font-medium">Data soal tidak tersedia.</p>
+        <p className="text-sm mt-1">Silakan refresh halaman atau hubungi admin.</p>
+      </div>
+    )
+  }
 
   // Border + bg kartu berdasarkan status
   const statusCardClass = {

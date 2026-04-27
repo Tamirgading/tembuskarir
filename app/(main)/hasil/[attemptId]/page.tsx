@@ -64,15 +64,32 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const pkg = pkgData as { name: string; total_questions: number; category: string } | null
   const isCpns = pkg?.category === 'CPNS'
 
-  const { data: questionsData } = await supabase
+  // Coba fetch dengan explanation_image_url; fallback tanpa kolom itu
+  // jika migration belum dijalankan di database (graceful degradation)
+  let questionsData: QuestionWithAnswer[] | null = null
+  const { data: qData, error: qErr } = await supabase
     .from('questions')
     .select('id, content, options, correct_answer, explanation, explanation_image_url, category, image_url, order_index')
     .eq('package_id', attempt.package_id)
     .order('order_index', { ascending: true })
 
+  if (qErr) {
+    // Fallback: kolom explanation_image_url mungkin belum ada di DB
+    const { data: qFallback } = await supabase
+      .from('questions')
+      .select('id, content, options, correct_answer, explanation, category, image_url, order_index')
+      .eq('package_id', attempt.package_id)
+      .order('order_index', { ascending: true })
+    // Tambahkan explanation_image_url: null agar type konsisten
+    questionsData = ((qFallback ?? []) as Omit<QuestionWithAnswer, 'explanation_image_url'>[])
+      .map((q) => ({ ...q, explanation_image_url: null }))
+  } else {
+    questionsData = (qData ?? []) as QuestionWithAnswer[]
+  }
+
   // Urutkan soal SKD: TWK → TIU → TKP, lalu order_index dalam tiap kategori
   const SKD_ORDER: Record<string, number> = { TWK: 0, TIU: 1, TKP: 2 }
-  const questions = ((questionsData ?? []) as QuestionWithAnswer[]).sort((a, b) => {
+  const questions = (questionsData).sort((a, b) => {
     const ao = SKD_ORDER[a.category ?? ''] ?? 99
     const bo = SKD_ORDER[b.category ?? ''] ?? 99
     if (ao !== bo) return ao - bo
