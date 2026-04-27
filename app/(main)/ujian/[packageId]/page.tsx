@@ -303,11 +303,11 @@ export default function UjianPage() {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    // Negative margin untuk break keluar dari py-8 container layout
-    <div className="-mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
+    // Layout ujian langsung full-width tanpa navbar (dihandle oleh (main)/layout.tsx)
+    <div>
 
       {/* ══ STICKY HEADER ══════════════════════════════════════════════════ */}
-      <div className="sticky top-16 z-40 bg-blue-800 text-white shadow-lg">
+      <div className="sticky top-0 z-40 bg-blue-800 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
 
@@ -356,7 +356,7 @@ export default function UjianPage() {
         <div className="flex gap-4 pt-4 pb-8 items-start">
 
           {/* ── SIDEBAR KIRI: Navigasi ────────────────────────────────────── */}
-          <aside className="w-56 shrink-0 sticky top-[128px] flex flex-col gap-3">
+          <aside className="w-56 shrink-0 sticky top-[68px] flex flex-col gap-3">
 
             {/* DAFTAR SOAL */}
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">

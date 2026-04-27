@@ -15,7 +15,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const { supabaseResponse, user } = await updateSession(request)
+  const { supabaseResponse, user } = await updateSession(request, {
+    'x-pathname': pathname,
+  })
 
   // Route group (main) + admin — wajib login
   // Catatan: /harga dan /paket bisa diakses publik (guest bisa lihat)
