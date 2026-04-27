@@ -110,12 +110,10 @@ export function LatexContent({ content, className }: LatexContentProps) {
       {groups.map((group, gi) => {
         if (group.type === 'ordered') {
           return (
-            <ol key={gi} className="list-none my-2 space-y-1.5">
+            <ol key={gi} className="list-none my-2 space-y-1">
               {group.items.map((item, ii) => (
                 <li key={ii} className="flex items-start gap-2 leading-snug">
-                  <span className="shrink-0 min-w-[1.4rem] h-[1.4rem] flex items-center justify-center rounded-md bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200 mt-0.5">
-                    {ii + 1}
-                  </span>
+                  <span className="shrink-0 text-xs font-semibold text-gray-500 mt-0.5 w-4 text-right">{ii + 1}.</span>
                   <span><InlineParts text={item} /></span>
                 </li>
               ))}
@@ -124,12 +122,10 @@ export function LatexContent({ content, className }: LatexContentProps) {
         }
         if (group.type === 'unordered') {
           return (
-            <ul key={gi} className="list-none my-2 space-y-1.5">
+            <ul key={gi} className="list-none my-2 space-y-1">
               {group.items.map((item, ii) => (
                 <li key={ii} className="flex items-start gap-2 leading-snug">
-                  <span className="shrink-0 w-[1.4rem] h-[1.4rem] flex items-center justify-center rounded-md bg-gray-100 text-gray-500 text-xs font-bold border border-gray-200 mt-0.5">
-                    •
-                  </span>
+                  <span className="shrink-0 text-gray-400 mt-0.5">•</span>
                   <span><InlineParts text={item} /></span>
                 </li>
               ))}

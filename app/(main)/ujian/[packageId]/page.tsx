@@ -445,13 +445,11 @@ export default function UjianPage() {
 
             {/* Card soal */}
             <div className="bg-white rounded-t-xl border border-gray-200 px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
-              <div className="text-gray-900 leading-relaxed text-sm">
-                <div className="flex items-start gap-2.5">
-                  <span className="shrink-0 min-w-[1.75rem] h-7 flex items-center justify-center rounded-lg bg-blue-600 text-white text-xs font-bold shadow-sm mt-0.5">
-                    {currentIndex + 1}
-                  </span>
-                  <div className="flex-1"><LatexContent content={currentQuestion.content} /></div>
-                </div>
+              <div className="text-gray-900 leading-relaxed text-sm space-y-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold shadow-sm">
+                  Nomor {currentIndex + 1}
+                </span>
+                <div><LatexContent content={currentQuestion.content} /></div>
               </div>
 
               {currentQuestion.image_url && (
