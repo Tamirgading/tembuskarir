@@ -317,10 +317,10 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
         </div>
 
         {/* ── Panel Navigasi ── */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3 sticky top-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3 lg:sticky lg:top-6">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Navigasi Soal</p>
 
-          <div className="grid grid-cols-5 gap-1.5">
+          <div className="grid grid-cols-5 gap-1.5 lg:max-h-none max-h-32 overflow-y-auto">
             {questions.map((q, idx) => {
               const s = getStatus(q)
               const isCurrent = idx === currentIndex

@@ -126,6 +126,10 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             <span className="bg-white/25 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">
               {attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'}
             </span>
+            {/* Badge lulus/belum lulus — hanya tampil di mobile */}
+            <span className={`sm:hidden text-[10px] font-black px-2.5 py-0.5 rounded-full border ${lulus ? 'bg-white/20 border-white/50 text-white' : 'bg-white/20 border-white/50 text-white'}`}>
+              {lulus ? '✓ LULUS' : 'BELUM LULUS'}
+            </span>
           </div>
 
           {/* TENGAH — progress per materi */}
@@ -160,8 +164,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             </div>
           )}
 
-          {/* KANAN — status kelulusan */}
-          <div className="shrink-0 pl-4 flex flex-col justify-center gap-2 w-28 sm:w-36">
+          {/* KANAN — status kelulusan (hidden on mobile) */}
+          <div className="hidden sm:flex shrink-0 pl-4 flex-col justify-center gap-2 w-36">
             <p className="text-white/80 text-[10px] font-bold uppercase tracking-wide">Status Kelulusan</p>
             <div className={`px-2 py-1.5 rounded-xl text-center font-black text-sm border-2 ${lulus ? 'bg-white/20 border-white/50 text-white' : 'bg-white/20 border-white/50 text-white'}`}>
               {lulus ? '✓ LULUS' : 'BELUM LULUS'}
