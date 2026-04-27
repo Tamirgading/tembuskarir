@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Image from 'next/image'
 import { useRouter, useParams } from 'next/navigation'
 import { CheckCircle2, AlertTriangle, Clock, Flag } from 'lucide-react'
@@ -26,12 +26,6 @@ interface Question {
 type Answers    = Record<string, string>
 type RaguRaguSet = Set<string>
 
-// ─── Label kategori SKD ─────────────────────────────────────────────────────
-const CATEGORY_LABEL: Record<string, string> = {
-  TWK: 'Tes Wawasan Kebangsaan (TWK)',
-  TIU: 'Tes Intelegensi Umum (TIU)',
-  TKP: 'Tes Karakteristik Pribadi (TKP)',
-}
 
 // ─── Timer ──────────────────────────────────────────────────────────────────
 function Timer({ secondsLeft, isUrgent }: { secondsLeft: number; isUrgent: boolean }) {
@@ -260,21 +254,7 @@ export default function UjianPage() {
   const isUrgent        = timeLeft > 0 && timeLeft <= 300
   const isLastQuestion  = currentIndex === questions.length - 1
 
-  // Statistik per kategori (untuk panel INFORMASI)
-  const categoryStats = useMemo(() => {
-    const stats: Record<string, { total: number; dijawab: number; ragu: number }> = {}
-    questions.forEach((q) => {
-      const cat = q.category ?? 'LAINNYA'
-      if (!stats[cat]) stats[cat] = { total: 0, dijawab: 0, ragu: 0 }
-      stats[cat].total++
-      if (answers[q.id]) stats[cat].dijawab++
-      if (raguRagu.has(q.id)) stats[cat].ragu++
-    })
-    return stats
-  }, [questions, answers, raguRagu])
-
-  const currentCat   = currentQuestion?.category ?? ''
-  const currentStats = categoryStats[currentCat] ?? { total: 0, dijawab: 0, ragu: 0 }
+  const currentCat = currentQuestion?.category ?? ''
 
   // ─── Loading / Error ──────────────────────────────────────────────────────
   if (isLoading) return (

@@ -2,8 +2,9 @@
 
 import { useState, useTransition, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react'
+import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, ChevronsUpDown, Pencil } from 'lucide-react'
 import { LatexContent } from '@/components/ui/LatexContent'
+import { EditQuestionModal } from './EditQuestionModal'
 
 interface Option {
   key: string
@@ -105,6 +106,7 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
   const [reorderingId, setReorderingId] = useState<string | null>(null)
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const [expandedDetailId, setExpandedDetailId] = useState<string | null>(null)
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
 
   // Group + sort per kategori, respecting subtest order
   const groups = useMemo(() => {
@@ -214,6 +216,16 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
           {allExpanded ? 'Tutup Semua' : 'Buka Semua'}
         </button>
       </div>
+
+      {/* Edit modal */}
+      {editingQuestion && (
+        <EditQuestionModal
+          question={editingQuestion}
+          packageId={packageId}
+          pkgCategory={pkgCategory}
+          onClose={() => setEditingQuestion(null)}
+        />
+      )}
 
       {/* Daftar grup per sub-tes */}
       {groups.map(({ key, questions: groupQs }) => {
@@ -331,6 +343,16 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
                             className="text-xs text-gray-400 hover:text-blue-600 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
                           >
                             {isDetailExpanded ? 'Tutup' : 'Detail'}
+                          </button>
+
+                          {/* Edit */}
+                          <button
+                            type="button"
+                            onClick={() => setEditingQuestion(q)}
+                            className="text-xs text-gray-400 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition-colors flex items-center gap-1"
+                          >
+                            <Pencil className="w-3 h-3" />
+                            Edit
                           </button>
 
                           {/* Hapus */}
