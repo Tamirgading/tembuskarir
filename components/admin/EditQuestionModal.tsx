@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { X } from 'lucide-react'
+import { RichTextarea } from '@/components/ui/RichTextarea'
 
 interface Option {
   key: string
@@ -236,12 +237,11 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
               <label className="block text-xs font-semibold text-gray-600 mb-1">
                 Pertanyaan <span className="text-red-500">*</span>
               </label>
-              <textarea
+              <RichTextarea
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={setContent}
                 rows={4}
-                placeholder="Tulis pertanyaan... Gunakan $x^2$ untuk LaTeX inline"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Tulis pertanyaan... Gunakan $x^2$ untuk LaTeX atau klik tombol list di atas"
                 required
               />
             </div>
@@ -391,12 +391,11 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
               <label className="block text-xs font-semibold text-gray-600">
                 Pembahasan <span className="text-gray-400 font-normal">(opsional)</span>
               </label>
-              <textarea
+              <RichTextarea
                 value={explanation}
-                onChange={(e) => setExplanation(e.target.value)}
+                onChange={setExplanation}
                 rows={3}
                 placeholder="Penjelasan mengapa jawaban ini benar..."
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
 
               {/* Gambar pembahasan */}

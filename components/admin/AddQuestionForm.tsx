@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { LatexContent } from '@/components/ui/LatexContent'
+import { RichTextarea } from '@/components/ui/RichTextarea'
 
 interface AddQuestionFormProps {
   packageId: string
@@ -288,12 +289,11 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
             <label className="block text-xs font-semibold text-gray-600 mb-1">
               Pertanyaan <span className="text-red-500">*</span>
             </label>
-            <textarea
+            <RichTextarea
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={setContent}
               rows={4}
-              placeholder="Tulis pertanyaan... Gunakan $x^2$ untuk LaTeX inline atau $$\frac{a}{b}$$ untuk blok"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Tulis pertanyaan... Gunakan $x^2$ untuk LaTeX atau klik tombol list di atas"
               required
             />
           </div>
@@ -437,14 +437,13 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
             <label className="block text-xs font-semibold text-gray-600">
               Pembahasan <span className="text-gray-400 font-normal">(opsional, support LaTeX)</span>
             </label>
-            <textarea
+            <RichTextarea
               value={explanation}
-              onChange={(e) => setExplanation(e.target.value)}
+              onChange={setExplanation}
               rows={3}
               placeholder={isTkp
                 ? 'Jelaskan mengapa opsi dengan nilai 5 paling tepat...'
                 : 'Penjelasan mengapa jawaban ini benar... bisa pakai $LaTeX$'}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
 
             {/* Gambar pembahasan */}
