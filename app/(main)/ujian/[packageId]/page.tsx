@@ -333,7 +333,7 @@ export default function UjianPage() {
               <Image src="/logotk.png" alt="TembusKarir" width={100} height={28} className="h-7 sm:h-8 w-auto object-contain brightness-0 invert" />
               <div className="hidden sm:block border-l border-blue-600 pl-3">
                 <p className="text-[10px] text-blue-300 uppercase tracking-widest font-medium leading-none">Simulasi CAT</p>
-                <p className="text-sm font-bold leading-tight">SKD CPNS</p>
+                <p className="text-sm font-bold leading-tight">{pkg?.name ?? 'SKD CPNS'}</p>
               </div>
             </div>
 
@@ -454,8 +454,7 @@ export default function UjianPage() {
                   {CATEGORY_LABEL[currentCat] ?? (currentCat || 'Soal Ujian')}
                 </p>
                 <div className="flex gap-3 text-xs text-gray-500 mt-0.5">
-                  <span className="hidden sm:inline">Jumlah Soal : {currentStats.total} &nbsp;|&nbsp;</span>
-                  <span>Nomor Soal : {currentIndex + 1}</span>
+                  <span>Jumlah Soal : {currentStats.total}</span>
                 </div>
               </div>
               <button
