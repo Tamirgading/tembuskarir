@@ -33,11 +33,6 @@ interface ScoreDetails {
 }
 
 const SKD_MAX: Record<string, number> = { TWK: 150, TIU: 175, TKP: 225 }
-const SKD_COLORS: Record<string, { bg: string; text: string; bar: string }> = {
-  TWK: { bg: 'bg-blue-50', text: 'text-blue-700', bar: 'bg-blue-500' },
-  TIU: { bg: 'bg-purple-50', text: 'text-purple-700', bar: 'bg-purple-500' },
-  TKP: { bg: 'bg-green-50', text: 'text-green-700', bar: 'bg-green-500' },
-}
 
 export default async function HasilPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = await params
