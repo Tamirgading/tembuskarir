@@ -203,11 +203,11 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
       </div>
 
       {/* ── Review Pembahasan ── */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-        <div className="bg-gray-50 border-b border-gray-100 px-4 sm:px-5 py-3">
-          <h2 className="font-bold text-gray-800 text-sm">Review Pembahasan</h2>
+      <div className="rounded-2xl shadow-md overflow-hidden border border-blue-100">
+        <div className="bg-blue-600 px-4 sm:px-5 py-3">
+          <h2 className="font-bold text-white text-sm">Review Pembahasan</h2>
         </div>
-        <div className="p-3 sm:p-4">
+        <div className="bg-blue-50 p-3 sm:p-4">
           <HasilReview questions={questions} userAnswers={userAnswers} />
         </div>
       </div>
