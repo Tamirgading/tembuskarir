@@ -380,7 +380,7 @@ export default function UjianPage() {
 
               {/* Grid nomor soal — scroll penuh, tanpa batasan tinggi */}
               <div className="px-2 py-2 overflow-y-auto max-h-[calc(100vh-200px)]">
-                <div className="grid grid-cols-5 gap-1">
+                <div className="grid grid-cols-6 gap-1">
                   {questions.map((q, idx) => {
                     const isAnswered = !!answers[q.id]
                     const isRagu     = raguRagu.has(q.id)
@@ -397,7 +397,7 @@ export default function UjianPage() {
                         onClick={() => setCurrentIndex(idx)}
                         disabled={isSubmitting}
                         title={`Soal ${idx + 1}${isAnswered ? ' ✓' : ''}${isRagu ? ' (ragu-ragu)' : ''}`}
-                        className={`w-full aspect-square rounded text-[11px] font-bold transition-all ${cls} disabled:cursor-not-allowed`}
+                        className={`w-full aspect-square rounded text-[10px] font-bold transition-all ${cls} disabled:cursor-not-allowed`}
                       >
                         {idx + 1}
                       </button>
