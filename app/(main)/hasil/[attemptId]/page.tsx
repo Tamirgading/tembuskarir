@@ -115,65 +115,30 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   return (
     <div className="max-w-5xl mx-auto space-y-4 px-0">
 
-      {/* ══ CARD UTAMA: Skor + SKD Breakdown (digabung) ══ */}
-      <div className="rounded-2xl shadow-lg overflow-hidden">
+      {/* ══ CARD UTAMA ══ */}
+      <div className={`rounded-2xl shadow-lg overflow-hidden ${lulus ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-rose-600'}`}>
 
-        {/* ── Bagian atas: gradient header ── */}
-        <div className={`px-4 sm:px-6 pt-5 pb-5 ${lulus ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-rose-600'}`}>
+        {/* ── Baris tengah: skor (kiri) + SKD (kanan) ── */}
+        <div className="flex gap-0">
 
-          {/* Baris utama: lingkaran + info + durasi */}
-          <div className="flex items-center gap-4">
-            {/* Lingkaran skor */}
-            <div className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/20 border-4 border-white/40 flex flex-col items-center justify-center shadow-inner">
-              <span className="text-2xl sm:text-3xl font-black text-white leading-none">{score}</span>
-              <span className="text-[9px] sm:text-[10px] text-white/70 mt-0.5">{isSKD ? '/ 550' : '/ 100'}</span>
+          {/* KIRI — skor & status */}
+          <div className="flex flex-col items-center justify-center gap-2 px-4 py-5 shrink-0 w-36 sm:w-44">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 border-4 border-white/40 flex flex-col items-center justify-center shadow-inner">
+              <span className="text-xl sm:text-2xl font-black text-white leading-none">{score}</span>
+              <span className="text-[9px] text-white/70">{isSKD ? '/ 550' : '/ 100'}</span>
             </div>
-
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              <p className="text-white/60 text-[10px] font-medium uppercase tracking-widest truncate">{pkg?.name}</p>
-              <p className="text-white text-xl sm:text-2xl font-black leading-tight mt-0.5">
-                {lulus ? '✓ Lulus' : '✗ Belum Lulus'}
-              </p>
-              <span className="inline-block bg-white/20 text-white text-xs px-2.5 py-0.5 rounded-full mt-1.5 font-medium">
-                {attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'} durasi
+            <div className="text-center">
+              <p className="text-white font-black text-sm leading-tight">{lulus ? '✓ Lulus' : '✗ Belum Lulus'}</p>
+              <p className="text-white/60 text-[10px] mt-0.5 leading-tight truncate max-w-[120px]">{pkg?.name}</p>
+              <span className="inline-block bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full mt-1">
+                {attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'}
               </span>
             </div>
           </div>
 
-          {/* Tombol aksi — baris horizontal */}
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            <Link
-              href={`/persiapan/${attempt.package_id}`}
-              className="py-2 bg-white text-xs font-bold rounded-lg text-center hover:opacity-90 transition-opacity shadow"
-              style={{ color: lulus ? '#16a34a' : '#dc2626' }}
-            >
-              Coba Lagi
-            </Link>
-            <Link
-              href={isCpns ? '/portal/cpns' : '/paket'}
-              className="py-2 bg-white/20 border border-white/30 text-white text-xs font-medium rounded-lg hover:bg-white/30 transition-colors text-center"
-            >
-              {isCpns ? 'Portal CPNS' : 'Paket Lain'}
-            </Link>
-            <Link
-              href="/dashboard"
-              className="py-2 bg-white/20 border border-white/30 text-white text-xs font-medium rounded-lg hover:bg-white/30 transition-colors text-center"
-            >
-              Dashboard
-            </Link>
-          </div>
-        </div>
-
-        {/* ── Bagian bawah: SKD breakdown (hanya CPNS) ── */}
-        {isSKD && scoreDetails?.categories && (
-          <div className="bg-white px-4 sm:px-6 py-4 space-y-3">
-
-            {/* Label section */}
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Rincian Nilai SKD</p>
-
-            {/* 3 kartu kategori */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          {/* KANAN — SKD breakdown (hanya CPNS) */}
+          {isSKD && scoreDetails?.categories && (
+            <div className="flex-1 bg-white/10 border-l border-white/20 px-3 py-4 space-y-2">
               {(['TWK', 'TIU', 'TKP'] as const).map((cat) => {
                 const stats = scoreDetails.categories![cat]
                 const max = SKD_MAX[cat]
@@ -182,60 +147,64 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                 const isPass = raw >= pg
                 const pct = Math.max(0, Math.min(100, (raw / max) * 100))
                 const pgPct = (pg / max) * 100
-                const colors = SKD_COLORS[cat]
 
                 return (
-                  <div key={cat} className={`rounded-xl p-3 border ${isPass ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                    {/* Badge kategori + status */}
-                    <div className="flex items-center justify-between mb-1.5 gap-1">
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${colors.bg} ${colors.text}`}>{cat}</span>
-                      <span className={`text-[9px] font-semibold ${isPass ? 'text-green-600' : 'text-red-500'}`}>
-                        {isPass ? '✓' : '✗'}
-                      </span>
-                    </div>
-
-                    {/* Skor */}
-                    <p className="text-lg sm:text-xl font-black text-gray-900 leading-none">
-                      {raw % 1 === 0 ? raw : raw.toFixed(1)}
-                    </p>
-                    <p className="text-[9px] text-gray-400">/ {max}</p>
-
+                  <div key={cat} className="flex items-center gap-2">
+                    {/* Badge */}
+                    <span className="shrink-0 w-9 text-center text-[10px] font-black text-white bg-white/25 rounded-md py-0.5">{cat}</span>
                     {/* Bar */}
-                    <div className="relative h-1 bg-gray-200 rounded-full overflow-hidden mt-1.5 mb-1">
-                      <div className={`absolute h-full rounded-full ${isPass ? colors.bar : 'bg-red-400'}`} style={{ width: `${pct}%` }} />
-                      <div className="absolute top-0 h-full w-px bg-gray-600 opacity-50" style={{ left: `${pgPct}%` }} />
+                    <div className="flex-1 relative h-2 bg-white/20 rounded-full overflow-hidden">
+                      <div
+                        className={`absolute h-full rounded-full ${isPass ? 'bg-white' : 'bg-red-300'}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                      <div className="absolute top-0 h-full w-px bg-white/50" style={{ left: `${pgPct}%` }} />
                     </div>
-                    <p className="text-[9px] text-gray-400">PG {pg}</p>
-
-                    {/* Stat */}
-                    {stats && (
-                      <div className="flex gap-1 mt-2 flex-wrap">
-                        <span className="text-[9px] text-green-600 font-semibold bg-green-100 px-1 py-0.5 rounded">✓{stats.correct}</span>
-                        <span className="text-[9px] text-red-500 font-semibold bg-red-100 px-1 py-0.5 rounded">✗{stats.wrong}</span>
-                        <span className="text-[9px] text-gray-400 bg-gray-100 px-1 py-0.5 rounded">—{stats.empty}</span>
-                      </div>
-                    )}
+                    {/* Skor */}
+                    <span className="shrink-0 text-xs font-black text-white w-14 text-right">
+                      {raw % 1 === 0 ? raw : raw.toFixed(1)}<span className="text-white/50 font-normal text-[9px]">/{max}</span>
+                    </span>
+                    {/* Status */}
+                    <span className={`shrink-0 text-[10px] font-bold w-4 ${isPass ? 'text-white' : 'text-red-200'}`}>
+                      {isPass ? '✓' : '✗'}
+                    </span>
                   </div>
                 )
               })}
-            </div>
 
-            {/* Total SKD */}
-            <div className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border ${lulus ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
-              <div>
-                <p className="text-[10px] text-gray-500">Total Skor SKD</p>
-                <p className="text-lg font-black text-gray-900 leading-tight">{score} <span className="text-xs font-normal text-gray-400">/ 550</span></p>
+              {/* Total */}
+              <div className="border-t border-white/20 pt-2 flex items-center justify-between">
+                <span className="text-white/70 text-[10px]">Total · PG ≥ {scoreDetails.passingGrade?.total ?? 311}</span>
+                <span className={`text-xs font-black px-2 py-0.5 rounded-full ${lulus ? 'bg-white text-green-600' : 'bg-red-200 text-red-700'}`}>
+                  {lulus ? '✓ LULUS' : '✗ TIDAK LULUS'}
+                </span>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-gray-500">Passing grade</p>
-                <p className="text-sm font-bold text-gray-700">≥ {scoreDetails.passingGrade?.total ?? 311}</p>
-              </div>
-              <span className={`px-3 py-1 rounded-full font-bold text-xs whitespace-nowrap ${lulus ? 'bg-green-600 text-white' : 'bg-red-100 text-red-700'}`}>
-                {lulus ? '✓ LULUS' : '✗ TIDAK LULUS'}
-              </span>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
+        {/* ── Tombol aksi — full width di bawah ── */}
+        <div className="grid grid-cols-3 gap-2 px-4 pb-4">
+          <Link
+            href={`/persiapan/${attempt.package_id}`}
+            className="py-2 bg-white text-xs font-bold rounded-lg text-center hover:opacity-90 transition-opacity shadow"
+            style={{ color: lulus ? '#16a34a' : '#dc2626' }}
+          >
+            Coba Lagi
+          </Link>
+          <Link
+            href={isCpns ? '/portal/cpns' : '/paket'}
+            className="py-2 bg-white/20 border border-white/30 text-white text-xs font-medium rounded-lg hover:bg-white/30 transition-colors text-center"
+          >
+            {isCpns ? 'Portal CPNS' : 'Paket Lain'}
+          </Link>
+          <Link
+            href="/dashboard"
+            className="py-2 bg-white/20 border border-white/30 text-white text-xs font-medium rounded-lg hover:bg-white/30 transition-colors text-center"
+          >
+            Dashboard
+          </Link>
+        </div>
       </div>
 
       {/* ── Review Pembahasan ── */}
