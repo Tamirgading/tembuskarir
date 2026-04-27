@@ -3,7 +3,7 @@
 // di (main)/layout.tsx berdasarkan usePathname().
 export default function UjianLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
       {children}
     </div>
   )

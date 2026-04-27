@@ -303,60 +303,75 @@ export default function UjianPage() {
   return (
     <div>
 
-      {/* ══ STICKY HEADER ══════════════════════════════════════════════════ */}
-      <div className="sticky top-0 z-40 bg-blue-800 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      {/* ══ STICKY HEADER — Glassmorphism ════════════════════════════════════ */}
+      <div className="sticky top-0 z-40">
+        {/* Layer gradasi biru di belakang */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-500 to-indigo-600 opacity-90" />
+        {/* Blur layer */}
+        <div className="absolute inset-0 backdrop-blur-md bg-white/10" />
+        {/* Garis bawah transparan */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+        {/* Kilau atas */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 lg:h-16 gap-2 sm:gap-4">
 
             {/* Logo + Nama Paket */}
             <div className="flex items-center gap-3 shrink-0">
-              {/* Mobile: icon saja */}
               <Image
                 src="/iconlogo.png"
                 alt="TembusKarir"
                 width={36} height={36}
-                className="sm:hidden h-8 w-8 object-contain brightness-0 invert"
+                className="sm:hidden h-8 w-8 object-contain brightness-0 invert drop-shadow-md"
               />
-              {/* Desktop: logo penuh */}
               <Image
                 src="/logotk.png"
                 alt="TembusKarir"
                 width={110} height={32}
-                className="hidden sm:block h-8 w-auto object-contain brightness-0 invert"
+                className="hidden sm:block h-8 w-auto object-contain brightness-0 invert drop-shadow-md"
               />
-              {/* Nama paket — desktop */}
-              <div className="hidden sm:block border-l border-blue-600 pl-3">
-                <p className="text-sm font-bold leading-tight tracking-wide">{pkg?.name ?? 'SKD CPNS'}</p>
+              <div className="hidden sm:block border-l border-white/30 pl-3">
+                <p className="text-xs text-blue-100 font-medium uppercase tracking-widest">Simulasi Ujian</p>
+                <p className="text-sm font-bold text-white leading-tight">{pkg?.name ?? 'SKD CPNS'}</p>
               </div>
             </div>
 
-            {/* Sub-Tes + Nomor — hanya desktop */}
-            <div className="hidden lg:flex items-center gap-6 text-sm">
-              <div className="text-center">
-                <p className="text-blue-300 text-[10px] uppercase tracking-wide">Sub-Tes</p>
-                <p className="font-semibold">{currentCat || '—'}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-blue-300 text-[10px] uppercase tracking-wide">Nomor Soal</p>
-                <p className="font-semibold">{currentIndex + 1} / {questions.length}</p>
+            {/* Sub-Tes + Progress — hanya desktop */}
+            <div className="hidden lg:flex items-center gap-3">
+              {currentCat && (
+                <div className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-xl px-3 py-1.5 backdrop-blur-sm">
+                  <span className="text-blue-100 text-[10px] uppercase tracking-widest font-medium">Sub-Tes</span>
+                  <span className="text-white font-bold text-sm">{currentCat}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-xl px-3 py-1.5 backdrop-blur-sm">
+                <span className="text-blue-100 text-[10px] uppercase tracking-widest font-medium">Soal</span>
+                <span className="text-white font-bold text-sm">{currentIndex + 1}</span>
+                <span className="text-blue-200 text-xs">/ {questions.length}</span>
               </div>
             </div>
 
-            {/* Nomor soal — mobile/tablet saja */}
-            <p className="lg:hidden text-blue-200 text-xs font-medium">
-              {currentIndex + 1}<span className="text-blue-400"> / {questions.length}</span>
-            </p>
+            {/* Nomor soal — mobile/tablet */}
+            <div className="lg:hidden flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-lg px-2.5 py-1 backdrop-blur-sm">
+              <span className="text-white font-bold text-sm">{currentIndex + 1}</span>
+              <span className="text-blue-200 text-xs">/ {questions.length}</span>
+            </div>
 
             {/* Timer + Submit */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              <div className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg ${isUrgent ? 'bg-red-600/80' : 'bg-blue-700'}`}>
-                <Clock className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-blue-300 shrink-0" />
+              <div className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border backdrop-blur-sm ${
+                isUrgent
+                  ? 'bg-red-500/80 border-red-300/30 animate-pulse'
+                  : 'bg-white/15 border-white/20'
+              }`}>
+                <Clock className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-white/80 shrink-0" />
                 <Timer secondsLeft={timeLeft} isUrgent={isUrgent} />
               </div>
               <button
                 onClick={() => setShowConfirm(true)}
                 disabled={isSubmitting}
-                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-red-500/90 hover:bg-red-500 border border-red-300/30 text-white text-sm font-semibold rounded-xl transition-all backdrop-blur-sm shadow-lg shadow-red-900/20 disabled:opacity-50"
               >
                 <Flag className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Akhiri Ujian</span>
