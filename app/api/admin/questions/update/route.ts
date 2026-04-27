@@ -52,23 +52,32 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Soal tidak ditemukan.' }, { status: 404 })
     }
 
+    const basePayload = {
+      content: content.trim(),
+      options,
+      correct_answer: correctAnswer,
+      explanation: explanation ?? null,
+      category: category ?? null,
+      difficulty: difficulty ?? 'medium',
+      image_url: imageUrl ?? null,
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateErr } = await (service.from('questions') as any)
-      .update({
-        content: content.trim(),
-        options,
-        correct_answer: correctAnswer,
-        explanation: explanation ?? null,
-        explanation_image_url: explanationImageUrl ?? null,
-        category: category ?? null,
-        difficulty: difficulty ?? 'medium',
-        image_url: imageUrl ?? null,
-      })
+      .update({ ...basePayload, explanation_image_url: explanationImageUrl ?? null })
       .eq('id', questionId)
 
     if (updateErr) {
-      console.error('[Questions Update] DB error:', updateErr)
-      return NextResponse.json({ error: 'Gagal memperbarui soal.' }, { status: 500 })
+      // Fallback: kolom explanation_image_url mungkin belum ada di DB production
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: fallbackErr } = await (service.from('questions') as any)
+        .update(basePayload)
+        .eq('id', questionId)
+
+      if (fallbackErr) {
+        console.error('[Questions Update] DB error:', fallbackErr)
+        return NextResponse.json({ error: 'Gagal memperbarui soal.' }, { status: 500 })
+      }
     }
 
     return NextResponse.json({ success: true }, { status: 200 })
