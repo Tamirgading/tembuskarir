@@ -463,33 +463,8 @@ export default function UjianPage() {
             {/* Wrapper shadow untuk seluruh kartu soal */}
             <div className="shadow-md rounded-xl">
 
-            {/* Sub-header kategori + Ragu-Ragu */}
-            <div className="bg-white rounded-t-xl border border-b-0 border-gray-200 px-4 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between gap-2">
-              <div>
-                <p className="text-blue-700 font-bold text-sm leading-snug">
-                  {CATEGORY_LABEL[currentCat] ?? (currentCat || 'Soal Ujian')}
-                </p>
-                <div className="flex gap-3 text-xs text-gray-500 mt-0.5">
-                  <span>Jumlah Soal : {currentStats.total}</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => toggleRaguRagu(currentQuestion.id)}
-                className={`shrink-0 flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-semibold transition-colors ${
-                  raguRagu.has(currentQuestion.id)
-                    ? 'bg-yellow-400 border-yellow-500 text-yellow-900 hover:bg-yellow-300'
-                    : 'bg-white border-gray-300 text-gray-500 hover:border-yellow-400 hover:text-yellow-600'
-                }`}
-              >
-                <Flag className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{raguRagu.has(currentQuestion.id) ? 'Ragu-Ragu ✓' : 'Ragu-Ragu'}</span>
-                <span className="sm:hidden">{raguRagu.has(currentQuestion.id) ? '✓' : 'Ragu'}</span>
-              </button>
-            </div>
-
             {/* Card soal */}
-            <div className="bg-white border border-gray-200 px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
+            <div className="bg-white rounded-t-xl border border-gray-200 px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
               <div className="text-gray-900 leading-relaxed text-sm">
                 <span className="font-semibold mr-1">{currentIndex + 1}.</span>
                 <LatexContent content={currentQuestion.content} />
@@ -544,21 +519,20 @@ export default function UjianPage() {
                 <span className="sm:hidden">Prev</span>
               </button>
 
-              {/* Ringkasan — hanya desktop */}
-              <div className="hidden md:flex items-center gap-3 text-xs text-gray-500">
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-green-500 inline-block" />
-                  Dijawab: <strong className="text-gray-700">{answeredCount}</strong>
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-yellow-400 inline-block" />
-                  Ragu: <strong className="text-gray-700">{raguCount}</strong>
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-gray-200 inline-block" />
-                  Belum: <strong className="text-gray-700">{unansweredCount}</strong>
-                </span>
-              </div>
+              {/* Tombol Ragu-Ragu — tengah footer */}
+              <button
+                type="button"
+                onClick={() => toggleRaguRagu(currentQuestion.id)}
+                className={`flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border font-semibold transition-colors ${
+                  raguRagu.has(currentQuestion.id)
+                    ? 'bg-yellow-400 border-yellow-500 text-yellow-900 hover:bg-yellow-300'
+                    : 'bg-white border-gray-300 text-gray-500 hover:border-yellow-400 hover:text-yellow-600'
+                }`}
+              >
+                <Flag className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{raguRagu.has(currentQuestion.id) ? 'Ragu-Ragu ✓' : 'Ragu-Ragu'}</span>
+                <span className="sm:hidden">{raguRagu.has(currentQuestion.id) ? '✓' : 'Ragu'}</span>
+              </button>
 
               {isLastQuestion ? (
                 <button
