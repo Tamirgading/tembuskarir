@@ -458,8 +458,16 @@ export default function UjianPage() {
             {/* Wrapper shadow untuk seluruh kartu soal */}
             <div className="shadow-md rounded-xl">
 
+            {/* Progress bar */}
+            <div className="h-1.5 w-full bg-gray-200 rounded-t-xl overflow-hidden">
+              <div
+                className="h-full bg-blue-500 transition-all duration-300"
+                style={{ width: `${questions.length > 0 ? (answeredCount / questions.length) * 100 : 0}%` }}
+              />
+            </div>
+
             {/* Card soal */}
-            <div className="bg-white rounded-t-xl border border-gray-200 px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
+            <div className="bg-white border border-t-0 border-gray-200 rounded-b-xl px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
               <div className="text-gray-900 leading-relaxed text-sm space-y-2">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold shadow-sm">
                   Nomor {currentIndex + 1}
