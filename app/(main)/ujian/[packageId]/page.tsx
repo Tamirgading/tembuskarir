@@ -367,9 +367,9 @@ export default function UjianPage() {
               {/* Legenda */}
               <div className="px-3 py-2 border-b border-gray-100 space-y-1">
                 {[
-                  { cls: 'bg-blue-600 border-blue-600',   label: 'Sudah Dijawab' },
-                  { cls: 'bg-white border-gray-400',       label: 'Belum Dijawab' },
-                  { cls: 'bg-yellow-400 border-yellow-400', label: 'Ragu - Ragu' },
+                  { cls: 'bg-green-500 border-green-500',   label: 'Sudah Dijawab' },
+                  { cls: 'bg-white border-gray-400',         label: 'Belum Dijawab' },
+                  { cls: 'bg-yellow-400 border-yellow-400',  label: 'Ragu - Ragu' },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2 text-[11px] text-gray-600">
                     <span className={`w-4 h-4 rounded border shrink-0 ${item.cls}`} />
@@ -378,8 +378,8 @@ export default function UjianPage() {
                 ))}
               </div>
 
-              {/* Grid nomor soal — max-h agar 60 box terlihat, sisanya scroll */}
-              <div className="px-2 py-2 overflow-y-auto max-h-[390px]">
+              {/* Grid nomor soal — scroll penuh, tanpa batasan tinggi */}
+              <div className="px-2 py-2 overflow-y-auto max-h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-5 gap-1">
                   {questions.map((q, idx) => {
                     const isAnswered = !!answers[q.id]
@@ -387,7 +387,7 @@ export default function UjianPage() {
                     const isCurrent  = idx === currentIndex
 
                     let cls = 'bg-white border border-gray-400 text-gray-700 hover:bg-gray-50'
-                    if (isAnswered && !isRagu) cls = 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'
+                    if (isAnswered && !isRagu) cls = 'bg-green-500 border-green-500 text-white hover:bg-green-600'
                     if (isRagu)               cls = 'bg-yellow-400 border-yellow-400 text-yellow-900 hover:bg-yellow-300'
                     if (isCurrent)            cls = 'bg-blue-800 border-blue-800 text-white ring-2 ring-blue-400 ring-offset-1'
 
@@ -404,29 +404,6 @@ export default function UjianPage() {
                     )
                   })}
                 </div>
-              </div>
-            </div>
-
-            {/* INFORMASI sub-tes */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="bg-blue-700 px-3 py-2">
-                <p className="text-xs font-bold text-white tracking-wide uppercase">Informasi</p>
-              </div>
-              <div className="px-3 py-2.5 space-y-1.5 text-xs text-gray-600">
-                <p className="font-semibold text-gray-800 text-[11px] leading-snug">
-                  {CATEGORY_LABEL[currentCat] ?? currentCat}
-                </p>
-                {[
-                  { label: 'Jumlah Soal',   value: currentStats.total },
-                  { label: 'Dijawab',        value: currentStats.dijawab },
-                  { label: 'Belum Dijawab',  value: currentStats.total - currentStats.dijawab - currentStats.ragu },
-                  { label: 'Ragu - Ragu',    value: currentStats.ragu },
-                ].map((row) => (
-                  <div key={row.label} className="flex justify-between items-center">
-                    <span className="text-gray-500">{row.label}</span>
-                    <span className="font-semibold text-gray-800">: {row.value}</span>
-                  </div>
-                ))}
               </div>
             </div>
 

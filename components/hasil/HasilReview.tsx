@@ -276,7 +276,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
           {(currentQuestion.explanation || currentQuestion.explanation_image_url) && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
               <p className="text-xs font-semibold text-blue-700">
-                {isTkp ? '💡 Penjelasan' : '💡 Pembahasan'}
+                {isTkp ? 'Penjelasan' : 'Pembahasan'}
               </p>
               {currentQuestion.explanation && (
                 <div className="text-sm text-blue-900 leading-relaxed">

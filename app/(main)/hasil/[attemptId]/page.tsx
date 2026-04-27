@@ -133,18 +133,6 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
             <div className="flex justify-center md:justify-start gap-6 text-sm pt-1 flex-wrap">
               <div className="text-center">
-                <p className="text-lg font-bold text-green-600">{attempt.correct_count ?? 0}</p>
-                <p className="text-gray-400 text-xs">Benar</p>
-              </div>
-              <div className="text-center">
-                <p className="text-lg font-bold text-red-500">{attempt.wrong_count ?? 0}</p>
-                <p className="text-gray-400 text-xs">Salah</p>
-              </div>
-              <div className="text-center">
-                <p className="text-lg font-bold text-gray-400">{attempt.empty_count ?? 0}</p>
-                <p className="text-gray-400 text-xs">Kosong</p>
-              </div>
-              <div className="text-center">
                 <p className="text-lg font-bold text-blue-600">{attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'}</p>
                 <p className="text-gray-400 text-xs">Durasi</p>
               </div>
