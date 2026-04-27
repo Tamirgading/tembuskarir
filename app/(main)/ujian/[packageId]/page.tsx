@@ -62,12 +62,19 @@ export default function UjianPage() {
   const [loadError, setLoadError]       = useState('')
   const [isLoading, setIsLoading]       = useState(true)
 
-  const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null)
-  const autoSubmitRef = useRef(false)
-  const answersRef    = useRef<Answers>({})
+  const timerRef        = useRef<ReturnType<typeof setInterval> | null>(null)
+  const autoSubmitRef   = useRef(false)
+  const answersRef      = useRef<Answers>({})
+  const numberStripRef  = useRef<HTMLDivElement>(null)
+  const activeNumberRef = useRef<HTMLButtonElement | null>(null)
 
   // Selalu sinkronkan ref agar timer tidak stale
   useEffect(() => { answersRef.current = answers }, [answers])
+
+  // Auto-scroll nomor aktif ke tengah strip (mobile)
+  useEffect(() => {
+    activeNumberRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }, [currentIndex])
 
   // ─── Submit Handler ──────────────────────────────────────────────────────
   const handleSubmit = useCallback(async (finalAnswers: Answers) => {
@@ -301,27 +308,37 @@ export default function UjianPage() {
 
   if (!currentQuestion) return null
 
+  // ─── Helper warna nomor soal (dipakai di sidebar & mobile strip) ─────────
+  function getNumberCls(q: Question, idx: number) {
+    const isAnswered = !!answers[q.id]
+    const isRagu     = raguRagu.has(q.id)
+    const isCurrent  = idx === currentIndex
+    if (isCurrent)            return 'bg-blue-800 border-blue-800 text-white ring-2 ring-blue-400 ring-offset-1'
+    if (isRagu)               return 'bg-yellow-400 border-yellow-400 text-yellow-900 hover:bg-yellow-300'
+    if (isAnswered)           return 'bg-green-500 border-green-500 text-white hover:bg-green-600'
+    return 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
+  }
+
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    // Layout ujian langsung full-width tanpa navbar (dihandle oleh (main)/layout.tsx)
     <div>
 
       {/* ══ STICKY HEADER ══════════════════════════════════════════════════ */}
       <div className="sticky top-0 z-40 bg-blue-800 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 lg:h-16 gap-2 sm:gap-4">
 
-            {/* Logo + Nama Ujian */}
-            <div className="flex items-center gap-3 shrink-0">
-              <Image src="/logotk.png" alt="TembusKarir" width={110} height={32} className="h-8 w-auto object-contain brightness-0 invert" />
+            {/* Logo + Label ujian */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <Image src="/logotk.png" alt="TembusKarir" width={100} height={28} className="h-7 sm:h-8 w-auto object-contain brightness-0 invert" />
               <div className="hidden sm:block border-l border-blue-600 pl-3">
                 <p className="text-[10px] text-blue-300 uppercase tracking-widest font-medium leading-none">Simulasi CAT</p>
                 <p className="text-sm font-bold leading-tight">SKD CPNS</p>
               </div>
             </div>
 
-            {/* Kategori + nomor soal */}
-            <div className="hidden md:flex items-center gap-6 text-sm">
+            {/* Sub-Tes + Nomor — hanya desktop */}
+            <div className="hidden lg:flex items-center gap-6 text-sm">
               <div className="text-center">
                 <p className="text-blue-300 text-[10px] uppercase tracking-wide">Sub-Tes</p>
                 <p className="font-semibold">{currentCat || '—'}</p>
@@ -332,16 +349,21 @@ export default function UjianPage() {
               </div>
             </div>
 
+            {/* Nomor soal — mobile/tablet saja */}
+            <p className="lg:hidden text-blue-200 text-xs font-medium">
+              {currentIndex + 1}<span className="text-blue-400"> / {questions.length}</span>
+            </p>
+
             {/* Timer + Submit */}
-            <div className="flex items-center gap-3 shrink-0">
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${isUrgent ? 'bg-red-600/80' : 'bg-blue-700'}`}>
-                <Clock className="w-4 h-4 text-blue-300 shrink-0" />
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <div className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg ${isUrgent ? 'bg-red-600/80' : 'bg-blue-700'}`}>
+                <Clock className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-blue-300 shrink-0" />
                 <Timer secondsLeft={timeLeft} isUrgent={isUrgent} />
               </div>
               <button
                 onClick={() => setShowConfirm(true)}
                 disabled={isSubmitting}
-                className="flex items-center gap-1.5 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
               >
                 <Flag className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Akhiri Ujian</span>
@@ -351,25 +373,51 @@ export default function UjianPage() {
         </div>
       </div>
 
+      {/* ══ MOBILE NUMBER STRIP (hanya < lg) ══════════════════════════════ */}
+      <div className="lg:hidden sticky top-14 z-30 bg-white border-b border-gray-200 shadow-sm">
+        {/* Legenda ringkas */}
+        <div className="flex items-center gap-3 px-3 pt-2 pb-1 text-[10px] text-gray-500">
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500 inline-block" />Dijawab</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-yellow-400 inline-block" />Ragu</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded border border-gray-300 inline-block" />Belum</span>
+          <span className="ml-auto text-gray-400">{answeredCount}/{questions.length} dijawab</span>
+        </div>
+        {/* Scrollable number row */}
+        <div
+          ref={numberStripRef}
+          className="flex gap-1.5 overflow-x-auto px-3 pb-2 scroll-smooth"
+          style={{ scrollbarWidth: 'none' }}
+        >
+          {questions.map((q, idx) => (
+            <button
+              key={q.id}
+              ref={idx === currentIndex ? activeNumberRef : null}
+              onClick={() => setCurrentIndex(idx)}
+              disabled={isSubmitting}
+              className={`shrink-0 w-9 h-9 rounded-lg text-xs font-bold transition-all border ${getNumberCls(q, idx)} disabled:cursor-not-allowed`}
+            >
+              {idx + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* ══ BODY ═══════════════════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-4 pt-4 pb-8 items-start">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="flex gap-4 pt-3 lg:pt-4 pb-8 items-start">
 
-          {/* ── SIDEBAR KIRI: Navigasi ────────────────────────────────────── */}
-          <aside className="w-56 shrink-0 sticky top-[68px] flex flex-col gap-3">
-
-            {/* DAFTAR SOAL */}
+          {/* ── SIDEBAR KIRI: hanya desktop (lg+) ────────────────────────── */}
+          <aside className="hidden lg:flex w-56 shrink-0 sticky top-[68px] flex-col gap-3">
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <div className="bg-blue-700 px-3 py-2">
                 <p className="text-xs font-bold text-white tracking-wide uppercase">Daftar Soal</p>
               </div>
-
               {/* Legenda */}
               <div className="px-3 py-2 border-b border-gray-100 space-y-1">
                 {[
-                  { cls: 'bg-green-500 border-green-500',   label: 'Sudah Dijawab' },
-                  { cls: 'bg-white border-gray-400',         label: 'Belum Dijawab' },
-                  { cls: 'bg-yellow-400 border-yellow-400',  label: 'Ragu - Ragu' },
+                  { cls: 'bg-green-500 border-green-500',  label: 'Sudah Dijawab' },
+                  { cls: 'bg-white border-gray-400',        label: 'Belum Dijawab' },
+                  { cls: 'bg-yellow-400 border-yellow-400', label: 'Ragu - Ragu' },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2 text-[11px] text-gray-600">
                     <span className={`w-4 h-4 rounded border shrink-0 ${item.cls}`} />
@@ -377,88 +425,70 @@ export default function UjianPage() {
                   </div>
                 ))}
               </div>
-
-              {/* Grid nomor soal — scroll penuh, tanpa batasan tinggi */}
+              {/* Grid nomor */}
               <div className="px-2 py-2 overflow-y-auto max-h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-6 gap-1">
-                  {questions.map((q, idx) => {
-                    const isAnswered = !!answers[q.id]
-                    const isRagu     = raguRagu.has(q.id)
-                    const isCurrent  = idx === currentIndex
-
-                    let cls = 'bg-white border border-gray-400 text-gray-700 hover:bg-gray-50'
-                    if (isAnswered && !isRagu) cls = 'bg-green-500 border-green-500 text-white hover:bg-green-600'
-                    if (isRagu)               cls = 'bg-yellow-400 border-yellow-400 text-yellow-900 hover:bg-yellow-300'
-                    if (isCurrent)            cls = 'bg-blue-800 border-blue-800 text-white ring-2 ring-blue-400 ring-offset-1'
-
-                    return (
-                      <button
-                        key={q.id}
-                        onClick={() => setCurrentIndex(idx)}
-                        disabled={isSubmitting}
-                        title={`Soal ${idx + 1}${isAnswered ? ' ✓' : ''}${isRagu ? ' (ragu-ragu)' : ''}`}
-                        className={`w-full aspect-square rounded text-[10px] font-bold transition-all ${cls} disabled:cursor-not-allowed`}
-                      >
-                        {idx + 1}
-                      </button>
-                    )
-                  })}
+                  {questions.map((q, idx) => (
+                    <button
+                      key={q.id}
+                      onClick={() => setCurrentIndex(idx)}
+                      disabled={isSubmitting}
+                      title={`Soal ${idx + 1}${!!answers[q.id] ? ' ✓' : ''}${raguRagu.has(q.id) ? ' (ragu)' : ''}`}
+                      className={`w-full aspect-square rounded text-[10px] font-bold transition-all border ${getNumberCls(q, idx)} disabled:cursor-not-allowed`}
+                    >
+                      {idx + 1}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
-
           </aside>
 
-          {/* ── KONTEN SOAL ───────────────────────────────────────────────── */}
+          {/* ── KONTEN SOAL (full-width mobile, flex-1 desktop) ───────────── */}
           <div className="flex-1 min-w-0 space-y-0">
 
-            {/* Sub-header kategori */}
-            <div className="bg-white rounded-t-xl border border-b-0 border-gray-200 px-5 py-3 flex items-center justify-between">
+            {/* Sub-header kategori + Ragu-Ragu */}
+            <div className="bg-white rounded-t-xl border border-b-0 border-gray-200 px-4 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between gap-2">
               <div>
-                <p className="text-blue-700 font-bold text-sm">
+                <p className="text-blue-700 font-bold text-sm leading-snug">
                   {CATEGORY_LABEL[currentCat] ?? (currentCat || 'Soal Ujian')}
                 </p>
-                <div className="flex gap-4 text-xs text-gray-500 mt-0.5">
-                  <span>Jumlah Soal : {currentStats.total}</span>
+                <div className="flex gap-3 text-xs text-gray-500 mt-0.5">
+                  <span className="hidden sm:inline">Jumlah Soal : {currentStats.total} &nbsp;|&nbsp;</span>
                   <span>Nomor Soal : {currentIndex + 1}</span>
                 </div>
               </div>
-
-              {/* Tombol Ragu-Ragu */}
               <button
                 type="button"
                 onClick={() => toggleRaguRagu(currentQuestion.id)}
-                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-semibold transition-colors ${
+                className={`shrink-0 flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-semibold transition-colors ${
                   raguRagu.has(currentQuestion.id)
                     ? 'bg-yellow-400 border-yellow-500 text-yellow-900 hover:bg-yellow-300'
                     : 'bg-white border-gray-300 text-gray-500 hover:border-yellow-400 hover:text-yellow-600'
                 }`}
               >
                 <Flag className="w-3.5 h-3.5" />
-                {raguRagu.has(currentQuestion.id) ? 'Ragu-Ragu ✓' : 'Ragu-Ragu'}
+                <span className="hidden sm:inline">{raguRagu.has(currentQuestion.id) ? 'Ragu-Ragu ✓' : 'Ragu-Ragu'}</span>
+                <span className="sm:hidden">{raguRagu.has(currentQuestion.id) ? '✓' : 'Ragu'}</span>
               </button>
             </div>
 
             {/* Card soal */}
-            <div className="bg-white border border-gray-200 px-6 py-5 space-y-5">
-
-              {/* Konten pertanyaan */}
+            <div className="bg-white border border-gray-200 px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
               <div className="text-gray-900 leading-relaxed text-sm">
                 <span className="font-semibold mr-1">{currentIndex + 1}.</span>
                 <LatexContent content={currentQuestion.content} />
               </div>
 
-              {/* Gambar soal */}
               {currentQuestion.image_url && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={currentQuestion.image_url}
                   alt="Gambar soal"
-                  className="max-h-72 object-contain rounded-lg border border-gray-200 mx-auto block"
+                  className="max-h-64 sm:max-h-72 object-contain rounded-lg border border-gray-200 mx-auto block"
                 />
               )}
 
-              {/* Pilihan jawaban */}
               <div className="space-y-2">
                 {(Array.isArray(currentQuestion.options) ? currentQuestion.options : []).map((opt) => {
                   const isSelected = answers[currentQuestion.id] === opt.key
@@ -467,7 +497,7 @@ export default function UjianPage() {
                       key={opt.key}
                       onClick={() => selectAnswer(currentQuestion.id, opt.key)}
                       disabled={isSubmitting}
-                      className={`w-full flex items-start gap-3 px-4 py-3 rounded-lg border text-left text-sm transition-all ${
+                      className={`w-full flex items-start gap-3 px-3 sm:px-4 py-3 rounded-lg border text-left text-sm transition-all ${
                         isSelected
                           ? 'border-blue-500 bg-blue-50 text-blue-900'
                           : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 text-gray-800'
@@ -487,20 +517,22 @@ export default function UjianPage() {
               </div>
             </div>
 
-            {/* Footer navigasi soal */}
-            <div className="bg-white rounded-b-xl border border-t-0 border-gray-200 px-5 py-3 flex justify-between items-center">
+            {/* Footer navigasi */}
+            <div className="bg-white rounded-b-xl border border-t-0 border-gray-200 px-4 sm:px-5 py-2.5 sm:py-3 flex justify-between items-center gap-2">
               <button
                 onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
                 disabled={currentIndex === 0 || isSubmitting}
-                className="flex items-center gap-2 px-5 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed font-medium"
               >
-                ← Soal Sebelumnya
+                <span>←</span>
+                <span className="hidden sm:inline">Soal Sebelumnya</span>
+                <span className="sm:hidden">Prev</span>
               </button>
 
-              {/* Ringkasan cepat */}
-              <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500">
+              {/* Ringkasan — hanya desktop */}
+              <div className="hidden md:flex items-center gap-3 text-xs text-gray-500">
                 <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-blue-600 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-sm bg-green-500 inline-block" />
                   Dijawab: <strong className="text-gray-700">{answeredCount}</strong>
                 </span>
                 <span className="flex items-center gap-1">
@@ -517,17 +549,20 @@ export default function UjianPage() {
                 <button
                   onClick={() => setShowConfirm(true)}
                   disabled={isSubmitting}
-                  className="px-5 py-2 bg-blue-700 text-white font-semibold rounded-lg text-sm hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="px-3 sm:px-5 py-2 bg-blue-700 text-white font-semibold rounded-lg text-sm hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Selesaikan Soal ✓
+                  <span className="hidden sm:inline">Selesaikan Soal ✓</span>
+                  <span className="sm:hidden">Selesai ✓</span>
                 </button>
               ) : (
                 <button
                   onClick={() => setCurrentIndex((i) => Math.min(questions.length - 1, i + 1))}
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 px-5 py-2 bg-blue-700 text-white font-semibold rounded-lg text-sm hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 bg-blue-700 text-white font-semibold rounded-lg text-sm hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Soal Selanjutnya →
+                  <span className="hidden sm:inline">Soal Selanjutnya</span>
+                  <span className="sm:hidden">Next</span>
+                  <span>→</span>
                 </button>
               )}
             </div>
