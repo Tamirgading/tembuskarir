@@ -113,49 +113,50 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-4">
+
       {/* ── Ringkasan Skor ── */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8">
-        <div className="flex flex-col md:flex-row items-center gap-6">
+      <div className={`rounded-2xl shadow-lg overflow-hidden ${lulus ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-rose-600'}`}>
+        {/* Header gradient */}
+        <div className="px-5 pt-5 pb-4 flex flex-col md:flex-row items-center gap-4">
 
           {/* Lingkaran skor */}
-          <div className={`w-32 h-32 shrink-0 rounded-full flex flex-col items-center justify-center border-4 ${lulus ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50'}`}>
-            <span className={`text-4xl font-bold leading-none ${lulus ? 'text-green-600' : 'text-red-500'}`}>{score}</span>
-            <span className="text-xs text-gray-500 mt-0.5">{isSKD ? '/ 550' : '/ 100'}</span>
+          <div className="shrink-0 w-24 h-24 rounded-full bg-white/20 border-4 border-white/40 flex flex-col items-center justify-center shadow-inner">
+            <span className="text-3xl font-black text-white leading-none">{score}</span>
+            <span className="text-[10px] text-white/70 mt-0.5">{isSKD ? '/ 550' : '/ 100'}</span>
           </div>
 
           {/* Detail */}
-          <div className="flex-1 text-center md:text-left space-y-2">
-            <p className="text-gray-400 text-xs font-medium uppercase tracking-wide">{pkg?.name}</p>
-            <span className={`inline-block px-4 py-1 rounded-full text-sm font-bold ${lulus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+          <div className="flex-1 text-center md:text-left">
+            <p className="text-white/70 text-xs font-medium uppercase tracking-widest mb-1">{pkg?.name}</p>
+            <p className="text-white text-2xl font-black leading-tight">
               {lulus ? '✓ LULUS' : '✗ BELUM LULUS'}
-            </span>
-
-            <div className="flex justify-center md:justify-start gap-6 text-sm pt-1 flex-wrap">
-              <div className="text-center">
-                <p className="text-lg font-bold text-blue-600">{attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'}</p>
-                <p className="text-gray-400 text-xs">Durasi</p>
-              </div>
+            </p>
+            <div className="flex justify-center md:justify-start gap-1 mt-2">
+              <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-medium">
+                {attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'} durasi
+              </span>
             </div>
           </div>
 
           {/* Aksi */}
-          <div className="flex flex-col gap-2 shrink-0">
+          <div className="flex flex-col gap-2 shrink-0 w-full md:w-auto">
             <Link
               href={`/persiapan/${attempt.package_id}`}
-              className="px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
+              className="px-4 py-2 bg-white text-sm font-bold rounded-lg text-center transition-opacity hover:opacity-90 shadow"
+              style={{ color: lulus ? '#16a34a' : '#dc2626' }}
             >
               Coba Lagi
             </Link>
             <Link
               href={isCpns ? '/portal/cpns' : '/paket'}
-              className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors text-center"
+              className="px-4 py-2 bg-white/20 border border-white/30 text-white text-sm font-medium rounded-lg hover:bg-white/30 transition-colors text-center"
             >
               {isCpns ? 'Portal CPNS' : 'Pilih Paket Lain'}
             </Link>
             <Link
               href="/dashboard"
-              className="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors text-center"
+              className="px-4 py-2 bg-white/20 border border-white/30 text-white text-sm font-medium rounded-lg hover:bg-white/30 transition-colors text-center"
             >
               Dashboard
             </Link>
@@ -163,76 +164,64 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
       </div>
 
-      {/* ── SKD Per-Kategori Breakdown (hanya untuk CPNS) ── */}
+      {/* ── SKD Per-Kategori Breakdown ── */}
       {isSKD && scoreDetails?.categories && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Rincian Nilai SKD</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(['TWK', 'TIU', 'TKP'] as const).map((cat) => {
-              const stats = scoreDetails.categories![cat]
-              const max = SKD_MAX[cat]
-              const pg = scoreDetails.passingGrade?.[cat] ?? 0
-              const raw = stats?.rawScore ?? 0
-              const isPass = raw >= pg
-              const pct = Math.max(0, Math.min(100, (raw / max) * 100))
-              const pgPct = (pg / max) * 100
-              const colors = SKD_COLORS[cat]
-
-              return (
-                <div key={cat} className={`rounded-xl p-4 border ${isPass ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${colors.bg} ${colors.text}`}>{cat}</span>
-                    <span className={`text-xs font-semibold ${isPass ? 'text-green-600' : 'text-red-500'}`}>
-                      {isPass ? '✓ Lulus' : '✗ Tidak Lulus'}
-                    </span>
-                  </div>
-
-                  {/* Skor */}
-                  <div className="mb-3">
-                    <span className="text-3xl font-bold text-gray-900">{raw % 1 === 0 ? raw : raw.toFixed(2)}</span>
-                    <span className="text-sm text-gray-400 ml-1">/ {max}</span>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
-                    <div
-                      className={`absolute h-full rounded-full transition-all ${isPass ? colors.bar : 'bg-red-400'}`}
-                      style={{ width: `${pct}%` }}
-                    />
-                    {/* Passing grade marker */}
-                    <div
-                      className="absolute top-0 h-full w-0.5 bg-gray-700 opacity-40"
-                      style={{ left: `${pgPct}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500">Passing grade: <strong>{pg}</strong></p>
-
-                  {/* Stat detail */}
-                  {stats && (
-                    <div className="flex gap-3 mt-3 text-xs">
-                      <span className="text-green-600 font-medium">✓ {stats.correct}</span>
-                      <span className="text-red-500 font-medium">✗ {stats.wrong}</span>
-                      <span className="text-gray-400">— {stats.empty}</span>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50 border-b border-gray-100 px-5 py-3">
+            <h2 className="font-bold text-gray-800 text-sm">Rincian Nilai SKD</h2>
           </div>
+          <div className="p-4 space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {(['TWK', 'TIU', 'TKP'] as const).map((cat) => {
+                const stats = scoreDetails.categories![cat]
+                const max = SKD_MAX[cat]
+                const pg = scoreDetails.passingGrade?.[cat] ?? 0
+                const raw = stats?.rawScore ?? 0
+                const isPass = raw >= pg
+                const pct = Math.max(0, Math.min(100, (raw / max) * 100))
+                const pgPct = (pg / max) * 100
+                const colors = SKD_COLORS[cat]
 
-          {/* Total row */}
-          <div className={`mt-4 p-4 rounded-xl border flex items-center justify-between ${lulus ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
-            <div>
-              <p className="text-sm text-gray-600">Total Skor SKD</p>
-              <p className="text-2xl font-bold text-gray-900">{score} <span className="text-sm font-normal text-gray-400">/ 550</span></p>
+                return (
+                  <div key={cat} className={`rounded-xl p-3.5 border shadow-sm ${isPass ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${colors.bg} ${colors.text}`}>{cat}</span>
+                      <span className={`text-xs font-semibold ${isPass ? 'text-green-600' : 'text-red-500'}`}>
+                        {isPass ? '✓ Lulus' : '✗ Tidak Lulus'}
+                      </span>
+                    </div>
+                    <div className="mb-2">
+                      <span className="text-2xl font-black text-gray-900">{raw % 1 === 0 ? raw : raw.toFixed(2)}</span>
+                      <span className="text-xs text-gray-400 ml-1">/ {max}</span>
+                    </div>
+                    <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
+                      <div className={`absolute h-full rounded-full ${isPass ? colors.bar : 'bg-red-400'}`} style={{ width: `${pct}%` }} />
+                      <div className="absolute top-0 h-full w-0.5 bg-gray-600 opacity-40" style={{ left: `${pgPct}%` }} />
+                    </div>
+                    <p className="text-[10px] text-gray-400">PG: <strong>{pg}</strong></p>
+                    {stats && (
+                      <div className="flex gap-2 mt-2 text-[10px]">
+                        <span className="text-green-600 font-semibold bg-green-100 px-1.5 py-0.5 rounded">✓ {stats.correct}</span>
+                        <span className="text-red-500 font-semibold bg-red-100 px-1.5 py-0.5 rounded">✗ {stats.wrong}</span>
+                        <span className="text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">— {stats.empty}</span>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
-            <div className="text-right">
-              <p className="text-xs text-gray-500 mb-1">Passing grade total</p>
-              <p className="text-lg font-bold text-gray-700">≥ {scoreDetails.passingGrade?.total ?? 311}</p>
-            </div>
-            <div>
-              <span className={`px-4 py-2 rounded-full font-bold text-sm ${lulus ? 'bg-green-600 text-white' : 'bg-red-100 text-red-700'}`}>
+
+            {/* Total row */}
+            <div className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 ${lulus ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
+              <div>
+                <p className="text-xs text-gray-500">Total Skor SKD</p>
+                <p className="text-xl font-black text-gray-900">{score} <span className="text-xs font-normal text-gray-400">/ 550</span></p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] text-gray-500">Passing grade</p>
+                <p className="text-base font-bold text-gray-700">≥ {scoreDetails.passingGrade?.total ?? 311}</p>
+              </div>
+              <span className={`px-3 py-1.5 rounded-full font-bold text-xs ${lulus ? 'bg-green-600 text-white' : 'bg-red-100 text-red-700'}`}>
                 {lulus ? '✓ LULUS SKD' : '✗ TIDAK LULUS'}
               </span>
             </div>
@@ -240,11 +229,16 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
       )}
 
-      {/* ── Review Pembahasan (navigasi per soal) ── */}
-      <div className="space-y-3">
-        <h2 className="font-semibold text-gray-900 text-lg">Review Pembahasan</h2>
-        <HasilReview questions={questions} userAnswers={userAnswers} />
+      {/* ── Review Pembahasan ── */}
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-100 px-5 py-3">
+          <h2 className="font-bold text-gray-800 text-sm">Review Pembahasan</h2>
+        </div>
+        <div className="p-4">
+          <HasilReview questions={questions} userAnswers={userAnswers} />
+        </div>
       </div>
+
     </div>
   )
 }
