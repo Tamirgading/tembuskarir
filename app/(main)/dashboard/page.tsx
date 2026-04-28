@@ -139,7 +139,7 @@ export default async function DashboardPage({
 
       {/* Payment banners */}
       {payment === 'success' && (
-        <div className="bg-green-50 border border-green-200 rounded-2xl px-5 py-4 flex items-center gap-3">
+        <div className="bg-green-50 border border-green-200 rounded-2xl px-5 py-4 flex items-center gap-3 shadow-sm">
           <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
           <div>
             <p className="font-semibold text-green-800 text-sm">Pembayaran berhasil!</p>
@@ -148,7 +148,7 @@ export default async function DashboardPage({
         </div>
       )}
       {payment === 'pending' && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl px-5 py-4 flex items-center gap-3">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl px-5 py-4 flex items-center gap-3 shadow-sm">
           <Clock className="w-5 h-5 text-yellow-600 shrink-0" />
           <div>
             <p className="font-semibold text-yellow-800 text-sm">Pembayaran sedang diproses</p>
@@ -199,7 +199,7 @@ export default async function DashboardPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
                 href="/portal/cpns"
-                className="group bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
+                className="group bg-white rounded-2xl border-2 border-gray-200 shadow-sm hover:border-blue-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
               >
                 <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
                   <FileText className="w-6 h-6 text-blue-600" />
@@ -215,7 +215,7 @@ export default async function DashboardPage({
 
               <Link
                 href="/portal/astra"
-                className="group bg-white rounded-2xl border-2 border-gray-200 hover:border-orange-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
+                className="group bg-white rounded-2xl border-2 border-gray-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
               >
                 <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
                   <FileText className="w-6 h-6 text-orange-600" />
@@ -241,7 +241,7 @@ export default async function DashboardPage({
                   { icon: <Target     className="w-4 h-4 text-purple-500" />, value: avgScore ?? '-',    label: 'Rata-rata'  },
                   { icon: <Award      className="w-4 h-4 text-amber-500" />,  value: highestScore ?? '-',label: 'Tertinggi'  },
                 ].map((s) => (
-                  <div key={s.label} className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+                  <div key={s.label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 text-center">
                     <div className="flex justify-center mb-1.5">{s.icon}</div>
                     <p className="text-2xl font-extrabold text-gray-900">{s.value}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{s.label}</p>
@@ -261,7 +261,7 @@ export default async function DashboardPage({
             </div>
 
             {attempts.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
                 <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
                   <FileText className="w-6 h-6 text-gray-400" />
                 </div>
@@ -272,7 +272,7 @@ export default async function DashboardPage({
                 </Link>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-50 overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-50 overflow-hidden">
                 {attempts.map((attempt) => {
                   const pkg = packageMap[attempt.package_id]
                   const score = attempt.score ?? 0
@@ -333,7 +333,7 @@ export default async function DashboardPage({
             <div className="space-y-3">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Langganan Aktif</p>
               {activeSubs.map((sub) => (
-                <div key={sub.id} className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4">
+                <div key={sub.id} className="bg-amber-50 border border-amber-200 rounded-2xl shadow-sm p-5 flex items-start gap-4">
                   <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
                     <CheckCircle className="w-5 h-5 text-amber-600" />
                   </div>
@@ -354,7 +354,7 @@ export default async function DashboardPage({
           {unlocks.length > 0 && (
             <div className="space-y-3">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Paket Satuan Dimiliki</p>
-              <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-50 overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-50 overflow-hidden">
                 {unlocks.map((unlock) => (
                   <div key={unlock.id} className="flex items-center gap-4 px-5 py-3.5">
                     <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
@@ -377,7 +377,7 @@ export default async function DashboardPage({
           <div className="space-y-3">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Semua Transaksi</p>
             {subs.length === 0 && unlocks.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10 text-center">
                 <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
                   <ShoppingBag className="w-6 h-6 text-gray-400" />
                 </div>
@@ -388,7 +388,7 @@ export default async function DashboardPage({
                 </Link>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-50 overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-50 overflow-hidden">
                 {subs.map((sub) => {
                   const cfg = STATUS_CONFIG[sub.status] ?? { label: sub.status, cls: 'bg-gray-100 text-gray-500' }
                   return (
