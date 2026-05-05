@@ -1,7 +1,7 @@
 import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Landmark, Banknote, BriefcaseBusiness, Zap } from 'lucide-react'
+import { Banknote, BriefcaseBusiness, Zap } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
 
@@ -148,64 +148,6 @@ export default async function HomePage() {
           </div>
 
           <div className="space-y-5">
-            {/* ── CPNS — AKTIF ── */}
-            <div className="relative bg-white rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(37,99,235,0.12)] hover:shadow-[0_25px_60px_rgba(37,99,235,0.22)] transition-all duration-300 border border-blue-100 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-600 to-cyan-500 rounded-l-3xl" />
-              <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-60 group-hover:bg-blue-100 transition-colors" />
-
-              {/* Badge aktif */}
-              <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-600" />
-                </span>
-                <div className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                  Tersedia
-                </div>
-              </div>
-
-              {/* Visual card */}
-              <div className="w-full sm:w-48 h-36 sm:h-40 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 relative shadow-lg z-10 flex flex-col items-center justify-center text-white">
-                <Landmark className="w-12 h-12 mb-2 opacity-90" />
-                <p className="text-sm font-bold">SKD CPNS 2025</p>
-                <p className="text-[11px] text-blue-200 mt-0.5">110 soal · 90 menit</p>
-                <div className="flex gap-1.5 mt-3">
-                  {['TWK', 'TIU', 'TKP'].map((s) => (
-                    <span key={s} className="text-[10px] font-bold px-2 py-0.5 bg-white/20 rounded-full">{s}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Konten */}
-              <div className="flex-1 text-center sm:text-left w-full z-10">
-                <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-blue-100 text-blue-700 text-xs font-bold uppercase">Instansi Pemerintah</span>
-                  <span className="px-2.5 py-0.5 rounded-md bg-green-100 text-green-700 text-xs font-bold uppercase">Gratis & Premium</span>
-                </div>
-                <h3 className="text-2xl font-bold font-heading text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
-                  Persiapan Seleksi CPNS 2025 — SKD
-                </h3>
-                <p className="text-slate-600 text-sm mb-4 leading-relaxed max-w-xl">
-                  Simulasi Seleksi Kompetensi Dasar (SKD) dengan sistem penilaian resmi BKN. Latihan TWK, TIU, dan TKP dengan soal berkualitas tinggi, passing grade real, dan pembahasan lengkap.
-                </p>
-                <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-5 text-xs text-slate-500">
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-blue-500 rounded-full" />TWK ≥65 · TIU ≥80 · TKP ≥166</span>
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-green-500 rounded-full" />Total ≥311 / 550</span>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link href="/portal/cpns"
-                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-0.5 w-full sm:w-auto">
-                    Latihan Sekarang
-                    <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  </Link>
-                  <Link href="/harga"
-                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:border-blue-300 hover:text-blue-600 transition-all w-full sm:w-auto text-sm">
-                    Lihat Paket Harga
-                  </Link>
-                </div>
-              </div>
-            </div>
-
             {/* ── ASTRA — AKTIF ── */}
             <div className="relative bg-white rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(234,88,12,0.10)] hover:shadow-[0_25px_60px_rgba(234,88,12,0.20)] transition-all duration-300 border border-orange-100 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-orange-500 to-amber-400 rounded-l-3xl" />
@@ -426,7 +368,7 @@ export default async function HomePage() {
           <p className="text-blue-100 mb-10 text-lg md:text-xl max-w-2xl mx-auto font-light">
             Jangan biarkan kesempatan emas terlewat. Bergabunglah dengan ribuan peserta lain yang telah sukses.
           </p>
-          <Link href={isLoggedIn ? '/portal/cpns' : '/register'}
+          <Link href={isLoggedIn ? '/portal/astra' : '/register'}
             className="inline-flex justify-center items-center bg-white text-blue-900 font-bold px-8 py-4 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:bg-blue-50 hover:scale-105 transition-all duration-300 text-lg">
             {isLoggedIn ? 'Mulai Simulasi Sekarang' : 'Mulai Simulasi Gratis'}
           </Link>
@@ -447,9 +389,9 @@ export default async function HomePage() {
               <h4 className="text-white font-bold mb-6 uppercase text-sm tracking-widest">Produk</h4>
               <ul className="space-y-4 text-sm font-medium">
                 {[
-                  { label: 'Simulasi SKD CPNS', href: '/portal/cpns' },
+                  { label: 'Psikotes ASTRA', href: '/portal/astra' },
+                  { label: 'Rekrutmen PLN', href: '/portal/pln' },
                   { label: 'Paket & Harga', href: '/harga' },
-                  { label: 'E-Book & PDF', href: 'https://lynk.id/tembuskarir' },
                 ].map((l) => (
                   <li key={l.label}>
                     <Link href={l.href} className="hover:text-blue-500 transition-colors flex items-center gap-2">

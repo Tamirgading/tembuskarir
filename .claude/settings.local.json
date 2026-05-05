@@ -163,7 +163,11 @@
       "Bash(git commit -m 'feat: Sprint 3 — Notes & Content Calendar:*)",
       "Bash(git commit -m 'feat: Sprint 4 & 5 — Analytics, Team, Settings, Admin Panel:*)",
       "Bash(gh auth:*)",
-      "Bash(git -C /d/Project/dashboard-suite remote -v)"
+      "Bash(git -C /d/Project/dashboard-suite remote -v)",
+      "Bash(grep -E \"\\\\.\\(ts|d\\\\.ts\\)$\")",
+      "Bash(xargs ls *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

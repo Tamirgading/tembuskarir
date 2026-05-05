@@ -63,7 +63,7 @@ export default async function DashboardPage({
   // ── Data: Beranda ──────────────────────────────────────────────────────────
   let attempts: AttemptPreview[] = []
   const packageMap: Record<string, { name: string; category: string }> = {}
-  let totalCount = 0, avgScore: number | null = null, highestScore: number | null = null, cpnsCount = 0, astraCount = 0
+  let totalCount = 0, avgScore: number | null = null, highestScore: number | null = null, astraCount = 0
 
   if (activeTab === 'beranda') {
     const { data: attemptsData } = await supabase
@@ -88,7 +88,6 @@ export default async function DashboardPage({
     avgScore = totalCount > 0
       ? Math.round(attempts.reduce((s, a) => s + (a.score ?? 0), 0) / totalCount) : null
     highestScore = totalCount > 0 ? Math.max(...attempts.map((a) => a.score ?? 0)) : null
-    cpnsCount = attempts.filter((a) => packageMap[a.package_id]?.category === 'CPNS').length
     astraCount = attempts.filter((a) => packageMap[a.package_id]?.category === 'ASTRA').length
   }
 
@@ -198,22 +197,6 @@ export default async function DashboardPage({
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Pilih Seleksi</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
-                href="/portal/cpns"
-                className="group bg-white rounded-2xl border-2 border-gray-200 shadow-sm hover:border-blue-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
-              >
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                  <FileText className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-gray-900 text-sm">SKD CPNS</p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {cpnsCount > 0 ? `${cpnsCount}× simulasi dikerjakan` : 'Mulai simulasi pertamamu'}
-                  </p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" />
-              </Link>
-
-              <Link
                 href="/portal/astra"
                 className="group bg-white rounded-2xl border-2 border-gray-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all p-5 flex items-center gap-4"
               >
@@ -255,7 +238,7 @@ export default async function DashboardPage({
           <div>
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Riwayat Ujian</p>
-              <Link href="/portal/cpns" className="text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+              <Link href="/portal/astra" className="text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors">
                 + Simulasi baru →
               </Link>
             </div>
@@ -267,8 +250,8 @@ export default async function DashboardPage({
                 </div>
                 <p className="font-semibold text-gray-700 text-sm">Belum ada simulasi</p>
                 <p className="text-xs text-gray-400 mt-1 mb-4">Kerjakan simulasi pertamamu sekarang!</p>
-                <Link href="/portal/cpns" className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors">
-                  Ke Portal CPNS →
+                <Link href="/portal/astra" className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors">
+                  Mulai Simulasi →
                 </Link>
               </div>
             ) : (
@@ -276,17 +259,11 @@ export default async function DashboardPage({
                 {attempts.map((attempt) => {
                   const pkg = packageMap[attempt.package_id]
                   const score = attempt.score ?? 0
-                  const isCpns = pkg?.category === 'CPNS'
-                  const isPassing = isCpns && score >= 311
                   return (
                     <Link key={attempt.id} href={`/hasil/${attempt.id}`}
                       className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition-colors"
                     >
-                      <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xs font-extrabold ${
-                        isCpns
-                          ? isPassing ? 'bg-green-100 text-green-700' : 'bg-red-50 text-red-500'
-                          : 'bg-blue-50 text-blue-700'
-                      }`}>
+                      <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xs font-extrabold bg-blue-50 text-blue-700">
                         {score}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -306,13 +283,6 @@ export default async function DashboardPage({
                         </p>
                       </div>
                       <div className="shrink-0 flex items-center gap-2">
-                        {isCpns && (
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            isPassing ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                          }`}>
-                            {isPassing ? 'LULUS' : 'Belum Lulus'}
-                          </span>
-                        )}
                         <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
                       </div>
                     </Link>
@@ -383,8 +353,8 @@ export default async function DashboardPage({
                 </div>
                 <p className="font-semibold text-gray-700 text-sm">Belum ada pembelian</p>
                 <p className="text-xs text-gray-400 mt-1 mb-4">Mulai dengan memilih paket di portal seleksi.</p>
-                <Link href="/portal/cpns" className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors">
-                  Ke Portal CPNS →
+                <Link href="/portal/astra" className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-colors">
+                  Mulai Simulasi →
                 </Link>
               </div>
             ) : (
