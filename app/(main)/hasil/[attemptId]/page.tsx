@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
 import { HasilReview } from '@/components/hasil/HasilReview'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 interface QuestionWithAnswer {
   id: string
@@ -107,8 +108,18 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     lulus = score >= 75
   }
 
+  const portalHref = isCpns ? '/portal/cpns' : '/paket'
+  const portalLabel = isCpns ? 'Portal CPNS' : 'Paket Soal'
+
   return (
     <div className="max-w-5xl mx-auto space-y-4 px-0">
+
+      {/* Breadcrumb */}
+      <Breadcrumb items={[
+        { label: portalLabel, href: portalHref },
+        { label: pkg?.name ?? 'Paket', href: attempt.package_id ? `/persiapan/${attempt.package_id}` : undefined },
+        { label: 'Hasil' },
+      ]} />
 
       {/* ══ CARD UTAMA ══ */}
       <div className={`rounded-2xl shadow-lg overflow-hidden ${lulus ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-rose-600'}`}>
