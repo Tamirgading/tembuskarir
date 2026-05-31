@@ -15,21 +15,6 @@ interface OngoingInfo {
   startedAt: string
 }
 
-const SKD_SCORING_RULES_TWK_TIU = [
-  { label: 'Benar', value: '+5', color: 'text-green-600' },
-  { label: 'Salah', value: '0', color: 'text-gray-400' },
-  { label: 'Kosong', value: '0', color: 'text-gray-400' },
-]
-
-const SKD_PASSING_GRADE = { TWK: 65, TIU: 80, TKP: 166, total: 311 }
-const SKD_MAX = { TWK: 150, TIU: 175, TKP: 225, total: 550 }
-
-const SKD_SUBTESTS = [
-  { name: 'TWK', full: 'Tes Wawasan Kebangsaan', soal: 30, color: 'bg-blue-100 text-blue-700 border-blue-200' },
-  { name: 'TIU', full: 'Tes Intelegensia Umum',  soal: 35, color: 'bg-purple-100 text-purple-700 border-purple-200' },
-  { name: 'TKP', full: 'Tes Karakteristik Pribadi', soal: 45, color: 'bg-green-100 text-green-700 border-green-200' },
-]
-
 export default async function PersiapanPage({ params }: { params: Promise<{ packageId: string }> }) {
   const { packageId } = await params
   const supabase = await createClient()
@@ -48,7 +33,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   if (!pkg) redirect('/paket')
 
   // Cek akses: gratis, langganan aktif, atau beli satuan
-  const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free, pkg.category)
+  const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free)
   if (accessStatus === 'locked') {
     if (pkg.category === 'ASTRA') redirect('/portal/astra')
     else redirect('/harga')
@@ -121,10 +106,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
     }
   }
 
-  const isCpns = pkg.category === 'CPNS'
   const isAstra = pkg.category === 'ASTRA'
-  const backHref = isCpns ? '/portal/cpns' : isAstra ? '/portal/astra' : '/paket'
-  const backLabel = isCpns ? 'Portal CPNS' : isAstra ? 'Portal ASTRA' : 'Paket Soal'
+  const backHref = isAstra ? '/portal/astra' : '/paket'
+  const backLabel = isAstra ? 'Portal ASTRA' : 'Paket Soal'
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
@@ -143,9 +127,6 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                {isCpns && (
-                  <span className="px-2.5 py-0.5 bg-white/20 text-white text-xs font-bold rounded-full">SKD CPNS</span>
-                )}
                 {isAstra && (
                   <span className="px-2.5 py-0.5 bg-white/20 text-white text-xs font-bold rounded-full">Psikotes ASTRA</span>
                 )}
@@ -170,8 +151,8 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             {([
               { icon: <Clipboard className="w-5 h-5 text-blue-200" />, label: 'Soal', value: `${pkg.total_questions}` },
               { icon: <Clock className="w-5 h-5 text-blue-200" />, label: 'Durasi', value: `${pkg.duration_minutes} menit` },
-              { icon: <Trophy className="w-5 h-5 text-blue-200" />, label: 'Skor Max', value: isCpns ? '550' : `${pkg.total_questions}` },
-              { icon: <BarChart2 className="w-5 h-5 text-blue-200" />, label: isCpns ? 'Passing' : 'Subtes', value: isCpns ? `${SKD_PASSING_GRADE.total}` : isAstra ? '7' : '-' },
+              { icon: <Trophy className="w-5 h-5 text-blue-200" />, label: 'Skor Max', value: `${pkg.total_questions}` },
+              { icon: <BarChart2 className="w-5 h-5 text-blue-200" />, label: 'Subtes', value: isAstra ? '7' : '-' },
             ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
                 <div className="flex justify-center mb-0.5">{s.icon}</div>
@@ -204,69 +185,10 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             </div>
           )}
 
-          {/* Sub-tes breakdown (CPNS only) */}
-          {isCpns && (
-            <div>
-              <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Pembagian Sub-tes SKD</h2>
-              <div className="grid grid-cols-3 gap-3">
-                {SKD_SUBTESTS.map((sub) => {
-                  const pg = SKD_PASSING_GRADE[sub.name as keyof typeof SKD_PASSING_GRADE] as number
-                  const max = SKD_MAX[sub.name as keyof typeof SKD_MAX] as number
-                  return (
-                    <div key={sub.name} className={`rounded-2xl border-2 p-4 text-center ${sub.color.split(' ')[0]} border-opacity-50`} style={{borderColor: 'inherit'}}>
-                      <span className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full border ${sub.color} mb-2`}>{sub.name}</span>
-                      <p className="text-2xl font-extrabold text-gray-900">{sub.soal}</p>
-                      <p className="text-xs text-gray-500">soal</p>
-                      <div className="mt-3 pt-2 border-t border-gray-200">
-                        <p className="text-[10px] text-gray-400">Passing grade</p>
-                        <p className="text-xs font-bold text-gray-700">≥ {pg} <span className="font-normal text-gray-400">/ {max}</span></p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="mt-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 flex items-center justify-between text-sm">
-                <span className="text-blue-700 font-medium">Total passing grade SKD</span>
-                <span className="font-extrabold text-blue-900">≥ {SKD_PASSING_GRADE.total} / {SKD_MAX.total}</span>
-              </div>
-            </div>
-          )}
-
           {/* Sistem penilaian */}
           <div>
             <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Sistem Penilaian</h2>
-            {isCpns ? (
-              <div className="grid grid-cols-2 gap-3">
-                {/* TWK & TIU */}
-                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-2">
-                  <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2.5">TWK & TIU</p>
-                  {SKD_SCORING_RULES_TWK_TIU.map((rule) => (
-                    <div key={rule.label} className="flex justify-between items-center text-xs">
-                      <span className="text-gray-600">{rule.label}</span>
-                      <span className={`font-bold ${rule.color}`}>{rule.value}</span>
-                    </div>
-                  ))}
-                </div>
-                {/* TKP */}
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-4 space-y-2">
-                  <p className="text-xs font-bold text-green-700 uppercase tracking-wide mb-2.5">TKP</p>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-600">Nilai per opsi</span>
-                    <span className="font-bold text-green-600">1 – 5</span>
-                  </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-600">Kosong</span>
-                    <span className="font-bold text-gray-400">0</span>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-green-200">
-                    <div className="flex items-center gap-1">
-                      <Lightbulb className="w-3 h-3 text-green-600 shrink-0" />
-                      <p className="text-[11px] text-green-600 font-semibold">Tidak ada penalti — isi semua soal TKP!</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : isAstra ? (
+            {isAstra ? (
               <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 space-y-2">
                 <p className="text-xs font-bold text-orange-700 uppercase tracking-wide mb-2.5">Semua Sub-tes</p>
                 <div className="flex justify-between items-center text-xs">
@@ -306,9 +228,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                 { icon: <Lock className="w-4 h-4 text-gray-500" />, text: 'Jawaban tidak bisa diubah setelah di-submit' },
                 { icon: <Wifi className="w-4 h-4 text-cyan-500" />, text: 'Pastikan koneksi internet stabil selama ujian' },
                 { icon: <Bookmark className="w-4 h-4 text-amber-500" />, text: 'Gunakan fitur tandai (bookmark) untuk soal yang ingin ditinjau kembali' },
-                isCpns
-                  ? { icon: <Lightbulb className="w-4 h-4 text-yellow-500" />, text: 'Strategi: kerjakan TKP dulu, lalu TWK dan TIU — tidak ada penalti di TKP' }
-                  : { icon: <Lightbulb className="w-4 h-4 text-yellow-500" />, text: 'Baca soal dengan teliti sebelum menjawab' },
+                { icon: <Lightbulb className="w-4 h-4 text-yellow-500" />, text: 'Baca soal dengan teliti sebelum menjawab' },
               ] as { icon: React.ReactNode; text: string }[]).map((item) => (
                 <div key={item.text} className="flex items-start gap-3 bg-gray-50 rounded-xl px-4 py-3 text-sm">
                   <span className="shrink-0 mt-0.5">{item.icon}</span>

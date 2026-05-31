@@ -44,7 +44,7 @@ export type Database = {
           id: string
           name: string
           slug: string
-          category: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
+          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
           description: string | null
           duration_minutes: number
           total_questions: number
@@ -56,7 +56,7 @@ export type Database = {
           id?: string
           name: string
           slug: string
-          category: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
+          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions: number
@@ -68,7 +68,7 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
-          category?: 'CPNS' | 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
+          category?: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions?: number
@@ -181,74 +181,6 @@ export type Database = {
           },
           {
             foreignKeyName: 'attempts_package_id_fkey'
-            columns: ['package_id']
-            isOneToOne: false
-            referencedRelation: 'packages'
-            referencedColumns: ['id']
-          }
-        ]
-      }
-      questions_tkp: {
-        Row: {
-          id: string
-          package_id: string
-          content: string
-          opt_a: string
-          opt_b: string
-          opt_c: string
-          opt_d: string
-          opt_e: string
-          point_a: number
-          point_b: number
-          point_c: number
-          point_d: number
-          point_e: number
-          explanation: string | null
-          image_url: string | null
-          order_index: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          package_id: string
-          content: string
-          opt_a: string
-          opt_b: string
-          opt_c: string
-          opt_d: string
-          opt_e: string
-          point_a: number
-          point_b: number
-          point_c: number
-          point_d: number
-          point_e: number
-          explanation?: string | null
-          image_url?: string | null
-          order_index?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          package_id?: string
-          content?: string
-          opt_a?: string
-          opt_b?: string
-          opt_c?: string
-          opt_d?: string
-          opt_e?: string
-          point_a?: number
-          point_b?: number
-          point_c?: number
-          point_d?: number
-          point_e?: number
-          explanation?: string | null
-          image_url?: string | null
-          order_index?: number
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'questions_tkp_package_id_fkey'
             columns: ['package_id']
             isOneToOne: false
             referencedRelation: 'packages'
@@ -397,7 +329,7 @@ export type Database = {
           user_id: string
           midtrans_order_id: string
           midtrans_transaction_id: string | null
-          plan_type: 'monthly' | 'yearly'
+          plan_type: string
           amount: number
           status: 'pending' | 'paid' | 'failed' | 'expired'
           paid_at: string | null
@@ -409,7 +341,7 @@ export type Database = {
           user_id: string
           midtrans_order_id: string
           midtrans_transaction_id?: string | null
-          plan_type: 'monthly' | 'yearly'
+          plan_type: string
           amount: number
           status?: 'pending' | 'paid' | 'failed' | 'expired'
           paid_at?: string | null
@@ -421,7 +353,7 @@ export type Database = {
           user_id?: string
           midtrans_order_id?: string
           midtrans_transaction_id?: string | null
-          plan_type?: 'monthly' | 'yearly'
+          plan_type?: string
           amount?: number
           status?: 'pending' | 'paid' | 'failed' | 'expired'
           paid_at?: string | null

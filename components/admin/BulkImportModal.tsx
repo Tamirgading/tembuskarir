@@ -14,12 +14,6 @@ interface ParsedQuestion {
   correct_answer: string
   category: string
   explanation: string
-  // TKP: nilai per opsi (1–5)
-  point_a?: number
-  point_b?: number
-  point_c?: number
-  point_d?: number
-  point_e?: number
   error?: string
 }
 
@@ -30,38 +24,20 @@ interface BulkImportModalProps {
 }
 
 const TEMPLATE_ROWS = [
-  ['content', 'A', 'B', 'C', 'D', 'E', 'correct_answer', 'category', 'explanation', 'point_a', 'point_b', 'point_c', 'point_d', 'point_e'],
-  // TWK example
-  [
-    'Pancasila sebagai dasar negara Indonesia terdapat dalam...',
-    'Batang Tubuh UUD 1945',
-    'Pembukaan UUD 1945',
-    'Penjelasan UUD 1945',
-    'Tap MPR No. III/MPR/2000',
-    'Ketetapan BPUPKI',
-    'B', 'TWK',
-    'Pancasila sebagai dasar negara tercantum dalam Pembukaan UUD 1945 alinea keempat',
-    '', '', '', '', '',
-  ],
-  // TIU example
+  ['content', 'A', 'B', 'C', 'D', 'E', 'correct_answer', 'category', 'explanation'],
+  // Contoh soal numerik
   [
     'Jika $2x + 3 = 11$, maka nilai $x$ adalah...',
     '3', '4', '5', '6', '7',
-    'B', 'TIU',
+    'B', 'NUM',
     '$2x = 11 - 3 = 8$, maka $x = 4$',
-    '', '', '', '', '',
   ],
-  // TKP example — gunakan point_a–e, correct_answer dikosongkan
+  // Contoh soal verbal
   [
-    'Rekan kerja Anda melakukan kesalahan yang merugikan tim. Sikap Anda adalah...',
-    'Mengajak bicara empat mata dan membantu mencari solusi',
-    'Menegur secara langsung di depan orang banyak',
-    'Melaporkan langsung ke atasan tanpa bicara dengannya',
-    'Membiarkan saja karena bukan urusan Anda',
-    'Menceritakan kepada rekan kerja lain',
-    '', 'TKP',
-    'Sikap profesional adalah menyelesaikan masalah secara konstruktif dan personal',
-    '5', '2', '3', '1', '1',
+    'Sinonim dari kata "efisien" adalah...',
+    'Boros', 'Lambat', 'Tepat guna', 'Rumit', 'Mahal',
+    'C', 'VER',
+    'Efisien berarti berdaya guna / tepat guna tanpa membuang sumber daya',
   ],
 ]
 
@@ -70,7 +46,7 @@ function downloadTemplate() {
     row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
   )
   const csv = lines.join('\r\n')
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -102,52 +78,23 @@ function buildQuestion(cells: string[], rowNum: number): ParsedQuestion {
   const [
     content = '', A = '', B = '', C = '', D = '', E = '',
     correct_answer = '', category = '', explanation = '',
-    pa = '', pb = '', pc = '', pd = '', pe = '',
   ] = cells
 
   const errors: string[] = []
   if (!content) errors.push('Pertanyaan kosong')
   if (!A || !B || !C || !D || !E) errors.push('Ada opsi yang kosong')
 
-  const isTkp = category.toUpperCase() === 'TKP'
-
-  let pointA: number | undefined
-  let pointB: number | undefined
-  let pointC: number | undefined
-  let pointD: number | undefined
-  let pointE: number | undefined
-
-  if (isTkp) {
-    pointA = pa !== '' ? parseInt(pa) : undefined
-    pointB = pb !== '' ? parseInt(pb) : undefined
-    pointC = pc !== '' ? parseInt(pc) : undefined
-    pointD = pd !== '' ? parseInt(pd) : undefined
-    pointE = pe !== '' ? parseInt(pe) : undefined
-
-    const pts = [pointA, pointB, pointC, pointD, pointE]
-    if (pts.some((p) => p === undefined || isNaN(p as number) || (p as number) < 1 || (p as number) > 5)) {
-      errors.push('Soal TKP: kolom point_a–point_e wajib diisi dengan nilai 1–5')
-    } else if (new Set(pts).size < 3) {
-      errors.push('Soal TKP: nilai point harus bervariasi (minimal 3 nilai berbeda)')
-    }
-  } else {
-    const validAnswer = ['A', 'B', 'C', 'D', 'E']
-    if (!validAnswer.includes(correct_answer.toUpperCase())) {
-      errors.push(`Jawaban benar "${correct_answer}" tidak valid (harus A–E)`)
-    }
+  const validAnswer = ['A', 'B', 'C', 'D', 'E']
+  if (!validAnswer.includes(correct_answer.toUpperCase())) {
+    errors.push(`Jawaban benar "${correct_answer}" tidak valid (harus A–E)`)
   }
 
   return {
     rowNum,
     content, A, B, C, D, E,
-    correct_answer: isTkp ? '' : correct_answer.toUpperCase(),
+    correct_answer: correct_answer.toUpperCase(),
     category,
     explanation,
-    point_a: pointA,
-    point_b: pointB,
-    point_c: pointC,
-    point_d: pointD,
-    point_e: pointE,
     error: errors.length > 0 ? errors.join(', ') : undefined,
   }
 }
@@ -221,36 +168,17 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
   async function handleImport() {
     if (validQuestions.length === 0) return
 
-    const questions = validQuestions.map((q, i) => {
-      const isTkp = q.category.toUpperCase() === 'TKP'
-      const pointMap: Record<string, number> = {
-        A: q.point_a ?? 1,
-        B: q.point_b ?? 1,
-        C: q.point_c ?? 1,
-        D: q.point_d ?? 1,
-        E: q.point_e ?? 1,
-      }
-
-      // Untuk TKP: correct_answer = opsi dengan point tertinggi
-      let correctAnswer = q.correct_answer
-      if (isTkp) {
-        correctAnswer = (['A', 'B', 'C', 'D', 'E'] as const)
-          .reduce((best, key) => pointMap[key] > pointMap[best] ? key : best, 'A' as string)
-      }
-
-      return {
-        content: q.content,
-        options: (['A', 'B', 'C', 'D', 'E'] as const).map((key) => ({
-          key,
-          text: q[key],
-          ...(isTkp ? { point: pointMap[key] } : {}),
-        })),
-        correctAnswer,
-        category: q.category || null,
-        explanation: q.explanation || null,
-        orderIndex: startIndex + i,
-      }
-    })
+    const questions = validQuestions.map((q, i) => ({
+      content: q.content,
+      options: (['A', 'B', 'C', 'D', 'E'] as const).map((key) => ({
+        key,
+        text: q[key],
+      })),
+      correctAnswer: q.correct_answer,
+      category: q.category || null,
+      explanation: q.explanation || null,
+      orderIndex: startIndex + i,
+    }))
 
     const res = await fetch('/api/admin/questions/bulk-import', {
       method: 'POST',
@@ -284,9 +212,9 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <p className="text-sm font-semibold text-blue-800 mb-2">Langkah 1 — Download template</p>
             <div className="text-xs text-blue-700 mb-3 space-y-1">
-              <p>Kolom wajib: <strong>content, A, B, C, D, E, category, explanation</strong></p>
-              <p>• <strong>TWK & TIU</strong>: isi <code className="bg-white/60 px-1 rounded">correct_answer</code> (A–E), biarkan kolom point kosong</p>
-              <p>• <strong>TKP</strong>: kosongkan <code className="bg-white/60 px-1 rounded">correct_answer</code>, isi <code className="bg-white/60 px-1 rounded">point_a</code>–<code className="bg-white/60 px-1 rounded">point_e</code> dengan nilai 1–5 (5=paling tepat)</p>
+              <p>Kolom wajib: <strong>content, A, B, C, D, E, correct_answer, category, explanation</strong></p>
+              <p>• Isi <code className="bg-white/60 px-1 rounded">correct_answer</code> dengan salah satu A–E</p>
+              <p>• <code className="bg-white/60 px-1 rounded">category</code> = kode sub-tes (mis. NUM, VER) — boleh dikosongkan</p>
             </div>
             <button onClick={downloadTemplate}
               className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors">
@@ -344,22 +272,15 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
                 <div>
                   <p className="text-xs font-semibold text-gray-600 mb-2">Preview {Math.min(3, validQuestions.length)} soal pertama:</p>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {validQuestions.slice(0, 3).map((q, i) => {
-                      const isTkp = q.category.toUpperCase() === 'TKP'
-                      return (
-                        <div key={i} className="bg-gray-50 rounded-lg p-2.5 text-xs border border-gray-200">
-                          <p className="font-medium text-gray-800 line-clamp-1">{i + 1}. {q.content}</p>
-                          <div className="flex gap-3 mt-1 text-gray-500 flex-wrap">
-                            {isTkp ? (
-                              <span className="text-green-700">TKP · Nilai: A={q.point_a} B={q.point_b} C={q.point_c} D={q.point_d} E={q.point_e}</span>
-                            ) : (
-                              <span>Jawaban: <strong className="text-green-600">{q.correct_answer}</strong></span>
-                            )}
-                            {q.category && <span>Kategori: <strong>{q.category}</strong></span>}
-                          </div>
+                    {validQuestions.slice(0, 3).map((q, i) => (
+                      <div key={i} className="bg-gray-50 rounded-lg p-2.5 text-xs border border-gray-200">
+                        <p className="font-medium text-gray-800 line-clamp-1">{i + 1}. {q.content}</p>
+                        <div className="flex gap-3 mt-1 text-gray-500 flex-wrap">
+                          <span>Jawaban: <strong className="text-green-600">{q.correct_answer}</strong></span>
+                          {q.category && <span>Kategori: <strong>{q.category}</strong></span>}
                         </div>
-                      )
-                    })}
+                      </div>
+                    ))}
                     {validQuestions.length > 3 && (
                       <p className="text-xs text-gray-400 text-center">... dan {validQuestions.length - 3} soal lainnya</p>
                     )}

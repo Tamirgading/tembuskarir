@@ -8,7 +8,7 @@ create table public.info_seleksi (
   id uuid primary key default gen_random_uuid(),
 
   -- Identitas institusi
-  institusi text not null,        -- 'CPNS', 'OJK', 'BI', 'PLN', 'RBB', 'ASTRA'
+  institusi text not null,        -- 'OJK', 'BI', 'PLN', 'RBB', 'ASTRA'
   kategori text not null          -- 'pengumuman' | 'soal' | 'jadwal' | 'tips' | 'kisi-kisi'
     check (kategori in ('pengumuman', 'soal', 'jadwal', 'tips', 'kisi-kisi')),
 
@@ -108,11 +108,6 @@ alter table public.crawl_sources enable row level security;
 
 -- Seed sumber crawl
 insert into public.crawl_sources (institusi, kategori, url, label) values
-  -- CPNS / BKN
-  ('CPNS', 'pengumuman', 'https://www.bkn.go.id/category/publikasi/pengumuman/', 'BKN - Pengumuman Resmi'),
-  ('CPNS', 'pengumuman', 'https://www.bkn.go.id/category/publikasi/berita/', 'BKN - Berita Terbaru'),
-  ('CPNS', 'jadwal',     'https://sscasn.bkn.go.id', 'SSCASN - Portal Resmi CPNS'),
-
   -- OJK
   ('OJK',  'pengumuman', 'https://www.ojk.go.id/id/karir/Pages/default.aspx', 'OJK - Halaman Karir'),
 

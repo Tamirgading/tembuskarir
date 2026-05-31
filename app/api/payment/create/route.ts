@@ -5,9 +5,9 @@ import { rateLimit, getClientIp } from '@/lib/rateLimit'
 import type { UserRow } from '@/lib/utils'
 
 const PLAN_PRICES: Record<string, number> = {
-  cpns_monthly:   39000,
-  cpns_quarterly: 89000,
-  package:        10000,  // per-paket, harga tetap
+  premium_monthly:   39000,
+  premium_quarterly: 89000,
+  package:           10000,  // per-paket, harga tetap
 }
 
 const VALID_PLAN_TYPES = Object.keys(PLAN_PRICES)
@@ -81,9 +81,9 @@ export async function POST(req: NextRequest) {
     console.log('[Payment Create] Subscription created:', subData?.id)
 
     const planLabels: Record<string, string> = {
-      cpns_monthly:   'CPNS Premium 1 Bulan',
-      cpns_quarterly: 'CPNS Premium 3 Bulan',
-      package:        'Paket Soal SKD CPNS',
+      premium_monthly:   'Premium 1 Bulan',
+      premium_quarterly: 'Premium 3 Bulan',
+      package:           'Paket Soal',
     }
 
     const snapData = await createSnapTransaction({

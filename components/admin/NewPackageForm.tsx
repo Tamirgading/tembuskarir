@@ -11,7 +11,7 @@ export function NewPackageForm() {
   const [form, setForm] = useState({
     name: '',
     slug: '',
-    category: 'CPNS',
+    category: 'PLN',
     description: '',
     duration_minutes: 90,
     total_questions: 100,
@@ -74,7 +74,7 @@ export function NewPackageForm() {
             }}
             required
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="cth: SKD CPNS 2024 - Paket 1"
+            placeholder="cth: GAT PLN 2024 - Paket 1"
           />
         </div>
 
@@ -86,7 +86,7 @@ export function NewPackageForm() {
             onChange={(e) => set('slug', e.target.value)}
             required
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-            placeholder="skd-cpns-2024-paket-1"
+            placeholder="gat-pln-2024-paket-1"
           />
           <p className="text-xs text-gray-400 mt-1">Harus unik, huruf kecil, tanpa spasi</p>
         </div>
@@ -100,7 +100,7 @@ export function NewPackageForm() {
             onChange={(e) => set('category', e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {['CPNS', 'UTBK', 'KEDINASAN', 'LAINNYA'].map((c) => (
+            {['PLN', 'ASTRA', 'BI', 'OJK', 'KEDINASAN', 'LAINNYA'].map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>

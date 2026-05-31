@@ -9,14 +9,6 @@
 
 insert into public.packages (id, name, slug, category, description, duration_minutes, total_questions, is_free, is_published) values
 
-  -- CPNS
-  ('a1000000-0000-0000-0000-000000000001',
-   'SKD CPNS — TWK, TIU, TKP',
-   'cpns-skd-latihan',
-   'CPNS',
-   'Latihan Seleksi Kompetensi Dasar (SKD) CPNS mencakup Tes Wawasan Kebangsaan (TWK), Tes Intelegensi Umum (TIU), dan Tes Karakteristik Pribadi (TKP). Sesuai sistem CAT BKN.',
-   100, 10, true, true),
-
   -- OJK
   ('a2000000-0000-0000-0000-000000000002',
    'Tes Kemampuan Umum OJK — PCAM 2025',
@@ -48,95 +40,6 @@ insert into public.packages (id, name, slug, category, description, duration_min
    'LAINNYA',
    'Latihan Tes Online Tahap 1 Rekrutmen Bersama BUMN (RBB) 2025. Mencakup TKD (verbal, numerik, analogi), nilai AKHLAK, dan Wawasan Kebangsaan sesuai kisi-kisi resmi FHCI.',
    90, 10, false, true);
-
-
--- ─── SOAL CPNS SKD ───────────────────────────────────────────
--- TIU: Numerik, Logika, Analogi Verbal
--- TKP: Karakteristik Pribadi
--- TWK: Wawasan Kebangsaan
-
-insert into public.questions
-  (package_id, content, options, correct_answer, explanation, difficulty, category, order_index) values
-
--- TIU 1: Numerik — Pekerjaan Bersama
-('a1000000-0000-0000-0000-000000000001',
- 'Sari dan Ratih memiliki suatu pekerjaan. Waktu yang dibutuhkan Sari untuk menyelesaikan pekerjaan adalah 21 menit, sedangkan Ratih membutuhkan 42 menit. Jika Sari dan Ratih bekerja bersama-sama, waktu yang dibutuhkan adalah …',
- '[{"key":"A","text":"14 menit"},{"key":"B","text":"21 menit"},{"key":"C","text":"28 menit"},{"key":"D","text":"35 menit"},{"key":"E","text":"42 menit"}]',
- 'A',
- 'Kecepatan Sari = 1/21, Ratih = 1/42. Total = 1/21 + 1/42 = 2/42 + 1/42 = 3/42 = 1/14. Waktu bersama = 14 menit.',
- 'medium', 'TIU', 1),
-
--- TIU 2: Logika — Urutan Prestasi
-('a1000000-0000-0000-0000-000000000001',
- 'Prestasi Intan lebih tinggi dari Dini dan lebih rendah dari Tina. Prestasi Cantik lebih rendah dari Intan, tetapi lebih tinggi dari Dini. Prestasi Dani lebih tinggi dari Dini dan Cantik. Tiga orang berprestasi terbaik adalah …',
- '[{"key":"A","text":"Dani, Intan, Tina"},{"key":"B","text":"Dani, Dini, Tina"},{"key":"C","text":"Intan, Tina, Cantik"},{"key":"D","text":"Intan, Dani, Cantik"},{"key":"E","text":"Tina, Cantik, Dini"}]',
- 'A',
- 'Urutan dari tertinggi: Tina > Intan > Dani > Cantik > Dini. Tiga teratas: Tina, Intan, Dani.',
- 'medium', 'TIU', 2),
-
--- TIU 3: Analogi Verbal — Ibukota Negara
-('a1000000-0000-0000-0000-000000000001',
- 'Afrika Selatan : Pretoria = … : …',
- '[{"key":"A","text":"Kanada : Canberra"},{"key":"B","text":"Ekuador : Quito"},{"key":"C","text":"Kamerun : Astana"},{"key":"D","text":"Maroko : Cetinje"},{"key":"E","text":"Nigeria : Wellington"}]',
- 'B',
- 'Pretoria adalah ibukota Afrika Selatan. Analogi yang sama: Quito adalah ibukota Ekuador. Ibukota Kanada = Ottawa, Kamerun = Yaoundé, Maroko = Rabat, Nigeria = Abuja.',
- 'easy', 'TIU', 3),
-
--- TIU 4: Numerik — Deret
-('a1000000-0000-0000-0000-000000000001',
- 'Diketahui deret: 2, 6, 12, 20, 30, … Bilangan berikutnya adalah …',
- '[{"key":"A","text":"40"},{"key":"B","text":"42"},{"key":"C","text":"44"},{"key":"D","text":"46"},{"key":"E","text":"48"}]',
- 'B',
- 'Selisih: 4, 6, 8, 10, 12. Pola selisih bertambah 2. Bilangan berikutnya = 30 + 12 = 42.',
- 'medium', 'TIU', 4),
-
--- TIU 5: Verbal — Sinonim
-('a1000000-0000-0000-0000-000000000001',
- 'KONTEMPORER = …',
- '[{"key":"A","text":"Tradisional"},{"key":"B","text":"Masa kini"},{"key":"C","text":"Kuno"},{"key":"D","text":"Klasik"},{"key":"E","text":"Primitif"}]',
- 'B',
- 'Kontemporer artinya pada masa sekarang / masa kini. Berasal dari bahasa Latin "contemporarius".',
- 'easy', 'TIU', 5),
-
--- TWK 1: Pancasila
-('a1000000-0000-0000-0000-000000000001',
- 'Pancasila sebagai dasar negara Indonesia tercantum dalam Pembukaan UUD 1945 alinea …',
- '[{"key":"A","text":"Pertama"},{"key":"B","text":"Kedua"},{"key":"C","text":"Ketiga"},{"key":"D","text":"Keempat"},{"key":"E","text":"Kelima"}]',
- 'D',
- 'Pancasila sebagai dasar negara terdapat dalam Pembukaan UUD 1945 alinea keempat yang memuat rumusan sila-sila Pancasila.',
- 'easy', 'TWK', 6),
-
--- TWK 2: NKRI
-('a1000000-0000-0000-0000-000000000001',
- 'Berdasarkan UUD 1945 Pasal 1 ayat (1), bentuk negara Republik Indonesia adalah …',
- '[{"key":"A","text":"Negara Federal"},{"key":"B","text":"Negara Serikat"},{"key":"C","text":"Negara Kesatuan"},{"key":"D","text":"Negara Konfederasi"},{"key":"E","text":"Negara Monarki"}]',
- 'C',
- 'UUD 1945 Pasal 1 ayat (1): "Negara Indonesia ialah Negara Kesatuan yang berbentuk Republik."',
- 'easy', 'TWK', 7),
-
--- TWK 3: Bhinneka Tunggal Ika
-('a1000000-0000-0000-0000-000000000001',
- 'Semboyan "Bhinneka Tunggal Ika" berasal dari kitab …',
- '[{"key":"A","text":"Negarakertagama"},{"key":"B","text":"Sutasoma"},{"key":"C","text":"Arjunawiwaha"},{"key":"D","text":"Pararaton"},{"key":"E","text":"Ramayana"}]',
- 'B',
- 'Bhinneka Tunggal Ika diambil dari Kitab Sutasoma karya Mpu Tantular pada masa Kerajaan Majapahit, abad ke-14.',
- 'medium', 'TWK', 8),
-
--- TKP 1: Pelayanan Publik
-('a1000000-0000-0000-0000-000000000001',
- 'Ketika pemilihan kepala desa sedang berlangsung, nenek Anda yang memiliki hak pilih dirawat di rumah sakit. Apa yang Anda lakukan?',
- '[{"key":"A","text":"Melaporkan keadaan nenek kepada panitia pemungutan suara"},{"key":"B","text":"Melaporkan keadaan nenek kepada panitia untuk menentukan langkah yang harus ditempuh"},{"key":"C","text":"Meminta orang lain menggunakan hak pilih nenek"},{"key":"D","text":"Membiarkan hak suara nenek hangus karena tidak bisa hadir"},{"key":"E","text":"Memilih sendiri mewakili nenek"}]',
- 'B',
- 'Jawaban terbaik adalah B. Melaporkan kepada panitia untuk menentukan langkah adalah tindakan yang solutif, responsif, dan menghormati prosedur. Hak pilih bersifat personal dan tidak dapat diwakilkan.',
- 'medium', 'TKP', 9),
-
--- TKP 2: Integritas Kerja
-('a1000000-0000-0000-0000-000000000001',
- 'Atasan Anda memberikan tugas tambahan yang bukan bidang keahlian Anda dan harus selesai besok. Apa yang Anda lakukan?',
- '[{"key":"A","text":"Meminta orang lain mengerjakan agar selesai tepat waktu"},{"key":"B","text":"Segera memulai dan menyelesaikan sebisanya, yang penting selesai"},{"key":"C","text":"Tidak perlu buru-buru karena bukan tugas pokok Anda"},{"key":"D","text":"Segera mengerjakan dan berusaha menyelesaikan seoptimal mungkin"},{"key":"E","text":"Menegosiasi dengan atasan karena takut hasilnya tidak maksimal"}]',
- 'D',
- 'Jawaban D menunjukkan profesionalisme, inisiatif, dan etos kerja tinggi. ASN yang baik mengerjakan tugas dengan sepenuh hati meski di luar bidang keahliannya.',
- 'medium', 'TKP', 10);
 
 
 -- ─── SOAL OJK PCAM ───────────────────────────────────────────
@@ -445,7 +348,6 @@ insert into public.questions
 -- Update total_questions sesuai soal yang diinsert
 update public.packages set total_questions = 10
   where id in (
-    'a1000000-0000-0000-0000-000000000001',
     'a2000000-0000-0000-0000-000000000002',
     'a3000000-0000-0000-0000-000000000003',
     'a4000000-0000-0000-0000-000000000004',

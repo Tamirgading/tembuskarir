@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TembusKarir — Prototype Beranda (perbandingan warna)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ DESIGN TOKENS (default = Tema A) ============ */
+  :root{
+    --ink:#0F2C44; --paper:#F7F6F2; --surface:#FFFFFF;
+    --primary:#0E9F6E; --primary-deep:#0B7D57; --on-primary:#FFFFFF;
+    --accent:#F4B400; --hairline:#E7E4DC; --muted:#5A6B7B; --soft:#F0EEE7;
+    --ring-track:#E7E4DC; --good:#0E9F6E;
+    --astra:#FF6B2C; /* aksen portal ASTRA (identitas, tetap di semua tema) */
+    --shadow: 0 1px 2px rgba(15,44,68,.04), 0 8px 24px -12px rgba(15,44,68,.12);
+  }
+  /* Tema B — Studio Ink (teal editorial) */
+  body.theme-b{
+    --ink:#16202B; --paper:#F4F2EC; --primary:#127C8A; --primary-deep:#0E6470;
+    --accent:#E08A3C; --hairline:#E5E1D8; --muted:#566370; --soft:#EDEAE1; --ring-track:#E5E1D8; --good:#127C8A;
+  }
+  /* Tema C — Biru Tepercaya (deep cobalt + amber) */
+  body.theme-c{
+    --ink:#122A43; --paper:#F6F5F1; --primary:#1B4F8A; --primary-deep:#143D6B;
+    --accent:#E0A23B; --hairline:#E6E3DB; --muted:#54637A; --soft:#EDEBE3; --ring-track:#E6E3DB; --good:#1B4F8A;
+  }
+  /* Tema D — Sage & Tanah Liat (pine + clay) */
+  body.theme-d{
+    --ink:#1E2B25; --paper:#F5F3EC; --primary:#2C6E54; --primary-deep:#225743;
+    --accent:#C2683E; --hairline:#E4E0D6; --muted:#566058; --soft:#ECE9E0; --ring-track:#E4E0D6; --good:#2C6E54;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    background:var(--paper); color:var(--ink);
+    line-height:1.5; font-size:15px;
+  }
+  h1,h2,h3,.display{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.01em}
+  .num{font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+
+  /* ===== Theme switcher ===== */
+  .switcher{
+    position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:12px 22px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hairline);
+  }
+  .switcher b{font-family:'Bricolage Grotesque';font-weight:700;font-size:14px}
+  .switcher .hint{color:var(--muted);font-size:12.5px}
+  .swatches{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+  .sw{display:flex;align-items:center;gap:8px;border:1px solid var(--hairline);background:#fff;
+    padding:6px 11px 6px 6px;border-radius:999px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink);transition:.15s}
+  .sw:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  .sw.active{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
+  .dot{width:18px;height:18px;border-radius:50%}
+
+  /* ===== App shell ===== */
+  .shell{display:grid;grid-template-columns:248px 1fr;min-height:calc(100vh - 50px)}
+  /* Sidebar */
+  .side{background:var(--ink);color:#fff;padding:22px 16px;display:flex;flex-direction:column;gap:6px;position:relative}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+  .brand .logo{width:30px;height:30px;border-radius:9px;background:var(--primary);display:grid;place-items:center;color:#fff;font-weight:800;font-family:'Bricolage Grotesque';font-size:16px}
+  .brand .name{font-family:'Bricolage Grotesque';font-weight:700;font-size:17px;color:#fff}
+  .navlabel{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:14px 10px 6px}
+  .nav{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;color:rgba(255,255,255,.72);font-weight:500;font-size:14px;cursor:pointer;transition:.15s}
+  .nav svg{width:18px;height:18px;opacity:.9}
+  .nav:hover{background:rgba(255,255,255,.07);color:#fff}
+  .nav.active{background:rgba(255,255,255,.10);color:#fff;font-weight:600}
+  .nav.active::before{content:"";position:absolute;left:0;width:3px;height:22px;border-radius:0 3px 3px 0;background:var(--primary)}
+  .subnav{display:flex;flex-direction:column;gap:2px;margin:2px 0 2px 30px;padding-left:10px;border-left:1px solid rgba(255,255,255,.12)}
+  .subnav a{color:rgba(255,255,255,.62);font-size:13px;text-decoration:none;padding:5px 8px;border-radius:7px;display:flex;align-items:center;gap:8px}
+  .subnav a:hover{background:rgba(255,255,255,.06);color:#fff}
+  .subnav .tag{margin-left:auto;font-size:10px;font-weight:700;color:#fff;background:var(--astra);padding:1px 7px;border-radius:999px}
+  .userchip{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.06)}
+  .userchip .av{width:34px;height:34px;border-radius:50%;background:var(--primary);display:grid;place-items:center;font-weight:700;color:#fff}
+  .userchip small{color:rgba(255,255,255,.55);font-size:11.5px}
+
+  /* Main */
+  .main{padding:26px 34px 50px;overflow:auto}
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+  .search{flex:1;max-width:420px;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--hairline);border-radius:11px;padding:9px 13px;color:var(--muted)}
+  .search input{border:0;outline:0;background:none;flex:1;font-family:inherit;font-size:14px;color:var(--ink)}
+  .targetchip{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--hairline);border-radius:11px;padding:8px 13px;font-size:13px;font-weight:600}
+  .targetchip .pill{font-size:11px;font-weight:700;color:#fff;background:var(--astra);padding:2px 8px;border-radius:999px}
+  .targetchip .days{color:var(--accent);font-weight:700}
+  .iconbtn{width:40px;height:40px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--hairline);border-radius:11px;cursor:pointer;color:var(--ink);position:relative}
+  .iconbtn .badge{position:absolute;top:8px;right:9px;width:7px;height:7px;background:var(--astra);border-radius:50%;border:1.5px solid var(--surface)}
+
+  .hello{font-size:26px;font-weight:700;margin-bottom:3px}
+  .sub{color:var(--muted);margin-bottom:22px;font-size:14.5px}
+
+  .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}
+  .card{background:var(--surface);border:1px solid var(--hairline);border-radius:18px;box-shadow:var(--shadow)}
+  .pad{padding:22px}
+  .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px}
+
+  /* Readiness */
+  .ready{display:flex;gap:24px;align-items:center}
+  .ring{position:relative;width:138px;height:138px;flex:none}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .pct b{font-family:'Space Grotesk';font-size:34px;font-weight:700;line-height:1}
+  .ring .pct span{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+  .ready h2{font-size:20px;font-weight:700;margin-bottom:4px}
+  .ready p{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .weak{display:inline-flex;align-items:center;gap:7px;background:var(--soft);border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:600;margin-bottom:16px}
+  .weak .d{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:var(--on-primary);border:0;border-radius:11px;padding:11px 18px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;transition:.15s}
+  .btn:hover{background:var(--primary-deep)}
+  .btn svg{width:16px;height:16px}
+  .btn.ghost{background:transparent;color:var(--primary);border:1px solid var(--hairline)}
+  .btn.ghost:hover{background:var(--soft)}
+
+  /* Next step (accented) */
+  .next{background:linear-gradient(180deg,var(--ink),color-mix(in srgb,var(--ink) 88%, #000));color:#fff;border:0}
+  .next .eyebrow{color:rgba(255,255,255,.55)}
+  .next h3{font-size:18px;font-weight:700;margin:2px 0 4px;color:#fff}
+  .next p{color:rgba(255,255,255,.65);font-size:13.5px;margin-bottom:16px}
+  .next .meta{display:flex;gap:16px;margin-bottom:18px;font-size:12.5px;color:rgba(255,255,255,.8)}
+  .next .meta b{font-family:'Space Grotesk';font-weight:600}
+  .next .btn{background:var(--primary)}
+  .next .btn:hover{background:var(--primary-deep)}
+
+  /* stat tiles */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .tile{background:var(--surface);border:1px solid var(--hairline);border-radius:15px;padding:16px}
+  .tile .k{font-family:'Space Grotesk';font-size:26px;font-weight:700;line-height:1}
+  .tile .l{color:var(--muted);font-size:12.5px;margin-top:5px}
+  .tile .ic{width:30px;height:30px;border-radius:9px;background:var(--soft);display:grid;place-items:center;margin-bottom:11px;color:var(--primary)}
+  .tile .ic svg{width:16px;height:16px}
+
+  /* mastery */
+  .mastery{margin-top:18px}
+  .mrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--hairline)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .code{width:42px;font-size:11px;font-weight:700;text-align:center;color:var(--ink);background:var(--soft);border-radius:7px;padding:4px 0}
+  .mrow .nm{flex:1;font-size:13.5px}
+  .mrow .nm small{display:block;color:var(--muted);font-size:11.5px}
+  .bar{width:120px;height:7px;background:var(--ring-track);border-radius:99px;overflow:hidden;flex:none}
+  .bar i{display:block;height:100%;border-radius:99px;background:var(--primary)}
+  .bar.low i{background:var(--accent)}
+  .mrow .pc{width:38px;text-align:right;font-family:'Space Grotesk';font-weight:600;font-size:13px}
+
+  /* history */
+  .hrow{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--hairline)}
+  .hrow:last-child{border-bottom:0}
+  .hrow .sc{width:42px;height:42px;border-radius:11px;background:var(--soft);display:grid;place-items:center;font-family:'Space Grotesk';font-weight:700;color:var(--primary);font-size:15px}
+  .hrow .t{flex:1;font-size:13.5px;font-weight:600}
+  .hrow .t small{display:block;color:var(--muted);font-weight:400;font-size:11.5px;margin-top:1px}
+  .hrow .chev{color:var(--muted)}
+  .section-title{font-size:15px;font-weight:700;margin:30px 0 4px}
+  .section-sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+  .footer-note{margin:34px 0 0;color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body class="theme-a">
+
+  <!-- ===== Theme switcher ===== -->
+  <div class="switcher">
+    <b>TembusKarir · Prototype Beranda</b>
+    <span class="hint">Konteks: Psikotes ASTRA · klik untuk bandingkan arah warna →</span>
+    <div class="swatches">
+      <button class="sw active" data-t="a"><span class="dot" style="background:#0E9F6E"></span> A · Tenang &amp; Tumbuh</button>
+      <button class="sw" data-t="b"><span class="dot" style="background:#127C8A"></span> B · Studio Ink</button>
+      <button class="sw" data-t="c"><span class="dot" style="background:#1B4F8A"></span> C · Biru Tepercaya</button>
+      <button class="sw" data-t="d"><span class="dot" style="background:#2C6E54"></span> D · Sage &amp; Tanah Liat</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <!-- ===== Sidebar ===== -->
+    <aside class="side">
+      <div class="brand"><div class="logo">T</div><div class="name">TembusKarir</div></div>
+
+      <div class="nav active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/></svg>
+        Beranda
+      </div>
+
+      <div class="navlabel">Latihan</div>
+      <div class="subnav">
+        <a href="#"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.4 14.4 9.6 9.6"/><path d="m18.66 5.34-1.06 1.06"/><path d="M6.4 17.6 5.34 18.66"/><path d="m21 3-1.5 1.5"/><path d="m3 21 1.5-1.5"/><rect x="3.5" y="14.5" width="6" height="6" rx="2" transform="rotate(45 6.5 17.5)"/><rect x="14.5" y="3.5" width="6" height="6" rx="2" transform="rotate(45 17.5 6.5)"/></svg> Psikotes ASTRA <span class="tag">Aktif</span></a>
+        <a href="#"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 7h5l-3 7"/></svg> Rekrutmen PLN</a>
+        <a href="#"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg> Rekrutmen Bersama BUMN</a>
+      </div>
+
+      <div class="navlabel">Perkembangan</div>
+      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg> Progres &amp; Analisis</div>
+      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> Leaderboard</div>
+
+      <div class="navlabel">Lainnya</div>
+      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg> Info Seleksi</div>
+      <div class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M5 20h14"/></svg> Langganan</div>
+
+      <div class="userchip">
+        <div class="av">P</div>
+        <div><div style="font-weight:600;font-size:13.5px">Putra A.</div><small>Paket Gratis</small></div>
+      </div>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+      <div class="topbar">
+        <div class="search">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input placeholder="Cari paket, sub-tes, atau materi…" />
+        </div>
+        <div class="targetchip">
+          <span class="pill">ASTRA</span> Target kamu · <span class="days">9 hari lagi</span>
+        </div>
+        <div class="iconbtn"><span class="badge"></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.27 21a2 2 0 0 0 3.46 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></div>
+      </div>
+
+      <div class="hello">Halo, Putra 👋</div>
+      <div class="sub">Tersisa <b>9 hari</b> menuju Psikotes ASTRA. Yuk amankan kelemahan terakhirmu.</div>
+
+      <div class="grid">
+        <!-- Readiness -->
+        <div class="card pad">
+          <div class="eyebrow">Kesiapan kamu</div>
+          <div class="ready">
+            <div class="ring">
+              <svg width="138" height="138" viewBox="0 0 138 138">
+                <circle cx="69" cy="69" r="60" fill="none" stroke="var(--ring-track)" stroke-width="12"/>
+                <circle cx="69" cy="69" r="60" fill="none" stroke="var(--primary)" stroke-width="12" stroke-linecap="round"
+                        stroke-dasharray="376.99" stroke-dashoffset="120.6"/>
+              </svg>
+              <div class="pct"><b class="num">68</b><span>%</span></div>
+            </div>
+            <div>
+              <h2>Tinggal sedikit lagi!</h2>
+              <p>Kamu sudah di atas rata-rata pelamar. Fokus ke 1 sub-tes ini untuk tembus target.</p>
+              <div class="weak"><span class="d"></span> Kelemahan terbesar: <b style="margin-left:4px">Working Memory · 52%</b></div>
+              <div style="display:flex;gap:10px">
+                <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg> Lanjut latihan</button>
+                <button class="btn ghost">Simulasi penuh</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next step -->
+        <div class="card next pad">
+          <div class="eyebrow">Langkah berikutmu</div>
+          <h3>Drill Working Memory</h3>
+          <p>Latihan terfokus untuk sub-tes terlemahmu. Cukup 8 menit.</p>
+          <div class="meta">
+            <span>📋 <b>10</b> soal</span>
+            <span>⏱ <b>8</b> menit</span>
+            <span>🎯 fokus kelemahan</span>
+          </div>
+          <button class="btn">Mulai drill
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- tiles -->
+      <div class="tiles">
+        <div class="tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2v6h6"/><path d="M4 2h10l6 6v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/></svg></div>
+          <div class="k num">7</div><div class="l">Simulasi selesai</div>
+        </div>
+        <div class="tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
+          <div class="k num">71</div><div class="l">Rata-rata skor</div>
+        </div>
+        <div class="tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3 4 4 4 8a4 4 0 0 1-8 0c0-1 .5-2 1-3"/><path d="M12 22a6 6 0 0 0 6-6c0-3-2-5-3-7"/></svg></div>
+          <div class="k num">5</div><div class="l">Hari beruntun</div>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:14px">
+        <!-- mastery -->
+        <div class="card pad mastery">
+          <div class="eyebrow">Penguasaan sub-tes ASTRA</div>
+          <div class="mrow"><span class="code">QR</span><div class="nm">Quantitative Reasoning<small>Penalaran kuantitatif</small></div><div class="bar"><i style="width:84%"></i></div><span class="pc num">84</span></div>
+          <div class="mrow"><span class="code">DR</span><div class="nm">Deductive Reasoning<small>Penalaran deduktif</small></div><div class="bar"><i style="width:76%"></i></div><span class="pc num">76</span></div>
+          <div class="mrow"><span class="code">RC</span><div class="nm">Reading Comprehension<small>Pemahaman bacaan</small></div><div class="bar"><i style="width:80%"></i></div><span class="pc num">80</span></div>
+          <div class="mrow"><span class="code">WM</span><div class="nm">Working Memory<small>Memori kerja — perlu perhatian</small></div><div class="bar low"><i style="width:52%"></i></div><span class="pc num">52</span></div>
+          <div class="mrow"><span class="code">PS</span><div class="nm">Perceptual Speed<small>Kecepatan persepsi</small></div><div class="bar"><i style="width:64%"></i></div><span class="pc num">64</span></div>
+        </div>
+
+        <!-- history -->
+        <div class="card pad">
+          <div class="eyebrow">Riwayat terakhir</div>
+          <div class="hrow"><div class="sc num">74</div><div class="t">Simulasi Psikotes ASTRA #3<small>Kemarin · 78 menit</small></div><span class="chev">›</span></div>
+          <div class="hrow"><div class="sc num">61</div><div class="t">Drill Working Memory<small>2 hari lalu · 9 menit</small></div><span class="chev">›</span></div>
+          <div class="hrow"><div class="sc num">69</div><div class="t">Simulasi Psikotes ASTRA #2<small>4 hari lalu · 80 menit</small></div><span class="chev">›</span></div>
+          <div style="margin-top:14px"><button class="btn ghost" style="width:100%">Lihat semua riwayat</button></div>
+        </div>
+      </div>
+
+      <div class="footer-note">Prototype statis · 4 arah warna · font: Bricolage Grotesque + Hanken Grotesk + Space Grotesk</div>
+    </main>
+  </div>
+
+<script>
+  const body=document.body;
+  document.querySelectorAll('.sw').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      body.className='theme-'+b.dataset.t;
+    });
+  });
+</script>
+</body>
+</html>

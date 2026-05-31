@@ -223,10 +223,10 @@ export async function sendPaymentSuccessEmail(
   amount: number,
 ): Promise<void> {
   const planLabelMap: Record<string, string> = {
-    monthly:        'Premium Bulanan (30 hari)',
-    yearly:         'Premium Tahunan (365 hari)',
-    cpns_monthly:   'Premium CPNS Bulanan (30 hari)',
-    cpns_quarterly: 'Premium CPNS 3 Bulan (90 hari)',
+    monthly:           'Premium Bulanan (30 hari)',
+    yearly:            'Premium Tahunan (365 hari)',
+    premium_monthly:   'Premium Bulanan (30 hari)',
+    premium_quarterly: 'Premium 3 Bulan (90 hari)',
   }
   const planLabel = planLabelMap[planType] ?? planType
   const expiryDate = new Date(expiresAt)
@@ -260,7 +260,7 @@ export async function sendPaymentSuccessEmail(
     <!-- Info akses -->
     <div style="background:${BLUE_LIGHT};border-left:4px solid ${BLUE};border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:24px;">
       <p style="margin:0;font-size:13px;color:${BLUE_DARK};line-height:1.6;">
-        Dengan Premium, kamu bisa mengakses <strong>seluruh paket soal</strong> CPNS, PLN, ASTRA, dan semua kategori lainnya
+        Dengan Premium, kamu bisa mengakses <strong>seluruh paket soal</strong> PLN, ASTRA, dan semua kategori lainnya
         hingga <strong>${expiryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>.
       </p>
     </div>

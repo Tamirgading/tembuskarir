@@ -84,7 +84,7 @@ function VoucherModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="Contoh: CPNS3BULAN"
+                placeholder="Contoh: PREMIUM3BULAN"
                 maxLength={32}
                 disabled={loading}
                 autoFocus

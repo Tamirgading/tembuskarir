@@ -18,22 +18,10 @@ interface QuestionWithAnswer {
   order_index: number
 }
 
-interface CategoryStats {
-  correct: number
-  wrong: number
-  empty: number
-  rawScore: number
-}
-
 interface ScoreDetails {
-  type: 'SKD' | 'simple'
-  categories?: Record<string, CategoryStats>
-  totalRaw?: number
-  passingGrade?: { TWK: number; TIU: number; TKP: number; total: number }
+  type: string
   lulus?: boolean
 }
-
-const SKD_MAX: Record<string, number> = { TWK: 150, TIU: 175, TKP: 225 }
 
 export default async function HasilPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = await params
@@ -58,7 +46,6 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     .single()
 
   const pkg = pkgData as { name: string; total_questions: number; category: string } | null
-  const isCpns = pkg?.category === 'CPNS'
 
   // Coba fetch dengan explanation_image_url; fallback tanpa kolom itu
   // jika migration belum dijalankan di database (graceful degradation)
@@ -83,33 +70,20 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     questionsData = (qData ?? []) as QuestionWithAnswer[]
   }
 
-  // Urutkan soal SKD: TWK → TIU → TKP, lalu order_index dalam tiap kategori
-  const SKD_ORDER: Record<string, number> = { TWK: 0, TIU: 1, TKP: 2 }
-  const questions = (questionsData).sort((a, b) => {
-    const ao = SKD_ORDER[a.category ?? ''] ?? 99
-    const bo = SKD_ORDER[b.category ?? ''] ?? 99
-    if (ao !== bo) return ao - bo
-    return a.order_index - b.order_index
-  })
+  const questions = (questionsData).sort((a, b) => a.order_index - b.order_index)
   const userAnswers = (attempt.answers ?? {}) as Record<string, string>
   const score = attempt.score ?? 0
 
-  // Parse score_details kalau ada (untuk CPNS)
+  // Parse score_details kalau ada
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rawDetails = (attempt as any).score_details as ScoreDetails | null | undefined
   const scoreDetails: ScoreDetails | null = rawDetails && typeof rawDetails === 'object' ? rawDetails : null
-  const isSKD = scoreDetails?.type === 'SKD'
 
   // Lulus check
-  let lulus: boolean
-  if (isSKD && scoreDetails?.lulus !== undefined) {
-    lulus = scoreDetails.lulus
-  } else {
-    lulus = score >= 75
-  }
+  const lulus = scoreDetails?.lulus !== undefined ? scoreDetails.lulus : score >= 75
 
-  const portalHref = isCpns ? '/portal/cpns' : '/paket'
-  const portalLabel = isCpns ? 'Portal CPNS' : 'Paket Soal'
+  const portalHref = '/paket'
+  const portalLabel = 'Paket Soal'
 
   return (
     <div className="max-w-5xl mx-auto space-y-4 px-0">
@@ -132,7 +106,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             <p className="text-white/60 text-[9px] font-medium uppercase tracking-wide text-center leading-tight max-w-[80px] truncate">{pkg?.name}</p>
             <div className="w-[72px] h-[72px] rounded-full bg-white/20 border-[3px] border-white/50 flex flex-col items-center justify-center shadow-inner">
               <span className="text-2xl font-black text-white leading-none">{score}</span>
-              <span className="text-[9px] text-white/70">{isSKD ? '/ 550' : '/ 100'}</span>
+              <span className="text-[9px] text-white/70">/ 100</span>
             </div>
             <span className="bg-white/25 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">
               {attempt.duration_seconds ? formatDuration(attempt.duration_seconds) : '-'}
@@ -142,38 +116,6 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               {lulus ? '✓ LULUS' : 'BELUM LULUS'}
             </span>
           </div>
-
-          {/* TENGAH — progress per materi */}
-          {isSKD && scoreDetails?.categories && (
-            <div className="flex-1 px-4 flex flex-col justify-center gap-2 border-r border-white/20">
-              <p className="text-white/80 text-[10px] font-bold uppercase tracking-wide">Progress Tiap Materi</p>
-              {(['TWK', 'TIU', 'TKP'] as const).map((cat) => {
-                const stats = scoreDetails.categories![cat]
-                const max = SKD_MAX[cat]
-                const pg = scoreDetails.passingGrade?.[cat] ?? 0
-                const raw = stats?.rawScore ?? 0
-                const isPass = raw >= pg
-                const pct = Math.max(0, Math.min(100, (raw / max) * 100))
-                const pgPct = (pg / max) * 100
-                return (
-                  <div key={cat} className="flex items-center gap-2">
-                    <span className="shrink-0 w-9 text-center text-[10px] font-black text-white bg-white/25 rounded-md py-0.5">{cat}</span>
-                    <div className="flex-1 relative h-2 bg-white/20 rounded-full overflow-hidden">
-                      <div className={`absolute h-full rounded-full ${isPass ? 'bg-white' : 'bg-red-300'}`} style={{ width: `${pct}%` }} />
-                      <div className="absolute top-0 h-full w-0.5 bg-white/60" style={{ left: `${pgPct}%` }} />
-                    </div>
-                    <span className="shrink-0 text-xs font-black text-white text-right w-12">
-                      <span className={isPass ? 'text-white' : 'text-red-200'}>{raw % 1 === 0 ? raw : raw.toFixed(0)}</span>
-                      <span className="text-white/40 font-normal text-[9px]">/{max}</span>
-                    </span>
-                  </div>
-                )
-              })}
-              <p className="text-white/50 text-[10px] pt-0.5 border-t border-white/15">
-                Total · PG ≥ {scoreDetails.passingGrade?.total ?? 311}
-              </p>
-            </div>
-          )}
 
           {/* KANAN — status kelulusan (hidden on mobile) */}
           <div className="hidden sm:flex shrink-0 pl-4 flex-col justify-center gap-2 w-36">
@@ -199,10 +141,10 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             Coba Lagi
           </Link>
           <Link
-            href={isCpns ? '/portal/cpns' : '/paket'}
+            href="/paket"
             className="py-2.5 bg-white/20 border border-white/30 text-white text-sm font-medium rounded-xl hover:bg-white/30 transition-colors text-center"
           >
-            {isCpns ? 'Portal CPNS' : 'Paket Lain'}
+            Paket Lain
           </Link>
           <Link
             href="/dashboard"

@@ -8,7 +8,8 @@
 ## Identitas Proyek
 
 - **Nama proyek**: TembusKarir (tembuskarir.id)
-- **Tujuan**: Platform simulasi ujian CPNS/SKD berbasis web dengan sistem langganan
+- **Tujuan**: Platform simulasi tes rekrutmen kerja (PLN, ASTRA, BUMN, OJK, BI, dll.) berbasis web dengan sistem langganan
+- **Catatan pivot**: Simulasi SKD CPNS sudah dipindahkan ke platform terpisah (TembusASN). TembusKarir tidak lagi menangani CPNS/SKD.
 - **Target user**: 5.000–50.000 user aktif dalam 6 bulan pertama
 - **Model bisnis**: Freemium — paket gratis terbatas, premium dengan langganan bulanan/tahunan
 
@@ -48,13 +49,14 @@ tryout-platform/
 │   │   ├── persiapan/[packageId]/   # Halaman persiapan sebelum ujian (fase B)
 │   │   ├── ujian/[packageId]/
 │   │   ├── hasil/[attemptId]/
-│   │   ├── info-seleksi/            # Info rekrutmen dari crawl BKN/OJK/PLN dll
+│   │   ├── info-seleksi/            # Info rekrutmen dari crawl OJK/PLN/BUMN dll
 │   │   ├── harga/
 │   │   └── profil/
 │   ├── (admin)/              # Route group — admin panel
 │   │   └── admin/
 │   ├── portal/               # Public pages (no login needed)
-│   │   └── cpns/             # Portal CPNS publik
+│   │   ├── pln/              # Portal PLN (GAT) publik
+│   │   └── astra/            # Portal ASTRA (Psikotes) publik
 │   ├── api/
 │   │   ├── submit/           # POST — submit jawaban ujian
 │   │   ├── payment/create/   # POST — buat order Midtrans
@@ -72,13 +74,14 @@ tryout-platform/
 │   ├── ui/
 │   │   └── LatexContent.tsx  # Render konten dengan LaTeX support
 │   ├── admin/
-│   │   ├── AddQuestionForm.tsx   # Form tambah soal (support TKP point mode)
-│   │   ├── BulkImportModal.tsx   # Import CSV dengan kolom point_a–point_e
+│   │   ├── AddQuestionForm.tsx   # Form tambah soal (pilihan ganda)
+│   │   ├── BulkImportModal.tsx   # Import CSV soal pilihan ganda
 │   │   ├── QuestionList.tsx
 │   │   ├── PackageActions.tsx
 │   │   └── ImportButton.tsx
 │   ├── portal/
-│   │   └── CpnsPackageCard.tsx  # Row card horizontal untuk portal CPNS
+│   │   ├── PlnPackageCard.tsx   # Row card untuk portal PLN
+│   │   └── AstraPackageCard.tsx # Row card untuk portal ASTRA
 │   ├── persiapan/
 │   │   └── PersiapanActions.tsx # CTA buttons (mulai/lanjutkan/mulai baru)
 │   └── hasil/
@@ -132,7 +135,7 @@ create table public.packages (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   slug text unique not null,
-  category text not null check (category in ('CPNS', 'UTBK', 'KEDINASAN', 'LAINNYA')),
+  category text not null check (category in ('PLN', 'ASTRA', 'BI', 'OJK', 'KEDINASAN', 'LAINNYA')),
   description text,
   duration_minutes int not null default 90,
   total_questions int not null,
@@ -148,13 +151,13 @@ create table public.questions (
   id uuid primary key default gen_random_uuid(),
   package_id uuid references public.packages(id) on delete cascade not null,
   content text not null,
-  -- TWK/TIU: [{"key":"A","text":"..."}]
-  -- TKP:     [{"key":"A","text":"...","point":5}, ...] ← field point wajib ada
+  -- MCQ biasa:        [{"key":"A","text":"..."}]
+  -- Berbasis poin:    [{"key":"A","text":"...","point":5}, ...] (PLN AKHLAK/LA)
   options jsonb not null,
-  correct_answer text not null,  -- "A"–"E". Untuk TKP = key dengan point tertinggi
+  correct_answer text not null,  -- "A"–"E". Untuk soal berbasis poin = key dengan point tertinggi
   explanation text,
   difficulty text default 'medium' check (difficulty in ('easy', 'medium', 'hard')),
-  category text,                 -- sub-kategori: TWK, TIU, TKP
+  category text,                 -- kode sub-tes, mis. NUM, VER, QR
   image_url text,
   order_index int not null default 0,
   created_at timestamptz default now()
@@ -176,7 +179,7 @@ create table public.attempts (
   status text not null default 'ongoing' check (status in ('ongoing', 'finished')),
   started_at timestamptz default now(),
   finished_at timestamptz,
-  score_details jsonb default '{}'       -- ★ WAJIB: detail per-kategori SKD
+  score_details jsonb default '{}'       -- ★ WAJIB: detail per-sub-tes (PLN/ASTRA)
 );
 -- JALANKAN di Supabase jika belum ada:
 -- ALTER TABLE public.attempts ADD COLUMN IF NOT EXISTS score_details jsonb DEFAULT '{}';
@@ -189,7 +192,7 @@ create table public.subscriptions (
   user_id uuid references public.users(id) on delete cascade not null,
   midtrans_order_id text unique not null,
   midtrans_transaction_id text,
-  plan_type text not null check (plan_type in ('monthly', 'yearly')),
+  plan_type text not null check (plan_type in ('premium_monthly', 'premium_quarterly', 'package', 'monthly', 'yearly')),
   amount int not null,
   -- 'expired' = batas waktu bayar habis (dari Midtrans expire event)
   -- 'failed'  = cancel/deny oleh user atau bank
@@ -204,7 +207,7 @@ create table public.subscriptions (
 ```sql
 create table public.info_seleksi (
   id uuid primary key default gen_random_uuid(),
-  institusi text not null,       -- CPNS, OJK, BI, PLN, RBB, ASTRA
+  institusi text not null,       -- OJK, BI, PLN, RBB, ASTRA
   kategori text not null,        -- pengumuman, jadwal, soal, tips, kisi-kisi
   judul text not null,
   ringkasan text,
@@ -218,17 +221,15 @@ create table public.info_seleksi (
 
 ---
 
-## SKD CPNS Scoring — WAJIB BENAR
+## Scoring per Kategori — WAJIB BENAR
 
-| Kategori | Benar | Salah | Kosong |
-|---|---|---|---|
-| TWK | +5 | **0** (tidak ada penalti) | 0 |
-| TIU | +5 | **0** (tidak ada penalti) | 0 |
-| TKP | nilai opsi 1–5 | — (tidak berlaku) | 0 |
+Scoring berbeda per `packages.category`, semua terpusat di `computeScore()`:
 
-- **TKP**: tidak ada benar/salah. Setiap opsi punya `point` (1–5). User dapat nilai sesuai opsi yang dipilih.
-- Skor max SKD: **550** (TWK 150 + TIU 175 + TKP 225)
-- Passing grade: TWK ≥65, TIU ≥80, TKP ≥166, Total ≥311
+| Kategori | Aturan |
+|---|---|
+| **PLN** (GAT) | Sub-tes MCQ (NUM/VER/SIL/DER/FIG/PU): +1 benar, 0 salah/kosong. AKHLAK & LA: berbasis poin per opsi (1–5); LA bisa `is_reverse_scored`. Soal AKHLAK/LA disimpan di tabel terpisah `questions_pln_akhlak` & `questions_pln_la`. |
+| **ASTRA** (Psikotes) | Semua sub-tes (QR/DR/RC/IR/VIZ/PS/WM): +1 benar, 0 salah/kosong. Skor = jumlah benar. |
+| lainnya (BI/OJK/dll.) | Simple percentage: `correctCount / total * 100`. |
 
 **PENTING**: Semua scoring terpusat di `lib/exam-scoring.ts` → fungsi `computeScore()`.
 Jangan duplikasi logika scoring di tempat lain.
@@ -272,8 +273,11 @@ create policy "subscriptions_select_own" on public.subscriptions for select usin
 ## Alur Ujian (penting untuk dipahami)
 
 ```
-/portal/cpns → /persiapan/[packageId] → /ujian/[packageId] → /hasil/[attemptId]
+/portal/pln (atau /portal/astra) → /persiapan/[packageId] → /ujian/[packageId] → /hasil/[attemptId]
 ```
+
+Catatan: paket ASTRA & PLN memakai runner ujian khusus (`/ujian/astra/[packageId]`,
+`/ujian/pln/[packageId]`); `/ujian/[packageId]` generik untuk kategori MCQ lain (BI/OJK/dll.).
 
 - `/persiapan`: Server Component. Cek login, akses premium, ongoing attempt.
   - Jika ongoing attempt **expired** → auto-finish dengan `computeScore()` → tampil mulai baru
@@ -347,7 +351,9 @@ ADMIN_EMAILS=email@admin.com           # Comma-separated admin emails
 | Sprint 5 | /harga dan /portal bisa diakses publik | Calon user lihat sebelum daftar |
 | Sprint 6 | Vercel Cron untuk crawl + cleanup | Otomatis, tidak perlu trigger manual |
 | Sprint 6 | Dedup via url_hash (md5 generated) | Cegah duplikat saat cron ulang |
-| Sprint 6 | TKP sistem poin per opsi (1–5) | Sesuai aturan resmi BKN, bukan benar/salah |
+| Sprint 6 | Sistem poin per opsi (1–5) untuk PLN AKHLAK/LA | Penilaian berbasis kecenderungan, bukan benar/salah |
+| Pasca-pivot | CPNS/SKD dihapus → fokus PLN/ASTRA/BUMN | CPNS dipindah ke platform terpisah (TembusASN) |
+| Pasca-pivot | Langganan di-rebrand cpns_* → premium_* | Satu langganan Premium membuka semua kategori paket |
 | Sprint 6 | Scoring di `lib/exam-scoring.ts` | Single source of truth, tidak duplikasi |
 | Sprint 6 | Auto-finish di /persiapan guard + cron | Guard = instant UX, cron = safety net |
 | Sprint 6 | Webhook expire → status 'expired' | Beda dari 'failed' (cancel/deny bank) |
@@ -366,7 +372,7 @@ ADMIN_EMAILS=email@admin.com           # Comma-separated admin emails
 ]
 ```
 
-- **crawl-seleksi**: crawl info rekrutmen dari BKN, OJK, BI, PLN, RBB, Astra
+- **crawl-seleksi**: crawl info rekrutmen dari OJK, PLN, RBB/BUMN, Astra
 - **cleanup**: (1) auto-finish expired ongoing attempts dengan skor proper, (2) expire pending subscriptions > 48 jam
 
 ---
@@ -393,8 +399,9 @@ npx supabase gen types typescript --local > types/database.ts
 - [x] Sprint 3: Dashboard & Progress (Landing Page, Profil, Leaderboard)
 - [x] Sprint 4: Monetisasi (Midtrans, Resend, Rate Limiting)
 - [x] Sprint 5: Admin Panel + SEO + Deploy Prep
-- [x] Sprint 6: Portal CPNS, Persiapan Page, TKP Scoring, Info Seleksi Crawl,
-                Auto-finish Expired Attempts, Icon Overhaul (lucide-react)
+- [x] Sprint 6: Portal Seleksi (PLN/ASTRA), Persiapan Page, Scoring per Kategori,
+                Info Seleksi Crawl, Auto-finish Expired Attempts, Icon Overhaul (lucide-react)
+- [x] Pasca-pivot: Hapus CPNS/SKD (pindah ke TembusASN), rebrand langganan ke Premium generik
 
 ## Hal yang Belum Dikerjakan / Backlog
 

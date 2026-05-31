@@ -6,21 +6,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // ─── CONFIG SUMBER ─────────────────────────────────────────────
 const SOURCES = [
-  { file: 'raw-cpns-detik.md',           institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'SKD' },
-  { file: 'raw-cpns-twk-tirto.md',       institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TWK' },
-  { file: 'raw-cpns-skd-mamikos.md',     institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TWK' },
-  { file: 'raw-cpns-skd-mamikos2.md',    institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TWK' },
-  { file: 'raw-cpns-skd-mamikos3.md',    institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TIU' },
-  { file: 'raw-cpns-skd-mamikos4.md',    institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TKP' },
-  { file: 'raw-cpns-skd-mamikos5.md',    institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TKP' },
-  { file: 'raw-cpns-latihan-mamikos.md', institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TIU' },
-  { file: 'raw-cpns-latihan-mamikos2.md',institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TKP' },
-  { file: 'raw-cpns-latihan-mamikos3.md',institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TWK' },
-  { file: 'raw-cpns-tkp-kumparan.md',   institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TKP' },
-  { file: 'raw-cpns-tiu-dealls.md',     institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TIU' },
-  { file: 'raw-cpns-twk-tirto2.md',    institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TWK' },
-  { file: 'raw-cpns-tiu-jawapos.md',   institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TIU' },
-  { file: 'raw-cpns-twk-jawapos.md',   institusi: 'CPNS', paket: 'SKD CPNS', kategori: 'TWK' },
   { file: 'raw-ojk-mamikos.md',          institusi: 'OJK',  paket: 'OJK PCAM', kategori: 'TKU' },
   { file: 'raw-ojk-tribun.md',           institusi: 'OJK',  paket: 'OJK PCAM', kategori: 'TPD' },
   { file: 'raw-ojk-detik.md',            institusi: 'OJK',  paket: 'OJK PCAM', kategori: 'TKU' },
@@ -178,7 +163,7 @@ function extractQuestionStandard(block) {
     const m1 = searchText.match(/(?:Jawaban|Kunci jawaban|Kunci|Answer|Jawab)\s*[:.=]?\s*\(?([A-Ea-e])\)?/i)
     if (m1) correctAnswer = m1[1].toUpperCase()
 
-    // Pola 2: TKP scoring format "Jawaban: B (5), C (4), ..." — ambil yang skor tertinggi (5)
+    // Pola 2: format poin per opsi "Jawaban: B (5), C (4), ..." — ambil yang skor tertinggi (5)
     if (!correctAnswer) {
       const m2 = searchText.match(/(?:Jawaban|Kunci jawaban)\s*[:.=]?\s*([A-Ea-e])\s*\(5\)/i)
       if (m2) correctAnswer = m2[1].toUpperCase()
@@ -472,9 +457,6 @@ function parseMarkdown(content) {
 function detectKategori(q, defaultKategori) {
   const text = (q.content + ' ' + (q.explanation || '')).toLowerCase()
 
-  if (/pancasila|uud 1945|bhinneka|wawasan kebangsaan|nkri|negara kesatuan|sejarah bangsa|nasionalisme/.test(text)) return 'TWK'
-  if (/deret|analogi|sinonim|antonim|aritmatika|geometri|verbal|numerik|figural|penalaran|logika matematika|mana yang benar/.test(text)) return 'TIU'
-  if (/karakteristik|situasi kerja|pelayanan publik|integritas|komitmen|empati|etos kerja/.test(text)) return 'TKP'
   if (/otoritas jasa keuangan|ojk|sektor keuangan|pasar modal|asuransi|perbankan|lembaga keuangan/.test(text)) return 'TKU'
   if (/bank indonesia|bank sentral|pcpm|kebijakan moneter|devisa|rupiah|sistem pembayaran|bi rate/.test(text)) return 'Pengetahuan Umum'
   if (/pln|listrik|transmisi|watt|volt|amper|generator|transformator|ketenagalistrikan|gat/.test(text)) return 'GAT'

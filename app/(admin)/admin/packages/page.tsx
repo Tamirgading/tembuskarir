@@ -97,7 +97,7 @@ export default async function AdminPackagesPage() {
           <Lightbulb className="w-4 h-4 text-blue-600 shrink-0" />
           <p className="font-semibold">Cara menambah soal ke paket:</p>
         </div>
-        <p>Klik <strong>Kelola Soal</strong> di baris paket yang ingin diisi, lalu gunakan form input soal yang tersedia. Paket CPNS membutuhkan tepat <strong>110 soal</strong> (TWK: 30, TIU: 35, TKP: 45) agar tampil penuh di website.</p>
+        <p>Klik <strong>Kelola Soal</strong> di baris paket yang ingin diisi, lalu gunakan form input soal yang tersedia. Jumlah soal sebaiknya sesuai dengan target soal paket agar tampil penuh di website.</p>
       </div>
     </div>
   )

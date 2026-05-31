@@ -6,7 +6,7 @@ import { LatexContent } from '@/components/ui/LatexContent'
 interface QuestionOption {
   key: string
   text: string
-  point?: number // TKP: nilai 1–5
+  point?: number // soal berbasis poin: nilai 1–5
 }
 
 interface ReviewQuestion {
@@ -28,8 +28,8 @@ interface HasilReviewProps {
 
 type FilterMode = 'semua' | 'salah' | 'kosong'
 
-// Warna badge nilai TKP
-const TKP_POINT_COLOR: Record<number, { bg: string; text: string; border: string; dot: string }> = {
+// Warna badge nilai poin
+const POINT_COLOR: Record<number, { bg: string; text: string; border: string; dot: string }> = {
   5: { bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-300',  dot: 'bg-green-500' },
   4: { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-300',   dot: 'bg-blue-500' },
   3: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-300', dot: 'bg-yellow-500' },
@@ -37,7 +37,7 @@ const TKP_POINT_COLOR: Record<number, { bg: string; text: string; border: string
   1: { bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-300',    dot: 'bg-red-400' },
 }
 
-const TKP_POINT_LABEL: Record<number, string> = {
+const POINT_LABEL: Record<number, string> = {
   5: 'Sangat Tepat',
   4: 'Tepat',
   3: 'Cukup Tepat',
@@ -49,19 +49,19 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [filter, setFilter] = useState<FilterMode>('semua')
 
-  // Deteksi apakah soal adalah TKP (ada field point pada options)
-  function isTkpQuestion(q: ReviewQuestion): boolean {
+  // Deteksi apakah soal berbasis poin (ada field point pada options)
+  function isPointQuestion(q: ReviewQuestion): boolean {
     return q.options.some((o) => typeof o.point === 'number')
   }
 
   function getStatus(q: ReviewQuestion): 'correct' | 'wrong' | 'empty' | 'answered' {
     const ans = userAnswers[q.id]
     if (!ans) return 'empty'
-    if (isTkpQuestion(q)) return 'answered' // TKP tidak punya benar/salah
+    if (isPointQuestion(q)) return 'answered' // soal berbasis poin tidak punya benar/salah
     return ans === q.correct_answer ? 'correct' : 'wrong'
   }
 
-  // Untuk filter: TKP "answered" tidak masuk 'salah' atau 'kosong'
+  // Untuk filter: soal poin "answered" tidak masuk 'salah' atau 'kosong'
   const filteredIndices = questions
     .map((q, i) => ({ q, i }))
     .filter(({ q }) => {
@@ -87,18 +87,18 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
   const currentQuestion = questions[currentIndex] ?? questions[0]
   const userAnswer = userAnswers[currentQuestion?.id ?? '']
   const status = currentQuestion ? getStatus(currentQuestion) : 'empty'
-  const isTkp = currentQuestion ? isTkpQuestion(currentQuestion) : false
+  const isPoint = currentQuestion ? isPointQuestion(currentQuestion) : false
 
-  // Poin yang didapat user pada soal TKP saat ini
-  const tkpPointEarned = isTkp && userAnswer
+  // Poin yang didapat user pada soal berbasis poin saat ini
+  const pointEarned = isPoint && userAnswer
     ? (currentQuestion.options.find((o) => o.key === userAnswer)?.point ?? 0)
     : 0
 
   const correctCount = questions.filter((q) => getStatus(q) === 'correct').length
   const wrongCount   = questions.filter((q) => getStatus(q) === 'wrong').length
   const emptyCount   = questions.filter((q) => getStatus(q) === 'empty').length
-  // TKP yang sudah dijawab
-  const tkpAnsweredCount = questions.filter((q) => isTkpQuestion(q) && getStatus(q) === 'answered').length
+  // Soal poin yang sudah dijawab
+  const pointAnsweredCount = questions.filter((q) => isPointQuestion(q) && getStatus(q) === 'answered').length
 
   // Guard: jika tidak ada soal (data gagal dimuat), tampilkan pesan
   if (!currentQuestion) {
@@ -115,7 +115,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
     correct:  'border-green-400 bg-green-50',
     wrong:    'border-red-400 bg-red-50',
     empty:    'border-gray-200 bg-white',
-    answered: 'border-blue-300 bg-blue-50', // TKP yang dijawab
+    answered: 'border-blue-300 bg-blue-50', // soal poin yang dijawab
   }[status]
 
   // Badge status di header kartu
@@ -125,7 +125,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
     empty:    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-500 ml-auto">— Tidak dijawab</span>,
     answered: (
       <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 ml-auto">
-        TKP · {tkpPointEarned} poin
+        {pointEarned} poin
       </span>
     ),
   }[status]
@@ -183,7 +183,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                 {currentQuestion.category}
               </span>
             )}
-            {isTkp && (
+            {isPoint && (
               <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 border border-green-200 rounded font-medium">
                 Sistem Poin
               </span>
@@ -212,9 +212,9 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
               const isUserChoice = userAnswer === opt.key
               const point = opt.point
 
-              if (isTkp && typeof point === 'number') {
-                // ── Mode TKP: tampilkan nilai poin per opsi ──
-                const pc = TKP_POINT_COLOR[point] ?? TKP_POINT_COLOR[1]
+              if (isPoint && typeof point === 'number') {
+                // ── Mode poin: tampilkan nilai poin per opsi ──
+                const pc = POINT_COLOR[point] ?? POINT_COLOR[1]
                 const isChosen = isUserChoice
 
                 return (
@@ -238,14 +238,14 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${pc.bg} ${pc.text} ${pc.border}`}>
                         {point} poin
                       </span>
-                      {point === 5 && <span className="text-[10px] text-gray-400">{TKP_POINT_LABEL[point]}</span>}
+                      {point === 5 && <span className="text-[10px] text-gray-400">{POINT_LABEL[point]}</span>}
                       {isChosen && <span className={`text-[10px] font-semibold ${pc.text}`}>← Pilihanmu</span>}
                     </div>
                   </div>
                 )
               }
 
-              // ── Mode TWK/TIU: benar/salah ──
+              // ── Mode pilihan ganda: benar/salah ──
               const isRight = currentQuestion.correct_answer === opt.key
               let bg = 'bg-gray-50 border-gray-200 text-gray-700'
               if (isRight) bg = 'bg-green-50 border-green-300 text-green-800'
@@ -276,7 +276,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
           {(currentQuestion.explanation || currentQuestion.explanation_image_url) && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
               <p className="text-xs font-semibold text-blue-700">
-                {isTkp ? 'Penjelasan' : 'Pembahasan'}
+                {isPoint ? 'Penjelasan' : 'Pembahasan'}
               </p>
               {currentQuestion.explanation && (
                 <div className="text-sm text-blue-900 leading-relaxed">
@@ -325,12 +325,12 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
               const s = getStatus(q)
               const isCurrent = idx === currentIndex
               const inFilter = filteredIndices.includes(idx)
-              const tkp = isTkpQuestion(q)
+              const point = isPointQuestion(q)
 
               let cls = 'bg-gray-100 text-gray-500' // empty
               if (s === 'correct')  cls = 'bg-green-100 text-green-700'
               if (s === 'wrong')    cls = 'bg-red-100 text-red-700'
-              if (s === 'answered') cls = 'bg-blue-100 text-blue-600' // TKP dijawab
+              if (s === 'answered') cls = 'bg-blue-100 text-blue-600' // soal poin dijawab
               if (isCurrent)        cls = 'bg-blue-600 text-white ring-2 ring-blue-300'
               if (!inFilter && !isCurrent) cls += ' opacity-30'
 
@@ -338,7 +338,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                 <button
                   key={q.id}
                   onClick={() => goTo(idx)}
-                  title={`Soal ${idx + 1}${tkp ? ' (TKP)' : ''} — ${
+                  title={`Soal ${idx + 1}${point ? ' (poin)' : ''} — ${
                     s === 'correct' ? 'Benar' :
                     s === 'wrong' ? 'Salah' :
                     s === 'answered' ? 'Dijawab' : 'Kosong'
@@ -356,7 +356,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
             {[
               { color: 'bg-green-100', label: `Benar (${correctCount})` },
               { color: 'bg-red-100',   label: `Salah (${wrongCount})` },
-              { color: 'bg-blue-100',  label: `TKP Dijawab (${tkpAnsweredCount})` },
+              { color: 'bg-blue-100',  label: `Poin Dijawab (${pointAnsweredCount})` },
               { color: 'bg-gray-100',  label: `Kosong (${emptyCount})` },
               { color: 'bg-blue-600',  label: 'Soal aktif' },
             ].map((item) => (

@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     const pkgTyped = pkg as { id: string; is_free: boolean; category: string }
 
-    const status = await checkPackageAccess(user.id, packageId, pkgTyped.is_free, pkgTyped.category)
+    const status = await checkPackageAccess(user.id, packageId, pkgTyped.is_free)
     const canAccess = status !== 'locked'
 
     return NextResponse.json({ canAccess, category: pkgTyped.category, status })

@@ -33,10 +33,6 @@ interface QuestionListProps {
 
 // ─── Metadata subtes ───────────────────────────────────────────────────────────
 const SUBTEST_FULL: Record<string, string> = {
-  // CPNS
-  TWK: 'Tes Wawasan Kebangsaan',
-  TIU: 'Tes Intelegensi Umum',
-  TKP: 'Tes Karakteristik Pribadi',
   // ASTRA
   QR: 'Quantitative Reasoning',
   DR: 'Deductive Reasoning',
@@ -59,10 +55,6 @@ const SUBTEST_FULL: Record<string, string> = {
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
-  // CPNS
-  TWK: 'bg-blue-100 text-blue-700 border-blue-200',
-  TIU: 'bg-purple-100 text-purple-700 border-purple-200',
-  TKP: 'bg-green-100 text-green-700 border-green-200',
   // ASTRA
   QR:  'bg-orange-100 text-orange-700 border-orange-200',
   DR:  'bg-amber-100 text-amber-700 border-amber-200',
@@ -86,13 +78,12 @@ const CATEGORY_COLOR: Record<string, string> = {
 
 // Urutan tampil per tipe paket
 const ORDERED_SUBTESTS: Record<string, string[]> = {
-  CPNS:  ['TWK', 'TIU', 'TKP'],
   ASTRA: ['QR', 'DR', 'RC', 'IR', 'VIZ', 'PS', 'WM'],
   PLN:   ['NUM', 'VER', 'SIL', 'DER', 'FIG', 'PU', 'LA', 'AKHLAK'],
 }
 
 // Subtes PLN yang pakai sistem poin (bukan MCQ biasa)
-const POINT_BASED_CATS = new Set(['TKP', 'AKHLAK', 'LA'])
+const POINT_BASED_CATS = new Set(['AKHLAK', 'LA'])
 
 const DIFFICULTY_LABEL: Record<string, string> = {
   easy: 'Mudah', medium: 'Sedang', hard: 'Sulit',

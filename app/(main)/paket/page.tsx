@@ -1,16 +1,14 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { FileText, Clock, Trophy, Lock } from 'lucide-react'
+import { FileText, Clock, Trophy } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { UserRow, PackageRow } from '@/lib/utils'
 
 export const metadata: Metadata = {
-  title: 'Paket Soal Try Out CPNS SKD',
-  description: 'Pilih paket soal try out CPNS SKD — TWK, TIU, TKP. Ada paket gratis dan premium dengan ribuan soal berkualitas.',
+  title: 'Paket Soal Simulasi Tes Kerja',
+  description: 'Pilih paket soal simulasi tes rekrutmen kerja. Ada paket gratis dan premium dengan ribuan soal berkualitas.',
 }
-
-const CPNS_TARGET = 110
 
 export default async function PaketPage() {
   const supabase = await createClient()
@@ -30,27 +28,9 @@ export default async function PaketPage() {
     .eq('is_published', true)
     .order('created_at', { ascending: true })
 
-  // Hitung jumlah soal per paket
-  const { data: questionCounts } = await supabase
-    .from('questions')
-    .select('package_id')
-
   const profile = profileData as Pick<UserRow, 'plan'> | null
   const packages = (packagesData ?? []) as PackageRow[]
   const userPlan = profile?.plan ?? 'free'
-
-  // Buat map packageId → jumlah soal
-  const countMap: Record<string, number> = {}
-  for (const row of (questionCounts ?? [])) {
-    const r = row as { package_id: string }
-    countMap[r.package_id] = (countMap[r.package_id] ?? 0) + 1
-  }
-
-  function isComingSoon(pkg: PackageRow): boolean {
-    if (pkg.category !== 'CPNS') return false
-    const count = countMap[pkg.id] ?? 0
-    return count < CPNS_TARGET
-  }
 
   return (
     <div className="space-y-6">
@@ -67,16 +47,11 @@ export default async function PaketPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {packages.map((pkg) => {
             const canAccess = pkg.is_free || userPlan === 'premium'
-            const comingSoon = isComingSoon(pkg)
 
             return (
               <div
                 key={pkg.id}
-                className={`bg-white rounded-xl border p-6 flex flex-col gap-4 transition-colors ${
-                  comingSoon
-                    ? 'border-gray-200 opacity-75'
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
+                className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col gap-4 transition-colors hover:border-blue-300"
               >
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2">
@@ -87,11 +62,6 @@ export default async function PaketPage() {
                     <h2 className="font-semibold text-gray-900 leading-snug">{pkg.name}</h2>
                   </div>
                   <div className="flex flex-col items-end gap-1">
-                    {comingSoon && (
-                      <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 flex items-center gap-1">
-                        <Lock className="w-3 h-3" /> Coming Soon
-                      </span>
-                    )}
                     <span
                       className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${
                         pkg.is_free
@@ -117,11 +87,7 @@ export default async function PaketPage() {
 
                 {/* CTA */}
                 <div className="mt-auto space-y-2">
-                  {comingSoon ? (
-                    <div className="w-full text-center py-2.5 bg-gray-100 text-gray-400 text-sm font-medium rounded-lg cursor-not-allowed">
-                      Segera Hadir
-                    </div>
-                  ) : canAccess ? (
+                  {canAccess ? (
                     <Link
                       href={`/persiapan/${pkg.id}`}
                       className="block w-full text-center py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
@@ -136,14 +102,12 @@ export default async function PaketPage() {
                       Upgrade Premium
                     </Link>
                   )}
-                  {!comingSoon && (
-                    <Link
-                      href={`/paket/${pkg.id}/leaderboard`}
-                      className="flex items-center justify-center gap-1.5 w-full text-center py-2 text-gray-500 text-xs hover:text-blue-600 transition-colors"
-                    >
-                      <Trophy className="w-3.5 h-3.5" /> Lihat Leaderboard
-                    </Link>
-                  )}
+                  <Link
+                    href={`/paket/${pkg.id}/leaderboard`}
+                    className="flex items-center justify-center gap-1.5 w-full text-center py-2 text-gray-500 text-xs hover:text-blue-600 transition-colors"
+                  >
+                    <Trophy className="w-3.5 h-3.5" /> Lihat Leaderboard
+                  </Link>
                 </div>
               </div>
             )

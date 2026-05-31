@@ -17,18 +17,6 @@ const CRON_SECRET = process.env.CRON_SECRET!
 // Sumber crawl per institusi — sinkron dengan tabel crawl_sources
 const CRAWL_SOURCES = [
   {
-    institusi: 'CPNS',
-    kategori: 'pengumuman' as const,
-    url: 'https://www.bkn.go.id/category/publikasi/pengumuman/',
-    label: 'BKN - Pengumuman Resmi',
-  },
-  {
-    institusi: 'CPNS',
-    kategori: 'pengumuman' as const,
-    url: 'https://www.bkn.go.id/category/publikasi/berita/',
-    label: 'BKN - Berita Terbaru',
-  },
-  {
     institusi: 'RBB',
     kategori: 'pengumuman' as const,
     url: 'https://fhcibumn.com/gallery/news',

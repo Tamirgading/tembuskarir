@@ -5,7 +5,7 @@ import {
   TrendingUp, Award, Target, CheckCircle, Package, ShoppingBag, CalendarDays,
 } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { getCpnsSubscriptionStatus } from '@/lib/access'
+import { getPremiumSubscriptionStatus } from '@/lib/access'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import BackButton from '@/components/ui/BackButton'
@@ -21,9 +21,9 @@ interface UnlockRow { id: string; package_id: string; created_at: string }
 
 // ── Konstanta ────────────────────────────────────────────────────────────────
 const PLAN_LABEL: Record<string, string> = {
-  cpns_monthly:  'Langganan CPNS — 1 Bulan',
-  cpns_quarterly:'Langganan CPNS — 3 Bulan',
-  package:       'Paket Satuan',
+  premium_monthly:  'Langganan Premium — 1 Bulan',
+  premium_quarterly:'Langganan Premium — 3 Bulan',
+  package:          'Paket Satuan',
 }
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   paid:    { label: 'Aktif',             cls: 'bg-green-100 text-green-700'  },
@@ -50,7 +50,7 @@ export default async function DashboardPage({
   const name = (profileData as { full_name: string | null } | null)?.full_name
     ?? user.email?.split('@')[0] ?? 'Pengguna'
 
-  const cpnsSub = await getCpnsSubscriptionStatus(user.id)
+  const premiumSub = await getPremiumSubscriptionStatus(user.id)
   const fmt = (d: string) =>
     new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
   const fmtTime = (d: string) =>
@@ -162,9 +162,9 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-extrabold text-gray-900">Halo, {name}!</h1>
           <p className="text-gray-500 text-sm mt-1">Selamat datang di dashboard persiapanmu.</p>
         </div>
-        {cpnsSub.active && cpnsSub.expiresAt && (
+        {premiumSub.active && premiumSub.expiresAt && (
           <span className="shrink-0 inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 font-semibold text-xs rounded-full whitespace-nowrap">
-            ✦ CPNS aktif s/d {fmt(cpnsSub.expiresAt)}
+            ✦ Premium aktif s/d {fmt(premiumSub.expiresAt)}
           </span>
         )}
       </div>

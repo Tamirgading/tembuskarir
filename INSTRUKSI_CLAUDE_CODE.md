@@ -107,7 +107,7 @@ Buat file supabase/migrations/001_initial_schema.sql dengan isi:
    otomatis insert ke tabel public.users
 
 3. Tabel packages:
-   - id, name, slug (unique), category (CPNS/UTBK/KEDINASAN/LAINNYA)
+   - id, name, slug (unique), category (PLN/ASTRA/BI/OJK/KEDINASAN/LAINNYA)
    - description, duration_minutes, total_questions
    - is_free (boolean), is_published (boolean)
    - created_at
@@ -116,7 +116,7 @@ Buat file supabase/migrations/001_initial_schema.sql dengan isi:
    - id, package_id (FK)
    - content (text), options (jsonb) — format: [{"key":"A","text":"..."}]
    - correct_answer (text), explanation (text)
-   - difficulty (easy/medium/hard), category (TWK/TIU/TKP)
+   - difficulty (easy/medium/hard), category (kode sub-tes, mis. NUM/VER/QR)
    - image_url (nullable), order_index, created_at
 
 5. Tabel attempts:
@@ -240,13 +240,13 @@ Konteks: Schema database sudah ada. Saya ingin ada data untuk testing.
 
 Bagian A — Buat file supabase/seed.sql:
 Insert 2 paket contoh:
-- "Try Out CPNS SKD Seri 1" (gratis, 30 soal, 30 menit, CPNS)
-- "Try Out CPNS SKD Seri 2" (premium, 100 soal, 90 menit, CPNS)
+- "Simulasi PLN GAT Seri 1" (gratis, 30 soal, 30 menit, PLN)
+- "Psikotes ASTRA Seri 1" (premium, 100 soal, 90 menit, ASTRA)
 
 Insert 10 soal contoh untuk paket pertama:
-- Mix 3 soal TWK, 4 soal TIU, 3 soal TKP
+- Mix soal numerik, verbal, dan penalaran
 - Setiap soal: content, 5 pilihan (A-E), correct_answer, explanation
-- Buat soal yang realistis tentang CPNS (bisa dibuat sendiri, tidak perlu soal asli)
+- Buat soal yang realistis tentang tes rekrutmen kerja (bisa dibuat sendiri, tidak perlu soal asli)
 
 Bagian B — Buat halaman app/(main)/paket/page.tsx:
 - Server Component — fetch semua paket yang is_published = true
@@ -417,7 +417,7 @@ Section C — Riwayat ujian (tabel):
 - Tampilkan maksimal 10 terbaru, dengan link "Lihat semua"
 
 Section D — Analisis kelemahan (jika ada cukup data, minimal 3 attempt):
-- Hitung akurasi per kategori (TWK, TIU, TKP) dari semua attempt
+- Hitung akurasi per sub-tes dari semua attempt
 - Tampilkan sebagai progress bar sederhana
 - Highlight kategori dengan akurasi terendah
 
@@ -435,7 +435,7 @@ Ubah app/page.tsx menjadi landing page profesional.
 Buat landing page dengan sections:
 
 1. Hero section:
-   - Headline: "Persiapkan CPNS Kamu dengan Try Out Terbaik"
+   - Headline: "Persiapkan Tes Kerja Kamu dengan Simulasi Terbaik"
    - Sub-headline: manfaat singkat (3-5 kata)
    - Dua tombol CTA: "Mulai Gratis" (→ /register) dan "Lihat Paket" (→ /paket)
    - Jika user sudah login, tampilkan "Ke Dashboard" saja

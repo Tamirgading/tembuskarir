@@ -1,31 +1,31 @@
 import type { Metadata } from 'next'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { Bricolage_Grotesque, Hanken_Grotesk, Space_Grotesk } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
-  variable: '--font-plus-jakarta',
-})
+// Body & UI — humanis, sangat terbaca
+const hanken = Hanken_Grotesk({ subsets: ['latin'], variable: '--font-hanken', display: 'swap' })
+// Display / heading — berkarakter, editorial (anti generik)
+const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage', display: 'swap' })
+// Angka / skor / timer — tabular, presisi
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space', display: 'swap' })
 
 const APP_URL = 'https://tembuskarir.id'
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: 'TembusKarir — Platform Try Out CPNS & SKD Terbaik',
+    default: 'TembusKarir — Platform Simulasi Tes Kerja BUMN & Swasta',
     template: '%s | TembusKarir',
   },
   description:
-    'Latihan soal CPNS SKD dengan ribuan soal TWK, TIU, TKP berkualitas tinggi. Timer realistis, pembahasan lengkap, dan analisis progress. Mulai gratis sekarang!',
+    'Latihan simulasi tes rekrutmen kerja PLN, Astra, BUMN, dan perusahaan lainnya dengan ribuan soal berkualitas. Timer realistis, pembahasan lengkap, dan analisis progress. Mulai gratis sekarang!',
   keywords: [
-    'try out CPNS',
-    'soal CPNS',
-    'latihan SKD',
-    'TWK TIU TKP',
-    'simulasi ujian CPNS',
-    'belajar CPNS online',
+    'simulasi tes kerja',
+    'tes rekrutmen PLN',
+    'psikotes Astra',
+    'tes BUMN',
+    'latihan soal kerja',
+    'try out kerja online',
     'tembuskarir',
   ],
   authors: [{ name: 'TembusKarir' }],
@@ -35,15 +35,15 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     url: APP_URL,
     siteName: 'TembusKarir',
-    title: 'TembusKarir — Platform Try Out CPNS & SKD Terbaik',
+    title: 'TembusKarir — Platform Simulasi Tes Kerja BUMN & Swasta',
     description:
-      'Latihan soal CPNS SKD dengan ribuan soal TWK, TIU, TKP berkualitas tinggi. Timer realistis, pembahasan lengkap, dan analisis progress.',
+      'Latihan simulasi tes rekrutmen kerja PLN, Astra, BUMN, dan perusahaan lainnya dengan ribuan soal berkualitas. Timer realistis, pembahasan lengkap, dan analisis progress.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TembusKarir — Platform Try Out CPNS & SKD Terbaik',
+    title: 'TembusKarir — Platform Simulasi Tes Kerja BUMN & Swasta',
     description:
-      'Latihan soal CPNS SKD dengan ribuan soal TWK, TIU, TKP berkualitas tinggi.',
+      'Latihan simulasi tes rekrutmen kerja PLN, Astra, BUMN, dan perusahaan lainnya dengan ribuan soal berkualitas.',
   },
   robots: {
     index: true,
@@ -68,7 +68,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className="scroll-smooth">
-      <body className={`${inter.variable} ${plusJakarta.variable} font-sans antialiased bg-slate-50 text-slate-600 overflow-x-hidden selection:bg-blue-100 selection:text-blue-700`}>
+      <body className={`${hanken.variable} ${bricolage.variable} ${spaceGrotesk.variable} font-sans antialiased bg-paper text-slate-600 overflow-x-hidden selection:bg-blue-100 selection:text-blue-700`}>
         {children}
       </body>
     </html>

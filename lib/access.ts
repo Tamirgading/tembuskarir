@@ -4,9 +4,13 @@
  *
  * Hierarki akses:
  *   1. Paket gratis (is_free = true) → semua user
- *   2. Langganan CPNS aktif (cpns_monthly / cpns_quarterly, status paid, belum expired)
+ *   2. Langganan Premium aktif (premium_monthly / premium_quarterly, status paid, belum expired)
+ *      — berlaku untuk semua kategori paket
  *   3. Paket dibeli satuan (unlocked_packages)
  */
+
+// Plan langganan premium yang membuka akses ke semua paket
+const PREMIUM_PLANS = ['premium_monthly', 'premium_quarterly']
 
 import { createServiceClient } from '@/lib/supabase/server'
 
@@ -23,26 +27,19 @@ export type AccessStatus =
 export async function checkPackageAccess(
   userId: string,
   packageId: string,
-  isFree: boolean,
-  category: string = 'CPNS'
+  isFree: boolean
 ): Promise<AccessStatus> {
   if (isFree) return 'free'
 
   const supabase = createServiceClient()
   const now = new Date().toISOString()
 
-  // Tentukan plan_type yang valid untuk kategori ini
-  const categoryPlans =
-    category === 'CPNS'
-      ? ['cpns_monthly', 'cpns_quarterly']
-      : [`${category.toLowerCase()}_monthly`, `${category.toLowerCase()}_quarterly`]
-
-  // Cek langganan aktif
+  // Cek langganan premium aktif (berlaku untuk semua kategori paket)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: sub } = await (supabase.from('subscriptions') as any)
     .select('id')
     .eq('user_id', userId)
-    .in('plan_type', categoryPlans)
+    .in('plan_type', PREMIUM_PLANS)
     .eq('status', 'paid')
     .gt('expires_at', now)
     .limit(1)
@@ -64,10 +61,10 @@ export async function checkPackageAccess(
 }
 
 /**
- * Cek apakah user punya langganan CPNS aktif.
- * Gunakan di portal page untuk tampilkan status subscription.
+ * Cek apakah user punya langganan Premium aktif.
+ * Gunakan di dashboard / halaman harga untuk tampilkan status subscription.
  */
-export async function getCpnsSubscriptionStatus(userId: string): Promise<{
+export async function getPremiumSubscriptionStatus(userId: string): Promise<{
   active: boolean
   expiresAt: string | null
   planType: string | null
@@ -79,7 +76,7 @@ export async function getCpnsSubscriptionStatus(userId: string): Promise<{
   const { data } = await (supabase.from('subscriptions') as any)
     .select('plan_type, expires_at')
     .eq('user_id', userId)
-    .in('plan_type', ['cpns_monthly', 'cpns_quarterly'])
+    .in('plan_type', PREMIUM_PLANS)
     .eq('status', 'paid')
     .gt('expires_at', now)
     .order('expires_at', { ascending: false })

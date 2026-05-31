@@ -7,8 +7,6 @@ import { AddQuestionForm } from '@/components/admin/AddQuestionForm'
 import { QuestionList } from '@/components/admin/QuestionList'
 import { ImportButton } from '@/components/admin/ImportButton'
 
-const CPNS_TARGET = 110
-
 export default async function AdminQuestionsPage({
   params,
 }: {
@@ -38,24 +36,9 @@ export default async function AdminQuestionsPage({
   const questions = (questionsData ?? []) as FullQuestion[]
 
   const total = questions.length
-  const isCPNS = pkg.category === 'CPNS'
-  const target = isCPNS ? CPNS_TARGET : pkg.total_questions
+  const target = pkg.total_questions
   const isComplete = total >= target
   const pct = Math.min(100, Math.round((total / target) * 100))
-
-  // Hitung per kategori
-  const byCategory: Record<string, number> = {}
-  for (const q of questions) {
-    const cat = q.category ?? 'LAINNYA'
-    byCategory[cat] = (byCategory[cat] ?? 0) + 1
-  }
-
-  // Distribusi ideal CPNS SKD
-  const cpnsDistribution = [
-    { label: 'TWK', target: 30, color: 'bg-blue-500' },
-    { label: 'TIU', target: 35, color: 'bg-purple-500' },
-    { label: 'TKP', target: 45, color: 'bg-green-500' },
-  ]
 
   return (
     <div className="space-y-6">
@@ -98,32 +81,6 @@ export default async function AdminQuestionsPage({
           />
         </div>
         <p className="text-xs text-right mt-1 text-gray-500">{pct}%</p>
-
-        {/* Distribusi CPNS */}
-        {isCPNS && (
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            {cpnsDistribution.map((d) => {
-              const count = byCategory[d.label] ?? 0
-              const done = count >= d.target
-              return (
-                <div key={d.label} className="bg-white rounded-lg p-3 border border-gray-200">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-sm font-semibold text-gray-700">{d.label}</span>
-                    <span className={`text-sm font-bold ${done ? 'text-green-600' : 'text-amber-600'}`}>
-                      {count}/{d.target}
-                    </span>
-                  </div>
-                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${done ? 'bg-green-500' : d.color} opacity-70`}
-                      style={{ width: `${Math.min(100, Math.round((count / d.target) * 100))}%` }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6 items-start">

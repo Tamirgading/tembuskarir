@@ -382,7 +382,7 @@ export default async function HomePage() {
             <div className="md:col-span-2">
               <Image src="/logotk.png" alt="Tembuskarir" width={140} height={36} className="h-8 w-auto opacity-70 mb-6 brightness-200 invert" />
               <p className="text-sm leading-relaxed max-w-sm">
-                Platform edukasi karir terdepan yang membantu jobseeker menembus tes kerja BUMN, CPNS, dan lain-lain.
+                Platform edukasi karir terdepan yang membantu jobseeker menembus tes kerja BUMN, PLN, Astra, dan lain-lain.
               </p>
             </div>
             <div>

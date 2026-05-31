@@ -40,3 +40,6 @@ next-env.d.ts
 supabase/.temp/
 
 .vercel
+
+# claude code agent worktrees (jangan di-commit)
+.claude/worktrees/

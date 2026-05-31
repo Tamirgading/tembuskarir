@@ -12,11 +12,6 @@ interface AddQuestionFormProps {
 
 // Pilihan kategori per tipe paket
 const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
-  CPNS: [
-    { value: 'TWK', label: 'TWK — Tes Wawasan Kebangsaan' },
-    { value: 'TIU', label: 'TIU — Tes Intelegensi Umum' },
-    { value: 'TKP', label: 'TKP — Tes Karakteristik Pribadi' },
-  ],
   ASTRA: [
     { value: 'QR',  label: 'QR — Quantitative Reasoning' },
     { value: 'DR',  label: 'DR — Deductive Reasoning' },
@@ -40,23 +35,6 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
 }
 
 const OPTION_KEYS = ['A', 'B', 'C', 'D', 'E'] as const
-const TKP_POINT_VALUES = [1, 2, 3, 4, 5] as const
-
-const TKP_POINT_COLOR: Record<number, string> = {
-  5: 'bg-green-100 text-green-700 border-green-300',
-  4: 'bg-blue-100 text-blue-700 border-blue-300',
-  3: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-  2: 'bg-orange-100 text-orange-700 border-orange-300',
-  1: 'bg-red-100 text-red-700 border-red-300',
-}
-
-const TKP_POINT_LABEL: Record<number, string> = {
-  5: 'Sangat Tepat',
-  4: 'Tepat',
-  3: 'Cukup Tepat',
-  2: 'Kurang Tepat',
-  1: 'Tidak Tepat',
-}
 
 export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps) {
   const categoryOptions = CATEGORY_OPTIONS[pkgCategory] ?? CATEGORY_OPTIONS.DEFAULT
@@ -71,7 +49,6 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
   const [content, setContent] = useState('')
   const [options, setOptions] = useState({ A: '', B: '', C: '', D: '', E: '' })
   const [correctAnswer, setCorrectAnswer] = useState('A')
-  const [optionPoints, setOptionPoints] = useState<Record<string, number>>({ A: 5, B: 4, C: 3, D: 2, E: 1 })
   const [explanation, setExplanation] = useState('')
   const [category, setCategory] = useState('')
   const [difficulty, setDifficulty] = useState('medium')
@@ -85,13 +62,10 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
   const [uploadedExplImageUrl, setUploadedExplImageUrl] = useState<string | null>(null)
   const explFileInputRef = useRef<HTMLInputElement>(null)
 
-  const isTkp = category === 'TKP'
-
   function resetForm() {
     setContent('')
     setOptions({ A: '', B: '', C: '', D: '', E: '' })
     setCorrectAnswer('A')
-    setOptionPoints({ A: 5, B: 4, C: 3, D: 2, E: 1 })
     setExplanation('')
     setCategory('')
     setDifficulty('medium')
@@ -136,13 +110,6 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     return data.url ?? null
   }, [])
 
-  // Untuk TKP: correct_answer = key dengan nilai point tertinggi
-  function getTkpCorrectAnswer(): string {
-    return OPTION_KEYS.reduce((best, key) =>
-      (optionPoints[key] ?? 0) > (optionPoints[best] ?? 0) ? key : best
-    , 'A' as string)
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
@@ -151,15 +118,6 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     if (!content.trim()) { setError('Pertanyaan wajib diisi.'); return }
     for (const key of OPTION_KEYS) {
       if (!options[key].trim()) { setError(`Opsi ${key} wajib diisi.`); return }
-    }
-
-    // Validasi TKP: setiap opsi harus punya nilai unik 1–5
-    if (isTkp) {
-      const pts = OPTION_KEYS.map((k) => optionPoints[k])
-      if (new Set(pts).size !== 5) {
-        setError('Soal TKP: setiap opsi harus punya nilai yang berbeda (1, 2, 3, 4, 5).')
-        return
-      }
     }
 
     let finalImageUrl: string | null = uploadedImageUrl
@@ -179,10 +137,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     const optionsArray = OPTION_KEYS.map((key) => ({
       key,
       text: options[key].trim(),
-      ...(isTkp ? { point: optionPoints[key] } : {}),
     }))
-
-    const finalCorrectAnswer = isTkp ? getTkpCorrectAnswer() : correctAnswer
 
     const res = await fetch('/api/admin/questions/create', {
       method: 'POST',
@@ -191,7 +146,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
         packageId,
         content: content.trim(),
         options: optionsArray,
-        correctAnswer: finalCorrectAnswer,
+        correctAnswer,
         explanation: explanation.trim() || null,
         explanationImageUrl: finalExplImageUrl,
         category: category || null,
@@ -210,7 +165,6 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
   }
 
   const isSubmitting = isPending || isUploading
-  const maxPoint = isTkp ? Math.max(...OPTION_KEYS.map((k) => optionPoints[k])) : -1
 
   return (
     <div className="space-y-4 text-sm">
@@ -245,25 +199,18 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
           </div>
           <div className="space-y-1.5">
             {OPTION_KEYS.map((key) => {
-              const point = optionPoints[key]
-              const isHighest = isTkp && point === maxPoint
-              const isCorrect = !isTkp && correctAnswer === key
+              const isCorrect = correctAnswer === key
               return (
                 <div key={key} className={`flex items-start gap-2 px-3 py-2 rounded-lg text-sm border ${
-                  isHighest || isCorrect ? 'bg-green-50 border-green-300' : 'bg-white border-gray-200'
+                  isCorrect ? 'bg-green-50 border-green-300' : 'bg-white border-gray-200'
                 }`}>
                   <span className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5 ${
-                    isHighest || isCorrect ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
+                    isCorrect ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
                   }`}>{key}</span>
                   <span className="flex-1 text-gray-700">
                     {options[key] ? <LatexContent content={options[key]} /> : <span className="text-gray-300 italic">Kosong</span>}
                   </span>
-                  {isTkp && (
-                    <span className={`ml-auto shrink-0 text-xs font-bold px-2 py-0.5 rounded-full border ${TKP_POINT_COLOR[point] ?? ''}`}>
-                      {point} — {TKP_POINT_LABEL[point]}
-                    </span>
-                  )}
-                  {!isTkp && isCorrect && <span className="ml-auto shrink-0 text-green-500 text-xs">✓ Benar</span>}
+                  {isCorrect && <span className="ml-auto shrink-0 text-green-500 text-xs">✓ Benar</span>}
                 </div>
               )
             })}
@@ -346,91 +293,40 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
             </div>
           </div>
 
-          {/* Info TKP */}
-          {isTkp && (
-            <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-xs text-green-800">
-              <p className="font-bold mb-1">📌 Mode TKP — Nilai per Opsi (1–5)</p>
-              <p>Klik angka di kanan setiap opsi untuk menentukan nilainya. Nilai <strong>5 = paling tepat</strong>, <strong>1 = paling kurang tepat</strong>. Setiap opsi harus punya nilai yang berbeda.</p>
-            </div>
-          )}
-
           {/* Opsi A–E */}
           <div className="space-y-2">
             <p className="text-xs font-semibold text-gray-600">
               Pilihan Jawaban <span className="text-red-500">*</span>
-              {isTkp && <span className="ml-2 font-normal text-green-600">— klik angka untuk atur nilai tiap opsi</span>}
             </p>
-            {OPTION_KEYS.map((key) => {
-              const point = optionPoints[key]
-              const isHighest = isTkp && point === maxPoint
-              return (
-                <div key={key} className="flex items-center gap-2">
-                  <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${
-                    isTkp
-                      ? isHighest ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
-                      : correctAnswer === key ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
-                  }`}>{key}</span>
-                  <input
-                    type="text"
-                    value={options[key]}
-                    onChange={(e) => setOptions((prev) => ({ ...prev, [key]: e.target.value }))}
-                    placeholder={`Opsi ${key} — bisa pakai $LaTeX$`}
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    required
-                  />
-                  {/* TKP: tombol nilai 1–5 */}
-                  {isTkp && (
-                    <div className="flex gap-1 shrink-0">
-                      {TKP_POINT_VALUES.map((val) => (
-                        <button
-                          key={val}
-                          type="button"
-                          title={TKP_POINT_LABEL[val]}
-                          onClick={() => setOptionPoints((prev) => ({ ...prev, [key]: val }))}
-                          className={`w-7 h-7 rounded-lg text-xs font-bold border transition-all ${
-                            point === val
-                              ? (TKP_POINT_COLOR[val] ?? '') + ' shadow-sm scale-110'
-                              : 'bg-gray-50 text-gray-400 border-gray-200 hover:border-gray-400'
-                          }`}
-                        >
-                          {val}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+            {OPTION_KEYS.map((key) => (
+              <div key={key} className="flex items-center gap-2">
+                <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${
+                  correctAnswer === key ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>{key}</span>
+                <input
+                  type="text"
+                  value={options[key]}
+                  onChange={(e) => setOptions((prev) => ({ ...prev, [key]: e.target.value }))}
+                  placeholder={`Opsi ${key} — bisa pakai $LaTeX$`}
+                  className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+              </div>
+            ))}
           </div>
 
-          {/* TKP: ringkasan nilai */}
-          {isTkp && (
-            <div className="flex gap-2 flex-wrap">
-              {OPTION_KEYS.map((key) => {
-                const point = optionPoints[key]
-                return (
-                  <span key={key} className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${TKP_POINT_COLOR[point] ?? ''}`}>
-                    {key} = {point}
-                  </span>
-                )
-              })}
-            </div>
-          )}
-
-          {/* Jawaban Benar — hanya untuk TWK/TIU/LAINNYA */}
-          {!isTkp && (
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
-                Jawaban Benar <span className="text-red-500">*</span>
-              </label>
-              <select value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-                {OPTION_KEYS.map((key) => (
-                  <option key={key} value={key}>{key} — {options[key] ? options[key].substring(0, 40) : `Opsi ${key}`}</option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* Jawaban Benar */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              Jawaban Benar <span className="text-red-500">*</span>
+            </label>
+            <select value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+              {OPTION_KEYS.map((key) => (
+                <option key={key} value={key}>{key} — {options[key] ? options[key].substring(0, 40) : `Opsi ${key}`}</option>
+              ))}
+            </select>
+          </div>
 
           {/* Pembahasan */}
           <div className="space-y-2">
@@ -441,9 +337,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
               value={explanation}
               onChange={setExplanation}
               rows={3}
-              placeholder={isTkp
-                ? 'Jelaskan mengapa opsi dengan nilai 5 paling tepat...'
-                : 'Penjelasan mengapa jawaban ini benar... bisa pakai $LaTeX$'}
+              placeholder="Penjelasan mengapa jawaban ini benar... bisa pakai $LaTeX$"
             />
 
             {/* Gambar pembahasan */}

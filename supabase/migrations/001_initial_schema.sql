@@ -41,7 +41,7 @@ create table public.packages (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   slug text unique not null,
-  category text not null check (category in ('CPNS', 'UTBK', 'KEDINASAN', 'LAINNYA')),
+  category text not null check (category in ('UTBK', 'KEDINASAN', 'LAINNYA')),
   description text,
   duration_minutes int not null default 90,
   total_questions int not null,
@@ -62,7 +62,7 @@ create table public.questions (
   correct_answer text not null check (correct_answer in ('A','B','C','D','E')),
   explanation text,
   difficulty text default 'medium' check (difficulty in ('easy', 'medium', 'hard')),
-  category text, -- TWK, TIU, TKP
+  category text, -- kode sub-tes, mis. NUM, VER, QR
   image_url text,
   order_index int not null default 0,
   created_at timestamptz default now()
@@ -95,7 +95,7 @@ create table public.subscriptions (
   user_id uuid references public.users(id) on delete cascade not null,
   midtrans_order_id text unique not null,
   midtrans_transaction_id text,
-  plan_type text not null check (plan_type in ('monthly', 'yearly')),
+  plan_type text not null check (plan_type in ('premium_monthly', 'premium_quarterly', 'package', 'monthly', 'yearly')),
   amount int not null,
   status text not null default 'pending' check (status in ('pending', 'paid', 'failed', 'expired')),
   paid_at timestamptz,

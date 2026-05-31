@@ -12,7 +12,7 @@ export default function PortalLoginCard() {
       <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 shadow-lg shadow-blue-200">
         <p className="text-white font-bold text-sm mb-1">Mulai Latihan Gratis</p>
         <p className="text-blue-200 text-xs mb-4 leading-relaxed">
-          Daftar sekarang dan akses soal SKD CPNS tanpa biaya
+          Daftar sekarang dan akses soal simulasi tes kerja tanpa biaya
         </p>
         <Link
           href="/register"

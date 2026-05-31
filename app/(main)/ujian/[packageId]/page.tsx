@@ -122,7 +122,7 @@ export default function UjianPage() {
             const accessJson = await accessRes.json() as { canAccess?: boolean; category?: string }
             if (!accessJson.canAccess) {
               setIsLoading(false)
-              router.push('/portal/cpns')
+              router.push('/harga')
               return
             }
           } catch { /* guard sudah di persiapan page */ }
@@ -138,14 +138,8 @@ export default function UjianPage() {
 
         if (qErr || !questionsData) { setLoadError('Gagal memuat soal.'); setIsLoading(false); return }
 
-        // Urutkan: TWK → TIU → TKP, lalu order_index dalam tiap kategori
-        const SKD_ORDER: Record<string, number> = { TWK: 0, TIU: 1, TKP: 2 }
-        const typed = (questionsData as Question[]).sort((a, b) => {
-          const ao = SKD_ORDER[a.category ?? ''] ?? 99
-          const bo = SKD_ORDER[b.category ?? ''] ?? 99
-          if (ao !== bo) return ao - bo
-          return a.order_index - b.order_index
-        })
+        // Urutkan berdasarkan order_index
+        const typed = (questionsData as Question[]).sort((a, b) => a.order_index - b.order_index)
         setQuestions(typed)
 
         // Attempt
@@ -333,7 +327,7 @@ export default function UjianPage() {
               />
               <div className="hidden sm:block border-l border-white/30 pl-3">
                 <p className="text-xs text-blue-100 font-medium uppercase tracking-widest">Simulasi Ujian</p>
-                <p className="text-sm font-bold text-white leading-tight">{pkg?.name ?? 'SKD CPNS'}</p>
+                <p className="text-sm font-bold text-white leading-tight">{pkg?.name ?? 'Simulasi Ujian'}</p>
               </div>
             </div>
 

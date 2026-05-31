@@ -10,7 +10,7 @@
 -- ── 1. Perluas kategori packages untuk mendukung 'PLN' ──────────────────────
 alter table public.packages drop constraint if exists packages_category_check;
 alter table public.packages add constraint packages_category_check
-  check (category in ('CPNS', 'UTBK', 'KEDINASAN', 'LAINNYA', 'ASTRA', 'PLN', 'BI', 'OJK'));
+  check (category in ('UTBK', 'KEDINASAN', 'LAINNYA', 'ASTRA', 'PLN', 'BI', 'OJK'));
 
 -- ── 2. Tabel questions_pln_akhlak ───────────────────────────────────────────
 -- Setiap opsi A-E memberi poin ke salah satu (atau beberapa) core value BUMN.

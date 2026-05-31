@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     .insert({
       name: name.trim(),
       slug: slug.trim(),
-      category: category ?? 'CPNS',
+      category: category ?? 'LAINNYA',
       description: description?.trim() || null,
       duration_minutes: duration_minutes ?? 90,
       total_questions: total_questions ?? 100,

@@ -20,7 +20,6 @@ type CrawlLog = {
 }
 
 const INSTITUSI_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
-  CPNS: { label: 'CPNS / BKN', color: 'bg-blue-100 text-blue-800', dot: 'bg-blue-500' },
   OJK:  { label: 'OJK', color: 'bg-green-100 text-green-800', dot: 'bg-green-500' },
   BI:   { label: 'Bank Indonesia', color: 'bg-red-100 text-red-800', dot: 'bg-red-500' },
   PLN:  { label: 'PLN', color: 'bg-yellow-100 text-yellow-800', dot: 'bg-yellow-500' },

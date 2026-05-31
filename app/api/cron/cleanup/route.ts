@@ -10,8 +10,8 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore, isAttemptExpired, transformTkpForScoring, transformPlnAkhlakForScoring, transformPlnLaForScoring } from '@/lib/exam-scoring'
-import type { QuestionTkpRow } from '@/lib/exam-scoring'
+import { computeScore, isAttemptExpired, transformPlnAkhlakForScoring, transformPlnLaForScoring } from '@/lib/exam-scoring'
+import type { QuestionPointRow } from '@/lib/exam-scoring'
 import type { PackageRow, AttemptRow, SubscriptionRow } from '@/lib/utils'
 
 const BATCH_SIZE = 50 // proses maksimal 50 attempt per run
@@ -83,18 +83,6 @@ export async function GET(request: NextRequest) {
           type McqQuestion = { id: string; correct_answer: string; category?: string | null; options?: { key: string; text: string; point?: number }[] | null }
           let questions: McqQuestion[] = (mcqData ?? []) as McqQuestion[]
 
-          // Untuk CPNS: gabungkan soal TKP dari tabel terpisah
-          if (pkgCategory === 'CPNS') {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: tkpData } = await (supabase.from('questions_tkp') as any)
-              .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e')
-              .eq('package_id', attempt.package_id)
-
-            if (tkpData && (tkpData as QuestionTkpRow[]).length > 0) {
-              questions = [...questions, ...transformTkpForScoring(tkpData as QuestionTkpRow[])]
-            }
-          }
-
           // Untuk PLN: gabungkan soal AKHLAK & LA dari tabel terpisah
           if (pkgCategory === 'PLN') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -102,8 +90,8 @@ export async function GET(request: NextRequest) {
               .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e')
               .eq('package_id', attempt.package_id)
 
-            if (akhlakData && (akhlakData as QuestionTkpRow[]).length > 0) {
-              questions = [...questions, ...transformPlnAkhlakForScoring(akhlakData as QuestionTkpRow[])]
+            if (akhlakData && (akhlakData as QuestionPointRow[]).length > 0) {
+              questions = [...questions, ...transformPlnAkhlakForScoring(akhlakData as QuestionPointRow[])]
             }
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -111,8 +99,8 @@ export async function GET(request: NextRequest) {
               .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e, is_reverse_scored')
               .eq('package_id', attempt.package_id)
 
-            if (laData && (laData as (QuestionTkpRow & { is_reverse_scored?: boolean })[]).length > 0) {
-              questions = [...questions, ...transformPlnLaForScoring(laData as (QuestionTkpRow & { is_reverse_scored?: boolean })[])]
+            if (laData && (laData as (QuestionPointRow & { is_reverse_scored?: boolean })[]).length > 0) {
+              questions = [...questions, ...transformPlnLaForScoring(laData as (QuestionPointRow & { is_reverse_scored?: boolean })[])]
             }
           }
 

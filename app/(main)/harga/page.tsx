@@ -3,55 +3,55 @@ import Link from 'next/link'
 import { CheckCircle2, Clock, Zap, Star, Infinity } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { BuyButton } from '@/components/ui/BuyButton'
-import { getCpnsSubscriptionStatus } from '@/lib/access'
+import { getPremiumSubscriptionStatus } from '@/lib/access'
 
 export const metadata: Metadata = {
   title: 'Langganan & Harga — TembusKarir',
-  description: 'Akses paket soal SKD CPNS. Beli per-paket Rp 10.000 atau berlangganan mulai Rp 39.000/bulan.',
+  description: 'Akses semua paket simulasi seleksi kerja. Beli per-paket Rp 10.000 atau berlangganan Premium mulai Rp 39.000/bulan.',
 }
 
 const PLANS = [
   {
-    id: 'cpns_monthly' as const,
+    id: 'premium_monthly' as const,
     price: 39000,
     priceLabel: 'Rp 39.000',
     period: '/ bulan',
     highlight: true,
     badge: 'Populer',
-    description: 'Akses semua paket SKD CPNS selama 30 hari',
-    features: ['Akses semua paket soal SKD', 'Pembahasan lengkap tiap soal', 'Riwayat & analisis skor per kategori', 'Leaderboard nasional'],
+    description: 'Akses semua paket simulasi selama 30 hari',
+    features: ['Akses semua paket soal', 'Pembahasan lengkap tiap soal', 'Riwayat & analisis skor per kategori', 'Leaderboard nasional'],
     icon: Zap,
   },
   {
-    id: 'cpns_quarterly' as const,
+    id: 'premium_quarterly' as const,
     price: 89000,
     priceLabel: 'Rp 89.000',
     period: '/ 3 bulan',
     highlight: false,
     badge: 'Hemat 24%',
-    description: 'Akses semua paket SKD CPNS selama 90 hari',
+    description: 'Akses semua paket simulasi selama 90 hari',
     features: ['Semua fitur paket Bulanan', 'Hemat vs beli 3× bulanan', 'Persiapan lebih tenang & terencana', 'Akses fitur baru selama periode'],
     icon: Star,
   },
 ]
 
-const planTypeLabel: Record<string, string> = { cpns_monthly: '1 Bulan', cpns_quarterly: '3 Bulan' }
+const planTypeLabel: Record<string, string> = { premium_monthly: '1 Bulan', premium_quarterly: '3 Bulan' }
 
 export default async function HargaPage({ searchParams }: { searchParams: Promise<{ payment?: string }> }) {
   const { payment } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  let cpnsSub = { active: false, expiresAt: null as string | null, planType: null as string | null }
-  if (user) cpnsSub = await getCpnsSubscriptionStatus(user.id)
+  let premiumSub = { active: false, expiresAt: null as string | null, planType: null as string | null }
+  if (user) premiumSub = await getPremiumSubscriptionStatus(user.id)
 
   const fmt = (d: string) => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="text-center">
-        <h1 className="text-2xl font-extrabold text-gray-900">Paket Langganan CPNS</h1>
-        <p className="text-gray-500 text-sm mt-1.5">Pilih cara terbaik untuk persiapan SKD kamu</p>
+        <h1 className="text-2xl font-extrabold text-gray-900">Paket Langganan Premium</h1>
+        <p className="text-gray-500 text-sm mt-1.5">Pilih cara terbaik untuk persiapan seleksi kerjamu</p>
       </div>
 
       {payment === 'success' && (
@@ -67,12 +67,12 @@ export default async function HargaPage({ searchParams }: { searchParams: Promis
         </div>
       )}
 
-      {cpnsSub.active && cpnsSub.expiresAt && (
+      {premiumSub.active && premiumSub.expiresAt && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-3">
           <span className="text-xl mt-0.5">✦</span>
           <div>
-            <p className="font-bold text-amber-800 text-sm">Langganan CPNS {planTypeLabel[cpnsSub.planType ?? ''] ?? ''} Aktif</p>
-            <p className="text-xs text-amber-600 mt-0.5">Berlaku hingga <strong>{fmt(cpnsSub.expiresAt)}</strong></p>
+            <p className="font-bold text-amber-800 text-sm">Langganan Premium {planTypeLabel[premiumSub.planType ?? ''] ?? ''} Aktif</p>
+            <p className="text-xs text-amber-600 mt-0.5">Berlaku hingga <strong>{fmt(premiumSub.expiresAt)}</strong></p>
             <p className="text-xs text-amber-700 mt-2">Perpanjang sekarang agar akses tidak terputus.</p>
           </div>
         </div>
@@ -89,8 +89,8 @@ export default async function HargaPage({ searchParams }: { searchParams: Promis
             <span className="text-[11px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full font-medium">Rp 10.000 · Akses Selamanya</span>
           </div>
           <p className="text-xs text-gray-500 mb-3 leading-relaxed">Beli akses ke satu paket soal — tidak ada expired. Cocok jika hanya butuh satu paket tertentu.</p>
-          <Link href="/portal/cpns" className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-            Pilih paket di Portal CPNS →
+          <Link href="/paket" className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+            Lihat semua paket →
           </Link>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default async function HargaPage({ searchParams }: { searchParams: Promis
                 ))}
               </ul>
               {user ? (
-                <BuyButton planType={plan.id} planLabel={plan.id === 'cpns_monthly' ? 'Mulai 1 Bulan' : 'Mulai 3 Bulan'} amount={plan.price} highlight={plan.highlight} />
+                <BuyButton planType={plan.id} planLabel={plan.id === 'premium_monthly' ? 'Mulai 1 Bulan' : 'Mulai 3 Bulan'} amount={plan.price} highlight={plan.highlight} />
               ) : (
                 <Link href="/register" className={`block w-full text-center py-2.5 text-sm font-semibold rounded-xl transition-colors ${plan.highlight ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
                   Daftar & Mulai
