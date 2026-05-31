@@ -1,41 +1,27 @@
-import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { NavbarWrapper } from '@/components/ui/NavbarWrapper'
-import { MainWrapper } from '@/components/ui/MainWrapper'
-import type { UserRow } from '@/lib/utils'
+import { AppShell } from '@/components/ui/AppShell'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/')
-
-  // Baca pathname dari middleware — hanya untuk skip DB fetch di halaman ujian
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') ?? ''
-  const isExamPage = pathname.startsWith('/ujian')
-
-  // Hanya fetch nama user jika bukan halaman ujian (hemat 1 DB call)
   let userName: string | null = null
-  if (!isExamPage) {
+  let userPlan: 'free' | 'premium' = 'free'
+
+  if (user) {
     const { data } = await supabase
       .from('users')
-      .select('full_name')
+      .select('full_name, plan')
       .eq('id', user.id)
       .single()
-    const profile = data as Pick<UserRow, 'full_name'> | null
+    const profile = data as { full_name: string | null; plan: 'free' | 'premium' } | null
     userName = profile?.full_name ?? user.email?.split('@')[0] ?? null
+    userPlan = profile?.plan ?? 'free'
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* NavbarWrapper & MainWrapper adalah client components — reaktif terhadap
-          usePathname() sehingga navbar hilang saat soft navigation ke /ujian juga */}
-      <NavbarWrapper userName={userName} />
-      <MainWrapper>
-        {children}
-      </MainWrapper>
-    </div>
+    <AppShell userName={userName} userPlan={userPlan}>
+      {children}
+    </AppShell>
   )
 }
