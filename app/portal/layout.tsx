@@ -24,7 +24,7 @@ export default async function PortalLayout({ children }: { children: React.React
   } catch { /* Supabase not configured */ }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <PortalNavbar
         isLoggedIn={isLoggedIn}
         userName={userName}
