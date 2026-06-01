@@ -1,10 +1,9 @@
 import Link from 'next/link'
-import { Briefcase, Package, History } from 'lucide-react'
+import { Briefcase, Package, ChevronRight, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import AstraPackageCard from '@/components/portal/AstraPackageCard'
-import PortalLoginCard from '@/components/portal/PortalLoginCard'
 import { getUnlockedPackageIds } from '@/lib/access'
 import { ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 
@@ -30,15 +29,14 @@ export default async function AstraPortalPage() {
 
     if (user) {
       unlockedPackageIds = await getUnlockedPackageIds(user.id)
-
-      const astraPkgIds = packages.map((p) => p.id)
-      if (astraPkgIds.length > 0) {
+      const ids = packages.map((p) => p.id)
+      if (ids.length > 0) {
         const { data: attemptsData } = await supabase
           .from('attempts')
           .select('id, score, started_at, package_id')
           .eq('user_id', user.id)
           .eq('status', 'finished')
-          .in('package_id', astraPkgIds)
+          .in('package_id', ids)
           .order('started_at', { ascending: false })
           .limit(5)
         recentAttempts = (attemptsData ?? []) as Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[]
@@ -49,105 +47,76 @@ export default async function AstraPortalPage() {
   const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="max-w-4xl mx-auto space-y-6">
 
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-5">
-        <Link href="/" className="hover:text-orange-600 transition-colors">Beranda</Link>
-        <span>›</span>
-        <span className="text-gray-900 font-semibold">Portal ASTRA</span>
-      </nav>
-
-      {/* Page header */}
-      <div className="flex items-center gap-4 mb-7">
-        <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-200">
-          <Briefcase className="w-6 h-6" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl font-extrabold text-gray-900">Portal ASTRA</h1>
-            <span className="px-2.5 py-0.5 bg-orange-500 text-white text-xs font-bold rounded-full">Psikotes</span>
+      {/* ── Header ── */}
+      <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft">
+        <div className="px-6 py-7 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-white/80" />
+            </div>
+            <div>
+              <p className="text-white/55 text-xs font-semibold uppercase tracking-wider">Rekrutmen Swasta &amp; BUMN</p>
+              <h1 className="text-2xl font-heading font-extrabold">Psikotes ASTRA</h1>
+            </div>
+            <span className="ml-auto text-[11px] font-bold px-3 py-1 bg-brand/20 text-brand-300 rounded-full">
+              Psikotes
+            </span>
           </div>
-          <p className="text-gray-500 text-sm mt-0.5">Simulasi Tes Psikologi Rekrutmen PT Astra International · 80 soal · 7 sub-tes</p>
+          <p className="text-white/60 text-sm mt-2">
+            Simulasi Tes Psikologi Rekrutmen PT Astra International — format per-sub-tes dengan timer terpisah persis tes aslinya.
+          </p>
+          {/* Stats */}
+          <div className="flex gap-3 mt-5 flex-wrap">
+            {[
+              { v: '80', l: 'total soal' },
+              { v: '7', l: 'sub-tes' },
+              { v: '41', l: 'menit total' },
+              { v: '+1', l: 'poin/benar' },
+            ].map((s) => (
+              <div key={s.l} className="bg-white/10 rounded-xl px-4 py-2 text-center">
+                <p className="font-num font-bold text-white">{s.v}</p>
+                <p className="text-white/55 text-[10px]">{s.l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sub-tes grid */}
+        <div className="bg-white px-6 py-5">
+          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sub-tes</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            {Object.entries(ASTRA_SUBTESTS).map(([key, sub]) => (
+              <div key={key} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-hairline bg-paper-soft">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand/10 text-brand-700 border border-brand/20 shrink-0">
+                  {key}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-ink truncate">{sub.full}</p>
+                  <p className="text-[10px] text-ink-muted font-num">{sub.soal} soal · {sub.minutes} mnt</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* 3-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_272px] gap-6 items-start">
+      {/* ── 2-kolom: paket + info ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_272px] gap-6 items-start">
 
-        {/* ══ LEFT SIDEBAR ══ */}
-        <aside className="space-y-4 sticky top-6">
-
-          {/* Sub-tes overview */}
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-            <div className="px-4 py-3 bg-gradient-to-r from-orange-500 to-amber-500">
-              <p className="text-xs font-bold text-white uppercase tracking-widest">Sub-tes Psikotes ASTRA</p>
-            </div>
-            <div className="p-3 space-y-1.5">
-              {Object.entries(ASTRA_SUBTESTS).map(([key, sub]) => (
-                <div key={key} className="flex items-center gap-3 rounded-xl px-3 py-2.5 border border-gray-100 hover:border-orange-200 hover:bg-orange-50 transition-colors">
-                  <span className="shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200 min-w-[36px] text-center">
-                    {key}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-700 truncate">{sub.full}</p>
-                    <p className="text-[10px] text-gray-400">{sub.soal} soal · {sub.minutes} mnt</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Riwayat */}
-          {isLoggedIn && (
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-1.5">
-                <History className="w-3.5 h-3.5 text-gray-400" />
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Riwayat ASTRA</p>
-              </div>
-              {recentAttempts.length === 0 ? (
-                <div className="p-4 text-center">
-                  <p className="text-xs text-gray-400">Belum ada simulasi</p>
-                  <p className="text-[10px] text-gray-300 mt-1">Mulai ujian pertamamu!</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-50">
-                  {recentAttempts.map((a) => (
-                    <Link key={a.id} href={`/hasil/${a.id}`} className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 transition-colors">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-semibold text-gray-700 truncate">
-                          {packageNameMap[a.package_id] ?? 'Paket ASTRA'}
-                        </p>
-                        <p className="text-[10px] text-gray-400">{formatDate(a.started_at)}</p>
-                      </div>
-                      <span className="text-sm font-extrabold ml-2 shrink-0 text-orange-600">
-                        {a.score ?? '–'}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Login card (guest) */}
-          {!isLoggedIn && <PortalLoginCard />}
-        </aside>
-
-        {/* ══ MAIN CONTENT ══ */}
-        <main className="space-y-4 min-w-0">
+        {/* Paket */}
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-extrabold text-gray-900">Paket Simulasi Psikotes</h2>
-              <p className="text-xs text-gray-400 mt-0.5">{packages.length} paket tersedia</p>
-            </div>
+            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Paket Simulasi</p>
+            <span className="text-xs text-ink-muted font-num">{packages.length} paket</span>
           </div>
 
           {packages.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center text-gray-400">
-              <div className="flex justify-center mb-3"><Package className="w-10 h-10 text-gray-300" /></div>
-              <p className="font-medium">Belum ada paket soal tersedia</p>
-              <p className="text-sm mt-1 text-gray-300">Pantau terus untuk update paket baru</p>
+            <div className="bg-white rounded-2xl border border-hairline shadow-soft p-12 text-center">
+              <Package className="w-10 h-10 text-ink-muted mx-auto mb-3" />
+              <p className="font-heading font-semibold text-ink">Belum ada paket tersedia</p>
+              <p className="text-sm mt-1 text-ink-muted">Pantau terus untuk update paket baru</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -162,51 +131,87 @@ export default async function AstraPortalPage() {
               ))}
             </div>
           )}
-        </main>
 
-        {/* ══ RIGHT SIDEBAR ══ */}
-        <aside className="space-y-4 sticky top-6">
+          {/* Riwayat (user login) */}
+          {isLoggedIn && recentAttempts.length > 0 && (
+            <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+              <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Riwayat Simulasimu</p>
+              <div className="divide-y divide-hairline">
+                {recentAttempts.map((a) => (
+                  <Link key={a.id} href={`/hasil/${a.id}`}
+                    className="flex items-center gap-3 py-3 hover:opacity-80 transition-opacity">
+                    <span className="w-10 h-10 rounded-xl bg-brand/10 grid place-items-center font-num font-bold text-brand text-sm shrink-0">
+                      {a.score ?? '–'}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13.5px] font-semibold text-ink truncate">{packageNameMap[a.package_id] ?? 'Paket'}</p>
+                      <p className="text-[11px] text-ink-muted">{formatDate(a.started_at)}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar: info */}
+        <aside className="space-y-4 lg:sticky lg:top-20">
 
           {/* Sistem penilaian */}
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-            <div className="px-4 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500">
-              <p className="text-xs font-bold text-white uppercase tracking-widest">Sistem Penilaian</p>
-            </div>
-            <div className="p-4 space-y-3 text-xs">
-              <div className="bg-orange-50 rounded-xl p-3 space-y-1.5">
-                <p className="font-bold text-orange-700 text-[11px] uppercase tracking-wide mb-2">Semua Sub-tes</p>
-                <div className="flex justify-between"><span className="text-gray-600">Benar</span><span className="font-bold text-green-600">+1</span></div>
-                <div className="flex justify-between"><span className="text-gray-600">Salah</span><span className="font-bold text-gray-400">0</span></div>
-                <div className="flex justify-between"><span className="text-gray-600">Tidak dijawab</span><span className="font-bold text-gray-400">0</span></div>
-                <div className="mt-1.5 pt-1.5 border-t border-orange-100">
-                  <p className="text-[10px] text-orange-600 font-semibold">Tidak ada penalti — jawab semua soal!</p>
+          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sistem Penilaian</p>
+            <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline">
+              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">Semua Sub-tes</p>
+              {[
+                { l: 'Benar', v: '+1', c: 'text-brand font-bold' },
+                { l: 'Salah', v: '0', c: 'text-ink-muted' },
+                { l: 'Tidak dijawab', v: '0', c: 'text-ink-muted' },
+              ].map((r) => (
+                <div key={r.l} className="flex justify-between items-center text-xs">
+                  <span className="text-ink-soft">{r.l}</span>
+                  <span className={`font-num ${r.c}`}>{r.v}</span>
                 </div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-gray-600 text-[11px] uppercase tracking-wide mb-1.5">Skor Total</p>
-                <p className="text-2xl font-extrabold text-gray-900">80</p>
-                <p className="text-[10px] text-gray-400">poin maksimum</p>
+              ))}
+              <div className="pt-2 border-t border-hairline">
+                <p className="text-[11px] text-brand font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Tidak ada penalti — jawab semua!
+                </p>
               </div>
             </div>
           </div>
 
           {/* Tips */}
-          <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Tips Sukses</p>
-            <div className="space-y-2.5 text-xs text-gray-600">
+          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
+            <div className="space-y-3">
               {[
-                { icon: '⚡', text: 'Perceptual Speed: 30 soal dalam 2 menit — latih kecepatan membaca karakter' },
-                { icon: '🧠', text: 'Working Memory: latih hafalan pasangan kata-angka sebelum tes' },
-                { icon: '📐', text: 'Visualization & Inductive: pelajari pola rotasi dan jaring-jaring kubus' },
-                { icon: '📖', text: 'Reading Comprehension: baca teks sekali dengan fokus, jawab tanpa kembali' },
-              ].map((tip) => (
-                <div key={tip.text} className="flex items-start gap-2">
-                  <span className="shrink-0 text-sm">{tip.icon}</span>
-                  <p className="leading-relaxed">{tip.text}</p>
+                { icon: '⚡', text: 'Perceptual Speed: 30 soal 2 menit — latih kecepatan baca karakter' },
+                { icon: '🧠', text: 'Working Memory: buat asosiasi mental kata-angka saat menghafal' },
+                { icon: '📐', text: 'Visualization & Inductive: pelajari pola rotasi & jaring-jaring' },
+                { icon: '📖', text: 'Reading: baca sekali dengan fokus, jawab tanpa kembali ke teks' },
+              ].map((t) => (
+                <div key={t.text} className="flex items-start gap-2.5 text-xs text-ink-soft">
+                  <span className="shrink-0 text-sm">{t.icon}</span>
+                  <p className="leading-relaxed">{t.text}</p>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Guest: ajakan daftar */}
+          {!isLoggedIn && (
+            <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+              <p className="font-heading font-bold text-sm mb-1">Mulai Latihan Gratis</p>
+              <p className="text-white/60 text-xs mb-4 leading-relaxed">Daftar sekarang dan akses paket simulasi tanpa biaya.</p>
+              <Link href="/register" className="block w-full text-center py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+                Daftar Gratis →
+              </Link>
+              <Link href="/login" className="block w-full text-center py-2 text-white/60 text-xs hover:text-white transition-colors mt-2">
+                Sudah punya akun? Masuk
+              </Link>
+            </div>
+          )}
         </aside>
       </div>
     </div>

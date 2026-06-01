@@ -1,36 +1,27 @@
 import { createClient } from '@/lib/supabase/server'
-import PortalNavbar from '@/components/portal/PortalNavbar'
-import type { UserRow } from '@/lib/utils'
+import { AppShell } from '@/components/ui/AppShell'
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
-  let userName: string | null = null
-  let userPlan: string = 'free'
-  let isLoggedIn = false
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      isLoggedIn = true
-      const { data } = await supabase
-        .from('users')
-        .select('full_name, plan')
-        .eq('id', user.id)
-        .single()
-      const profile = data as Pick<UserRow, 'full_name' | 'plan'> | null
-      userName = profile?.full_name ?? user.email?.split('@')[0] ?? null
-      userPlan = profile?.plan ?? 'free'
-    }
-  } catch { /* Supabase not configured */ }
+  let userName: string | null = null
+  let userPlan: 'free' | 'premium' = 'free'
+
+  if (user) {
+    const { data } = await supabase
+      .from('users')
+      .select('full_name, plan')
+      .eq('id', user.id)
+      .single()
+    const profile = data as { full_name: string | null; plan: 'free' | 'premium' } | null
+    userName = profile?.full_name ?? user.email?.split('@')[0] ?? null
+    userPlan = profile?.plan ?? 'free'
+  }
 
   return (
-    <div className="min-h-screen bg-paper">
-      <PortalNavbar
-        isLoggedIn={isLoggedIn}
-        userName={userName}
-        userPlan={userPlan as 'free' | 'premium'}
-      />
+    <AppShell userName={userName} userPlan={userPlan}>
       {children}
-    </div>
+    </AppShell>
   )
 }
