@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
   User, Settings, Ticket, LogOut, ChevronDown, Menu, X, Sparkles,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react'
 
 interface AppShellProps {
@@ -38,7 +39,6 @@ const NAV: Group[] = [
   },
 ]
 
-// Tab bar mobile (5 tujuan utama)
 const TABS: Item[] = [
   { href: '/dashboard', label: 'Beranda', icon: Home },
   { href: '/paket', label: 'Latihan', icon: Package },
@@ -53,8 +53,20 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
   const [drawer, setDrawer] = useState(false)
   const [menu, setMenu] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
 
-  // Halaman ujian aktif → mode fokus penuh (tanpa shell)
+  // Pulihkan preferensi sidebar dari localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebar-collapsed')
+    if (saved === 'true') setCollapsed(true)
+  }, [])
+
+  const toggleSidebar = () => {
+    const next = !collapsed
+    setCollapsed(next)
+    localStorage.setItem('sidebar-collapsed', String(next))
+  }
+
   if (pathname.startsWith('/ujian/')) return <>{children}</>
 
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U'
@@ -72,19 +84,31 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
     router.refresh()
   }
 
-  const SidebarBody = (
+  // ── Konten sidebar (sama untuk desktop dan mobile) ───────────────────────────
+  const SidebarBody = (isMobile = false) => (
     <>
-      <Link href="/dashboard" className="flex items-center gap-2.5 px-2 pb-5" onClick={() => setDrawer(false)}>
-        <span className="w-8 h-8 rounded-[9px] bg-brand grid place-items-center text-white font-heading font-extrabold text-base">T</span>
-        <span className="font-heading font-bold text-[17px] text-white">TembusKarir</span>
-      </Link>
+      {/* Brand */}
+      <div className={`flex items-center gap-2.5 pb-5 ${collapsed && !isMobile ? 'justify-center px-0' : 'px-2'}`}>
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2.5"
+          onClick={() => isMobile && setDrawer(false)}
+        >
+          <span className="w-8 h-8 rounded-[9px] bg-brand grid place-items-center text-white font-heading font-extrabold text-base shrink-0">T</span>
+          {(!collapsed || isMobile) && (
+            <span className="font-heading font-bold text-[17px] text-white whitespace-nowrap">TembusKarir</span>
+          )}
+        </Link>
+      </div>
 
-      <nav className="flex-1 overflow-y-auto -mx-1 px-1 space-y-0.5">
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden -mx-1 px-1 space-y-0.5">
         {NAV.map((group, gi) => (
           <div key={gi}>
-            {group.section && (
+            {group.section && (!collapsed || isMobile) && (
               <p className="text-[11px] uppercase tracking-wider text-white/40 px-3 pt-4 pb-1.5 font-semibold">{group.section}</p>
             )}
+            {group.section && collapsed && !isMobile && <div className="pt-3" />}
             {group.items.map((it) => {
               const Icon = it.icon
               const active = isActive(it.href)
@@ -92,15 +116,24 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
                 <Link
                   key={it.href}
                   href={it.href}
-                  onClick={() => setDrawer(false)}
-                  className={`relative flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm transition-colors ${
-                    active ? 'bg-white/10 text-white font-semibold' : 'text-white/70 hover:bg-white/[0.07] hover:text-white'
-                  }`}
+                  onClick={() => isMobile && setDrawer(false)}
+                  title={collapsed && !isMobile ? it.label : undefined}
+                  className={`relative flex items-center rounded-[10px] text-sm transition-colors ${
+                    collapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5'
+                  } ${active ? 'bg-white/10 text-white font-semibold' : 'text-white/70 hover:bg-white/[0.07] hover:text-white'}`}
                 >
                   {active && <span className="absolute left-0 w-[3px] h-5 rounded-r bg-brand" />}
                   <Icon className="w-[18px] h-[18px] shrink-0 opacity-90" />
-                  <span className="flex-1">{it.label}</span>
-                  {it.tag && <span className="text-[10px] font-bold text-white bg-[#FF6B2C] px-2 py-0.5 rounded-full">{it.tag}</span>}
+                  {(!collapsed || isMobile) && (
+                    <>
+                      <span className="flex-1 truncate">{it.label}</span>
+                      {it.tag && (
+                        <span className="text-[10px] font-bold text-white bg-[#FF6B2C] px-2 py-0.5 rounded-full shrink-0">
+                          {it.tag}
+                        </span>
+                      )}
+                    </>
+                  )}
                 </Link>
               )
             })}
@@ -108,10 +141,13 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
         ))}
       </nav>
 
-      {/* Upgrade banner (free) */}
-      {userPlan === 'free' && (
-        <Link href="/harga" onClick={() => setDrawer(false)}
-          className="mt-3 block rounded-2xl bg-white/[0.07] border border-white/10 p-3.5 hover:bg-white/10 transition-colors">
+      {/* Upgrade banner (free, expanded only) */}
+      {userPlan === 'free' && (!collapsed || isMobile) && (
+        <Link
+          href="/harga"
+          onClick={() => isMobile && setDrawer(false)}
+          className="mt-3 block rounded-2xl bg-white/[0.07] border border-white/10 p-3.5 hover:bg-white/10 transition-colors"
+        >
           <div className="flex items-center gap-2 text-white font-semibold text-sm mb-1">
             <Sparkles className="w-4 h-4 text-brand-300" /> Naik ke Premium
           </div>
@@ -119,30 +155,74 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
         </Link>
       )}
 
+      {/* Upgrade icon-only (free, collapsed) */}
+      {userPlan === 'free' && collapsed && !isMobile && (
+        <Link href="/harga" title="Naik ke Premium"
+          className="mt-3 w-9 h-9 rounded-xl bg-white/10 hover:bg-white/15 grid place-items-center mx-auto transition-colors">
+          <Sparkles className="w-4 h-4 text-brand-300" />
+        </Link>
+      )}
+
       {/* User chip */}
       <div className="mt-3 pt-3 border-t border-white/10">
-        <div className="flex items-center gap-2.5 px-1">
-          <span className="w-9 h-9 rounded-full bg-brand grid place-items-center text-white font-bold shrink-0">{initial}</span>
-          <div className="min-w-0 flex-1">
-            <p className="text-white text-[13.5px] font-semibold truncate">{userName ?? 'Pengguna'}</p>
-            <p className="text-white/45 text-[11px]">{userPlan === 'premium' ? 'Premium' : 'Paket Gratis'}</p>
+        {(!collapsed || isMobile) ? (
+          <>
+            <div className="flex items-center gap-2.5 px-1">
+              <span className="w-9 h-9 rounded-full bg-brand grid place-items-center text-white font-bold shrink-0">{initial}</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-white text-[13.5px] font-semibold truncate">{userName ?? 'Pengguna'}</p>
+                <p className="text-white/45 text-[11px]">{userPlan === 'premium' ? 'Premium' : 'Paket Gratis'}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 mt-2.5">
+              <Link href="/profil" onClick={() => isMobile && setDrawer(false)}
+                className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors">
+                <User className="w-3.5 h-3.5" /> Profil
+              </Link>
+              <Link href="/pengaturan" onClick={() => isMobile && setDrawer(false)}
+                className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors">
+                <Settings className="w-3.5 h-3.5" /> Pengaturan
+              </Link>
+              <Link href="/redeem" onClick={() => isMobile && setDrawer(false)}
+                className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors">
+                <Ticket className="w-3.5 h-3.5" /> Voucher
+              </Link>
+              <button onClick={signOut} disabled={signingOut}
+                className="flex items-center justify-center gap-1.5 text-xs text-red-300/80 hover:text-red-200 hover:bg-red-500/10 rounded-lg py-2 transition-colors disabled:opacity-50">
+                <LogOut className="w-3.5 h-3.5" /> {signingOut ? '...' : 'Keluar'}
+              </button>
+            </div>
+          </>
+        ) : (
+          /* Collapsed: hanya ikon-ikon vertikal */
+          <div className="flex flex-col items-center gap-1.5">
+            <span title={userName ?? 'Pengguna'}
+              className="w-9 h-9 rounded-full bg-brand grid place-items-center text-white font-bold cursor-default">
+              {initial}
+            </span>
+            <Link href="/profil" title="Profil"
+              className="w-9 h-9 rounded-xl hover:bg-white/10 grid place-items-center text-white/70 hover:text-white transition-colors">
+              <User className="w-4 h-4" />
+            </Link>
+            <button onClick={signOut} disabled={signingOut} title="Keluar"
+              className="w-9 h-9 rounded-xl hover:bg-red-500/10 grid place-items-center text-red-300/80 hover:text-red-200 transition-colors disabled:opacity-50">
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-1.5 mt-2.5">
-          <Link href="/profil" onClick={() => setDrawer(false)} className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors"><User className="w-3.5 h-3.5" />Profil</Link>
-          <Link href="/pengaturan" onClick={() => setDrawer(false)} className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors"><Settings className="w-3.5 h-3.5" />Pengaturan</Link>
-          <Link href="/redeem" onClick={() => setDrawer(false)} className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors"><Ticket className="w-3.5 h-3.5" />Voucher</Link>
-          <button onClick={signOut} disabled={signingOut} className="flex items-center justify-center gap-1.5 text-xs text-red-300/80 hover:text-red-200 hover:bg-red-500/10 rounded-lg py-2 transition-colors disabled:opacity-50"><LogOut className="w-3.5 h-3.5" />{signingOut ? '...' : 'Keluar'}</button>
-        </div>
+        )}
       </div>
     </>
   )
 
   return (
-    <div className="min-h-screen bg-paper lg:grid lg:grid-cols-[256px_1fr]">
+    <div className="min-h-screen bg-paper flex">
       {/* ===== Desktop sidebar ===== */}
-      <aside className="hidden lg:flex flex-col bg-ink text-white p-4 lg:sticky lg:top-0 lg:h-screen">
-        {SidebarBody}
+      <aside
+        className={`hidden lg:flex flex-col bg-ink text-white sticky top-0 h-screen shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out ${
+          collapsed ? 'w-[68px] px-3 py-4' : 'w-[256px] p-4'
+        }`}
+      >
+        {SidebarBody(false)}
       </aside>
 
       {/* ===== Mobile drawer ===== */}
@@ -150,31 +230,58 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
         <>
           <div className="lg:hidden fixed inset-0 z-40 bg-ink/50 backdrop-blur-sm" onClick={() => setDrawer(false)} />
           <aside className="lg:hidden fixed inset-y-0 left-0 z-50 w-[270px] bg-ink text-white p-4 flex flex-col shadow-2xl">
-            <button onClick={() => setDrawer(false)} className="absolute top-4 right-4 text-white/60 hover:text-white"><X className="w-5 h-5" /></button>
-            {SidebarBody}
+            <button onClick={() => setDrawer(false)} className="absolute top-4 right-4 text-white/60 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            {SidebarBody(true)}
           </aside>
         </>
       )}
 
       {/* ===== Content column ===== */}
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col flex-1 min-w-0 min-h-screen">
         {/* Topbar */}
         <header className="sticky top-0 z-30 bg-paper/80 backdrop-blur border-b border-hairline">
-          <div className="flex items-center gap-3 h-14 px-4 sm:px-6 lg:px-8">
-            <button onClick={() => setDrawer(true)} className="lg:hidden -ml-1 p-2 rounded-lg text-ink hover:bg-black/5"><Menu className="w-5 h-5" /></button>
+          <div className="flex items-center gap-2 h-14 px-4 sm:px-6 lg:px-8">
+
+            {/* Mobile hamburger */}
+            <button onClick={() => setDrawer(true)}
+              className="lg:hidden -ml-1 p-2 rounded-lg text-ink hover:bg-black/5">
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Desktop sidebar toggle */}
+            <button
+              onClick={toggleSidebar}
+              title={collapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
+              className="hidden lg:flex p-2 rounded-lg text-ink-muted hover:text-ink hover:bg-black/5 transition-colors"
+            >
+              {collapsed
+                ? <ChevronRight className="w-5 h-5" />
+                : <ChevronLeft className="w-5 h-5" />}
+            </button>
+
+            {/* Logo — mobile only */}
             <Link href="/dashboard" className="lg:hidden flex items-center gap-2">
               <span className="w-7 h-7 rounded-lg bg-brand grid place-items-center text-white font-heading font-extrabold text-sm">T</span>
               <span className="font-heading font-bold text-ink">TembusKarir</span>
             </Link>
 
+            {/* Right: premium badge + avatar */}
             <div className="ml-auto flex items-center gap-2.5">
               {userPlan === 'premium' ? (
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand/10 text-brand-700 text-xs font-bold rounded-full"><Sparkles className="w-3.5 h-3.5" />Premium</span>
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand/10 text-brand-700 text-xs font-bold rounded-full">
+                  <Sparkles className="w-3.5 h-3.5" />Premium
+                </span>
               ) : (
-                <Link href="/harga" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-lg hover:bg-brand-700 transition-colors"><Sparkles className="w-3.5 h-3.5" />Upgrade</Link>
+                <Link href="/harga"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-lg hover:bg-brand-700 transition-colors">
+                  <Sparkles className="w-3.5 h-3.5" />Upgrade
+                </Link>
               )}
               <div className="relative">
-                <button onClick={() => setMenu((v) => !v)} className="flex items-center gap-2 rounded-full pl-1 pr-2.5 py-1 hover:bg-black/5 transition-colors">
+                <button onClick={() => setMenu((v) => !v)}
+                  className="flex items-center gap-2 rounded-full pl-1 pr-2.5 py-1 hover:bg-black/5 transition-colors">
                   <span className="w-8 h-8 rounded-full bg-ink text-white grid place-items-center text-sm font-bold">{initial}</span>
                   <ChevronDown className={`w-4 h-4 text-ink-muted transition-transform ${menu ? 'rotate-180' : ''}`} />
                 </button>
@@ -191,10 +298,16 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
                         { href: '/pengaturan', label: 'Pengaturan', icon: Settings },
                         { href: '/redeem', label: 'Redeem Voucher', icon: Ticket },
                       ].map(({ href, label, icon: Icon }) => (
-                        <Link key={href} href={href} onClick={() => setMenu(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-soft transition-colors"><Icon className="w-4 h-4" />{label}</Link>
+                        <Link key={href} href={href} onClick={() => setMenu(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-soft transition-colors">
+                          <Icon className="w-4 h-4" />{label}
+                        </Link>
                       ))}
                       <div className="border-t border-hairline my-1" />
-                      <button onClick={signOut} disabled={signingOut} className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"><LogOut className="w-4 h-4" />{signingOut ? 'Keluar...' : 'Keluar'}</button>
+                      <button onClick={signOut} disabled={signingOut}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50">
+                        <LogOut className="w-4 h-4" />{signingOut ? 'Keluar...' : 'Keluar'}
+                      </button>
                     </div>
                   </>
                 )}
@@ -212,7 +325,10 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
             const Icon = t.icon
             const active = isActive(t.href)
             return (
-              <Link key={t.href} href={t.href} className={`flex flex-col items-center gap-0.5 py-2.5 text-[10.5px] font-semibold transition-colors ${active ? 'text-brand' : 'text-ink-muted'}`}>
+              <Link key={t.href} href={t.href}
+                className={`flex flex-col items-center gap-0.5 py-2.5 text-[10.5px] font-semibold transition-colors ${
+                  active ? 'text-brand' : 'text-ink-muted'
+                }`}>
                 <Icon className="w-5 h-5" />
                 {t.label}
               </Link>
