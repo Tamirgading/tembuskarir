@@ -48,7 +48,7 @@ function TimerDisplay({ seconds, isUrgent }: { seconds: number; isUrgent: boolea
   const m = Math.floor(seconds / 60).toString().padStart(2, '0')
   const s = (seconds % 60).toString().padStart(2, '0')
   return (
-    <span className={`font-mono text-lg font-bold ${isUrgent ? 'text-red-600 animate-pulse' : 'text-gray-800'}`}>
+    <span className={`font-num text-lg font-bold ${isUrgent ? 'text-red-500 animate-pulse' : 'text-ink'}`}>
       {m}:{s}
     </span>
   )
@@ -306,7 +306,7 @@ export default function AstraUjianPage() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center space-y-3">
           <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-500">Memuat soal ujian...</p>
+          <p className="text-ink-muted">Memuat soal ujian...</p>
         </div>
       </div>
     )
@@ -318,7 +318,7 @@ export default function AstraUjianPage() {
         <div className="text-center space-y-4 max-w-sm">
           <AlertTriangle className="w-10 h-10 text-red-400 mx-auto" />
           <p className="text-red-600 font-medium">{loadError}</p>
-          <button onClick={() => router.back()} className="text-orange-600 hover:underline text-sm">← Kembali</button>
+          <button onClick={() => router.back()} className="text-ink-muted hover:text-ink text-sm">← Kembali</button>
         </div>
       </div>
     )
@@ -331,10 +331,10 @@ export default function AstraUjianPage() {
 
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-3xl border border-hairline shadow-soft overflow-hidden">
           <div className="bg-gradient-to-br from-orange-500 to-amber-500 px-7 py-8">
             <p className="text-orange-100 text-sm font-semibold mb-1">Psikotes ASTRA</p>
-            <h1 className="text-2xl font-extrabold text-white">{pkgName}</h1>
+            <h1 className="text-2xl font-heading font-extrabold text-white">{pkgName}</h1>
             <div className="flex gap-3 mt-4">
               {[
                 { label: 'soal total', value: totalSoal },
@@ -342,7 +342,7 @@ export default function AstraUjianPage() {
                 { label: 'menit total', value: totalMenit },
               ].map(s => (
                 <div key={s.label} className="bg-white/20 rounded-xl px-4 py-2 text-center">
-                  <p className="text-white font-bold">{s.value}</p>
+                  <p className="text-white font-num font-bold">{s.value}</p>
                   <p className="text-orange-100 text-xs">{s.label}</p>
                 </div>
               ))}
@@ -350,34 +350,34 @@ export default function AstraUjianPage() {
           </div>
 
           <div className="p-6 space-y-4">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Urutan Sub-tes</p>
+            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Urutan Sub-tes</p>
 
             <div className="space-y-2">
               {subtestKeys.map((key, i) => {
                 const sub = ASTRA_SUBTESTS[key]
                 const qs = questionsBySubtest[key]
                 return (
-                  <div key={key} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-100 bg-gray-50">
+                  <div key={key} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-hairline bg-paper-soft">
                     <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 text-xs font-bold flex items-center justify-center shrink-0">
                       {i + 1}
                     </span>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full border shrink-0 ${SUBTEST_COLORS[key]}`}>
                       {key}
                     </span>
-                    <span className="text-sm font-semibold text-gray-700 flex-1">{sub.full}</span>
-                    <span className="text-xs text-gray-400 shrink-0">{qs.length} soal · {sub.minutes} mnt</span>
+                    <span className="text-sm font-semibold text-ink-soft flex-1">{sub.full}</span>
+                    <span className="text-xs text-ink-muted shrink-0 font-num">{qs.length} soal · {sub.minutes} mnt</span>
                   </div>
                 )
               })}
             </div>
 
-            <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 text-xs text-orange-700 leading-relaxed">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-800 leading-relaxed">
               <strong>Perhatian:</strong> Sub-tes dikerjakan berurutan. Waktu tiap sub-tes berjalan terpisah dan tidak bisa dijeda. Jawaban otomatis tersimpan saat waktu habis.
             </div>
 
             <button
               onClick={goToFirstSubtest}
-              className="w-full py-4 bg-orange-500 text-white font-bold text-base rounded-2xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 active:scale-[0.98]"
+              className="w-full py-4 bg-orange-500 text-white font-bold text-base rounded-2xl hover:bg-orange-600 transition-all shadow-soft active:scale-[0.98]"
             >
               Mulai Simulasi →
             </button>
@@ -396,14 +396,14 @@ export default function AstraUjianPage() {
 
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-3xl border border-hairline shadow-soft overflow-hidden">
           <div className="bg-gradient-to-br from-orange-500 to-amber-500 px-7 py-8">
             <p className="text-orange-100 text-sm font-semibold mb-2">
               Sub-tes {currentSubtestIdx + 1} dari {subtestKeys.length}
             </p>
             <div className="flex items-center gap-3 mb-3">
               <span className="px-3 py-1 bg-white/30 text-white text-sm font-extrabold rounded-full">{key}</span>
-              <h2 className="text-xl font-extrabold text-white">{sub.full}</h2>
+              <h2 className="text-xl font-heading font-extrabold text-white">{sub.full}</h2>
             </div>
             <div className="flex gap-3">
               {[
@@ -412,7 +412,7 @@ export default function AstraUjianPage() {
                 { label: 'per benar', value: '+1' },
               ].map(s => (
                 <div key={s.label} className="bg-white/20 rounded-xl px-4 py-2 text-center">
-                  <p className="text-white font-bold">{s.value}</p>
+                  <p className="text-white font-num font-bold">{s.value}</p>
                   <p className="text-orange-100 text-xs">{s.label}</p>
                 </div>
               ))}
@@ -420,24 +420,24 @@ export default function AstraUjianPage() {
           </div>
 
           <div className="p-6 space-y-4">
-            <div className="bg-gray-50 rounded-2xl p-5">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Deskripsi</p>
-              <p className="text-gray-700 text-sm leading-relaxed">{info?.desc}</p>
+            <div className="bg-paper-soft rounded-2xl p-5 border border-hairline">
+              <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-2">Deskripsi</p>
+              <p className="text-ink-soft text-sm leading-relaxed">{info?.desc}</p>
             </div>
 
-            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5">
-              <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">💡 Tips</p>
-              <p className="text-orange-800 text-sm leading-relaxed">{info?.tip}</p>
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+              <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2">Tips</p>
+              <p className="text-amber-900 text-sm leading-relaxed">{info?.tip}</p>
             </div>
 
-            <div className="flex items-start gap-2 text-xs text-gray-500 bg-gray-50 rounded-xl px-4 py-3">
+            <div className="flex items-start gap-2 text-xs text-ink-muted bg-paper-soft rounded-xl px-4 py-3 border border-hairline">
               <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
               <p>Timer dimulai saat kamu klik &quot;Mulai&quot;. Soal dikerjakan satu per satu &mdash; tidak bisa kembali ke soal sebelumnya.</p>
             </div>
 
             <button
               onClick={handleStartSubtest}
-              className="w-full py-4 bg-orange-500 text-white font-bold text-base rounded-2xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 active:scale-[0.98]"
+              className="w-full py-4 bg-orange-500 text-white font-bold text-base rounded-2xl hover:bg-orange-600 transition-all shadow-soft active:scale-[0.98]"
             >
               Mulai {key} →
             </button>
@@ -461,13 +461,13 @@ export default function AstraUjianPage() {
       <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
 
         {/* Header bar */}
-        <div className="bg-white rounded-2xl border border-gray-200 px-5 py-3 flex items-center gap-4">
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-3 flex items-center gap-4">
           <span className={`text-xs font-bold px-2.5 py-1 rounded-full border shrink-0 ${SUBTEST_COLORS[key]}`}>
             {key}
           </span>
           <div className="flex-1">
-            <p className="text-xs text-gray-400">{ASTRA_SUBTESTS[key].full}</p>
-            <p className="text-sm font-bold text-gray-800">Soal {currentQIdx + 1} / {questions.length}</p>
+            <p className="text-xs text-ink-muted">{ASTRA_SUBTESTS[key].full}</p>
+            <p className="text-sm font-bold text-ink">Soal <span className="font-num">{currentQIdx + 1}</span> / <span className="font-num">{questions.length}</span></p>
           </div>
 
           {/* Progress bar */}
@@ -486,9 +486,9 @@ export default function AstraUjianPage() {
 
           {/* Timer */}
           <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 shrink-0 ${
-            isUrgent ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-gray-50'
+            isUrgent ? 'border-red-300 bg-red-50' : 'border-hairline bg-paper-soft'
           }`}>
-            <p className="text-xs text-gray-400">Waktu</p>
+            <p className="text-xs text-ink-muted">Waktu</p>
             <TimerDisplay seconds={timeLeft} isUrgent={isUrgent} />
           </div>
         </div>
@@ -502,19 +502,19 @@ export default function AstraUjianPage() {
         )}
 
         {/* Card soal */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-6 space-y-5">
           {/* Nomor soal */}
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+            <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-num font-bold shrink-0">
               {currentQIdx + 1}
             </span>
-            <span className="text-xs text-gray-400">
-              Sub-tes {currentSubtestIdx + 1} dari {subtestKeys.length}
+            <span className="text-xs text-ink-muted">
+              Sub-tes <span className="font-num">{currentSubtestIdx + 1}</span> dari <span className="font-num">{subtestKeys.length}</span>
             </span>
           </div>
 
           {/* Konten soal */}
-          <div className="text-gray-900 leading-relaxed">
+          <div className="text-ink leading-relaxed">
             <QuestionContent content={currentQ.content} />
           </div>
 
@@ -535,11 +535,11 @@ export default function AstraUjianPage() {
                   className={`w-full flex items-start gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${
                     isSelected
                       ? 'border-orange-500 bg-orange-50 text-orange-900'
-                      : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50/40 text-gray-800'
+                      : 'border-hairline hover:border-orange-300 hover:bg-orange-50/40 text-ink'
                   }`}
                 >
                   <span className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
-                    isSelected ? 'border-orange-500 bg-orange-500 text-white' : 'border-gray-300 text-gray-500'
+                    isSelected ? 'border-orange-500 bg-orange-500 text-white' : 'border-hairline text-ink-muted'
                   }`}>
                     {opt.key}
                   </span>
@@ -564,8 +564,8 @@ export default function AstraUjianPage() {
               disabled={!isAnswered || isSubmitting}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 isAnswered && !isSubmitting
-                  ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm hover:shadow-orange-200 hover:shadow-md'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-soft'
+                  : 'bg-paper-soft text-ink-muted cursor-not-allowed'
               }`}
             >
               {isLastQ
@@ -578,22 +578,22 @@ export default function AstraUjianPage() {
         {/* ── Modal Konfirmasi Selesai Sub-tes ── */}
         {showFinishConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white rounded-3xl shadow-soft border border-hairline max-w-sm w-full p-6 space-y-5">
               <div className="text-center">
                 <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertTriangle className="w-7 h-7 text-orange-500" />
                 </div>
-                <h3 className="text-lg font-extrabold text-gray-900 mb-1">
+                <h3 className="text-lg font-heading font-extrabold text-ink mb-1">
                   Selesaikan Sub-tes {key}?
                 </h3>
-                <p className="text-sm text-gray-500 leading-relaxed">
+                <p className="text-sm text-ink-muted leading-relaxed">
                   {isLastSubtest
                     ? 'Kamu akan mengirim seluruh jawaban. Tindakan ini tidak dapat dibatalkan.'
                     : `Kamu akan berpindah ke sub-tes berikutnya. Jawaban sub-tes ${key} tidak bisa diubah lagi.`}
                 </p>
                 {timeLeft > 30 && (
                   <p className="mt-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-                    Masih ada <span className="font-bold">{Math.floor(timeLeft / 60)} menit {timeLeft % 60} detik</span> tersisa
+                    Masih ada <span className="font-num font-bold">{Math.floor(timeLeft / 60)} menit {timeLeft % 60} detik</span> tersisa
                   </p>
                 )}
               </div>
@@ -606,7 +606,7 @@ export default function AstraUjianPage() {
                 </button>
                 <button
                   onClick={() => setShowFinishConfirm(false)}
-                  className="w-full py-3 border-2 border-gray-200 text-gray-600 font-semibold rounded-2xl hover:bg-gray-50 transition-all text-sm"
+                  className="w-full py-3 border border-hairline text-ink-soft font-semibold rounded-2xl hover:bg-paper-soft transition-all text-sm"
                 >
                   Kembali, Cek Jawaban Lagi
                 </button>
@@ -623,8 +623,8 @@ export default function AstraUjianPage() {
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="text-center space-y-3">
         <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-gray-700 font-medium">Mengirim jawaban...</p>
-        <p className="text-gray-400 text-sm">Harap jangan tutup halaman ini</p>
+        <p className="text-ink font-medium">Mengirim jawaban...</p>
+        <p className="text-ink-muted text-sm">Harap jangan tutup halaman ini</p>
       </div>
     </div>
   )

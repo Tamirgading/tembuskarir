@@ -32,7 +32,7 @@ function Timer({ secondsLeft, isUrgent }: { secondsLeft: number; isUrgent: boole
   const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0')
   const s = (secondsLeft % 60).toString().padStart(2, '0')
   return (
-    <span className={`font-mono text-2xl font-bold tracking-wider ${isUrgent ? 'text-red-300 animate-pulse' : 'text-white'}`}>
+    <span className={`font-num text-2xl font-bold tracking-wider ${isUrgent ? 'text-red-300 animate-pulse' : 'text-white'}`}>
       {m}:{s}
     </span>
   )
@@ -255,7 +255,7 @@ export default function UjianPage() {
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="text-center space-y-3">
         <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-gray-500">Memuat soal ujian...</p>
+        <p className="text-ink-muted">Memuat soal ujian...</p>
       </div>
     </div>
   )
@@ -274,7 +274,7 @@ export default function UjianPage() {
   if (!pkg || questions.length === 0) return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="text-center space-y-4">
-        <p className="text-gray-500 font-medium">Soal untuk paket ini belum tersedia.</p>
+        <p className="text-ink-muted font-medium">Soal untuk paket ini belum tersedia.</p>
         <button onClick={() => router.back()} className="text-blue-600 hover:underline text-sm">← Kembali</button>
       </div>
     </div>
@@ -290,7 +290,7 @@ export default function UjianPage() {
     if (isCurrent)            return 'bg-blue-800 border-blue-800 text-white ring-2 ring-blue-400 ring-offset-1'
     if (isRagu)               return 'bg-yellow-400 border-yellow-400 text-yellow-900 hover:bg-yellow-300'
     if (isAnswered)           return 'bg-green-500 border-green-500 text-white hover:bg-green-600'
-    return 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
+    return 'bg-white border border-hairline text-ink-soft hover:bg-paper-soft'
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -376,13 +376,13 @@ export default function UjianPage() {
       </div>
 
       {/* ══ MOBILE NUMBER STRIP (hanya < lg) ══════════════════════════════ */}
-      <div className="lg:hidden sticky top-14 z-30 bg-white border-b border-gray-200 shadow-sm">
+      <div className="lg:hidden sticky top-14 z-30 bg-white border-b border-hairline shadow-soft">
         {/* Legenda ringkas */}
-        <div className="flex items-center gap-3 px-3 pt-2 pb-1 text-[10px] text-gray-500">
+        <div className="flex items-center gap-3 px-3 pt-2 pb-1 text-[10px] text-ink-muted">
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500 inline-block" />Dijawab</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-yellow-400 inline-block" />Ragu</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded border border-gray-300 inline-block" />Belum</span>
-          <span className="ml-auto text-gray-400">{answeredCount}/{questions.length} dijawab</span>
+          <span className="ml-auto text-ink-muted"><span className="font-num">{answeredCount}/{questions.length}</span> dijawab</span>
         </div>
         {/* Scrollable number row */}
         <div
@@ -410,7 +410,7 @@ export default function UjianPage() {
 
           {/* ── SIDEBAR KIRI: hanya desktop (lg+) ────────────────────────── */}
           <aside className="hidden lg:flex w-56 shrink-0 sticky top-[68px] flex-col gap-3">
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-md">
+            <div className="bg-white rounded-xl border border-hairline overflow-hidden shadow-soft">
               <div className="bg-blue-700 px-3 py-2">
                 <p className="text-xs font-bold text-white tracking-wide uppercase">Daftar Soal</p>
               </div>
@@ -461,7 +461,7 @@ export default function UjianPage() {
             </div>
 
             {/* Card soal */}
-            <div className="bg-white border border-t-0 border-gray-200 rounded-b-xl px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
+            <div className="bg-white border border-t-0 border-hairline rounded-b-xl px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
               <div className="text-gray-900 leading-relaxed text-sm space-y-2">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold shadow-sm">
                   Nomor {currentIndex + 1}
@@ -489,11 +489,11 @@ export default function UjianPage() {
                       className={`w-full flex items-start gap-3 px-3 sm:px-4 py-3 rounded-lg border text-left text-sm transition-all ${
                         isSelected
                           ? 'border-blue-500 bg-blue-50 text-blue-900'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 text-gray-800'
+                          : 'border-hairline hover:border-brand/40 hover:bg-brand/5 text-ink'
                       } disabled:cursor-not-allowed`}
                     >
                       <span className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold mt-0.5 ${
-                        isSelected ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-400 text-gray-500'
+                        isSelected ? 'border-brand bg-brand text-white' : 'border-hairline text-ink-muted'
                       }`}>
                         {opt.key}
                       </span>
@@ -507,11 +507,11 @@ export default function UjianPage() {
             </div>
 
             {/* Footer navigasi */}
-            <div className="bg-white rounded-b-xl border border-t-0 border-gray-200 px-4 sm:px-5 py-2.5 sm:py-3 flex justify-between items-center gap-2">
+            <div className="bg-white rounded-b-xl border border-t-0 border-hairline px-4 sm:px-5 py-2.5 sm:py-3 flex justify-between items-center gap-2">
               <button
                 onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
                 disabled={currentIndex === 0 || isSubmitting}
-                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 border border-hairline text-ink-soft rounded-lg text-sm hover:bg-paper-soft disabled:opacity-40 disabled:cursor-not-allowed font-medium"
               >
                 <span>←</span>
                 <span className="hidden sm:inline">Soal Sebelumnya</span>
@@ -525,7 +525,7 @@ export default function UjianPage() {
                 className={`flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border font-semibold transition-colors ${
                   raguRagu.has(currentQuestion.id)
                     ? 'bg-yellow-400 border-yellow-500 text-yellow-900 hover:bg-yellow-300'
-                    : 'bg-white border-gray-300 text-gray-500 hover:border-yellow-400 hover:text-yellow-600'
+                    : 'bg-white border-hairline text-ink-muted hover:border-amber-400 hover:text-amber-600'
                 }`}
               >
                 <Flag className="w-3.5 h-3.5" />
@@ -583,12 +583,12 @@ export default function UjianPage() {
                   <p>Belum dijawab: <strong className="text-red-600">{unansweredCount} soal</strong></p>
                 </div>
               )}
-              <p className="pt-1 text-gray-400 text-xs">Setelah diakhiri, jawaban tidak bisa diubah.</p>
+              <p className="pt-1 text-ink-muted text-xs">Setelah diakhiri, jawaban tidak bisa diubah.</p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
+                className="flex-1 py-2.5 border border-hairline text-ink-soft rounded-lg text-sm hover:bg-paper-soft"
               >
                 Kembali
               </button>
