@@ -71,6 +71,74 @@ function QuestionContent({ content }: { content: string }) {
   )
 }
 
+// ─── WM: tipe pasangan kata-angka ───────────────────────────────────────────────
+interface WmPair { word: string; number: number }
+
+// ─── WM: Animasi fase hafalan (layar putih penuh) ────────────────────────────────
+function WmMemoryAnimation({
+  pairs,
+  onComplete,
+}: {
+  pairs: WmPair[]
+  onComplete: () => void
+}) {
+  const [innerPhase, setInnerPhase] = useState<'dots' | 'showing'>('dots')
+  const [pairIdx, setPairIdx] = useState(0)
+  const [activeDot, setActiveDot] = useState(0) // 0,1,2 untuk 3 titik bergiliran
+
+  // ── Animasi 3 titik selama 3 detik ───────────────────────────────────────────
+  useEffect(() => {
+    if (innerPhase !== 'dots') return
+    const dotInterval = setInterval(() => {
+      setActiveDot(d => (d + 1) % 3)
+    }, 400)
+    const dotsEnd = setTimeout(() => {
+      clearInterval(dotInterval)
+      setInnerPhase('showing')
+    }, 3000)
+    return () => { clearInterval(dotInterval); clearTimeout(dotsEnd) }
+  }, [innerPhase])
+
+  // ── Tampilkan tiap pasangan 1 detik ──────────────────────────────────────────
+  useEffect(() => {
+    if (innerPhase !== 'showing') return
+    if (pairIdx >= pairs.length) {
+      onComplete()
+      return
+    }
+    const t = setTimeout(() => setPairIdx(i => i + 1), 1000)
+    return () => clearTimeout(t)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [innerPhase, pairIdx])
+
+  return (
+    <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
+      {innerPhase === 'dots' && (
+        <div className="flex items-center gap-4">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className={`w-5 h-5 rounded-full bg-ink transition-all duration-300 ${
+                activeDot === i ? 'opacity-100 scale-125' : 'opacity-20 scale-100'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+      {innerPhase === 'showing' && pairIdx < pairs.length && (
+        <div className="text-center select-none">
+          <p className="text-4xl font-heading font-extrabold text-ink mb-4">
+            {pairs[pairIdx].word}
+          </p>
+          <p className="text-7xl font-num font-extrabold text-ink">
+            {pairs[pairIdx].number}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Halaman Ujian ASTRA ────────────────────────────────────────────────────────
 export default function AstraUjianPage() {
   const router = useRouter()
@@ -91,6 +159,11 @@ export default function AstraUjianPage() {
   const [timeLeft, setTimeLeft] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showFinishConfirm, setShowFinishConfirm] = useState(false)
+
+  // ── WM: data pasangan (array per soal, diindex sesuai urutan soal WM) ──────────
+  const [wmPairsData, setWmPairsData] = useState<WmPair[][]>([])
+  // ── WM: fase per soal — 'memory' = animasi hafal, 'recall' = jawab MCQ ─────────
+  const [wmPhase, setWmPhase] = useState<'memory' | 'recall'>('memory')
 
   // Refs untuk menghindari stale closure di timer
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -184,6 +257,21 @@ export default function AstraUjianPage() {
         setSubtestKeys(availableKeys)
         setQuestionsBySubtest(grouped)
 
+        // ── Fetch WM memory pairs jika ada sub-tes WM ─────────────────────────
+        if (grouped['WM']) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: wmData } = await (supabase.from('questions_astra_wm') as any)
+            .select('memory_pairs, order_index')
+            .eq('package_id', packageId)
+            .order('order_index', { ascending: true })
+
+          if (wmData && (wmData as { memory_pairs: WmPair[] }[]).length > 0) {
+            setWmPairsData(
+              (wmData as { memory_pairs: WmPair[] }[]).map(r => r.memory_pairs ?? [])
+            )
+          }
+        }
+
         // Cek attempt ongoing
         const { data: ongoingData } = await supabase
           .from('attempts')
@@ -269,6 +357,8 @@ export default function AstraUjianPage() {
     const key = subtestKeys[currentSubtestIdx]
     setTimeLeft(ASTRA_SUBTESTS[key].minutes * 60)
     setCurrentQIdx(0)
+    // WM: mulai dari fase hafalan
+    if (key === 'WM') setWmPhase('memory')
     setPhase('in-progress')
   }
 
@@ -289,6 +379,8 @@ export default function AstraUjianPage() {
     const questions = questionsBySubtest[key]
     if (currentQIdx < questions.length - 1) {
       setCurrentQIdx(prev => prev + 1)
+      // WM: soal berikutnya dimulai kembali dari fase hafalan
+      if (key === 'WM') setWmPhase('memory')
     } else {
       // Soal terakhir subtest → tampilkan konfirmasi dulu
       setShowFinishConfirm(true)
@@ -457,8 +549,18 @@ export default function AstraUjianPage() {
     const isLastSubtest = currentSubtestIdx === subtestKeys.length - 1
     const isUrgent = timeLeft > 0 && timeLeft <= 30
 
+    const isWm = key === 'WM'
+
     return (
       <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
+
+        {/* ── WM: Overlay hafalan (fullscreen putih) ── */}
+        {isWm && wmPhase === 'memory' && (
+          <WmMemoryAnimation
+            pairs={wmPairsData[currentQIdx] ?? []}
+            onComplete={() => setWmPhase('recall')}
+          />
+        )}
 
         {/* Header bar */}
         <div className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-3 flex items-center gap-4">
@@ -570,7 +672,7 @@ export default function AstraUjianPage() {
             >
               {isLastQ
                 ? (isLastSubtest ? 'Selesai & Kirim Hasil ✓' : 'Selesai Sub-tes →')
-                : 'Berikutnya →'}
+                : isWm ? 'Hafal & Lanjut →' : 'Berikutnya →'}
             </button>
           </div>
         </div>
