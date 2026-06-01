@@ -1,6 +1,7 @@
 import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { Banknote, BriefcaseBusiness, Zap, BookOpenCheck, BarChart3, MonitorCheck, ArrowRight, Play } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
@@ -9,17 +10,18 @@ async function getAuthState() {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { isLoggedIn: false, firstName: null }
-    const { data } = await supabase.from('users').select('full_name').eq('id', user.id).single()
-    const fullName = (data as { full_name: string | null } | null)?.full_name ?? ''
-    return { isLoggedIn: true, firstName: fullName.split(' ')[0] || 'Kamu' }
+    if (!user) return { isLoggedIn: false }
+    return { isLoggedIn: true }
   } catch {
-    return { isLoggedIn: false, firstName: null }
+    return { isLoggedIn: false }
   }
 }
 
 export default async function HomePage() {
   const { isLoggedIn } = await getAuthState()
+
+  // User yang sudah login → langsung ke dashboard (beranda hanya untuk tamu)
+  if (isLoggedIn) redirect('/dashboard')
 
   return (
     <>
@@ -51,9 +53,9 @@ export default async function HomePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                <Link href={isLoggedIn ? '/dashboard' : '/register'}
+                <Link href="/register"
                   className="inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl bg-brand text-white font-bold text-base shadow-soft hover:bg-brand-700 transition-colors">
-                  {isLoggedIn ? 'Ke Dashboard' : 'Mulai Gratis'}
+                  Mulai Gratis
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link href="#jenis-tes"
@@ -304,9 +306,9 @@ export default async function HomePage() {
           <p className="text-white/65 mb-9 text-lg max-w-xl mx-auto">
             Daftar gratis, kerjakan simulasi pertamamu, dan lihat persis di mana kamu berdiri menuju karier impian.
           </p>
-          <Link href={isLoggedIn ? '/dashboard' : '/register'}
+          <Link href="/register"
             className="inline-flex justify-center items-center gap-2 bg-brand text-white font-bold px-7 py-3.5 rounded-xl hover:bg-brand-700 transition-colors text-base">
-            {isLoggedIn ? 'Ke Dashboard' : 'Mulai Gratis'} <ArrowRight className="w-4 h-4" />
+            Mulai Gratis <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
