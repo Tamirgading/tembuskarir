@@ -424,8 +424,8 @@ export default function AstraUjianPage() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="bg-white rounded-3xl border border-hairline shadow-soft overflow-hidden">
-          <div className="bg-gradient-to-br from-orange-500 to-amber-500 px-7 py-8">
-            <p className="text-orange-100 text-sm font-semibold mb-1">Psikotes ASTRA</p>
+          <div className="px-7 py-8 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+            <p className="text-white/55 text-sm font-semibold mb-1">Psikotes ASTRA</p>
             <h1 className="text-2xl font-heading font-extrabold text-white">{pkgName}</h1>
             <div className="flex gap-3 mt-4">
               {[
@@ -433,9 +433,9 @@ export default function AstraUjianPage() {
                 { label: 'sub-tes', value: subtestKeys.length },
                 { label: 'menit total', value: totalMenit },
               ].map(s => (
-                <div key={s.label} className="bg-white/20 rounded-xl px-4 py-2 text-center">
+                <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2 text-center">
                   <p className="text-white font-num font-bold">{s.value}</p>
-                  <p className="text-orange-100 text-xs">{s.label}</p>
+                  <p className="text-white/55 text-xs">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -450,7 +450,7 @@ export default function AstraUjianPage() {
                 const qs = questionsBySubtest[key]
                 return (
                   <div key={key} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-hairline bg-paper-soft">
-                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 text-xs font-bold flex items-center justify-center shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-brand/10 text-brand-700 text-xs font-num font-bold flex items-center justify-center shrink-0">
                       {i + 1}
                     </span>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full border shrink-0 ${SUBTEST_COLORS[key]}`}>
@@ -469,7 +469,7 @@ export default function AstraUjianPage() {
 
             <button
               onClick={goToFirstSubtest}
-              className="w-full py-4 bg-orange-500 text-white font-bold text-base rounded-2xl hover:bg-orange-600 transition-all shadow-soft active:scale-[0.98]"
+              className="w-full py-4 bg-brand text-white font-bold text-base rounded-2xl hover:bg-brand-700 transition-all shadow-soft active:scale-[0.98]"
             >
               Mulai Simulasi →
             </button>
@@ -489,12 +489,12 @@ export default function AstraUjianPage() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="bg-white rounded-3xl border border-hairline shadow-soft overflow-hidden">
-          <div className="bg-gradient-to-br from-orange-500 to-amber-500 px-7 py-8">
-            <p className="text-orange-100 text-sm font-semibold mb-2">
-              Sub-tes {currentSubtestIdx + 1} dari {subtestKeys.length}
+          <div className="px-7 py-8 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+            <p className="text-white/55 text-sm font-semibold mb-2">
+              Sub-tes <span className="font-num">{currentSubtestIdx + 1}</span> dari <span className="font-num">{subtestKeys.length}</span>
             </p>
             <div className="flex items-center gap-3 mb-3">
-              <span className="px-3 py-1 bg-white/30 text-white text-sm font-extrabold rounded-full">{key}</span>
+              <span className="px-3 py-1 bg-white/15 text-white text-sm font-extrabold rounded-full border border-white/20">{key}</span>
               <h2 className="text-xl font-heading font-extrabold text-white">{sub.full}</h2>
             </div>
             <div className="flex gap-3">
@@ -503,9 +503,9 @@ export default function AstraUjianPage() {
                 { label: 'menit', value: sub.minutes },
                 { label: 'per benar', value: '+1' },
               ].map(s => (
-                <div key={s.label} className="bg-white/20 rounded-xl px-4 py-2 text-center">
+                <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2 text-center">
                   <p className="text-white font-num font-bold">{s.value}</p>
-                  <p className="text-orange-100 text-xs">{s.label}</p>
+                  <p className="text-white/55 text-xs">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -529,7 +529,7 @@ export default function AstraUjianPage() {
 
             <button
               onClick={handleStartSubtest}
-              className="w-full py-4 bg-orange-500 text-white font-bold text-base rounded-2xl hover:bg-orange-600 transition-all shadow-soft active:scale-[0.98]"
+              className="w-full py-4 bg-brand text-white font-bold text-base rounded-2xl hover:bg-brand-700 transition-all shadow-soft active:scale-[0.98]"
             >
               Mulai {key} →
             </button>
