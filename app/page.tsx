@@ -397,9 +397,8 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div className="md:col-span-2">
-              <Image src="/logotk.png" alt="TembusKarir" width={120} height={32} className="h-8 w-auto opacity-80 mb-5 brightness-200 invert" />
               <p className="text-sm leading-relaxed max-w-xs">
-                Simulasi tes rekrutmen kerja yang terasa seperti aslinya — untuk persiapan PLN, ASTRA, BUMN, dan perusahaan lainnya.
+                Simulasi tes rekrutmen kerja yang terasa seperti aslinya.
               </p>
             </div>
             <div>
