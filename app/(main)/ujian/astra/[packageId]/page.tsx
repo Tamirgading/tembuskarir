@@ -607,7 +607,7 @@ export default function AstraUjianPage() {
         <div className="bg-white rounded-2xl border border-hairline shadow-soft p-6 space-y-5">
           {/* Nomor soal */}
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-num font-bold shrink-0">
+            <span className="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center text-sm font-num font-bold shrink-0">
               {currentQIdx + 1}
             </span>
             <span className="text-xs text-ink-muted">
@@ -636,12 +636,12 @@ export default function AstraUjianPage() {
                   onClick={() => selectAnswer(currentQ.id, opt.key)}
                   className={`w-full flex items-start gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${
                     isSelected
-                      ? 'border-orange-500 bg-orange-50 text-orange-900'
-                      : 'border-hairline hover:border-orange-300 hover:bg-orange-50/40 text-ink'
+                      ? 'border-brand bg-brand/5 text-ink'
+                      : 'border-hairline hover:border-brand/40 hover:bg-brand/5 text-ink'
                   }`}
                 >
                   <span className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
-                    isSelected ? 'border-orange-500 bg-orange-500 text-white' : 'border-hairline text-ink-muted'
+                    isSelected ? 'border-brand bg-brand text-white' : 'border-hairline text-ink-muted'
                   }`}>
                     {opt.key}
                   </span>
@@ -666,7 +666,7 @@ export default function AstraUjianPage() {
               disabled={!isAnswered || isSubmitting}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 isAnswered && !isSubmitting
-                  ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-soft'
+                  ? 'bg-brand text-white hover:bg-brand-700 shadow-soft'
                   : 'bg-paper-soft text-ink-muted cursor-not-allowed'
               }`}
             >
@@ -702,7 +702,7 @@ export default function AstraUjianPage() {
               <div className="flex flex-col gap-2">
                 <button
                   onClick={handleConfirmFinish}
-                  className="w-full py-3 bg-orange-500 text-white font-bold rounded-2xl hover:bg-orange-600 transition-all"
+                  className="w-full py-3 bg-brand text-white font-bold rounded-2xl hover:bg-brand-700 transition-all"
                 >
                   {isLastSubtest ? 'Ya, Kirim Jawaban' : 'Ya, Lanjut ke Sub-tes Berikutnya'}
                 </button>
