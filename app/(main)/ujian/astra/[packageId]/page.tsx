@@ -48,7 +48,7 @@ function TimerDisplay({ seconds, isUrgent }: { seconds: number; isUrgent: boolea
   const m = Math.floor(seconds / 60).toString().padStart(2, '0')
   const s = (seconds % 60).toString().padStart(2, '0')
   return (
-    <span className={`font-num text-lg font-bold ${isUrgent ? 'text-red-500 animate-pulse' : 'text-ink'}`}>
+    <span className={`font-num text-lg font-bold ${isUrgent ? 'text-red-300 animate-pulse' : 'text-white'}`}>
       {m}:{s}
     </span>
   )
@@ -562,35 +562,35 @@ export default function AstraUjianPage() {
           />
         )}
 
-        {/* Header bar */}
-        <div className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-3 flex items-center gap-4">
+        {/* Header bar — navy brand */}
+        <div className="rounded-2xl shadow-soft px-5 py-3 flex items-center gap-4" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <span className={`text-xs font-bold px-2.5 py-1 rounded-full border shrink-0 ${SUBTEST_COLORS[key]}`}>
             {key}
           </span>
-          <div className="flex-1">
-            <p className="text-xs text-ink-muted">{ASTRA_SUBTESTS[key].full}</p>
-            <p className="text-sm font-bold text-ink">Soal <span className="font-num">{currentQIdx + 1}</span> / <span className="font-num">{questions.length}</span></p>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] text-white/50 truncate">{ASTRA_SUBTESTS[key].full} · Sub-tes <span className="font-num">{currentSubtestIdx + 1}</span> dari <span className="font-num">{subtestKeys.length}</span></p>
+            <p className="text-sm font-bold text-white">Soal <span className="font-num">{currentQIdx + 1}</span> / <span className="font-num">{questions.length}</span></p>
           </div>
 
-          {/* Progress bar */}
+          {/* Progress dots */}
           <div className="hidden sm:flex gap-0.5 w-32">
             {questions.map((q, i) => (
               <div
                 key={q.id}
                 className={`h-1.5 flex-1 rounded-full ${
-                  i < currentQIdx ? 'bg-green-400'
-                  : i === currentQIdx ? 'bg-orange-500'
-                  : 'bg-gray-200'
+                  i < currentQIdx ? 'bg-brand'
+                  : i === currentQIdx ? 'bg-white'
+                  : 'bg-white/20'
                 }`}
               />
             ))}
           </div>
 
           {/* Timer */}
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 shrink-0 ${
-            isUrgent ? 'border-red-300 bg-red-50' : 'border-hairline bg-paper-soft'
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 ${
+            isUrgent ? 'border-red-400/50 bg-red-500/20' : 'border-white/15 bg-white/10'
           }`}>
-            <p className="text-xs text-ink-muted">Waktu</p>
+            <p className="text-[11px] text-white/55">Waktu</p>
             <TimerDisplay seconds={timeLeft} isUrgent={isUrgent} />
           </div>
         </div>
@@ -605,16 +605,6 @@ export default function AstraUjianPage() {
 
         {/* Card soal */}
         <div className="bg-white rounded-2xl border border-hairline shadow-soft p-6 space-y-5">
-          {/* Nomor soal */}
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center text-sm font-num font-bold shrink-0">
-              {currentQIdx + 1}
-            </span>
-            <span className="text-xs text-ink-muted">
-              Sub-tes <span className="font-num">{currentSubtestIdx + 1}</span> dari <span className="font-num">{subtestKeys.length}</span>
-            </span>
-          </div>
-
           {/* Konten soal */}
           <div className="text-ink leading-relaxed">
             <QuestionContent content={currentQ.content} />
