@@ -170,23 +170,17 @@ export default function LandingNavbar({ isLoggedIn, firstName }: LandingNavbarPr
 
   return (
     <>
-      <nav className="bg-white sticky top-0 z-50 border-b border-slate-200">
+      <nav className="bg-white/90 backdrop-blur sticky top-0 z-50 border-b border-hairline">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-14">
 
-            <Link href="/" className="flex-shrink-0 transition-transform hover:scale-105 active:scale-95">
-              <Image src="/logotk.png" alt="Tembuskarir" width={140} height={40} className="h-10 w-auto object-contain" priority />
+            <Link href="/" className="flex-shrink-0">
+              <Image src="/logotk.png" alt="Tembuskarir" width={120} height={32} className="h-8 w-auto object-contain" priority />
             </Link>
 
-            <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-              <Link href="#fitur" className="hover:text-blue-600 transition-colors py-2 relative group">
-                Fitur
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full" />
-              </Link>
-              <Link href="#jenis-tes" className="hover:text-blue-600 transition-colors py-2 relative group">
-                Jenis Tes
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full" />
-              </Link>
+            <div className="hidden md:flex items-center gap-7 text-sm font-semibold text-ink-soft">
+              <Link href="#fitur" className="hover:text-ink transition-colors">Fitur</Link>
+              <Link href="#jenis-tes" className="hover:text-ink transition-colors">Jenis Tes</Link>
 
               {isLoggedIn ? (
                 <div className="relative ml-4" ref={dropdownRef}>

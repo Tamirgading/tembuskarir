@@ -1,8 +1,10 @@
 import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { Banknote, BriefcaseBusiness, Zap, BookOpenCheck, BarChart3, MonitorCheck, ArrowRight, Play } from 'lucide-react'
+import {
+  Banknote, BriefcaseBusiness, Zap, MonitorCheck, BarChart3, BookOpenCheck,
+  ArrowRight, CheckCircle2, ChevronDown,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
 
@@ -17,115 +19,188 @@ async function getAuthState() {
   }
 }
 
+// ── Komponen FAQ item ────────────────────────────────────────────────────────
+function FaqItem({ q, a }: { q: string; a: string }) {
+  return (
+    <details className="group border border-hairline rounded-xl overflow-hidden">
+      <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none font-semibold text-ink text-sm select-none hover:bg-paper-soft transition-colors">
+        {q}
+        <ChevronDown className="w-4 h-4 text-ink-muted shrink-0 transition-transform group-open:rotate-180" />
+      </summary>
+      <div className="px-5 pb-4 text-sm text-ink-muted leading-relaxed border-t border-hairline pt-3">
+        {a}
+      </div>
+    </details>
+  )
+}
+
 export default async function HomePage() {
   const { isLoggedIn } = await getAuthState()
-
-  // User yang sudah login → langsung ke dashboard (beranda hanya untuk tamu)
-  if (isLoggedIn) redirect('/dashboard')
 
   return (
     <>
       <LandingNavbar isLoggedIn={isLoggedIn} firstName={null} />
 
-      {/* ══════════════════════════ HERO ══════════════════════════ */}
-      <section className="relative pt-12 pb-16 overflow-hidden bg-paper">
-        <div className="absolute inset-0 bg-grid-slate opacity-50 z-0" />
-        {/* satu wash emerald lembut — tenang, bukan glow ramai */}
-        <div className="absolute -top-32 -right-24 w-[460px] h-[460px] bg-brand/10 rounded-full blur-[120px] z-0" />
+      {/* ══ HERO ══════════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden bg-paper pt-16 pb-20">
+        <div className="absolute inset-0 bg-grid-slate opacity-50 pointer-events-none" />
+        <div className="absolute -top-40 -right-32 w-[500px] h-[500px] bg-brand/8 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-            {/* Teks */}
-            <div className="text-center lg:text-left order-2 lg:order-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-hairline text-ink-soft text-xs font-bold tracking-wide mb-6 shadow-soft">
+            {/* ── Teks kiri ── */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-hairline rounded-full text-ink-soft text-xs font-semibold mb-7 shadow-soft">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand" />
                 Simulasi tes kerja BUMN &amp; Swasta
               </div>
 
-              <h1 className="text-4xl lg:text-[3.4rem] font-extrabold font-heading text-ink tracking-tight leading-[1.1] mb-6">
+              <h1 className="text-[2.75rem] lg:text-[3.5rem] font-heading font-extrabold text-ink leading-[1.08] tracking-tight mb-5">
                 Latihan yang terasa<br />
                 <span className="text-brand">persis seperti tesnya.</span>
               </h1>
 
-              <p className="text-lg text-ink-muted mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Simulasi rekrutmen PLN, ASTRA, dan BUMN dengan format per-subtes & timer seperti aslinya. Setiap hasil memetakan kesiapanmu — kamu tahu persis apa yang harus dilatih berikutnya.
+              <p className="text-lg text-ink-muted leading-relaxed mb-8 max-w-lg">
+                Simulasi rekrutmen PLN, ASTRA, dan BUMN dengan format per-sub-tes &amp; timer seperti aslinya. Setiap hasil memetakan kesiapanmu — kamu tahu persis apa yang harus dilatih berikutnya.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                <Link href="/register"
-                  className="inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl bg-brand text-white font-bold text-base shadow-soft hover:bg-brand-700 transition-colors">
-                  Mulai Gratis
+              <div className="flex flex-wrap gap-3 mb-12">
+                <Link href={isLoggedIn ? '/dashboard' : '/register'}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand-700 transition-colors shadow-soft">
+                  {isLoggedIn ? 'Ke Dashboard' : 'Mulai Gratis'}
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link href="#jenis-tes"
-                  className="inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl bg-white text-ink font-semibold text-base border border-hairline hover:bg-paper-soft transition-colors">
-                  <Play className="w-4 h-4 text-brand" /> Lihat Jenis Tes
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-hairline text-ink font-semibold text-base hover:bg-paper-soft transition-colors">
+                  Lihat Jenis Tes
                 </Link>
               </div>
 
               {/* Trust strip */}
-              <div className="mt-10 pt-7 border-t border-hairline grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-hairline max-w-sm">
                 {[
                   { k: '2.000+', l: 'Peserta aktif' },
-                  { k: '15+', l: 'Sub-tes terukur' },
+                  { k: '7', l: 'Sub-tes ASTRA' },
                   { k: '100%', l: 'Format tes asli' },
                 ].map((s) => (
-                  <div key={s.l} className="text-center lg:text-left">
-                    <p className="font-num font-bold text-2xl text-ink">{s.k}</p>
+                  <div key={s.l}>
+                    <p className="font-num font-extrabold text-2xl text-ink">{s.k}</p>
                     <p className="text-xs text-ink-muted mt-0.5">{s.l}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Gambar hero */}
-            <div className="relative order-1 lg:order-2">
-              <div className="relative rounded-3xl overflow-hidden bg-white p-3 border border-hairline shadow-soft">
-                <Image
-                  src="/gambar-beranda.png"
-                  alt="Ilustrasi Platform Simulasi Tes Kerja"
-                  width={600}
-                  height={420}
-                  className="relative z-10 w-full h-auto rounded-2xl"
-                  priority
-                />
+            {/* ── Kanan: UI mockup cards ── */}
+            <div className="relative hidden lg:block">
+              {/* Card utama — kesiapan */}
+              <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+                <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-4">Kesiapan kamu</p>
+                <div className="flex items-center gap-5">
+                  <div className="relative w-[100px] h-[100px] shrink-0">
+                    <svg width="100" height="100" viewBox="0 0 100 100" className="-rotate-90">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#E7E4DC" strokeWidth="9" />
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="#0E9F6E" strokeWidth="9" strokeLinecap="round"
+                        strokeDasharray="251.3" strokeDashoffset="80.4" />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="font-num font-bold text-[26px] text-ink leading-none">68</span>
+                      <span className="text-[10px] text-ink-muted">%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-heading font-bold text-ink text-base">Tinggal sedikit lagi!</p>
+                    <p className="text-xs text-ink-muted mt-1 mb-3">7 simulasi selesai · 5 hari beruntun</p>
+                    <div className="inline-flex items-center gap-2 bg-paper-soft rounded-lg px-3 py-1.5 text-xs font-semibold">
+                      <span className="w-2 h-2 rounded-full bg-amber-400" />
+                      Lemah: Working Memory · 52%
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card mengambang — langkah berikut */}
+              <div className="absolute -top-5 -right-5 rounded-2xl p-4 text-white w-52 shadow-soft"
+                style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+                <p className="text-[10px] text-white/55 uppercase tracking-wider mb-1">Langkah berikutmu</p>
+                <p className="font-heading font-bold text-sm">Drill Working Memory</p>
+                <div className="flex gap-3 mt-2 text-[11px] text-white/70">
+                  <span>10 soal</span>
+                  <span>8 mnt</span>
+                </div>
+                <div className="mt-3 py-1.5 bg-brand rounded-lg text-center text-xs font-bold">Mulai →</div>
+              </div>
+
+              {/* Card mengambang — progress sub-tes */}
+              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl border border-hairline shadow-soft p-4 w-52">
+                <p className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2.5">Sub-tes ASTRA</p>
+                {[
+                  { k: 'QR', p: 84 }, { k: 'DR', p: 76 }, { k: 'WM', p: 52, low: true },
+                ].map((s) => (
+                  <div key={s.k} className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[10px] font-bold w-7 text-ink-soft">{s.k}</span>
+                    <span className="flex-1 h-1.5 bg-hairline rounded-full overflow-hidden">
+                      <span className="block h-full rounded-full" style={{ width: `${s.p}%`, background: s.low ? '#F4B400' : '#0E9F6E' }} />
+                    </span>
+                    <span className="text-[10px] font-num font-semibold text-ink w-7 text-right">{s.p}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════ FITUR ══════════════════════════ */}
-      <section id="fitur" className="py-20 bg-white border-y border-hairline">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-brand font-bold tracking-wider text-sm uppercase">Kenapa TembusKarir</span>
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-ink mt-2 mb-3">Dibuat untuk membuatmu siap</h2>
-            <p className="text-ink-muted text-lg">Bukan sekadar kumpulan soal — sebuah peta jalan menuju lolos seleksi.</p>
+      {/* ══ BUKTI ANGKA ════════════════════════════════════════════════════════ */}
+      <section className="py-8 bg-white border-y border-hairline">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
+            {[
+              { k: '2.000+', l: 'Pengguna aktif' },
+              { k: '90', l: 'Soal per paket ASTRA' },
+              { k: '41', l: 'Menit simulasi ASTRA' },
+              { k: '7', l: 'Sub-tes terukur' },
+            ].map((s) => (
+              <div key={s.l}>
+                <p className="font-num font-extrabold text-3xl text-ink">{s.k}</p>
+                <p className="text-sm text-ink-muted mt-1">{s.l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ FITUR ══════════════════════════════════════════════════════════════ */}
+      <section id="fitur" className="py-20 bg-paper">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="text-brand font-bold text-sm uppercase tracking-wider mb-2">Kenapa TembusKarir</p>
+            <h2 className="text-3xl font-heading font-extrabold text-ink">Dibuat untuk membuatmu siap</h2>
+            <p className="text-ink-muted mt-3 max-w-lg mx-auto">Bukan sekadar kumpulan soal — sistem yang memberi tahu kamu persis di mana kamu berdiri.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-5">
             {[
               {
                 icon: <MonitorCheck className="w-6 h-6" />,
                 title: 'Simulasi Sungguhan',
-                desc: 'Antarmuka, timer, dan urutan sub-tes dibuat presisi seperti tes PLN & ASTRA yang asli. Latih mental sebelum hari-H.',
+                desc: 'Format per-sub-tes, timer terpisah, dan antarmuka yang dirancang persis seperti tes PLN & ASTRA aslinya. Latih mental sebelum hari-H.',
               },
               {
                 icon: <BarChart3 className="w-6 h-6" />,
                 title: 'Peta Kesiapan',
-                desc: 'Setiap simulasi memetakan penguasaanmu per sub-tes dan menyorot kelemahan — kamu tahu persis apa yang harus dilatih.',
+                desc: 'Setiap simulasi memetakan penguasaanmu per sub-tes, menyoroti kelemahan, dan merekomendasikan langkah berikut yang tepat.',
               },
               {
                 icon: <BookOpenCheck className="w-6 h-6" />,
-                title: 'Pembahasan Lengkap',
-                desc: 'Tinjau tiap soal setelah ujian dengan pembahasan rinci. Pahami kenapa, bukan sekadar tahu jawaban benarnya.',
+                title: 'Pembahasan Rinci',
+                desc: 'Tinjau setiap soal setelah ujian dengan penjelasan lengkap. Pahami konsepnya, bukan sekadar tahu jawaban benarnya.',
               },
             ].map((f) => (
-              <div key={f.title} className="bg-paper rounded-2xl p-7 border border-hairline hover:shadow-soft transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-brand/10 text-brand flex items-center justify-center mb-5">{f.icon}</div>
-                <h3 className="text-lg font-bold font-heading text-ink mb-2">{f.title}</h3>
+              <div key={f.title} className="bg-white rounded-2xl p-6 border border-hairline hover:shadow-soft transition-shadow">
+                <div className="w-11 h-11 rounded-xl bg-brand/10 text-brand flex items-center justify-center mb-4">{f.icon}</div>
+                <h3 className="font-heading font-bold text-ink mb-2">{f.title}</h3>
                 <p className="text-ink-muted text-sm leading-relaxed">{f.desc}</p>
               </div>
             ))}
@@ -133,231 +208,238 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════ JENIS TES ══════════════════════════ */}
-      <section id="jenis-tes" className="py-16 bg-paper">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-9">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-ink">Pilih jalur seleksimu</h2>
-            <p className="text-ink-muted mt-2.5 text-lg">Pilih kategori sesuai target karier tahun ini.</p>
+      {/* ══ JENIS TES ══════════════════════════════════════════════════════════ */}
+      <section id="jenis-tes" className="py-20 bg-white border-y border-hairline">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-10">
+            <p className="text-brand font-bold text-sm uppercase tracking-wider mb-2">Jalur Seleksi</p>
+            <h2 className="text-3xl font-heading font-extrabold text-ink">Pilih jenis tesmu</h2>
+            <p className="text-ink-muted mt-2">Format &amp; sub-tes sudah disesuaikan persis dengan tes aslinya.</p>
           </div>
 
-          <div className="space-y-5">
-            {/* ── ASTRA ── */}
-            <div className="relative bg-white rounded-3xl p-5 sm:p-6 border border-hairline shadow-soft hover:border-orange-200 transition-colors flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-orange-500 rounded-l-3xl" />
-              <div className="absolute top-4 right-4 z-20">
-                <span className="bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Tersedia</span>
-              </div>
-
-              <div className="w-full sm:w-48 h-36 sm:h-40 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 relative shadow-sm z-10 flex flex-col items-center justify-center text-white">
-                <BriefcaseBusiness className="w-12 h-12 mb-2 opacity-90" />
-                <p className="text-sm font-bold">Psikotes ASTRA</p>
-                <p className="text-[11px] text-orange-100 mt-0.5">80 soal · per sub-tes</p>
-                <div className="flex flex-wrap gap-1 mt-3 justify-center px-2">
-                  {['QR', 'DR', 'RC', 'PS'].map((s) => (
-                    <span key={s} className="text-[10px] font-bold px-2 py-0.5 bg-white/20 rounded-full">{s}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex-1 text-center sm:text-left w-full z-10">
-                <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-orange-100 text-orange-700 text-xs font-bold uppercase">Swasta / BUMN</span>
-                  <span className="px-2.5 py-0.5 rounded-md bg-brand/10 text-brand-700 text-xs font-bold uppercase">Gratis &amp; Premium</span>
-                </div>
-                <h3 className="text-2xl font-bold font-heading text-ink mb-3">Persiapan Psikotes ASTRA</h3>
-                <p className="text-ink-muted text-sm mb-4 leading-relaxed max-w-xl">
-                  Simulasi psikotes ASTRA dengan format sub-tes berurutan dan waktu terpisah per sub-tes — persis seperti tes aslinya. Meliputi 7 sub-tes dari Quantitative Reasoning hingga Working Memory.
-                </p>
-                <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-5 text-xs text-ink-muted">
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-orange-500 rounded-full" />QR · DR · RC · IR · VIZ · PS · WM</span>
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-amber-500 rounded-full" />Waktu per sub-tes</span>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link href="/portal/astra" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors w-full sm:w-auto">
-                    Latihan Sekarang <ArrowRight className="w-4 h-4" />
-                  </Link>
-                  <Link href="/harga" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-hairline text-ink-soft font-semibold hover:bg-paper-soft transition-colors w-full sm:w-auto text-sm">
-                    Lihat Paket Harga
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* ── PLN ── */}
-            <div className="relative bg-white rounded-3xl p-5 sm:p-6 border border-hairline shadow-soft hover:border-yellow-200 transition-colors flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500 rounded-l-3xl" />
-              <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
-                <span className="bg-brand text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">Baru</span>
-                <span className="bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Tersedia</span>
-              </div>
-
-              <div className="w-full sm:w-48 h-36 sm:h-44 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-500 via-amber-500 to-orange-500 relative shadow-sm z-10 flex flex-col items-center justify-center text-white p-3">
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '12px 12px' }} />
-                <Zap className="w-10 h-10 mb-1.5 opacity-95 relative z-10" />
-                <p className="text-sm font-bold relative z-10">GAT PLN</p>
-                <p className="text-[10px] text-yellow-50 mt-0.5 relative z-10">Rekrutmen PT PLN (Persero)</p>
-                <div className="flex items-center gap-3 mt-2.5 relative z-10">
-                  <div className="text-center"><p className="font-num text-lg font-extrabold leading-none">8</p><p className="text-[9px] text-yellow-100 uppercase tracking-wider">Sub-tes</p></div>
-                  <div className="w-px h-6 bg-white/30" />
-                  <div className="text-center"><p className="font-num text-lg font-extrabold leading-none">180</p><p className="text-[9px] text-yellow-100 uppercase tracking-wider">Menit</p></div>
-                </div>
-              </div>
-
-              <div className="flex-1 text-center sm:text-left w-full z-10">
-                <div className="flex items-center justify-center sm:justify-start gap-2 mb-2 flex-wrap">
-                  <span className="px-2.5 py-0.5 rounded-md bg-yellow-100 text-yellow-800 text-xs font-bold uppercase">BUMN</span>
-                  <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 text-xs font-bold uppercase">AKHLAK Core Values</span>
-                  <span className="px-2.5 py-0.5 rounded-md bg-brand/10 text-brand-700 text-xs font-bold uppercase">Gratis &amp; Premium</span>
-                </div>
-                <h3 className="text-2xl font-bold font-heading text-ink mb-2">Persiapan Rekrutmen PLN — GAT</h3>
-                <p className="text-ink-muted text-sm mb-3 leading-relaxed max-w-xl">
-                  Simulasi General Aptitude Test PT PLN (Persero) — format <strong className="text-ink-soft">per-sub-tes berurutan</strong> persis tes aslinya. Dilengkapi <strong className="text-ink-soft">Learning Agility</strong> dan <strong className="text-ink-soft">AKHLAK</strong> — dua sub-tes khas BUMN.
-                </p>
-                <div className="flex flex-wrap gap-1.5 justify-center sm:justify-start mb-4">
-                  {[
-                    { label: 'NUM', cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-                    { label: 'VER', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
-                    { label: 'SIL', cls: 'bg-orange-50 text-orange-700 border-orange-200' },
-                    { label: 'DER', cls: 'bg-red-50 text-red-600 border-red-200' },
-                    { label: 'FIG', cls: 'bg-rose-50 text-rose-600 border-rose-200' },
-                    { label: 'PU', cls: 'bg-sky-50 text-sky-700 border-sky-200' },
-                    { label: 'LA', cls: 'bg-violet-50 text-violet-700 border-violet-200' },
-                    { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-700 border-purple-200' },
-                  ].map((s) => (
-                    <span key={s.label} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${s.cls}`}>{s.label}</span>
-                  ))}
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link href="/portal/pln" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-yellow-500 text-white font-bold hover:bg-yellow-600 transition-colors w-full sm:w-auto">
-                    Latihan Sekarang <ArrowRight className="w-4 h-4" />
-                  </Link>
-                  <Link href="/harga" className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-hairline text-ink-soft font-semibold hover:bg-paper-soft transition-colors w-full sm:w-auto text-sm">
-                    Lihat Paket Harga
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* ── Coming Soon ── */}
-            <div className="grid sm:grid-cols-2 gap-4">
-              {([
-                {
-                  visual: <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden"><Image src="/card-ojk.png" width={56} height={56} className="w-full h-full object-cover" alt="OJK" /></div>,
-                  title: 'PCAM OJK', tag: 'Lembaga Negara', desc: 'Penerimaan Calon Analis Muda OJK — TPA, Bahasa Inggris, dan asesmen.',
-                },
-                {
-                  visual: <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center"><Banknote className="w-7 h-7 text-white" /></div>,
-                  title: 'PCPM BI', tag: 'Bank Sentral', desc: 'Penerimaan Calon Pegawai Muda Bank Indonesia — TPA dan studi kasus ekonomi.',
-                },
-              ] as { visual: React.ReactNode; title: string; tag: string; desc: string }[]).map((item) => (
-                <div key={item.title} className="relative bg-white rounded-2xl p-5 border border-hairline flex items-center gap-4 overflow-hidden">
-                  <div className="absolute inset-0 z-10 bg-white/55 backdrop-blur-[1px] flex items-center justify-center cursor-not-allowed">
-                    <span className="bg-ink text-white px-5 py-1.5 rounded-lg font-bold text-xs tracking-widest shadow-soft">SEGERA HADIR</span>
+          <div className="grid sm:grid-cols-2 gap-4 mb-4">
+            {/* ASTRA */}
+            <div className="bg-white rounded-2xl border border-hairline hover:shadow-soft hover:border-brand/30 transition-all p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
+                    style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+                    <BriefcaseBusiness className="w-5 h-5" />
                   </div>
-                  {item.visual}
                   <div>
-                    <span className="px-2 py-0.5 rounded-md bg-paper-soft text-ink-muted text-[10px] font-bold uppercase">{item.tag}</span>
-                    <h3 className="text-sm font-bold text-ink mt-1 mb-0.5">{item.title}</h3>
-                    <p className="text-ink-muted text-xs leading-relaxed line-clamp-2">{item.desc}</p>
+                    <p className="font-heading font-bold text-ink">Psikotes ASTRA</p>
+                    <p className="text-xs text-ink-muted">PT Astra International</p>
                   </div>
                 </div>
-              ))}
+                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-brand/10 text-brand-700">Tersedia</span>
+              </div>
+              <div className="flex flex-wrap gap-1 mb-4">
+                {['QR','DR','RC','IR','VIZ','PS','WM'].map((k) => (
+                  <span key={k} className="text-[10px] font-bold px-1.5 py-0.5 bg-paper-soft border border-hairline rounded text-ink-muted">{k}</span>
+                ))}
+              </div>
+              <div className="flex items-center justify-between text-xs text-ink-muted mb-4">
+                <span className="font-num">80 soal · 7 sub-tes · 41 mnt</span>
+                <span className="font-semibold text-brand-700 bg-brand/10 px-2 py-0.5 rounded-full">Gratis &amp; Premium</span>
+              </div>
+              <Link href="/portal/astra"
+                className="block w-full text-center py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+                Latihan Sekarang →
+              </Link>
+            </div>
+
+            {/* PLN */}
+            <div className="bg-white rounded-2xl border border-hairline hover:shadow-soft hover:border-brand/30 transition-all p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
+                    style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-heading font-bold text-ink">Rekrutmen PLN — GAT</p>
+                    <p className="text-xs text-ink-muted">PT PLN (Persero)</p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-brand/10 text-brand-700">Tersedia</span>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-brand text-white">Baru</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-1 mb-4">
+                {['NUM','VER','SIL','DER','FIG','PU','LA','AKHLAK'].map((k) => (
+                  <span key={k} className="text-[10px] font-bold px-1.5 py-0.5 bg-paper-soft border border-hairline rounded text-ink-muted">{k}</span>
+                ))}
+              </div>
+              <div className="flex items-center justify-between text-xs text-ink-muted mb-4">
+                <span className="font-num">210 soal · 8 sub-tes · 180 mnt</span>
+                <span className="font-semibold text-brand-700 bg-brand/10 px-2 py-0.5 rounded-full">Gratis &amp; Premium</span>
+              </div>
+              <Link href="/portal/pln"
+                className="block w-full text-center py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+                Latihan Sekarang →
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════ STEPS ══════════════════════════ */}
-      <section className="py-20 bg-white border-y border-hairline overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <span className="text-brand font-bold tracking-wider text-sm uppercase">Alur Belajar</span>
-            <h2 className="text-3xl font-heading font-bold text-ink mt-2">Tiga langkah menuju siap</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-10 relative">
-            <div className="hidden md:block absolute top-9 left-[16%] right-[16%] h-px border-t border-dashed border-hairline z-0" />
+          {/* Coming soon — row compact */}
+          <div className="grid sm:grid-cols-2 gap-4">
             {[
-              { num: 1, title: 'Pilih Tes', desc: 'Tentukan jenis seleksi sesuai lowongan kerja impianmu.' },
-              { num: 2, title: 'Kerjakan Simulasi', desc: 'Hadapi soal dengan tekanan waktu nyata seperti ujian asli.', active: true },
-              { num: 3, title: 'Pelajari Hasil', desc: 'Lihat peta kesiapanmu, tutup kelemahan, lalu ulangi.' },
-            ].map((step) => (
-              <div key={step.num} className="relative z-10 text-center">
-                <div className={`w-[72px] h-[72px] border-4 border-white shadow-soft rounded-full flex items-center justify-center text-2xl font-extrabold font-num mx-auto mb-5 ${
-                  step.active ? 'bg-brand text-white' : 'bg-paper text-brand'
-                }`}>
-                  {step.num}
+              { icon: <Image src="/card-ojk.png" width={32} height={32} alt="OJK" className="rounded-lg object-cover w-8 h-8" />, title: 'PCAM OJK', sub: 'Otoritas Jasa Keuangan' },
+              { icon: <Banknote className="w-5 h-5 text-white" />, title: 'PCPM Bank Indonesia', sub: 'Bank Sentral RI' },
+            ].map((item) => (
+              <div key={item.title} className="relative bg-paper-soft rounded-2xl border border-hairline p-4 flex items-center gap-3 overflow-hidden">
+                <div className="absolute inset-0 bg-paper-soft/80 backdrop-blur-[1px] flex items-center justify-center z-10">
+                  <span className="text-[10px] font-bold text-ink-muted bg-white border border-hairline px-4 py-1.5 rounded-lg tracking-widest">SEGERA HADIR</span>
                 </div>
-                <h3 className="text-lg font-bold font-heading text-ink mb-2">{step.title}</h3>
-                <p className="text-sm text-ink-muted px-4 leading-relaxed">{step.desc}</p>
+                <div className="w-10 h-10 rounded-xl bg-ink flex items-center justify-center shrink-0 text-white">
+                  {typeof item.icon === 'string' ? item.icon : item.icon}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-ink">{item.title}</p>
+                  <p className="text-xs text-ink-muted">{item.sub}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════ CTA ══════════════════════════ */}
+      {/* ══ CARA KERJA ═════════════════════════════════════════════════════════ */}
+      <section className="py-20 bg-paper">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="text-brand font-bold text-sm uppercase tracking-wider mb-2">Alur Belajar</p>
+            <h2 className="text-3xl font-heading font-extrabold text-ink">Tiga langkah menuju siap</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            <div className="hidden md:block absolute top-8 left-[20%] right-[20%] h-px border-t border-dashed border-hairline" />
+            {[
+              { num: 1, title: 'Pilih Jalur Seleksi', desc: 'Tentukan jenis tes sesuai lowongan kerja yang kamu incar.' },
+              { num: 2, title: 'Kerjakan Simulasi', desc: 'Format per-sub-tes dengan timer terpisah — persis kondisi tes nyata.', active: true },
+              { num: 3, title: 'Pelajari Kesiapanmu', desc: 'Lihat peta kesiapan, tutup kelemahan, dan ulangi sampai siap.' },
+            ].map((step) => (
+              <div key={step.num} className="relative z-10 text-center">
+                <div className={`w-16 h-16 rounded-full border-4 border-white shadow-soft flex items-center justify-center font-num font-extrabold text-2xl mx-auto mb-4 ${
+                  step.active ? 'bg-brand text-white' : 'bg-paper text-brand'
+                }`}>
+                  {step.num}
+                </div>
+                <h3 className="font-heading font-bold text-ink mb-2">{step.title}</h3>
+                <p className="text-sm text-ink-muted px-2 leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ FAQ ════════════════════════════════════════════════════════════════ */}
+      <section className="py-20 bg-white border-t border-hairline">
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-heading font-extrabold text-ink">Pertanyaan yang sering ditanya</h2>
+          </div>
+          <div className="space-y-3">
+            <FaqItem
+              q="Apakah TembusKarir gratis?"
+              a="Ya, ada paket gratis yang bisa langsung dicoba tanpa kartu kredit. Paket premium mulai Rp 39.000/bulan membuka akses ke semua paket soal dan analisis lengkap."
+            />
+            <FaqItem
+              q="Seberapa mirip dengan tes aslinya?"
+              a="Sangat mirip — format per-sub-tes, timer terpisah per sub-tes, dan tipe soal disesuaikan dengan kisi-kisi rekrutmen PLN dan ASTRA yang beredar."
+            />
+            <FaqItem
+              q="Berapa lama akses premium aktif?"
+              a="Paket bulanan aktif 30 hari, paket 3 bulan aktif 90 hari. Keduanya bisa diperpanjang kapan saja dan durasi langsung ditambahkan."
+            />
+            <FaqItem
+              q="Metode pembayaran apa yang tersedia?"
+              a="Transfer bank, QRIS, GoPay, OVO, Dana, dan kartu kredit/debit via Midtrans. Akses aktif otomatis dalam detik setelah pembayaran dikonfirmasi."
+            />
+            <FaqItem
+              q="Apakah bisa diakses di HP?"
+              a="Ya, tampilan responsif dan sudah dioptimalkan untuk mobile. Tersedia juga navigasi bawah saat login untuk pengalaman seperti aplikasi."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ══ CTA ════════════════════════════════════════════════════════════════ */}
       <section className="py-20 relative overflow-hidden" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
-        <div className="absolute -top-24 -right-16 w-96 h-96 bg-brand/15 rounded-full blur-3xl" />
+        <div className="absolute -top-24 -right-16 w-96 h-96 bg-brand/15 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-3xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-white mb-4 leading-tight">
             Mulai petakan kesiapanmu hari ini
           </h2>
-          <p className="text-white/65 mb-9 text-lg max-w-xl mx-auto">
-            Daftar gratis, kerjakan simulasi pertamamu, dan lihat persis di mana kamu berdiri menuju karier impian.
+          <p className="text-white/60 mb-8 text-lg max-w-xl mx-auto">
+            Daftar gratis, kerjakan simulasi pertamamu, dan lihat persis di mana kamu berdiri.
           </p>
-          <Link href="/register"
-            className="inline-flex justify-center items-center gap-2 bg-brand text-white font-bold px-7 py-3.5 rounded-xl hover:bg-brand-700 transition-colors text-base">
-            Mulai Gratis <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link href={isLoggedIn ? '/dashboard' : '/register'}
+              className="inline-flex items-center gap-2 bg-brand text-white font-bold px-7 py-3.5 rounded-xl hover:bg-brand-700 transition-colors">
+              {isLoggedIn ? 'Ke Dashboard' : 'Mulai Gratis'} <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link href="#jenis-tes"
+              className="inline-flex items-center gap-2 border border-white/20 text-white font-semibold px-7 py-3.5 rounded-xl hover:bg-white/10 transition-colors">
+              Lihat Jenis Tes
+            </Link>
+          </div>
+          <div className="flex flex-wrap justify-center gap-5 mt-8 text-sm text-white/50">
+            {['Gratis tanpa kartu kredit', 'Akses premium mulai Rp 39.000/bln', 'Bayar via QRIS &amp; e-wallet'].map((t) => (
+              <span key={t} className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-brand-300" />{t}</span>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ══════════════════════════ FOOTER ══════════════════════════ */}
+      {/* ══ FOOTER ═════════════════════════════════════════════════════════════ */}
       <footer className="bg-ink text-white/55 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-12">
+          <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div className="md:col-span-2">
-              <Image src="/logotk.png" alt="Tembuskarir" width={140} height={36} className="h-8 w-auto opacity-80 mb-6 brightness-200 invert" />
-              <p className="text-sm leading-relaxed max-w-sm">
-                Platform simulasi tes rekrutmen kerja — membantu jobseeker menembus seleksi BUMN, PLN, Astra, dan lainnya dengan latihan yang terukur.
+              <Image src="/logotk.png" alt="TembusKarir" width={120} height={32} className="h-8 w-auto opacity-80 mb-5 brightness-200 invert" />
+              <p className="text-sm leading-relaxed max-w-xs">
+                Simulasi tes rekrutmen kerja yang terasa seperti aslinya — untuk persiapan PLN, ASTRA, BUMN, dan perusahaan lainnya.
               </p>
             </div>
             <div>
-              <h4 className="text-white font-bold mb-5 uppercase text-sm tracking-widest">Produk</h4>
-              <ul className="space-y-3.5 text-sm font-medium">
+              <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Produk</h4>
+              <ul className="space-y-3 text-sm font-medium">
                 {[
                   { label: 'Psikotes ASTRA', href: '/portal/astra' },
                   { label: 'Rekrutmen PLN', href: '/portal/pln' },
-                  { label: 'Paket & Harga', href: '/harga' },
+                  { label: 'Paket &amp; Harga', href: '/harga' },
                 ].map((l) => (
                   <li key={l.label}>
                     <Link href={l.href} className="hover:text-brand-300 transition-colors flex items-center gap-2">
-                      <ArrowRight className="w-3 h-3" /> {l.label}
+                      <ArrowRight className="w-3 h-3" />
+                      <span dangerouslySetInnerHTML={{ __html: l.label }} />
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-bold mb-5 uppercase text-sm tracking-widest">Komunitas</h4>
-              <ul className="space-y-3.5 text-sm font-medium">
+              <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Komunitas</h4>
+              <ul className="space-y-3 text-sm font-medium">
                 <li>
-                  <a href="https://www.youtube.com/@Tembuskarir" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-red-400 transition-colors">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                  <a href="https://www.youtube.com/@Tembuskarir" target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 hover:text-red-400 transition-colors">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
                     YouTube
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.tiktok.com/@tembuskarir" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-pink-400 transition-colors">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z" /></svg>
+                  <a href="https://www.tiktok.com/@tembuskarir" target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 hover:text-pink-400 transition-colors">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z" /></svg>
                     TikTok
                   </a>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/10 pt-8 mt-10 flex flex-col md:flex-row justify-between items-center text-xs gap-4">
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs gap-4">
             <p>© 2025 TembusKarir. All Rights Reserved.</p>
             <div className="flex gap-6">
               <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
