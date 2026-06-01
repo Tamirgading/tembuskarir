@@ -111,7 +111,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   const backLabel = isAstra ? 'Portal ASTRA' : 'Paket Soal'
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-3xl mx-auto space-y-5">
 
       {/* Breadcrumb */}
       <Breadcrumb items={[
@@ -121,27 +121,27 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
       ]} />
 
       {/* ── Hero card ── */}
-      <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
-        {/* Header gradient */}
-        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-7 py-8">
+      <div className="bg-white rounded-3xl border border-hairline overflow-hidden shadow-soft">
+        {/* Header navy */}
+        <div className="px-7 py-8 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 {isAstra && (
-                  <span className="px-2.5 py-0.5 bg-white/20 text-white text-xs font-bold rounded-full">Psikotes ASTRA</span>
+                  <span className="px-2.5 py-0.5 bg-orange-500 text-white text-xs font-bold rounded-full">Psikotes ASTRA</span>
                 )}
                 <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${
-                  pkg.is_free ? 'bg-green-400 text-white' : 'bg-amber-400 text-gray-900'
+                  pkg.is_free ? 'bg-brand text-white' : 'bg-amber-400 text-ink'
                 }`}>
                   {pkg.is_free ? 'GRATIS' : '✦ PREMIUM'}
                 </span>
               </div>
-              <h1 className="text-2xl font-extrabold text-white leading-snug">{pkg.name}</h1>
+              <h1 className="text-2xl font-heading font-extrabold leading-snug">{pkg.name}</h1>
               {pkg.description && (
-                <p className="text-blue-200 text-sm mt-2 max-w-lg leading-relaxed">{pkg.description}</p>
+                <p className="text-white/60 text-sm mt-2 max-w-lg leading-relaxed">{pkg.description}</p>
               )}
             </div>
-            <div className="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
               <FileText className="w-8 h-8 text-white/80" />
             </div>
           </div>
@@ -149,15 +149,15 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           {/* Stats row */}
           <div className="flex gap-4 mt-6 flex-wrap">
             {([
-              { icon: <Clipboard className="w-5 h-5 text-blue-200" />, label: 'Soal', value: `${pkg.total_questions}` },
-              { icon: <Clock className="w-5 h-5 text-blue-200" />, label: 'Durasi', value: `${pkg.duration_minutes} menit` },
-              { icon: <Trophy className="w-5 h-5 text-blue-200" />, label: 'Skor Max', value: `${pkg.total_questions}` },
-              { icon: <BarChart2 className="w-5 h-5 text-blue-200" />, label: 'Subtes', value: isAstra ? '7' : '-' },
+              { icon: <Clipboard className="w-5 h-5 text-brand-300" />, label: 'Soal', value: `${pkg.total_questions}` },
+              { icon: <Clock className="w-5 h-5 text-brand-300" />, label: 'Durasi', value: `${pkg.duration_minutes} mnt` },
+              { icon: <Trophy className="w-5 h-5 text-brand-300" />, label: 'Skor Max', value: `${pkg.total_questions}` },
+              { icon: <BarChart2 className="w-5 h-5 text-brand-300" />, label: 'Sub-tes', value: isAstra ? '7' : '-' },
             ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
                 <div className="flex justify-center mb-0.5">{s.icon}</div>
-                <p className="text-white font-bold text-sm leading-none mt-0.5">{s.value}</p>
-                <p className="text-blue-200 text-xs mt-0.5">{s.label}</p>
+                <p className="text-white font-num font-bold text-sm leading-none mt-0.5">{s.value}</p>
+                <p className="text-white/55 text-xs mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
@@ -169,16 +169,16 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           {/* Sub-tes breakdown (ASTRA) */}
           {isAstra && (
             <div>
-              <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Pembagian Sub-tes</h2>
+              <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Pembagian Sub-tes</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {Object.entries(ASTRA_SUBTESTS).map(([key, sub]) => (
-                  <div key={key} className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-center">
+                  <div key={key} className="rounded-xl border border-hairline bg-paper p-3 text-center">
                     <span className="inline-block text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200 mb-1.5">
                       {key}
                     </span>
-                    <p className="text-lg font-extrabold text-gray-900">{sub.soal}</p>
-                    <p className="text-[10px] text-gray-400">soal · {sub.minutes} mnt</p>
-                    <p className="text-[10px] text-gray-500 mt-1 leading-tight">{sub.full}</p>
+                    <p className="text-lg font-num font-extrabold text-ink">{sub.soal}</p>
+                    <p className="text-[10px] text-ink-muted">soal · {sub.minutes} mnt</p>
+                    <p className="text-[10px] text-ink-soft mt-1 leading-tight">{sub.full}</p>
                   </div>
                 ))}
               </div>
@@ -187,52 +187,52 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
           {/* Sistem penilaian */}
           <div>
-            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Sistem Penilaian</h2>
+            <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sistem Penilaian</h2>
             {isAstra ? (
-              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 space-y-2">
-                <p className="text-xs font-bold text-orange-700 uppercase tracking-wide mb-2.5">Semua Sub-tes</p>
+              <div className="bg-brand/5 border border-brand/20 rounded-2xl p-4 space-y-2">
+                <p className="text-xs font-bold text-brand-700 uppercase tracking-wide mb-2.5">Semua Sub-tes</p>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-600">Benar</span>
-                  <span className="font-bold text-green-600">+1</span>
+                  <span className="text-ink-soft">Benar</span>
+                  <span className="font-num font-bold text-brand">+1</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-600">Salah</span>
-                  <span className="font-bold text-gray-400">0</span>
+                  <span className="text-ink-soft">Salah</span>
+                  <span className="font-num font-bold text-ink-muted">0</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-600">Kosong</span>
-                  <span className="font-bold text-gray-400">0</span>
+                  <span className="text-ink-soft">Kosong</span>
+                  <span className="font-num font-bold text-ink-muted">0</span>
                 </div>
-                <div className="mt-2 pt-2 border-t border-orange-200">
+                <div className="mt-2 pt-2 border-t border-brand/15">
                   <div className="flex items-center gap-1">
-                    <Lightbulb className="w-3 h-3 text-orange-600 shrink-0" />
-                    <p className="text-[11px] text-orange-600 font-semibold">Tidak ada penalti — jawab semua soal!</p>
+                    <Lightbulb className="w-3 h-3 text-brand shrink-0" />
+                    <p className="text-[11px] text-brand-700 font-semibold">Tidak ada penalti — jawab semua soal!</p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex gap-6 text-sm">
-                <div><span className="text-green-600 font-bold">✓ Benar</span><p className="text-xs text-gray-500 mt-0.5">poin ditambah</p></div>
-                <div><span className="text-red-500 font-bold">✗ Salah</span><p className="text-xs text-gray-500 mt-0.5">poin dikurangi</p></div>
-                <div><span className="text-gray-400 font-bold">— Kosong</span><p className="text-xs text-gray-500 mt-0.5">tidak berpengaruh</p></div>
+              <div className="bg-paper border border-hairline rounded-2xl p-4 flex gap-6 text-sm">
+                <div><span className="text-brand font-bold">✓ Benar</span><p className="text-xs text-ink-muted mt-0.5">poin ditambah</p></div>
+                <div><span className="text-red-500 font-bold">✗ Salah</span><p className="text-xs text-ink-muted mt-0.5">poin dikurangi</p></div>
+                <div><span className="text-ink-muted font-bold">— Kosong</span><p className="text-xs text-ink-muted mt-0.5">tidak berpengaruh</p></div>
               </div>
             )}
           </div>
 
           {/* Tata tertib */}
           <div>
-            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Sebelum Memulai</h2>
+            <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sebelum Memulai</h2>
             <div className="space-y-2">
               {([
-                { icon: <Clock className="w-4 h-4 text-blue-500" />, text: `Waktu ujian ${pkg.duration_minutes} menit dan terus berjalan setelah dimulai` },
-                { icon: <Lock className="w-4 h-4 text-gray-500" />, text: 'Jawaban tidak bisa diubah setelah di-submit' },
-                { icon: <Wifi className="w-4 h-4 text-cyan-500" />, text: 'Pastikan koneksi internet stabil selama ujian' },
+                { icon: <Clock className="w-4 h-4 text-brand" />, text: `Waktu ujian ${pkg.duration_minutes} menit dan terus berjalan setelah dimulai` },
+                { icon: <Lock className="w-4 h-4 text-ink-muted" />, text: 'Jawaban tidak bisa diubah setelah di-submit' },
+                { icon: <Wifi className="w-4 h-4 text-brand" />, text: 'Pastikan koneksi internet stabil selama ujian' },
                 { icon: <Bookmark className="w-4 h-4 text-amber-500" />, text: 'Gunakan fitur tandai (bookmark) untuk soal yang ingin ditinjau kembali' },
-                { icon: <Lightbulb className="w-4 h-4 text-yellow-500" />, text: 'Baca soal dengan teliti sebelum menjawab' },
+                { icon: <Lightbulb className="w-4 h-4 text-amber-500" />, text: 'Baca soal dengan teliti sebelum menjawab' },
               ] as { icon: React.ReactNode; text: string }[]).map((item) => (
-                <div key={item.text} className="flex items-start gap-3 bg-gray-50 rounded-xl px-4 py-3 text-sm">
+                <div key={item.text} className="flex items-start gap-3 bg-paper rounded-xl px-4 py-3 text-sm border border-hairline">
                   <span className="shrink-0 mt-0.5">{item.icon}</span>
-                  <p className="text-gray-600 leading-relaxed">{item.text}</p>
+                  <p className="text-ink-soft leading-relaxed">{item.text}</p>
                 </div>
               ))}
             </div>
@@ -242,10 +242,10 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
       </div>
 
       {/* ── CTA section ── */}
-      <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm space-y-4">
+      <div className="bg-white rounded-3xl border border-hairline p-6 shadow-soft space-y-4">
         <div className="text-center">
-          <h3 className="font-bold text-gray-900">Siap Memulai?</h3>
-          <p className="text-sm text-gray-400 mt-0.5">Timer akan berjalan begitu ujian dimulai</p>
+          <h3 className="font-heading font-bold text-ink">Siap Memulai?</h3>
+          <p className="text-sm text-ink-muted mt-0.5">Timer akan berjalan begitu ujian dimulai</p>
         </div>
 
         <PersiapanActions
@@ -258,7 +258,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
         <Link
           href={backHref}
-          className="block w-full text-center py-2.5 text-gray-400 text-sm hover:text-gray-600 transition-colors"
+          className="block w-full text-center py-2.5 text-ink-muted text-sm hover:text-ink transition-colors"
         >
           ← Kembali ke {backLabel}
         </Link>

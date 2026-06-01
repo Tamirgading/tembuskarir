@@ -20,14 +20,14 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
     <nav
       aria-label="Breadcrumb"
       className="flex items-center w-fit max-w-full overflow-x-auto gap-0.5
-                 bg-white border border-gray-200 rounded-full shadow-sm
+                 bg-white border border-hairline rounded-full shadow-soft
                  px-3 py-1.5 text-xs"
       style={{ scrollbarWidth: 'none' }}
     >
       {/* Rumah — selalu link ke /dashboard */}
       <Link
         href="/dashboard"
-        className="shrink-0 p-0.5 rounded-full text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        className="shrink-0 p-0.5 rounded-full text-ink-muted hover:text-brand hover:bg-brand/10 transition-colors"
         aria-label="Beranda"
       >
         <Home className="w-3.5 h-3.5" />
@@ -35,18 +35,18 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
 
       {items.map((item, i) => (
         <span key={i} className="flex items-center gap-0.5 min-w-0">
-          <ChevronRight className="w-3 h-3 text-gray-300 shrink-0" />
+          <ChevronRight className="w-3 h-3 text-hairline shrink-0" />
 
           {item.href ? (
             <Link
               href={item.href}
-              className="px-1.5 py-0.5 rounded-full text-gray-400 hover:text-blue-600
-                         hover:bg-blue-50 transition-colors whitespace-nowrap truncate max-w-[140px]"
+              className="px-1.5 py-0.5 rounded-full text-ink-muted hover:text-brand
+                         hover:bg-brand/10 transition-colors whitespace-nowrap truncate max-w-[140px]"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="px-1.5 font-semibold text-gray-800 whitespace-nowrap truncate max-w-[160px]">
+            <span className="px-1.5 font-semibold text-ink whitespace-nowrap truncate max-w-[160px]">
               {item.label}
             </span>
           )}

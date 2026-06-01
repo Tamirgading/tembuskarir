@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CheckCircle2, Clock, Zap, Star, Infinity } from 'lucide-react'
+import { CheckCircle2, Clock, Zap, Star, Infinity as InfinityIcon, Check, Sparkles, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { BuyButton } from '@/components/ui/BuyButton'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
@@ -19,7 +19,7 @@ const PLANS = [
     highlight: true,
     badge: 'Populer',
     description: 'Akses semua paket simulasi selama 30 hari',
-    features: ['Akses semua paket soal', 'Pembahasan lengkap tiap soal', 'Riwayat & analisis skor per kategori', 'Leaderboard nasional'],
+    features: ['Akses semua paket soal', 'Pembahasan lengkap tiap soal', 'Riwayat & analisis skor per sub-tes', 'Leaderboard nasional'],
     icon: Zap,
   },
   {
@@ -48,10 +48,10 @@ export default async function HargaPage({ searchParams }: { searchParams: Promis
   const fmt = (d: string) => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-7">
       <div className="text-center">
-        <h1 className="text-2xl font-extrabold text-gray-900">Paket Langganan Premium</h1>
-        <p className="text-gray-500 text-sm mt-1.5">Pilih cara terbaik untuk persiapan seleksi kerjamu</p>
+        <h1 className="text-2xl font-heading font-extrabold text-ink">Paket Langganan Premium</h1>
+        <p className="text-ink-muted text-sm mt-1.5">Pilih cara terbaik untuk persiapan seleksi kerjamu</p>
       </div>
 
       {payment === 'success' && (
@@ -69,7 +69,7 @@ export default async function HargaPage({ searchParams }: { searchParams: Promis
 
       {premiumSub.active && premiumSub.expiresAt && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-3">
-          <span className="text-xl mt-0.5">✦</span>
+          <Sparkles className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
           <div>
             <p className="font-bold text-amber-800 text-sm">Langganan Premium {planTypeLabel[premiumSub.planType ?? ''] ?? ''} Aktif</p>
             <p className="text-xs text-amber-600 mt-0.5">Berlaku hingga <strong>{fmt(premiumSub.expiresAt)}</strong></p>
@@ -78,55 +78,40 @@ export default async function HargaPage({ searchParams }: { searchParams: Promis
         </div>
       )}
 
-      {/* Per-paket */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5 flex items-start gap-4">
-        <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shrink-0">
-          <Infinity className="w-5 h-5 text-gray-600" />
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            <h3 className="font-bold text-gray-900 text-sm">Beli Per Paket</h3>
-            <span className="text-[11px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full font-medium">Rp 10.000 · Akses Selamanya</span>
-          </div>
-          <p className="text-xs text-gray-500 mb-3 leading-relaxed">Beli akses ke satu paket soal — tidak ada expired. Cocok jika hanya butuh satu paket tertentu.</p>
-          <Link href="/paket" className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-            Lihat semua paket →
-          </Link>
-        </div>
-      </div>
-
       {/* Langganan */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {PLANS.map((plan) => {
           const Icon = plan.icon
+          const hl = plan.highlight
           return (
-            <div key={plan.id} className={`relative rounded-2xl border p-5 space-y-4 ${plan.highlight ? 'bg-blue-600 border-blue-600 shadow-xl shadow-blue-200' : 'bg-white border-gray-200'}`}>
+            <div key={plan.id} className={`relative rounded-2xl border p-6 space-y-4 ${hl ? 'border-transparent text-white shadow-soft' : 'bg-white border-hairline'}`}
+              style={hl ? { background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' } : undefined}>
               {plan.badge && (
-                <span className={`absolute -top-3 right-4 text-[11px] font-bold px-3 py-1 rounded-full ${plan.highlight ? 'bg-amber-400 text-amber-900' : 'bg-green-100 text-green-700'}`}>{plan.badge}</span>
+                <span className={`absolute -top-3 right-4 text-[11px] font-bold px-3 py-1 rounded-full ${hl ? 'bg-brand text-white' : 'bg-brand/10 text-brand-700'}`}>{plan.badge}</span>
               )}
               <div className="flex items-start gap-3">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${plan.highlight ? 'bg-white/20' : 'bg-blue-50'}`}>
-                  <Icon className={`w-4 h-4 ${plan.highlight ? 'text-white' : 'text-blue-600'}`} />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${hl ? 'bg-white/10' : 'bg-brand/10'}`}>
+                  <Icon className={`w-5 h-5 ${hl ? 'text-brand-300' : 'text-brand'}`} />
                 </div>
                 <div>
-                  <p className={`text-2xl font-extrabold leading-none ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>{plan.priceLabel}</p>
-                  <p className={`text-xs mt-0.5 ${plan.highlight ? 'text-blue-200' : 'text-gray-400'}`}>{plan.period}</p>
+                  <p className={`font-num text-2xl font-extrabold leading-none ${hl ? 'text-white' : 'text-ink'}`}>{plan.priceLabel}</p>
+                  <p className={`text-xs mt-1 ${hl ? 'text-white/55' : 'text-ink-muted'}`}>{plan.period}</p>
                 </div>
               </div>
-              <p className={`text-xs leading-relaxed ${plan.highlight ? 'text-blue-100' : 'text-gray-500'}`}>{plan.description}</p>
-              <ul className="space-y-2">
+              <p className={`text-sm leading-relaxed ${hl ? 'text-white/70' : 'text-ink-muted'}`}>{plan.description}</p>
+              <ul className="space-y-2.5">
                 {plan.features.map((f) => (
-                  <li key={f} className={`flex items-start gap-2 text-xs ${plan.highlight ? 'text-blue-100' : 'text-gray-600'}`}>
-                    <span className={`shrink-0 mt-0.5 ${plan.highlight ? 'text-blue-300' : 'text-green-500'}`}>✓</span>
+                  <li key={f} className={`flex items-start gap-2.5 text-sm ${hl ? 'text-white/85' : 'text-ink-soft'}`}>
+                    <Check className={`w-4 h-4 shrink-0 mt-0.5 ${hl ? 'text-brand-300' : 'text-brand'}`} />
                     {f}
                   </li>
                 ))}
               </ul>
               {user ? (
-                <BuyButton planType={plan.id} planLabel={plan.id === 'premium_monthly' ? 'Mulai 1 Bulan' : 'Mulai 3 Bulan'} amount={plan.price} highlight={plan.highlight} />
+                <BuyButton planType={plan.id} planLabel={plan.id === 'premium_monthly' ? 'Mulai 1 Bulan' : 'Mulai 3 Bulan'} amount={plan.price} highlight={hl} />
               ) : (
-                <Link href="/register" className={`block w-full text-center py-2.5 text-sm font-semibold rounded-xl transition-colors ${plan.highlight ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
-                  Daftar & Mulai
+                <Link href="/register" className={`block w-full text-center py-2.5 text-sm font-bold rounded-xl transition-colors ${hl ? 'bg-brand text-white hover:bg-brand-700' : 'bg-brand text-white hover:bg-brand-700'}`}>
+                  Daftar &amp; Mulai
                 </Link>
               )}
             </div>
@@ -134,17 +119,34 @@ export default async function HargaPage({ searchParams }: { searchParams: Promis
         })}
       </div>
 
+      {/* Per-paket */}
+      <div className="bg-white rounded-2xl border border-hairline p-5 flex items-start gap-4">
+        <div className="w-10 h-10 bg-paper-soft rounded-xl flex items-center justify-center shrink-0">
+          <InfinityIcon className="w-5 h-5 text-ink-soft" />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <h3 className="font-bold text-ink text-sm">Beli Per Paket</h3>
+            <span className="text-[11px] px-2 py-0.5 bg-paper-soft text-ink-muted rounded-full font-medium">Rp 10.000 · Akses Selamanya</span>
+          </div>
+          <p className="text-xs text-ink-muted mb-3 leading-relaxed">Beli akses ke satu paket soal — tidak ada masa kedaluwarsa. Cocok jika hanya butuh satu paket tertentu.</p>
+          <Link href="/paket" className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand-700 transition-colors">
+            Lihat semua paket <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      </div>
+
       {/* FAQ */}
-      <div className="bg-gray-50 rounded-2xl p-5 space-y-3">
-        <p className="font-semibold text-gray-800 text-sm">Pertanyaan Umum</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-500">
+      <div className="bg-paper-soft rounded-2xl p-6 space-y-3 border border-hairline">
+        <p className="font-heading font-bold text-ink text-sm">Pertanyaan Umum</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-ink-muted">
           {[
             { q: 'Metode pembayaran apa saja?', a: 'Transfer bank, QRIS, GoPay, OVO, Dana, kartu kredit/debit via Midtrans.' },
             { q: 'Kapan akses aktif?', a: 'Otomatis dalam hitungan detik setelah pembayaran dikonfirmasi.' },
             { q: 'Apakah ada refund?', a: 'Tidak ada refund setelah pembayaran berhasil diproses.' },
             { q: 'Cara perpanjang?', a: 'Beli ulang paket yang sama. Durasi otomatis ditambahkan.' },
           ].map((item) => (
-            <div key={item.q}><p className="font-medium text-gray-700 mb-0.5">{item.q}</p><p>{item.a}</p></div>
+            <div key={item.q}><p className="font-semibold text-ink-soft mb-0.5">{item.q}</p><p>{item.a}</p></div>
           ))}
         </div>
       </div>
