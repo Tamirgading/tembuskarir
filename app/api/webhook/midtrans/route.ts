@@ -6,11 +6,14 @@ import type { UserRow, SubscriptionRow } from '@/lib/utils'
 
 // Durasi plan dalam hari (0 = permanen / tidak expire)
 const PLAN_DURATION: Record<string, number> = {
-  monthly:           30,   // legacy
-  yearly:            365,  // legacy
-  premium_monthly:   30,
-  premium_quarterly: 90,
-  package:           0,    // per-paket: permanen, tidak ada expires_at
+  monthly:              30,   // legacy
+  yearly:               365,  // legacy
+  premium_monthly:      30,
+  premium_quarterly:    90,
+  package:              0,    // per-paket: permanen
+  pln_gat_monthly:      30,
+  pln_tahap2_monthly:   30,
+  pln_complete_monthly: 30,
 }
 
 interface MidtransWebhookPayload {
@@ -176,10 +179,13 @@ export async function POST(req: NextRequest) {
           .eq('id', sub.user_id)
 
         const planLabelMap: Record<string, string> = {
-          monthly:           'Premium Bulanan',
-          yearly:            'Premium Tahunan',
-          premium_monthly:   'Premium Bulanan',
-          premium_quarterly: 'Premium 3 Bulan',
+          monthly:              'Premium Bulanan',
+          yearly:               'Premium Tahunan',
+          premium_monthly:      'Premium Bulanan',
+          premium_quarterly:    'Premium 3 Bulan',
+          pln_gat_monthly:      'PLN Tahap 1 GAT Bulanan',
+          pln_tahap2_monthly:   'PLN Tahap 2 Bulanan',
+          pln_complete_monthly: 'PLN Complete Bulanan',
         }
         const planLabel = planLabelMap[planType] ?? planType
 

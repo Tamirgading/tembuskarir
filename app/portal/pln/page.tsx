@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Zap, Package, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { Zap, Package, ChevronRight, CheckCircle2, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -100,6 +100,23 @@ export default async function PlnPortalPage() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* ── Link ke Tahap 2 ── */}
+      <div className="rounded-2xl border border-hairline bg-white shadow-soft p-5 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center shrink-0">
+            <BookOpen className="w-5 h-5 text-brand" />
+          </div>
+          <div>
+            <p className="font-heading font-bold text-ink text-sm">PLN Tahap 2 — Akademik &amp; Bahasa Inggris</p>
+            <p className="text-xs text-ink-muted mt-0.5">50 soal Akademik (per bidang) + 50 soal Bahasa Inggris · 100 menit</p>
+          </div>
+        </div>
+        <Link href="/portal/pln/tahap2"
+          className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+          Pilih Bidang <ChevronRight className="w-4 h-4" />
+        </Link>
       </div>
 
       {/* ── 2-kolom: paket + info ── */}
