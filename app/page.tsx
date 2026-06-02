@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {
   Banknote, BriefcaseBusiness, Zap, MonitorCheck, BarChart3, BookOpenCheck,
-  ArrowRight, CheckCircle2, ChevronDown,
+  ArrowRight, CheckCircle2, ChevronDown, Crosshair, Clock, TrendingUp, RotateCcw,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
@@ -194,14 +194,36 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="space-y-3">
-              {[
-                { icon: '🎯', title: 'Melamar ke PLN atau ASTRA', desc: 'Simulasi persis format seleksi yang akan kamu hadapi, termasuk sub-tes spesifik perusahaan.' },
-                { icon: '⏱', title: 'Mau latihan dengan tekanan waktu', desc: 'Timer terpisah per sub-tes — melatih mental agar tidak panik saat ujian sesungguhnya.' },
-                { icon: '📊', title: 'Butuh tahu letak kelemahanmu', desc: 'Setiap simulasi menghasilkan peta penguasaan per sub-tes, bukan sekadar nilai akhir.' },
-                { icon: '🔁', title: 'Ingin latihan berulang secara efisien', desc: 'Drill sub-tes terlemah tanpa harus mengulang seluruh paket dari awal.' },
-              ].map((item) => (
-                <div key={item.title} className="flex items-start gap-3 bg-white rounded-xl border border-hairline px-4 py-3.5">
-                  <span className="text-xl shrink-0 mt-0.5">{item.icon}</span>
+              {([
+                {
+                  icon: <Crosshair className="w-4 h-4" />,
+                  iconBg: 'bg-brand/10 text-brand',
+                  title: 'Melamar ke PLN atau ASTRA',
+                  desc: 'Simulasi persis format seleksi yang akan kamu hadapi, termasuk sub-tes spesifik perusahaan.',
+                },
+                {
+                  icon: <Clock className="w-4 h-4" />,
+                  iconBg: 'bg-amber-100 text-amber-700',
+                  title: 'Mau latihan dengan tekanan waktu',
+                  desc: 'Timer terpisah per sub-tes melatih mental agar tidak panik saat ujian sesungguhnya.',
+                },
+                {
+                  icon: <TrendingUp className="w-4 h-4" />,
+                  iconBg: 'bg-violet-100 text-violet-700',
+                  title: 'Butuh tahu letak kelemahanmu',
+                  desc: 'Setiap simulasi menghasilkan peta penguasaan per sub-tes, bukan sekadar nilai akhir.',
+                },
+                {
+                  icon: <RotateCcw className="w-4 h-4" />,
+                  iconBg: 'bg-sky-100 text-sky-700',
+                  title: 'Ingin latihan berulang secara efisien',
+                  desc: 'Drill sub-tes terlemah tanpa harus mengulang seluruh paket dari awal.',
+                },
+              ] as { icon: React.ReactNode; iconBg: string; title: string; desc: string }[]).map((item) => (
+                <div key={item.title} className="flex items-start gap-3.5 bg-white rounded-xl border border-hairline px-4 py-4 hover:shadow-soft transition-shadow">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${item.iconBg}`}>
+                    {item.icon}
+                  </div>
                   <div>
                     <p className="font-semibold text-ink text-sm">{item.title}</p>
                     <p className="text-xs text-ink-muted mt-0.5 leading-relaxed">{item.desc}</p>
