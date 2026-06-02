@@ -7,13 +7,17 @@ import { AddQuestionForm } from '@/components/admin/AddQuestionForm'
 import { QuestionList } from '@/components/admin/QuestionList'
 import { ImportButton } from '@/components/admin/ImportButton'
 import { WmPairsManager } from '@/components/admin/WmPairsManager'
+import { PlnSpecialForms } from '@/components/admin/PlnSpecialForms'
 
 export default async function AdminQuestionsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ packageId: string }>
+  searchParams: Promise<{ formTab?: string }>
 }) {
   const { packageId } = await params
+  const { formTab } = await searchParams
   const supabase = await createClient()
 
   const { data: pkgData } = await supabase
@@ -116,10 +120,47 @@ export default async function AdminQuestionsPage({
           )}
         </div>
 
-        {/* Form tambah soal */}
+        {/* Form tambah soal — PLN punya 3 tipe, lainnya hanya MCQ */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-6">
-          <h2 className="font-semibold text-gray-900 mb-4">+ Tambah Soal</h2>
-          <AddQuestionForm packageId={packageId} pkgCategory={pkg.category} />
+          {pkg.category === 'PLN' ? (
+            <>
+              {/* Tab: MCQ · AKHLAK · LA */}
+              <div className="flex gap-1 p-1 bg-paper-soft rounded-xl border border-hairline mb-4">
+                {[
+                  { tab: 'mcq',    label: 'MCQ (NUM/VER/…)' },
+                  { tab: 'akhlak', label: 'AKHLAK' },
+                  { tab: 'la',     label: 'LA' },
+                ].map((t) => {
+                  const active = (formTab ?? 'mcq') === t.tab
+                  return (
+                    <Link key={t.tab}
+                      href={`/admin/packages/${packageId}/questions?formTab=${t.tab}`}
+                      className={`flex-1 text-center py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                        active ? 'bg-white text-ink shadow-soft' : 'text-ink-muted hover:text-ink'
+                      }`}>
+                      {t.label}
+                    </Link>
+                  )
+                })}
+              </div>
+
+              {(formTab === 'akhlak' || formTab === 'la') ? (
+                <PlnSpecialForms packageId={packageId} />
+              ) : (
+                <>
+                  <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+                    Sub-tes MCQ: <strong>NUM · VER · SIL · DER · FIG · PU</strong>. Pilih sub-tes di dropdown &quot;Sub-tes&quot; saat mengisi soal.
+                  </p>
+                  <AddQuestionForm packageId={packageId} pkgCategory={pkg.category} />
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <h2 className="font-semibold text-gray-900 mb-4">+ Tambah Soal</h2>
+              <AddQuestionForm packageId={packageId} pkgCategory={pkg.category} />
+            </>
+          )}
         </div>
       </div>
     </div>
