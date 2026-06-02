@@ -4,80 +4,116 @@ import { createClient } from '@/lib/supabase/server'
 import { getUnlockedPackageIds } from '@/lib/access'
 import { BIDANG_BY_SLUG, BI_FULL_SLUG, BI_DEMO_SLUG, akdingSlug } from '@/lib/bidang-config'
 import type { PackageRow } from '@/lib/utils'
-import { ArrowRight, Clock, FileText, Languages, BookOpen, CheckCircle2, Lock } from 'lucide-react'
+import {
+  ArrowRight, Clock, FileText, Languages, BookOpen,
+  CheckCircle2, Lock, Sparkles,
+} from 'lucide-react'
 
 interface Props { params: Promise<{ slug: string }> }
 
-function PackageCard({
+// ── Horizontal package row ─────────────────────────────────────────────────────
+function PackageRow({
   pkg,
   isLoggedIn,
   isUnlocked,
   icon,
-  accentCls,
+  iconCls,
 }: {
   pkg: PackageRow | null
   isLoggedIn: boolean
   isUnlocked: boolean
   icon: React.ReactNode
-  accentCls: string
+  iconCls: string
 }) {
   if (!pkg) return (
-    <div className="bg-white rounded-2xl border border-hairline p-5 opacity-60 text-center text-ink-muted text-sm">
-      Paket belum tersedia. Segera hadir.
+    <div className="flex items-center gap-4 bg-paper-soft rounded-2xl border border-hairline px-5 py-4 text-sm text-ink-muted opacity-60">
+      {icon} Paket belum tersedia — segera hadir
     </div>
   )
 
   const canAccess = pkg.is_free || isUnlocked
   const href = `/persiapan/${pkg.id}`
+  const isFree = pkg.is_free
 
   return (
-    <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5 flex flex-col gap-4 hover:shadow-md transition-shadow">
-      <div className="flex items-start gap-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${accentCls}`}>
-          {icon}
+    <div className="flex items-center gap-4 bg-white rounded-2xl border border-hairline px-5 py-4 hover:shadow-soft transition-shadow">
+      {/* Ikon */}
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${iconCls}`}>
+        {icon}
+      </div>
+
+      {/* Konten */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+          <p className="font-heading font-bold text-ink text-sm">{pkg.name}</p>
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+            isFree ? 'bg-brand/10 text-brand-700' :
+            isUnlocked ? 'bg-brand/10 text-brand-700' :
+            'bg-amber-100 text-amber-700'
+          }`}>
+            {isFree ? 'GRATIS' : isUnlocked ? '✓ DIMILIKI' : '✦ PREMIUM'}
+          </span>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-            <h3 className="font-heading font-bold text-ink text-sm">{pkg.name}</h3>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-              pkg.is_free ? 'bg-brand/10 text-brand-700' :
-              isUnlocked ? 'bg-brand/10 text-brand-700' :
-              'bg-amber-100 text-amber-700'
-            }`}>
-              {pkg.is_free ? 'GRATIS' : isUnlocked ? '✓ DIMILIKI' : '✦ PREMIUM'}
-            </span>
-          </div>
-          {pkg.description && (
-            <p className="text-xs text-ink-muted leading-relaxed line-clamp-2">{pkg.description}</p>
-          )}
+        {pkg.description && (
+          <p className="text-xs text-ink-muted line-clamp-1 mb-1.5">{pkg.description}</p>
+        )}
+        <div className="flex items-center gap-4 text-xs text-ink-muted">
+          <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /><span className="font-num">{pkg.total_questions}</span> soal</span>
+          <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /><span className="font-num">{pkg.duration_minutes}</span> menit</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 text-xs text-ink-muted">
-        <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> <span className="font-num">{pkg.total_questions}</span> soal</span>
-        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> <span className="font-num">{pkg.duration_minutes}</span> menit</span>
-      </div>
-
-      <div className="mt-auto">
+      {/* CTA */}
+      <div className="shrink-0 flex items-center gap-2">
         {canAccess ? (
-          <Link href={href} className="flex items-center justify-center gap-2 w-full py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
-            <CheckCircle2 className="w-4 h-4" /> Mulai Simulasi
+          <Link href={href}
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+            <CheckCircle2 className="w-4 h-4" /> Mulai
           </Link>
         ) : isLoggedIn ? (
-          <div className="flex gap-2">
-            <Link href={href} className="flex-1 text-center py-2.5 bg-paper-soft border border-hairline text-ink-muted text-xs font-semibold rounded-xl hover:bg-white transition-colors">
-              Coba 20 soal
+          <>
+            <Link href={href}
+              className="px-3 py-2.5 text-xs font-semibold text-ink-soft bg-paper-soft border border-hairline rounded-xl hover:bg-white transition-colors">
+              Coba gratis
             </Link>
-            <Link href="/harga" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-brand text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition-colors">
-              <Lock className="w-3.5 h-3.5" /> Beli Rp 10.000
+            <Link href="/harga"
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-ink text-white text-sm font-bold rounded-xl hover:bg-ink-soft transition-colors">
+              <Lock className="w-3.5 h-3.5" /> Beli <span className="font-num">10K</span>
             </Link>
-          </div>
+          </>
         ) : (
-          <Link href="/register" className="flex items-center justify-center gap-2 w-full py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+          <Link href="/register"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
             Daftar Gratis <ArrowRight className="w-4 h-4" />
           </Link>
         )}
       </div>
+    </div>
+  )
+}
+
+// ── Section header ─────────────────────────────────────────────────────────────
+function SectionHeader({
+  icon,
+  iconBg,
+  title,
+  subtitle,
+}: {
+  icon: React.ReactNode
+  iconBg: string
+  title: string
+  subtitle?: string
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">{title}</p>
+        {subtitle && <p className="text-xs text-ink-muted">{subtitle}</p>}
+      </div>
+      <div className="flex-1 h-px bg-hairline" />
     </div>
   )
 }
@@ -89,10 +125,10 @@ export default async function PlnBidangPage({ params }: Props) {
 
   let isLoggedIn = false
   let unlockedIds: string[] = []
-  let biDemoPackage: PackageRow | null = null
-  let biFullPackage: PackageRow | null = null
-  let akdingDemoPackage: PackageRow | null = null
-  let akdingFullPackage: PackageRow | null = null
+  let biDemo: PackageRow | null = null
+  let biFull: PackageRow | null = null
+  let akdingDemo: PackageRow | null = null
+  let akdingFull: PackageRow | null = null
 
   try {
     const supabase = await createClient()
@@ -109,78 +145,123 @@ export default async function PlnBidangPage({ params }: Props) {
       .eq('is_published', true)
 
     const pkgMap = Object.fromEntries(((pkgs ?? []) as PackageRow[]).map((p) => [p.slug, p]))
-    biDemoPackage    = pkgMap[BI_DEMO_SLUG] ?? null
-    biFullPackage    = pkgMap[BI_FULL_SLUG] ?? null
-    akdingDemoPackage = pkgMap[akdingSlug(slug, 'demo')] ?? null
-    akdingFullPackage = pkgMap[akdingSlug(slug, 'full')] ?? null
+    biDemo    = pkgMap[BI_DEMO_SLUG] ?? null
+    biFull    = pkgMap[BI_FULL_SLUG] ?? null
+    akdingDemo = pkgMap[akdingSlug(slug, 'demo')] ?? null
+    akdingFull = pkgMap[akdingSlug(slug, 'full')] ?? null
   } catch { /* ignore */ }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
 
-      {/* Header */}
+      {/* Header bidang */}
       <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft">
-        <div className="px-6 py-7 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+        <div className="px-6 py-6 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <nav className="flex items-center gap-2 text-xs text-white/50 mb-4">
-            <Link href="/portal/pln" className="hover:text-white transition-colors">Portal PLN</Link>
+            <Link href="/portal/pln" className="hover:text-white transition-colors">Rekrutmen PLN</Link>
             <span>›</span>
             <Link href="/portal/pln/tahap2" className="hover:text-white transition-colors">Tahap 2</Link>
             <span>›</span>
             <span className="text-white/80">{bidang.name}</span>
           </nav>
-          <div className="flex items-center gap-3 mb-2">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold border shrink-0 ${bidang.color}`}>
-              {bidang.short.split(' ')[0].substring(0, 3).toUpperCase()}
+          <div className="flex items-center gap-3">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${bidang.color}`}>
+              <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-white/55 text-xs uppercase tracking-wider">Akademik</p>
+              <p className="text-white/55 text-xs font-semibold uppercase tracking-wider">Akademik — Bidang</p>
               <h1 className="text-xl font-heading font-extrabold text-white">{bidang.name}</h1>
             </div>
           </div>
-          <p className="text-white/60 text-sm">
-            Pilih paket yang ingin dikerjakan. Kamu bisa mulai dari mana saja — Bahasa Inggris atau Akademik.
+          <p className="text-white/60 text-sm mt-3">
+            Pilih paket yang ingin dikerjakan. Kamu bisa mulai dari mana saja.
           </p>
         </div>
 
         {/* Info strip */}
-        <div className="bg-white px-6 py-3.5 flex flex-wrap gap-6 text-xs text-ink-muted">
-          <span className="flex items-center gap-1.5"><Languages className="w-3.5 h-3.5 text-brand" /> Bahasa Inggris: 50 soal · 50 mnt</span>
-          <span className="flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-brand" /> Akademik {bidang.short}: 50 soal · 50 mnt</span>
+        <div className="bg-white px-6 py-3.5 flex flex-wrap gap-5 text-xs text-ink-muted">
+          <span className="flex items-center gap-1.5">
+            <Languages className="w-3.5 h-3.5 text-brand" />
+            Bahasa Inggris: <span className="font-num font-semibold">50</span> soal · <span className="font-num font-semibold">50</span> mnt
+          </span>
+          <span className="flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5 text-brand" />
+            Akademik {bidang.short}: <span className="font-num font-semibold">50</span> soal · <span className="font-num font-semibold">50</span> mnt
+          </span>
         </div>
       </div>
 
-      {/* Paket Bahasa Inggris */}
-      <div>
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Languages className="w-3.5 h-3.5" /> Bahasa Inggris PLN
-        </p>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <PackageCard pkg={biDemoPackage} isLoggedIn={isLoggedIn} isUnlocked={unlockedIds.includes(biDemoPackage?.id ?? '')} icon={<Languages className="w-5 h-5" />} accentCls="bg-brand/10 text-brand" />
-          <PackageCard pkg={biFullPackage} isLoggedIn={isLoggedIn} isUnlocked={unlockedIds.includes(biFullPackage?.id ?? '')} icon={<Languages className="w-5 h-5" />} accentCls="bg-ink text-white" />
-        </div>
-        <p className="text-xs text-ink-muted mt-2">
-          💡 Paket Bahasa Inggris ini sama untuk semua bidang — cukup beli sekali.
-        </p>
+      {/* ── Section: Bahasa Inggris ── */}
+      <div className="space-y-3">
+        <SectionHeader
+          icon={<Languages className="w-4 h-4 text-brand" />}
+          iconBg="bg-brand/10"
+          title="Bahasa Inggris PLN"
+          subtitle="Sama untuk semua bidang — cukup beli sekali"
+        />
+
+        <PackageRow
+          pkg={biDemo}
+          isLoggedIn={isLoggedIn}
+          isUnlocked={unlockedIds.includes(biDemo?.id ?? '')}
+          icon={<Languages className="w-5 h-5 text-brand" />}
+          iconCls="bg-brand/10"
+        />
+        <PackageRow
+          pkg={biFull}
+          isLoggedIn={isLoggedIn}
+          isUnlocked={unlockedIds.includes(biFull?.id ?? '')}
+          icon={<Languages className="w-5 h-5 text-white" />}
+          iconCls="bg-ink"
+        />
       </div>
 
-      {/* Paket Akademik */}
-      <div>
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3 flex items-center gap-2">
-          <BookOpen className="w-3.5 h-3.5" /> Akademik — {bidang.name}
-        </p>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <PackageCard pkg={akdingDemoPackage} isLoggedIn={isLoggedIn} isUnlocked={unlockedIds.includes(akdingDemoPackage?.id ?? '')} icon={<BookOpen className="w-5 h-5" />} accentCls={`${bidang.color.split(' ').slice(0,2).join(' ')}`} />
-          <PackageCard pkg={akdingFullPackage} isLoggedIn={isLoggedIn} isUnlocked={unlockedIds.includes(akdingFullPackage?.id ?? '')} icon={<BookOpen className="w-5 h-5" />} accentCls="bg-ink text-white" />
+      {/* Divider antar section */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t-2 border-dashed border-hairline" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-paper px-4 text-xs text-ink-muted font-semibold">+</span>
         </div>
       </div>
 
-      {/* Link ke harga */}
-      <div className="bg-paper-soft rounded-2xl border border-hairline p-5 flex items-center justify-between gap-4">
+      {/* ── Section: Akademik ── */}
+      <div className="space-y-3">
+        <SectionHeader
+          icon={<BookOpen className={`w-4 h-4 ${bidang.color.split(' ')[1]}`} />}
+          iconBg={bidang.color.split(' ')[0]}
+          title={`Akademik — ${bidang.name}`}
+          subtitle="Materi sesuai keilmuan bidang ini"
+        />
+
+        <PackageRow
+          pkg={akdingDemo}
+          isLoggedIn={isLoggedIn}
+          isUnlocked={unlockedIds.includes(akdingDemo?.id ?? '')}
+          icon={<BookOpen className={`w-5 h-5 ${bidang.color.split(' ')[1]}`} />}
+          iconCls={bidang.color.split(' ')[0]}
+        />
+        <PackageRow
+          pkg={akdingFull}
+          isLoggedIn={isLoggedIn}
+          isUnlocked={unlockedIds.includes(akdingFull?.id ?? '')}
+          icon={<BookOpen className="w-5 h-5 text-white" />}
+          iconCls="bg-ink"
+        />
+      </div>
+
+      {/* CTA langganan */}
+      <div className="rounded-2xl border border-hairline p-5 flex items-center justify-between gap-4 bg-white shadow-soft">
         <div>
-          <p className="font-semibold text-ink text-sm">Mau akses semua tanpa beli satu per satu?</p>
-          <p className="text-xs text-ink-muted mt-0.5">Langganan PLN Tahap 2 — BI + Akademik {bidang.short} mulai Rp 30.000/bulan</p>
+          <div className="flex items-center gap-1.5 mb-1">
+            <Sparkles className="w-4 h-4 text-brand" />
+            <p className="font-semibold text-ink text-sm">Akses penuh tanpa beli satuan-satuan?</p>
+          </div>
+          <p className="text-xs text-ink-muted">Langganan PLN Tahap 2 — BI + Akademik {bidang.short} mulai <span className="font-num font-semibold">Rp 30.000</span>/bulan</p>
         </div>
-        <Link href={`/harga?plnBidang=${slug}`} className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+        <Link href={`/harga?plnBidang=${slug}`}
+          className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
           Lihat Harga <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
