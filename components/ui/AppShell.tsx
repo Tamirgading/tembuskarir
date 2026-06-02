@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
   User, Settings, Ticket, LogOut, ChevronDown, Menu, X, Sparkles,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, BookOpen,
 } from 'lucide-react'
 
 interface AppShellProps {
@@ -16,7 +16,7 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
-type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string }
+type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string; sub?: boolean }
 type Group = { section: string | null; items: Item[] }
 
 const NAV: Group[] = [
@@ -26,6 +26,8 @@ const NAV: Group[] = [
     items: [
       { href: '/portal/astra', label: 'Psikotes ASTRA', icon: Briefcase, tag: 'Populer' },
       { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap },
+      { href: '/portal/pln/gat', label: 'Tahap 1 — GAT', icon: Zap, sub: true },
+      { href: '/portal/pln/tahap2', label: 'Tahap 2 — Akademik', icon: BookOpen, sub: true },
       { href: '/paket', label: 'Semua Paket', icon: Package },
     ],
   },
@@ -73,6 +75,8 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
   const isActive = (href: string) => {
     const base = href.split('?')[0]
     if (base === '/dashboard') return pathname === '/dashboard'
+    // Hub PLN: hanya aktif di halaman /portal/pln persis (bukan sub-routes)
+    if (base === '/portal/pln') return pathname === '/portal/pln'
     return pathname === base || pathname.startsWith(base + '/')
   }
 
@@ -112,6 +116,27 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
             {group.items.map((it) => {
               const Icon = it.icon
               const active = isActive(it.href)
+
+              // Sub-item (Tahap 1/2 PLN): hidden saat sidebar collapsed (kecuali mobile)
+              if (it.sub && collapsed && !isMobile) return null
+
+              if (it.sub) {
+                return (
+                  <Link
+                    key={it.href}
+                    href={it.href}
+                    onClick={() => isMobile && setDrawer(false)}
+                    className={`relative flex items-center gap-2 pl-9 pr-3 py-2 rounded-[10px] text-xs transition-colors ${
+                      active ? 'bg-white/10 text-white font-semibold' : 'text-white/55 hover:bg-white/[0.07] hover:text-white'
+                    }`}
+                  >
+                    {active && <span className="absolute left-0 w-[3px] h-4 rounded-r bg-brand" />}
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 shrink-0" />
+                    <span className="flex-1 truncate">{it.label}</span>
+                  </Link>
+                )
+              }
+
               return (
                 <Link
                   key={it.href}

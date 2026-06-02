@@ -1,251 +1,154 @@
 import Link from 'next/link'
-import { Zap, Package, ChevronRight, CheckCircle2, BookOpen } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
-import type { PackageRow, AttemptRow } from '@/lib/utils'
-import { formatDate } from '@/lib/utils'
-import PlnPackageCard from '@/components/portal/PlnPackageCard'
-import { getUnlockedPackageIds } from '@/lib/access'
+import { Zap, BookOpen, ChevronRight, Clock, FileText, Layers } from 'lucide-react'
 import { PLN_SUBTESTS } from '@/lib/exam-scoring'
 
-export default async function PlnPortalPage() {
-  let packages: PackageRow[] = []
-  let isLoggedIn = false
-  let unlockedPackageIds: string[] = []
-  let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
+const GAT_STATS = [
+  { v: '8', l: 'sub-tes' },
+  { v: '210', l: 'total soal' },
+  { v: '180', l: 'menit' },
+]
+const T2_STATS = [
+  { v: '12', l: 'bidang' },
+  { v: '100', l: 'total soal' },
+  { v: '100', l: 'menit' },
+]
 
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    isLoggedIn = !!user
-
-    const { data: pkgData } = await supabase
-      .from('packages')
-      .select('*')
-      .eq('category', 'PLN')
-      .eq('is_published', true)
-      .order('is_free', { ascending: false })
-      .order('created_at', { ascending: true })
-    packages = (pkgData ?? []) as PackageRow[]
-
-    if (user) {
-      unlockedPackageIds = await getUnlockedPackageIds(user.id)
-      const ids = packages.map((p) => p.id)
-      if (ids.length > 0) {
-        const { data: attemptsData } = await supabase
-          .from('attempts')
-          .select('id, score, started_at, package_id')
-          .eq('user_id', user.id)
-          .eq('status', 'finished')
-          .in('package_id', ids)
-          .order('started_at', { ascending: false })
-          .limit(5)
-        recentAttempts = (attemptsData ?? []) as Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[]
-      }
-    }
-  } catch { /* Supabase not configured */ }
-
-  const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
-
+export default function PlnHubPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
 
-      {/* ── Header ── */}
-      <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft">
-        <div className="px-6 py-7 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white/80" />
-            </div>
-            <div>
-              <p className="text-white/55 text-xs font-semibold uppercase tracking-wider">BUMN — PT PLN (Persero)</p>
-              <h1 className="text-2xl font-heading font-extrabold">Rekrutmen PLN — GAT</h1>
-            </div>
-            <span className="ml-auto text-[11px] font-bold px-3 py-1 bg-brand/20 text-brand-300 rounded-full">
-              GAT
-            </span>
-          </div>
-          <p className="text-white/60 text-sm mt-2">
-            Simulasi General Aptitude Test PT PLN (Persero) — 8 sub-tes berurutan termasuk Learning Agility &amp; AKHLAK core values BUMN.
-          </p>
-          {/* Stats */}
-          <div className="flex gap-3 mt-5 flex-wrap">
-            {[
-              { v: '210', l: 'total soal' },
-              { v: '8', l: 'sub-tes' },
-              { v: '180', l: 'menit total' },
-              { v: '+1', l: 'kognitif' },
-            ].map((s) => (
-              <div key={s.l} className="bg-white/10 rounded-xl px-4 py-2 text-center">
-                <p className="font-num font-bold text-white">{s.v}</p>
-                <p className="text-white/55 text-[10px]">{s.l}</p>
+      {/* Header */}
+      <div>
+        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1">Portal Seleksi</p>
+        <h1 className="text-2xl font-heading font-extrabold text-ink">Rekrutmen PLN</h1>
+        <p className="text-ink-muted mt-1.5">Seleksi PT PLN (Persero) terdiri dari dua tahap. Pilih tahap yang ingin kamu persiapkan.</p>
+      </div>
+
+      {/* 2 kartu utama */}
+      <div className="grid sm:grid-cols-2 gap-5">
+
+        {/* Tahap 1 — GAT */}
+        <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft flex flex-col">
+          <div className="px-6 py-6 text-white flex-1" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+                <Zap className="w-4.5 h-4.5 text-white/80" />
               </div>
-            ))}
+              <div>
+                <p className="text-white/55 text-[10px] uppercase tracking-wider font-semibold">Tahap 1</p>
+                <p className="text-white font-heading font-bold text-base leading-snug">General Aptitude Test</p>
+              </div>
+            </div>
+            <p className="text-white/60 text-xs leading-relaxed mb-4">
+              Tes Aptitude umum — 8 sub-tes kognitif berurutan. Wajib untuk semua pelamar PLN, tanpa terkecuali.
+            </p>
+            {/* Sub-tes grid kecil */}
+            <div className="flex flex-wrap gap-1 mb-4">
+              {Object.keys(PLN_SUBTESTS).map((k) => (
+                <span key={k} className="text-[10px] font-bold px-1.5 py-0.5 bg-white/10 text-white/70 rounded">{k}</span>
+              ))}
+            </div>
+            <div className="flex gap-4">
+              {GAT_STATS.map((s) => (
+                <div key={s.l}>
+                  <p className="font-num font-extrabold text-white text-xl leading-none">{s.v}</p>
+                  <p className="text-white/50 text-[10px]">{s.l}</p>
+                </div>
+              ))}
+            </div>
           </div>
+          <Link href="/portal/pln/gat"
+            className="flex items-center justify-between px-6 py-4 bg-white hover:bg-paper-soft transition-colors border-t border-hairline group">
+            <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <FileText className="w-4 h-4 text-brand" />
+              Lihat Paket Simulasi GAT
+            </div>
+            <ChevronRight className="w-4 h-4 text-ink-muted group-hover:text-brand transition-colors" />
+          </Link>
         </div>
 
-        {/* Sub-tes grid */}
-        <div className="bg-white px-6 py-5">
-          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sub-tes GAT</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {Object.entries(PLN_SUBTESTS).map(([key, sub]) => (
-              <div key={key} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-hairline bg-paper-soft">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand/10 text-brand-700 border border-brand/20 shrink-0">
-                  {key}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold text-ink truncate">{sub.full}</p>
-                  <p className="text-[10px] text-ink-muted font-num">{sub.soal} soal · {sub.minutes} mnt</p>
-                </div>
+        {/* Tahap 2 — Akademik */}
+        <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft flex flex-col">
+          <div className="px-6 py-6 flex-1" style={{ background: 'linear-gradient(135deg,#1a3a2e,#0d2118)' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+                <BookOpen className="w-4.5 h-4.5 text-white/80" />
               </div>
-            ))}
+              <div>
+                <p className="text-white/55 text-[10px] uppercase tracking-wider font-semibold text-white">Tahap 2</p>
+                <p className="text-white font-heading font-bold text-base leading-snug">Akademik &amp; Bahasa Inggris</p>
+              </div>
+            </div>
+            <p className="text-white/60 text-xs leading-relaxed mb-4">
+              Tes bidang keilmuan + Bahasa Inggris. Materi Akademik berbeda per bidang — pilih bidangmu terlebih dahulu.
+            </p>
+            <div className="flex gap-1 mb-4">
+              {['Akademik', 'Bahasa Inggris'].map((l) => (
+                <span key={l} className="text-[10px] font-bold px-2 py-0.5 bg-white/10 text-white/70 rounded">{l}</span>
+              ))}
+            </div>
+            <div className="flex gap-4">
+              {T2_STATS.map((s) => (
+                <div key={s.l}>
+                  <p className="font-num font-extrabold text-white text-xl leading-none">{s.v}</p>
+                  <p className="text-white/50 text-[10px]">{s.l}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Link href="/portal/pln/tahap2"
+            className="flex items-center justify-between px-6 py-4 bg-white hover:bg-paper-soft transition-colors border-t border-hairline group">
+            <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <Layers className="w-4 h-4 text-brand" />
+              Pilih Bidang Akademik
+            </div>
+            <ChevronRight className="w-4 h-4 text-ink-muted group-hover:text-brand transition-colors" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Info alur */}
+      <div className="bg-paper-soft rounded-2xl border border-hairline p-5">
+        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Alur Seleksi PLN</p>
+        <div className="flex items-center gap-3 flex-wrap text-sm text-ink-soft">
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-brand text-white text-xs font-num font-bold flex items-center justify-center shrink-0">1</span>
+            <span>Lolos Administrasi</span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-ink text-white text-xs font-num font-bold flex items-center justify-center shrink-0">2</span>
+            <span><strong className="text-ink">Tahap 1 — GAT</strong> (semua pelamar)</span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-ink text-white text-xs font-num font-bold flex items-center justify-center shrink-0">3</span>
+            <span><strong className="text-ink">Tahap 2 — Akademik + BI</strong> (yang lolos Tahap 1)</span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-paper-soft border border-hairline text-ink-muted text-xs font-num font-bold flex items-center justify-center shrink-0">4</span>
+            <span className="text-ink-muted">Wawancara &amp; lanjutan</span>
           </div>
         </div>
       </div>
 
-      {/* ── Link ke Tahap 2 ── */}
-      <div className="rounded-2xl border border-hairline bg-white shadow-soft p-5 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center shrink-0">
-            <BookOpen className="w-5 h-5 text-brand" />
-          </div>
+      {/* Info timer per tahap */}
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div className="bg-white rounded-xl border border-hairline p-4 flex items-center gap-3">
+          <Clock className="w-5 h-5 text-brand shrink-0" />
           <div>
-            <p className="font-heading font-bold text-ink text-sm">PLN Tahap 2 — Akademik &amp; Bahasa Inggris</p>
-            <p className="text-xs text-ink-muted mt-0.5">50 soal Akademik (per bidang) + 50 soal Bahasa Inggris · 100 menit</p>
+            <p className="text-sm font-semibold text-ink">Tahap 1 — 180 menit total</p>
+            <p className="text-xs text-ink-muted">8 sub-tes dengan timer terpisah, dikerjakan berurutan</p>
           </div>
         </div>
-        <Link href="/portal/pln/tahap2"
-          className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
-          Pilih Bidang <ChevronRight className="w-4 h-4" />
-        </Link>
-      </div>
-
-      {/* ── 2-kolom: paket + info ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_272px] gap-6 items-start">
-
-        {/* Paket */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Paket Simulasi</p>
-            <span className="text-xs text-ink-muted font-num">{packages.length} paket</span>
+        <div className="bg-white rounded-xl border border-hairline p-4 flex items-center gap-3">
+          <Clock className="w-5 h-5 text-brand shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-ink">Tahap 2 — 100 menit total</p>
+            <p className="text-xs text-ink-muted">50 mnt Akademik + 50 mnt Bahasa Inggris, urutan bebas</p>
           </div>
-
-          {packages.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-hairline shadow-soft p-12 text-center">
-              <Package className="w-10 h-10 text-ink-muted mx-auto mb-3" />
-              <p className="font-heading font-semibold text-ink">Belum ada paket tersedia</p>
-              <p className="text-sm mt-1 text-ink-muted">Pantau terus untuk update paket baru</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {packages.map((pkg, i) => (
-                <PlnPackageCard
-                  key={pkg.id}
-                  pkg={pkg}
-                  isLoggedIn={isLoggedIn}
-                  isUnlocked={unlockedPackageIds.includes(pkg.id)}
-                  index={i}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Riwayat (user login) */}
-          {isLoggedIn && recentAttempts.length > 0 && (
-            <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-              <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Riwayat Simulasimu</p>
-              <div className="divide-y divide-hairline">
-                {recentAttempts.map((a) => (
-                  <Link key={a.id} href={`/hasil/${a.id}`}
-                    className="flex items-center gap-3 py-3 hover:opacity-80 transition-opacity">
-                    <span className="w-10 h-10 rounded-xl bg-brand/10 grid place-items-center font-num font-bold text-brand text-sm shrink-0">
-                      {a.score ?? '–'}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13.5px] font-semibold text-ink truncate">{packageNameMap[a.package_id] ?? 'Paket'}</p>
-                      <p className="text-[11px] text-ink-muted">{formatDate(a.started_at)}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
-
-        {/* Sidebar: info */}
-        <aside className="space-y-4 lg:sticky lg:top-20">
-
-          {/* Sistem penilaian */}
-          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sistem Penilaian</p>
-            <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline mb-3">
-              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">6 Sub-tes Kognitif</p>
-              <p className="text-[10px] text-ink-muted">NUM · VER · SIL · DER · FIG · PU</p>
-              {[
-                { l: 'Benar', v: '+1', c: 'text-brand font-bold' },
-                { l: 'Salah / Kosong', v: '0', c: 'text-ink-muted' },
-              ].map((r) => (
-                <div key={r.l} className="flex justify-between items-center text-xs">
-                  <span className="text-ink-soft">{r.l}</span>
-                  <span className={`font-num ${r.c}`}>{r.v}</span>
-                </div>
-              ))}
-            </div>
-            <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline">
-              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">LA &amp; AKHLAK</p>
-              <p className="text-[10px] text-ink-muted">Sistem poin per opsi (1–5)</p>
-              {[
-                { l: 'Opsi paling tepat', v: '+5', c: 'text-brand font-bold' },
-                { l: 'Opsi kurang tepat', v: '+1', c: 'text-ink-muted' },
-              ].map((r) => (
-                <div key={r.l} className="flex justify-between items-center text-xs">
-                  <span className="text-ink-soft">{r.l}</span>
-                  <span className={`font-num ${r.c}`}>{r.v}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Tips */}
-          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
-            <div className="space-y-3">
-              {[
-                { icon: '🧮', text: 'Numerik & Deret: pola aritmatika dasar — skip soal sulit, kembali nanti' },
-                { icon: '📚', text: 'Verbal: kuasai istilah umum dan istilah ketenagalistrikan PLN' },
-                { icon: '⚡', text: 'Pengetahuan PLN: pelajari sejarah, struktur, dan proyek strategis PLN' },
-                { icon: '🌟', text: 'AKHLAK: jujur dan natural, cerminkan 6 core values BUMN tanpa berlebihan' },
-              ].map((t) => (
-                <div key={t.text} className="flex items-start gap-2.5 text-xs text-ink-soft">
-                  <span className="shrink-0 text-sm">{t.icon}</span>
-                  <p className="leading-relaxed">{t.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Info tambahan PLN */}
-          <div className="bg-paper-soft rounded-xl p-4 border border-hairline">
-            <div className="flex items-start gap-2 text-xs text-ink-muted">
-              <CheckCircle2 className="w-4 h-4 text-brand shrink-0 mt-0.5" />
-              <p className="leading-relaxed">Sub-tes dikerjakan berurutan dengan timer terpisah per sub-tes — LA &amp; AKHLAK menggunakan sistem poin berbeda dari kognitif.</p>
-            </div>
-          </div>
-
-          {/* Guest: ajakan daftar */}
-          {!isLoggedIn && (
-            <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
-              <p className="font-heading font-bold text-sm mb-1">Mulai Latihan Gratis</p>
-              <p className="text-white/60 text-xs mb-4 leading-relaxed">Daftar sekarang dan akses paket simulasi tanpa biaya.</p>
-              <Link href="/register" className="block w-full text-center py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
-                Daftar Gratis →
-              </Link>
-              <Link href="/login" className="block w-full text-center py-2 text-white/60 text-xs hover:text-white transition-colors mt-2">
-                Sudah punya akun? Masuk
-              </Link>
-            </div>
-          )}
-        </aside>
       </div>
     </div>
   )
