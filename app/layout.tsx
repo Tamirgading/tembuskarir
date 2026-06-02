@@ -14,8 +14,13 @@ const APP_URL = 'https://tembuskarir.id'
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: 'TembusKarir — Platform Simulasi Tes Kerja BUMN & Swasta',
+    default: 'TembusKarir',
     template: '%s | TembusKarir',
+  },
+  icons: {
+    icon: '/iconlogo.png',
+    shortcut: '/iconlogo.png',
+    apple: '/iconlogo.png',
   },
   description:
     'Latihan simulasi tes rekrutmen kerja PLN, Astra, BUMN, dan perusahaan lainnya dengan ribuan soal berkualitas. Timer realistis, pembahasan lengkap, dan analisis progress. Mulai gratis sekarang!',
