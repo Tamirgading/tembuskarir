@@ -42,7 +42,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   const pkg = pkgData as PackageRow | null
   if (!pkg) redirect('/paket')
 
-  const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free)
+  const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free, pkg.slug)
   if (accessStatus === 'locked') {
     if (pkg.category === 'ASTRA') redirect('/portal/astra')
     else redirect('/harga')

@@ -6,7 +6,8 @@ import {
   Briefcase, Zap, Sparkles,
 } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { getPremiumSubscriptionStatus } from '@/lib/access'
+import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
+import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -81,6 +82,7 @@ export default async function DashboardPage({
     ?? user.email?.split('@')[0] ?? 'Pengguna'
 
   const premiumSub = await getPremiumSubscriptionStatus(user.id)
+  const plnSub = await getPlnSubscriptionStatus(user.id)
   const fmt = (d: string) => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
   const fmtTime = (d: string) => new Date(d).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
   const fmtLong = (d: string | null) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'
@@ -174,11 +176,19 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-heading font-extrabold text-ink">Halo, {name} 👋</h1>
           <p className="text-ink-muted text-sm mt-1">Selamat datang kembali. Yuk lanjutkan persiapanmu.</p>
         </div>
-        {premiumSub.active && premiumSub.expiresAt && (
-          <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand/10 text-brand-700 font-semibold text-xs rounded-full whitespace-nowrap">
-            <Sparkles className="w-3.5 h-3.5" /> Premium s/d {fmt(premiumSub.expiresAt)}
-          </span>
-        )}
+        <div className="flex flex-wrap gap-2 shrink-0">
+          {premiumSub.active && premiumSub.expiresAt && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand/10 text-brand-700 font-semibold text-xs rounded-full whitespace-nowrap">
+              <Sparkles className="w-3.5 h-3.5" /> Premium s/d {fmt(premiumSub.expiresAt)}
+            </span>
+          )}
+          {plnSub.active && plnSub.expiresAt && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-700 font-semibold text-xs rounded-full whitespace-nowrap">
+              <Zap className="w-3.5 h-3.5" />
+              PLN{plnSub.bidang && BIDANG_BY_SLUG[plnSub.bidang] ? ` · ${BIDANG_BY_SLUG[plnSub.bidang].short}` : ''} s/d {fmt(plnSub.expiresAt)}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}

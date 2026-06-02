@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     // Fetch package metadata
     const { data: pkg, error: pkgErr } = await supabase
       .from('packages')
-      .select('id, is_free, category')
+      .select('id, slug, is_free, category')
       .eq('id', packageId)
       .single()
 
@@ -28,9 +28,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Package not found' }, { status: 404 })
     }
 
-    const pkgTyped = pkg as { id: string; is_free: boolean; category: string }
+    const pkgTyped = pkg as { id: string; slug: string; is_free: boolean; category: string }
 
-    const status = await checkPackageAccess(user.id, packageId, pkgTyped.is_free)
+    const status = await checkPackageAccess(user.id, packageId, pkgTyped.is_free, pkgTyped.slug)
     const canAccess = status !== 'locked'
 
     return NextResponse.json({ canAccess, category: pkgTyped.category, status })
