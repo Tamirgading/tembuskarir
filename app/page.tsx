@@ -42,113 +42,52 @@ export default async function HomePage() {
       <LandingNavbar isLoggedIn={isLoggedIn} firstName={null} />
 
       {/* ══ HERO ══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-paper pt-16 pb-20">
-        <div className="absolute inset-0 bg-grid-slate opacity-50 pointer-events-none" />
-        <div className="absolute -top-40 -right-32 w-[500px] h-[500px] bg-brand/8 rounded-full blur-[140px] pointer-events-none" />
+      <section className="relative overflow-hidden bg-paper pt-20 pb-24">
+        <div className="absolute inset-0 bg-grid-slate opacity-40 pointer-events-none" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-brand/7 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
 
-            {/* ── Teks kiri ── */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-hairline rounded-full text-ink-soft text-xs font-semibold mb-7 shadow-soft">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-                Simulasi tes kerja BUMN &amp; Swasta
-              </div>
-
-              <h1 className="text-[2.75rem] lg:text-[3.5rem] font-heading font-extrabold text-ink leading-[1.08] tracking-tight mb-5">
-                Latihan yang terasa<br />
-                <span className="text-brand">persis seperti tesnya.</span>
-              </h1>
-
-              <p className="text-lg text-ink-muted leading-relaxed mb-8 max-w-lg">
-                Simulasi rekrutmen PLN, ASTRA, dan BUMN dengan format per-sub-tes &amp; timer seperti aslinya. Setiap hasil memetakan kesiapanmu — kamu tahu persis apa yang harus dilatih berikutnya.
-              </p>
-
-              <div className="flex flex-wrap gap-3 mb-12">
-                <Link href={isLoggedIn ? '/dashboard' : '/register'}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand-700 transition-colors shadow-soft">
-                  {isLoggedIn ? 'Ke Dashboard' : 'Mulai Gratis'}
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link href="#jenis-tes"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-hairline text-ink font-semibold text-base hover:bg-paper-soft transition-colors">
-                  Lihat Jenis Tes
-                </Link>
-              </div>
-
-              {/* Trust strip */}
-              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-hairline max-w-sm">
-                {[
-                  { k: '2.000+', l: 'Peserta aktif' },
-                  { k: '7', l: 'Sub-tes ASTRA' },
-                  { k: '100%', l: 'Format tes asli' },
-                ].map((s) => (
-                  <div key={s.l}>
-                    <p className="font-num font-extrabold text-2xl text-ink">{s.k}</p>
-                    <p className="text-xs text-ink-muted mt-0.5">{s.l}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Kanan: UI mockup cards ── */}
-            <div className="relative hidden lg:block">
-              {/* Card utama — kesiapan */}
-              <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-                <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-4">Kesiapan kamu</p>
-                <div className="flex items-center gap-5">
-                  <div className="relative w-[100px] h-[100px] shrink-0">
-                    <svg width="100" height="100" viewBox="0 0 100 100" className="-rotate-90">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#E7E4DC" strokeWidth="9" />
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#0E9F6E" strokeWidth="9" strokeLinecap="round"
-                        strokeDasharray="251.3" strokeDashoffset="80.4" />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="font-num font-bold text-[26px] text-ink leading-none">68</span>
-                      <span className="text-[10px] text-ink-muted">%</span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-heading font-bold text-ink text-base">Tinggal sedikit lagi!</p>
-                    <p className="text-xs text-ink-muted mt-1 mb-3">7 simulasi selesai · 5 hari beruntun</p>
-                    <div className="inline-flex items-center gap-2 bg-paper-soft rounded-lg px-3 py-1.5 text-xs font-semibold">
-                      <span className="w-2 h-2 rounded-full bg-amber-400" />
-                      Lemah: Working Memory · 52%
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card mengambang — langkah berikut */}
-              <div className="absolute -top-5 -right-5 rounded-2xl p-4 text-white w-52 shadow-soft"
-                style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
-                <p className="text-[10px] text-white/55 uppercase tracking-wider mb-1">Langkah berikutmu</p>
-                <p className="font-heading font-bold text-sm">Drill Working Memory</p>
-                <div className="flex gap-3 mt-2 text-[11px] text-white/70">
-                  <span>10 soal</span>
-                  <span>8 mnt</span>
-                </div>
-                <div className="mt-3 py-1.5 bg-brand rounded-lg text-center text-xs font-bold">Mulai →</div>
-              </div>
-
-              {/* Card mengambang — progress sub-tes */}
-              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl border border-hairline shadow-soft p-4 w-52">
-                <p className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2.5">Sub-tes ASTRA</p>
-                {[
-                  { k: 'QR', p: 84 }, { k: 'DR', p: 76 }, { k: 'WM', p: 52, low: true },
-                ].map((s) => (
-                  <div key={s.k} className="flex items-center gap-2 mb-1.5">
-                    <span className="text-[10px] font-bold w-7 text-ink-soft">{s.k}</span>
-                    <span className="flex-1 h-1.5 bg-hairline rounded-full overflow-hidden">
-                      <span className="block h-full rounded-full" style={{ width: `${s.p}%`, background: s.low ? '#F4B400' : '#0E9F6E' }} />
-                    </span>
-                    <span className="text-[10px] font-num font-semibold text-ink w-7 text-right">{s.p}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-hairline rounded-full text-ink-soft text-xs font-semibold mb-7 shadow-soft">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
+            Simulasi tes kerja BUMN &amp; Swasta
           </div>
+
+          <h1 className="text-[2.75rem] sm:text-[3.75rem] font-heading font-extrabold text-ink leading-[1.06] tracking-tight mb-6">
+            Latihan yang terasa<br />
+            <span className="text-brand">persis seperti tesnya.</span>
+          </h1>
+
+          <p className="text-lg text-ink-muted leading-relaxed mb-10 max-w-xl mx-auto">
+            Simulasi rekrutmen PLN, ASTRA, dan BUMN dengan format per-sub-tes dan timer seperti aslinya. Setiap hasil memetakan kesiapanmu secara terperinci.
+          </p>
+
+          <div className="flex flex-wrap gap-3 justify-center mb-14">
+            <Link href={isLoggedIn ? '/dashboard' : '/register'}
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand-700 transition-colors shadow-soft">
+              {isLoggedIn ? 'Ke Dashboard' : 'Mulai Gratis'}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link href="#jenis-tes"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white border border-hairline text-ink font-semibold text-base hover:bg-paper-soft transition-colors">
+              Lihat Jenis Tes
+            </Link>
+          </div>
+
+          {/* Trust strip — centered */}
+          <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 pt-8 border-t border-hairline">
+            {[
+              { k: '2.000+', l: 'Peserta aktif' },
+              { k: '7', l: 'Sub-tes ASTRA' },
+              { k: '100%', l: 'Format tes asli' },
+            ].map((s) => (
+              <div key={s.l} className="text-center">
+                <p className="font-num font-extrabold text-2xl text-ink">{s.k}</p>
+                <p className="text-xs text-ink-muted mt-0.5">{s.l}</p>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 
