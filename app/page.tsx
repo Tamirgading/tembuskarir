@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {
   Banknote, BriefcaseBusiness, Zap, MonitorCheck, BarChart3, BookOpenCheck,
-  ArrowRight, CheckCircle2, ChevronDown, Crosshair, Clock, TrendingUp, RotateCcw,
+  ArrowRight, ChevronDown, Crosshair, Clock, TrendingUp, RotateCcw,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import LandingNavbar from '@/components/ui/LandingNavbar'
@@ -448,63 +448,29 @@ export default async function HomePage() {
               Lihat Jenis Tes
             </Link>
           </div>
-          <div className="flex flex-wrap justify-center gap-5 mt-8 text-sm text-white/50">
-            {['Gratis tanpa kartu kredit', 'Akses premium mulai Rp 39.000/bln', 'Bayar via QRIS &amp; e-wallet'].map((t) => (
-              <span key={t} className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-brand-300" />{t}</span>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* ══ FOOTER ═════════════════════════════════════════════════════════════ */}
-      <footer className="bg-ink text-white/55 py-12">
+      <footer className="bg-ink text-white/55 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-10 mb-10">
-            <div className="md:col-span-2">
-              <p className="text-sm leading-relaxed max-w-xs">
-                Simulasi tes rekrutmen kerja yang terasa seperti aslinya.
-              </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            {/* Sosial media */}
+            <div className="flex items-center gap-5">
+              <a href="https://www.youtube.com/@Tembuskarir" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm hover:text-red-400 transition-colors">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                YouTube
+              </a>
+              <a href="https://www.tiktok.com/@tembuskarir" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm hover:text-pink-400 transition-colors">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z" /></svg>
+                TikTok
+              </a>
             </div>
-            <div>
-              <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Produk</h4>
-              <ul className="space-y-3 text-sm font-medium">
-                {[
-                  { label: 'Psikotes ASTRA', href: '/portal/astra' },
-                  { label: 'Rekrutmen PLN', href: '/portal/pln' },
-                  { label: 'Paket &amp; Harga', href: '/harga' },
-                ].map((l) => (
-                  <li key={l.label}>
-                    <Link href={l.href} className="hover:text-brand-300 transition-colors flex items-center gap-2">
-                      <ArrowRight className="w-3 h-3" />
-                      <span dangerouslySetInnerHTML={{ __html: l.label }} />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Komunitas</h4>
-              <ul className="space-y-3 text-sm font-medium">
-                <li>
-                  <a href="https://www.youtube.com/@Tembuskarir" target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:text-red-400 transition-colors">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
-                    YouTube
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.tiktok.com/@tembuskarir" target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:text-pink-400 transition-colors">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z" /></svg>
-                    TikTok
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs gap-4">
-            <p>© 2025 TembusKarir. All Rights Reserved.</p>
-            <div className="flex gap-6">
+            {/* Copyright + legal */}
+            <div className="flex flex-wrap items-center gap-5 text-xs">
+              <p>© 2025 TembusKarir</p>
               <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>
