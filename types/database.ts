@@ -44,7 +44,7 @@ export type Database = {
           id: string
           name: string
           slug: string
-          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
+          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'BUMN' | 'KEDINASAN' | 'LAINNYA'
           description: string | null
           duration_minutes: number
           total_questions: number
@@ -56,7 +56,7 @@ export type Database = {
           id?: string
           name: string
           slug: string
-          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
+          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'BUMN' | 'KEDINASAN' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions: number

@@ -8,6 +8,7 @@ import { QuestionList } from '@/components/admin/QuestionList'
 import { ImportButton } from '@/components/admin/ImportButton'
 import { WmPairsManager } from '@/components/admin/WmPairsManager'
 import { PlnSpecialForms } from '@/components/admin/PlnSpecialForms'
+import { BumnAkhlakForm } from '@/components/admin/BumnAkhlakForm'
 
 export default async function AdminQuestionsPage({
   params,
@@ -122,7 +123,39 @@ export default async function AdminQuestionsPage({
 
         {/* Form tambah soal — PLN punya 3 tipe, lainnya hanya MCQ */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-6">
-          {pkg.category === 'PLN' ? (
+          {pkg.category === 'BUMN' ? (
+            <>
+              {/* Tab: MCQ · AKHLAK */}
+              <div className="flex gap-1 p-1 bg-paper-soft rounded-xl border border-hairline mb-4">
+                {[
+                  { tab: 'mcq',    label: 'MCQ (TWK/VLR/WC/NS/DIAG)' },
+                  { tab: 'akhlak', label: 'AKHLAK' },
+                ].map((t) => {
+                  const active = (formTab ?? 'mcq') === t.tab
+                  return (
+                    <Link key={t.tab}
+                      href={`/admin/packages/${packageId}/questions?formTab=${t.tab}`}
+                      className={`flex-1 text-center py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                        active ? 'bg-white text-ink shadow-soft' : 'text-ink-muted hover:text-ink'
+                      }`}>
+                      {t.label}
+                    </Link>
+                  )
+                })}
+              </div>
+
+              {formTab === 'akhlak' ? (
+                <BumnAkhlakForm packageId={packageId} />
+              ) : (
+                <>
+                  <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+                    Sub-tes MCQ: <strong>TWK · VLR · WC · NS · DIAG</strong>. Pilih sub-tes di dropdown saat mengisi soal.
+                  </p>
+                  <AddQuestionForm packageId={packageId} pkgCategory={pkg.category} />
+                </>
+              )}
+            </>
+          ) : pkg.category === 'PLN' ? (
             <>
               {/* Tab: MCQ · AKHLAK · LA */}
               <div className="flex gap-1 p-1 bg-paper-soft rounded-xl border border-hairline mb-4">
