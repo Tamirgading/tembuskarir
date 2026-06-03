@@ -246,6 +246,95 @@ def parse_format_b(combined_path):
 
 
 # ---------------------------------------------------------------------------
+# Parser Format C  -- soal+opsi dalam SATU paragraf panjang per soal
+# ---------------------------------------------------------------------------
+
+def parse_format_c(soal_path, pemb_path):
+    # type: (str, str) -> List[dict]
+    """
+    Format C: setiap soal satu paragraf, opsi embedded inline.
+    Mendukung lowercase (a. b. c. d.) MAUPUN uppercase (A. B. C. D.)
+
+    Contoh lowercase: "Pertanyaan... a. OpsiA b. OpsiB c. OpsiC d. OpsiD"
+    Contoh uppercase: "Pertanyaan... A. OpsiA B. OpsiB C. OpsiC D. OpsiD"
+
+    Pembahasan: satu paragraf per soal.
+    Contoh: "C. Teks opsi benar. Pembahasan: penjelasan..."
+    """
+    soal = get_paras(soal_path)[4:]  # skip header
+    pemb = get_paras(pemb_path)[4:]  # skip header
+
+    questions = []
+
+    for idx, soal_para in enumerate(soal):
+        # Split sebelum opsi: spasi + [a-dA-D] + titik + spasi
+        parts = re.split(r'\s+(?=[a-dA-D]\.\s)', soal_para)
+        if len(parts) < 5:
+            # Fallback: coba tanpa perlu spasi sebelumnya (setelah . atau ?)
+            parts = re.split(r'(?<=[.?!])\s+(?=[a-dA-D]\.\s)', soal_para)
+        if len(parts) < 5:
+            continue
+
+        question = parts[0].strip()
+        options = []
+        for p in parts[1:5]:
+            m = re.match(r'^[a-dA-D]\.\s*(.+)', p.strip())
+            if m:
+                options.append(m.group(1).strip())
+
+        if len(options) < 4:
+            continue
+
+        if idx >= len(pemb):
+            continue
+
+        pemb_para = pemb[idx]
+        letter_m = re.match(r'^([A-Da-d])[\.\s]', pemb_para)
+        letter = letter_m.group(1).upper() if letter_m else 'A'
+
+        expl_m = re.search(r'(?i)pembahasan\s*:\s*(.+)', pemb_para, re.DOTALL)
+        explanation = expl_m.group(1).strip() if expl_m else ''
+
+        questions.append({
+            "content": question,
+            "options": options,
+            "correct_answer": letter,
+            "explanation": explanation,
+        })
+
+    return questions
+
+
+def detect_format(paras_after_header):
+    # type: (List[str]) -> str
+    """
+    Deteksi format soal:
+    - Format C: paragraf pertama mengandung embedded options (a/A, b/B dalam satu paragraf)
+    - Format A: options ada di paragraf terpisah
+    """
+    if not paras_after_header:
+        return 'A'
+    first = paras_after_header[0]
+    # Cek ada " a. " atau " A. " DAN " b. " atau " B. " dalam satu paragraf
+    has_a = bool(re.search(r'\s[a-dA-D]\.\s', first))
+    has_b = bool(re.search(r'\s[b-dB-D]\.\s', first))
+    if has_a and has_b:
+        return 'C'
+    return 'A'
+
+
+def parse_soal_auto(soal_path, pemb_path):
+    # type: (str, str) -> List[dict]
+    """Auto-detect format dan parse."""
+    soal_paras = get_paras(soal_path)[4:]
+    fmt = detect_format(soal_paras)
+    if fmt == 'C':
+        return parse_format_c(soal_path, pemb_path)
+    else:
+        return parse_format_a(soal_path, pemb_path)
+
+
+# ---------------------------------------------------------------------------
 # SQL generation
 # ---------------------------------------------------------------------------
 
@@ -384,6 +473,31 @@ def generate_migration(bidang_slug, bidang_name, pakets, output_path):
 
 
 # ---------------------------------------------------------------------------
+# File finder (robust — handle variasi spasi/nama file)
+# ---------------------------------------------------------------------------
+
+def find_paket_docx(base_path, paket_num):
+    # type: (str, int) -> tuple
+    """
+    Cari file soal dan pembahasan untuk paket tertentu.
+    Mengembalikan (soal_path, pemb_path) atau (None, None) jika tidak ditemukan.
+    Menggunakan glob agar tahan terhadap variasi spasi di nama file.
+    """
+    base = Path(base_path)
+    prefix = "Paket %d" % paket_num
+    soal_path = None
+    pemb_path = None
+
+    for f in sorted(base.glob(prefix + "*.docx")):
+        if "Pembahasan" in f.name or "Pembahasan" in f.stem:
+            pemb_path = str(f)
+        else:
+            soal_path = str(f)
+
+    return soal_path, pemb_path
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -391,57 +505,56 @@ def main():
     BASE_SOAL = r"D:\Soal\PLN\Akding dan Bahasa Inggris"
     BASE_MIGR = r"D:\Soal\ClaudeProject-web\supabase\migrations"
 
-    # Definisi bidang: (folder_name, bidang_slug, bidang_name)
-    # Tambahkan bidang lain di sini setelah folder tersedia
+    # (folder_name, bidang_slug, bidang_name)
+    # Slug harus SAMA dengan yang ada di lib/bidang-config.ts
     BIDANG_LIST = [
-        (
-            "Akding Bidang Akuntansi & Keuangan",
-            "akuntansi-keuangan",
-            "Akuntansi & Keuangan",
-        ),
-        # Uncomment setelah folder tersedia:
-        # ("Akding Bidang Hukum & Regulasi Energi",        "hukum-regulasi",       "Hukum & Regulasi Energi"),
-        # ("Akding Bidang Komunikasi & Humas",              "komunikasi-humas",     "Komunikasi & Hubungan Masyarakat"),
-        # ("Akding Bidang Manajemen & Bisnis",              "manajemen-bisnis",     "Manajemen & Bisnis"),
-        # ("Akding Bidang Teknologi Informasi",             "teknologi-informasi",  "Teknologi Informasi"),
-        # ("Akding Bidang Psikologi Industri",              "psikologi-industri",   "Psikologi Industri"),
-        # ("Akding Bidang Teknik Elektro",                  "teknik-elektro",       "Teknik Elektro & Energi"),
-        # ("Akding Bidang Teknik Mesin",                    "teknik-mesin",         "Teknik Mesin"),
-        # ("Akding Bidang Teknik Sipil",                    "teknik-sipil",         "Teknik Sipil & Konstruksi"),
-        # ("Akding Bidang Lingkungan & K3",                 "lingkungan-k3",        "Lingkungan & K3"),
-        # ("Akding Bidang Logistik & Rantai Pasok",         "logistik",             "Logistik & Rantai Pasok"),
-        # ("Akding Bidang Manajemen Aset",                  "manajemen-aset",       "Manajemen Aset"),
+        ("Akding Bidang Akuntansi & Keuangan",          "akuntansi-keuangan",    "Akuntansi & Keuangan"),
+        ("Akding Bidang Hukum & Regulasi Energi",       "hukum-regulasi",        "Hukum & Regulasi Energi"),
+        ("Akding Bidang Komunikasi & Hubungan Masyarakat","komunikasi-humas",     "Komunikasi & Hubungan Masyarakat"),
+        ("Akding Bidang Manajemen & Bisnis",            "manajemen-bisnis",      "Manajemen & Bisnis"),
+        ("Akding Bidang Matematika & Sains Data",       "matematika-sains-data", "Matematika & Sains Data"),
+        ("Akding Bidang Psikologi",                     "psikologi",             "Psikologi"),
+        ("Akding Bidang Teknik Elektro & Energi",       "teknik-elektro",        "Teknik Elektro & Energi"),
+        ("Akding Bidang Teknik Industri & Logistik",    "teknik-industri",       "Teknik Industri & Logistik"),
+        ("Akding Bidang Teknik Informatika",            "teknik-informatika",    "Teknik Informatika"),
+        ("Akding Bidang Teknik Kimia & Lingkungan",     "teknik-kimia",          "Teknik Kimia & Lingkungan"),
+        ("Akding Bidang Teknik Mesin & Material",       "teknik-mesin",          "Teknik Mesin & Material"),
+        ("Akding Bidang Teknik Sipil & Geoteknik",      "teknik-sipil",          "Teknik Sipil & Geoteknik"),
     ]
+
+    total_soal_all = 0
 
     for folder, slug, name in BIDANG_LIST:
         base = "%s\\%s" % (BASE_SOAL, folder)
         print("")
         print("=" * 60)
-        print("Bidang: %s" % name)
+        print("Bidang: %s  [%s]" % (name, slug))
+
+        if not Path(base).exists():
+            print("  SKIP: folder tidak ditemukan (%s)" % base)
+            continue
 
         pakets = []
 
-        # Paket 1 (Format A)
-        soal1 = "%s\\Paket 1 - Akding Bidang %s - Tembuskarir.docx" % (base, name)
-        pemb1 = "%s\\Paket 1 - Pembahasan Akding Bidang %s - Tembuskarir.docx" % (base, name)
-        if Path(soal1).exists() and Path(pemb1).exists():
+        # Paket 1 (Format A: soal + pembahasan terpisah)
+        soal1, pemb1 = find_paket_docx(base, 1)
+        if soal1 and pemb1:
             try:
-                qs = parse_format_a(soal1, pemb1)
+                qs = parse_soal_auto(soal1, pemb1)
                 pakets.append(qs)
                 print("  Paket 1 (Format A): %d soal" % len(qs))
             except Exception as e:
                 print("  Paket 1 ERROR: %s" % e)
                 pakets.append([])
         else:
-            print("  Paket 1: file tidak ditemukan")
+            print("  Paket 1: file tidak ditemukan (soal=%s, pemb=%s)" % (soal1, pemb1))
             pakets.append([])
 
         # Paket 2 (Format A)
-        soal2 = "%s\\Paket 2 - Akding Bidang %s - Tembuskarir.docx" % (base, name)
-        pemb2 = "%s\\Paket 2 - Pembahasan Akding Bidang %s - Tembuskarir.docx" % (base, name)
-        if Path(soal2).exists() and Path(pemb2).exists():
+        soal2, pemb2 = find_paket_docx(base, 2)
+        if soal2 and pemb2:
             try:
-                qs = parse_format_a(soal2, pemb2)
+                qs = parse_soal_auto(soal2, pemb2)
                 pakets.append(qs)
                 print("  Paket 2 (Format A): %d soal" % len(qs))
             except Exception as e:
@@ -451,9 +564,9 @@ def main():
             print("  Paket 2: file tidak ditemukan")
             pakets.append([])
 
-        # Paket 3 (Format B - combined)
-        soal3 = "%s\\Paket 3 - Akding Bidang %s - Tembuskarir.docx" % (base, name)
-        if Path(soal3).exists():
+        # Paket 3 (Format B: soal+pembahasan gabung) — jika ada
+        soal3, _ = find_paket_docx(base, 3)
+        if soal3 and "Pembahasan" not in soal3:
             try:
                 qs = parse_format_b(soal3)
                 pakets.append(qs)
@@ -467,7 +580,14 @@ def main():
 
         # Generate SQL
         out_file = "%s\\2026-06-02_akding_%s.sql" % (BASE_MIGR, slug)
+        # Generate SQL
+        out_file = "%s\\2026-06-03_akding_%s.sql" % (BASE_MIGR, slug)
         generate_migration(slug, name, pakets, out_file)
+        total_soal_all += sum(len(p) for p in pakets if p)
+
+    print("")
+    print("=" * 60)
+    print("SELESAI. Total soal semua bidang: %d" % total_soal_all)
 
 
 if __name__ == "__main__":
