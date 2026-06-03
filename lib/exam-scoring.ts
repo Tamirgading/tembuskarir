@@ -199,9 +199,9 @@ export function computeScore(
     }
 
   } else if (pkgCategory === 'BUMN') {
-    // ── BUMN TKD Scoring ─────────────────────────────────────────────────────
-    // TWK + TIU: MCQ +1 benar, 0 salah/kosong.
-    // TKP: berbasis poin per opsi (1–5), tidak ada jawaban salah.
+    // ── BUMN Scoring ─────────────────────────────────────────────────────────
+    // TWK, VLR, WC, NS, DIAG : MCQ +1 benar, 0 salah/kosong.
+    // AKHLAK                  : berbasis poin per opsi (1–5), tidak ada jawaban salah.
     const catStats: Record<string, CategoryStats> = {}
 
     for (const q of questions) {
@@ -209,7 +209,7 @@ export function computeScore(
       if (!catStats[cat]) catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
 
       const userAnswer = answers[q.id]
-      const isPointBased = cat === 'TKP'
+      const isPointBased = cat === 'AKHLAK'
 
       if (!userAnswer) {
         emptyCount++

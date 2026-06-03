@@ -53,10 +53,12 @@ const SUBTEST_FULL: Record<string, string> = {
   // PLN Tahap 2
   AKDING: 'Akademik Kedinasan',
   BI: 'Bahasa Inggris',
-  // BUMN TKD
-  TWK: 'Tes Wawasan Kebangsaan',
-  TIU: 'Tes Intelegensia Umum',
-  TKP: 'Tes Karakteristik Pribadi',
+  // BUMN
+  TWK:    'Tes Wawasan Kebangsaan',
+  VLR:    'Verbal Logical Reasoning',
+  WC:     'Word Classification',
+  NS:     'Number Sequence',
+  DIAG:   'Diagram Reasoning',
   // Generic
   LAINNYA: 'Lainnya',
 }
@@ -82,10 +84,12 @@ const CATEGORY_COLOR: Record<string, string> = {
   // PLN Tahap 2
   AKDING: 'bg-brand/10 text-brand-700 border-brand/30',
   BI:     'bg-sky-100 text-sky-700 border-sky-200',
-  // BUMN TKD
-  TWK: 'bg-violet-100 text-violet-700 border-violet-200',
-  TIU: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-  TKP: 'bg-purple-100 text-purple-700 border-purple-200',
+  // BUMN
+  TWK:    'bg-violet-100 text-violet-700 border-violet-200',
+  VLR:    'bg-indigo-100 text-indigo-700 border-indigo-200',
+  WC:     'bg-blue-100 text-blue-700 border-blue-200',
+  NS:     'bg-cyan-100 text-cyan-700 border-cyan-200',
+  DIAG:   'bg-teal-100 text-teal-700 border-teal-200',
   // Generic
   LAINNYA: 'bg-gray-100 text-gray-600 border-gray-200',
 }
@@ -94,7 +98,7 @@ const CATEGORY_COLOR: Record<string, string> = {
 const ORDERED_SUBTESTS: Record<string, string[]> = {
   ASTRA: ['QR', 'DR', 'RC', 'IR', 'VIZ', 'PS', 'WM'],
   PLN:   ['NUM', 'VER', 'SIL', 'DER', 'FIG', 'PU', 'LA', 'AKHLAK', 'AKDING', 'BI'],
-  BUMN:  ['TWK', 'TIU', 'TKP'],
+  BUMN:  ['TWK', 'VLR', 'WC', 'NS', 'DIAG', 'AKHLAK'],
 }
 
 // Subtes PLN yang pakai sistem poin (bukan MCQ biasa)

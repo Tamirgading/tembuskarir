@@ -10,26 +10,44 @@ const BUMN_SUBTESTS = [
   {
     code: 'TWK',
     full: 'Tes Wawasan Kebangsaan',
-    soal: 35,
-    menit: 35,
     topik: 'Pancasila · UUD 1945 · NKRI · Bhinneka',
     cls: 'bg-violet-50 text-violet-700 border-violet-200',
+    type: 'mcq',
   },
   {
-    code: 'TIU',
-    full: 'Tes Intelegensia Umum',
-    soal: 35,
-    menit: 35,
-    topik: 'Verbal · Numerik · Figural',
+    code: 'VLR',
+    full: 'Verbal Logical Reasoning',
+    topik: 'Penalaran verbal · Analogi · Silogisme',
     cls: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    type: 'mcq',
   },
   {
-    code: 'TKP',
-    full: 'Tes Karakteristik Pribadi',
-    soal: 35,
-    menit: 35,
-    topik: 'Integritas · Profesionalisme · Pelayanan Publik',
+    code: 'WC',
+    full: 'Word Classification',
+    topik: 'Klasifikasi kata · Sinonim · Antonim',
+    cls: 'bg-blue-50 text-blue-700 border-blue-200',
+    type: 'mcq',
+  },
+  {
+    code: 'NS',
+    full: 'Number Sequence',
+    topik: 'Deret angka · Pola bilangan · Operasi hitung',
+    cls: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+    type: 'mcq',
+  },
+  {
+    code: 'DIAG',
+    full: 'Diagram Reasoning',
+    topik: 'Penalaran gambar · Pola visual · Analogi figural',
+    cls: 'bg-teal-50 text-teal-700 border-teal-200',
+    type: 'mcq',
+  },
+  {
+    code: 'AKHLAK',
+    full: 'Nilai AKHLAK',
+    topik: 'Amanah · Kompeten · Harmonis · Loyal · Adaptif · Kolaboratif',
     cls: 'bg-purple-50 text-purple-700 border-purple-200',
+    type: 'point',
   },
 ]
 
@@ -101,9 +119,8 @@ export default async function BumnPortalPage() {
           {/* Stats */}
           <div className="flex gap-4 mt-6 flex-wrap">
             {[
-              { label: 'Soal / paket', value: '105' },
-              { label: 'Durasi', value: '105 mnt' },
-              { label: 'Sub-tes', value: '3' },
+              { label: 'Sub-tes', value: '6' },
+              { label: 'Durasi', value: '~90 mnt' },
               { label: 'Perusahaan', value: '65+' },
             ].map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
@@ -116,16 +133,20 @@ export default async function BumnPortalPage() {
 
         {/* Sub-tes breakdown */}
         <div className="bg-paper px-6 py-4">
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Breakdown Sub-tes</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">6 Sub-tes</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {BUMN_SUBTESTS.map((sub) => (
-              <div key={sub.code} className={`rounded-2xl border px-4 py-3 ${sub.cls}`}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-sm">{sub.code}</span>
-                  <span className="font-num font-bold text-xs">{sub.soal} soal · {sub.menit} mnt</span>
+              <div key={sub.code} className={`rounded-xl border px-3 py-2.5 ${sub.cls}`}>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="font-bold text-xs">{sub.code}</span>
+                  {sub.type === 'point' && (
+                    <span className="text-[9px] font-bold bg-purple-200/60 text-purple-700 px-1.5 py-0.5 rounded-full">
+                      POIN
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs font-medium opacity-80">{sub.full}</p>
-                <p className="text-[10px] opacity-60 mt-0.5">{sub.topik}</p>
+                <p className="text-[10px] font-semibold opacity-80 leading-tight">{sub.full}</p>
+                <p className="text-[9px] opacity-55 mt-0.5 leading-tight">{sub.topik}</p>
               </div>
             ))}
           </div>

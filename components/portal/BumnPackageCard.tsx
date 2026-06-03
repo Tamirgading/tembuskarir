@@ -15,9 +15,12 @@ interface BumnPackageCardProps {
 }
 
 const BUMN_SUBTESTS = [
-  { label: 'TWK', cls: 'bg-violet-50 text-violet-700 border-violet-200', title: 'Tes Wawasan Kebangsaan' },
-  { label: 'TIU', cls: 'bg-indigo-50 text-indigo-700 border-indigo-200', title: 'Tes Intelegensia Umum' },
-  { label: 'TKP', cls: 'bg-purple-50 text-purple-700 border-purple-200', title: 'Tes Karakteristik Pribadi' },
+  { label: 'TWK',    cls: 'bg-violet-50 text-violet-700 border-violet-200', title: 'Tes Wawasan Kebangsaan' },
+  { label: 'VLR',    cls: 'bg-indigo-50 text-indigo-700 border-indigo-200', title: 'Verbal Logical Reasoning' },
+  { label: 'WC',     cls: 'bg-blue-50 text-blue-700 border-blue-200',       title: 'Word Classification' },
+  { label: 'NS',     cls: 'bg-cyan-50 text-cyan-700 border-cyan-200',       title: 'Number Sequence' },
+  { label: 'DIAG',   cls: 'bg-teal-50 text-teal-700 border-teal-200',       title: 'Diagram Reasoning' },
+  { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-700 border-purple-200', title: 'Nilai AKHLAK (poin)' },
 ]
 
 export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: BumnPackageCardProps) {

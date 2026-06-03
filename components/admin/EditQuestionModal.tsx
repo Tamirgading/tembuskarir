@@ -54,9 +54,12 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
     { value: 'BI',     label: 'BI — Bahasa Inggris' },
   ],
   BUMN: [
-    { value: 'TWK', label: 'TWK — Tes Wawasan Kebangsaan' },
-    { value: 'TIU', label: 'TIU — Tes Intelegensia Umum' },
-    { value: 'TKP', label: 'TKP — Tes Karakteristik Pribadi (poin)' },
+    { value: 'TWK',    label: 'TWK — Tes Wawasan Kebangsaan' },
+    { value: 'VLR',    label: 'VLR — Verbal Logical Reasoning' },
+    { value: 'WC',     label: 'WC — Word Classification' },
+    { value: 'NS',     label: 'NS — Number Sequence' },
+    { value: 'DIAG',   label: 'DIAG — Diagram Reasoning' },
+    { value: 'AKHLAK', label: 'AKHLAK — Nilai AKHLAK (poin 1–5)' },
   ],
   DEFAULT: [
     { value: 'LAINNYA', label: 'LAINNYA' },
