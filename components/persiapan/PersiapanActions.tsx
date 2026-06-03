@@ -7,22 +7,34 @@ import { Play, RotateCcw, Zap } from 'lucide-react'
 interface PersiapanActionsProps {
   packageId: string
   pkgCategory: string
+  pkgSlug: string
   ongoingAttemptId: string | null
   ongoingAnsweredCount: number
   ongoingStartedAt: string | null
 }
 
+/** Tentukan URL runner ujian berdasarkan kategori + slug paket */
+function getUjianHref(packageId: string, pkgCategory: string, pkgSlug: string): string {
+  if (pkgCategory === 'ASTRA') return `/ujian/astra/${packageId}`
+  if (pkgCategory === 'PLN') {
+    // AKDING & BI PLN pakai runner generik MCQ (bukan runner GAT)
+    if (pkgSlug.startsWith('akding-') || pkgSlug.startsWith('bi-pln-')) {
+      return `/ujian/${packageId}`
+    }
+    return `/ujian/pln/${packageId}`
+  }
+  return `/ujian/${packageId}`
+}
+
 export function PersiapanActions({
   packageId,
   pkgCategory,
+  pkgSlug,
   ongoingAttemptId,
   ongoingAnsweredCount,
   ongoingStartedAt,
 }: PersiapanActionsProps) {
-  const ujianHref =
-    pkgCategory === 'ASTRA' ? `/ujian/astra/${packageId}` :
-    pkgCategory === 'PLN'   ? `/ujian/pln/${packageId}` :
-    `/ujian/${packageId}`
+  const ujianHref = getUjianHref(packageId, pkgCategory, pkgSlug)
   const router = useRouter()
   const [isAbandonLoading, setIsAbandonLoading] = useState(false)
   const [error, setError] = useState('')

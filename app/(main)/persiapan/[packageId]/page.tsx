@@ -205,6 +205,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
         <PersiapanActions
           packageId={packageId}
           pkgCategory={pkg.category}
+          pkgSlug={pkg.slug}
           ongoingAttemptId={ongoingInfo?.id ?? null}
           ongoingAnsweredCount={ongoingInfo?.answeredCount ?? 0}
           ongoingStartedAt={ongoingInfo?.startedAt ?? null}
