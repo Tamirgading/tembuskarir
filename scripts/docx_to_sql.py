@@ -338,8 +338,109 @@ def parse_soal_auto(soal_path, pemb_path):
 # SQL generation
 # ---------------------------------------------------------------------------
 
-def insert_block(pkg_slug, questions, start_order=1):
-    # type: (str, List[dict], int) -> str
+# ---------------------------------------------------------------------------
+# Parser Format BI  -- Bahasa Inggris PLN (multi-seksi + reading comprehension)
+# ---------------------------------------------------------------------------
+
+def parse_format_bi(soal_path, pemb_path):
+    # type: (str, str) -> List[dict]
+    """
+    Format BI: header 2 baris, lalu 3 seksi:
+      1. Grammar/Structure   -- 1 soal + 4 opsi per paragraf (5 paragraf/soal)
+      2. Vocabulary          -- didahului 'Petunjuk:' (dilewati), lalu 1 kalimat + 4 sinonim
+      3. Reading Comp.       -- 'Teks N' + paragraf bacaan (panjang), lalu soal + 4 opsi
+                               Teks bacaan diembed ke konten soal.
+
+    Pembahasan: header 2 baris, lalu pasangan 'Jawaban: X.' + penjelasan.
+    """
+    soal = get_paras(soal_path)[2:]   # skip 2-baris header
+    pemb = get_paras(pemb_path)[2:]   # skip 2-baris header
+
+    # ── Parse pembahasan ─────────────────────────────────────────────────────
+    answers = []
+    i = 0
+    while i < len(pemb):
+        para = pemb[i]
+        if re.match(r"(?i)jawaban\s*:", para):
+            letter = extract_letter(para) or "A"
+            expl = ""
+            if i + 1 < len(pemb) and not re.match(r"(?i)jawaban\s*:", pemb[i+1]):
+                expl = pemb[i+1]
+                i += 2
+            else:
+                i += 1
+            answers.append({"letter": letter, "explanation": expl})
+        else:
+            i += 1
+
+    # ── Parse soal ────────────────────────────────────────────────────────────
+    questions = []
+    current_passage = ""   # teks bacaan aktif (untuk Reading Comprehension)
+    i = 0
+
+    while i < len(soal):
+        para = soal[i]
+
+        # 1. Skip "Petunjuk:" (instruksi seksi)
+        if re.match(r"(?i)^petunjuk", para):
+            i += 1
+            current_passage = ""   # reset passage saat seksi baru
+            continue
+
+        # 2. "Teks N" → kumpulkan paragraf bacaan panjang sampai soal pertama
+        if re.match(r"(?i)^teks\s*\d", para):
+            passage_parts = []
+            i += 1
+            while i < len(soal):
+                np = soal[i]
+                # Paragraf bacaan = panjang (> 120 karakter) dan bukan "Petunjuk"/"Teks"
+                if len(np) > 120 and not re.match(r"(?i)^(petunjuk|teks\s*\d)", np):
+                    passage_parts.append(np)
+                    i += 1
+                else:
+                    break   # berhenti di paragraf pendek (= soal)
+            current_passage = "\n\n".join(passage_parts)
+            continue
+
+        # 3. Coba parse sebagai soal + 4 opsi (5 paragraf berurutan)
+        if i + 4 <= len(soal):
+            opts = soal[i+1:i+5]
+            # Validasi: semua opsi pendek (< 160 karakter) dan soal sendiri < 250 karakter
+            if all(len(o) < 160 for o in opts) and len(para) < 250:
+                content = para
+                if current_passage:
+                    # Embed teks bacaan ke dalam konten soal
+                    content = "[Teks Bacaan]:\n" + current_passage + "\n\n[Pertanyaan]: " + para
+                questions.append({
+                    "content": content,
+                    "options": list(opts),
+                    "passage": current_passage,
+                })
+                i += 5
+                continue
+
+        # 4. Paragraf tidak dikenali → skip
+        i += 1
+
+    # ── Gabungkan soal + jawaban ─────────────────────────────────────────────
+    result = []
+    for idx, q in enumerate(questions):
+        ans = answers[idx] if idx < len(answers) else {"letter": "A", "explanation": ""}
+        result.append({
+            "content": q["content"],
+            "options": q["options"],
+            "correct_answer": ans["letter"],
+            "explanation": ans["explanation"],
+        })
+    return result
+
+
+# ---------------------------------------------------------------------------
+# SQL generation
+# ---------------------------------------------------------------------------
+
+def insert_block(pkg_slug, questions, start_order=1, category="AKDING"):
+    # type: (str, List[dict], int, str) -> str
     """Generate DO $$ block untuk insert soal ke package."""
     if not questions:
         return ""
@@ -360,8 +461,8 @@ def insert_block(pkg_slug, questions, start_order=1):
         lines.append(
             "  INSERT INTO public.questions"
             " (package_id,content,options,correct_answer,explanation,category,order_index)"
-            " VALUES (pkg_id,'%s','%s'::jsonb,'%s','%s','AKDING',%d);"
-            % (content, opts, correct, expl, order)
+            " VALUES (pkg_id,'%s','%s'::jsonb,'%s','%s','%s',%d);"
+            % (content, opts, correct, expl, category, order)
         )
 
     lines.append("END $$;")
@@ -461,6 +562,85 @@ def generate_migration(bidang_slug, bidang_name, pakets, output_path):
     if p3:
         out.append(insert_block(paket3_slug, p3))
         out.append("")
+
+    Path(output_path).write_text("\n".join(out), encoding="utf-8")
+
+    print("Written: %s" % output_path)
+    print("  Demo   : %d soal" % len(demo_qs))
+    if p1: print("  Paket 1: %d soal" % len(p1))
+    if p2: print("  Paket 2: %d soal" % len(p2))
+    if p3: print("  Paket 3: %d soal" % len(p3))
+    print("  TOTAL soal di DB: %d" % (len(p1) + len(p2) + len(p3)))
+
+
+def generate_migration_bi(pakets, output_path):
+    # type: (List[List[dict]], str) -> None
+    """Generate SQL migration khusus Bahasa Inggris PLN."""
+
+    p1 = pakets[0] if len(pakets) > 0 else []
+    p2 = pakets[1] if len(pakets) > 1 else []
+    p3 = pakets[2] if len(pakets) > 2 else []
+
+    demo_slug   = "bi-pln-demo"
+    full_slug   = "bi-pln-full"     # slug lama dari migration awal
+    paket1_slug = "bi-pln-paket-1"
+    paket2_slug = "bi-pln-paket-2"
+    paket3_slug = "bi-pln-paket-3"
+
+    demo_qs = p1[:10]   # 10 soal gratis (setengah Paket 1)
+
+    out = []
+    out.append("-- ================================================================")
+    out.append("-- Soal Bahasa Inggris PLN (BI)")
+    out.append("-- Auto-generated by scripts/docx_to_sql.py")
+    out.append("-- Paket 1: %d soal  |  Paket 2: %d soal  |  Paket 3: %d soal" % (len(p1), len(p2), len(p3)))
+    out.append("-- ================================================================")
+    out.append("")
+
+    # 1. Update demo
+    out.append("-- 1. Update demo package (10 soal gratis)")
+    out.append("UPDATE public.packages")
+    out.append("  SET total_questions = %d, duration_minutes = 15" % len(demo_qs))
+    out.append("  WHERE slug = '%s';" % demo_slug)
+    out.append("")
+
+    # 2. Rename full -> paket-1
+    if p1:
+        out.append("-- 2. Rename 'full' -> 'paket-1' dan update")
+        out.append("UPDATE public.packages SET")
+        out.append("  slug = '%s'," % paket1_slug)
+        out.append("  name = 'Bahasa Inggris PLN - Paket 1',")
+        out.append("  total_questions = %d," % len(p1))
+        out.append("  duration_minutes = 25")
+        out.append("  WHERE slug = '%s';" % full_slug)
+        out.append("")
+
+    # 3. Buat paket-2 dan paket-3
+    for pn, pqs, pslug in [(2, p2, paket2_slug), (3, p3, paket3_slug)]:
+        if pqs:
+            out.append("-- %d. Create paket-%d" % (pn + 1, pn))
+            out.append("INSERT INTO public.packages (name,slug,category,description,duration_minutes,total_questions,is_free,is_published)")
+            out.append("  VALUES (")
+            out.append("    'Bahasa Inggris PLN - Paket %d'," % pn)
+            out.append("    '%s'," % pslug)
+            out.append("    'PLN',")
+            out.append("    'Latihan Bahasa Inggris PLN paket %d. Grammar, vocabulary, reading comprehension.' ," % pn)
+            out.append("    25, %d, false, true" % len(pqs))
+            out.append("  )")
+            out.append("  ON CONFLICT (slug) DO UPDATE SET")
+            out.append("    name=EXCLUDED.name, total_questions=EXCLUDED.total_questions, duration_minutes=EXCLUDED.duration_minutes;")
+            out.append("")
+
+    # 4. Insert questions
+    out.append("-- ================================================================")
+    out.append("-- INSERT QUESTIONS")
+    out.append("-- ================================================================")
+    out.append("")
+
+    for slug, qs in [(demo_slug, demo_qs), (paket1_slug, p1), (paket2_slug, p2), (paket3_slug, p3)]:
+        if qs:
+            out.append(insert_block(slug, qs, category="BI"))
+            out.append("")
 
     Path(output_path).write_text("\n".join(out), encoding="utf-8")
 
@@ -578,16 +758,39 @@ def main():
             print("  Paket 3: file tidak ditemukan")
             pakets.append([])
 
-        # Generate SQL
-        out_file = "%s\\2026-06-02_akding_%s.sql" % (BASE_MIGR, slug)
-        # Generate SQL
         out_file = "%s\\2026-06-03_akding_%s.sql" % (BASE_MIGR, slug)
         generate_migration(slug, name, pakets, out_file)
         total_soal_all += sum(len(p) for p in pakets if p)
 
+    # ── Bahasa Inggris PLN ───────────────────────────────────────────────────
     print("")
     print("=" * 60)
-    print("SELESAI. Total soal semua bidang: %d" % total_soal_all)
+    print("Bidang: Bahasa Inggris PLN  [bi-pln]")
+
+    bi_base = "%s\\Bahasa Inggris" % BASE_SOAL
+    bi_pakets = []
+    for pn in [1, 2, 3]:
+        soal_path = "%s\\Paket %d - Bahasa Inggris - Tembuskarir.docx" % (bi_base, pn)
+        pemb_path = "%s\\Paket %d - Pembahasan Bahasa Inggris - Tembuskarir.docx" % (bi_base, pn)
+        if Path(soal_path).exists() and Path(pemb_path).exists():
+            try:
+                qs = parse_format_bi(soal_path, pemb_path)
+                bi_pakets.append(qs)
+                print("  Paket %d (Format BI): %d soal" % (pn, len(qs)))
+            except Exception as e:
+                print("  Paket %d ERROR: %s" % (pn, e))
+                bi_pakets.append([])
+        else:
+            print("  Paket %d: file tidak ditemukan" % pn)
+            bi_pakets.append([])
+
+    bi_out = "%s\\2026-06-03_bi_pln.sql" % BASE_MIGR
+    generate_migration_bi(bi_pakets, bi_out)
+    total_soal_all += sum(len(p) for p in bi_pakets if p)
+
+    print("")
+    print("=" * 60)
+    print("SELESAI. Total soal semua bidang + BI: %d" % total_soal_all)
 
 
 if __name__ == "__main__":
