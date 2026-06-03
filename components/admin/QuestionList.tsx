@@ -41,7 +41,7 @@ const SUBTEST_FULL: Record<string, string> = {
   VIZ: 'Visualization',
   PS: 'Perceptual Speed',
   WM: 'Working Memory',
-  // PLN
+  // PLN GAT
   NUM: 'Numerik',
   VER: 'Verbal',
   SIL: 'Silogisme',
@@ -50,6 +50,9 @@ const SUBTEST_FULL: Record<string, string> = {
   PU: 'Pengetahuan Umum PLN',
   LA: 'Learning Agility',
   AKHLAK: 'AKHLAK',
+  // PLN Tahap 2
+  AKDING: 'Akademik Kedinasan',
+  BI: 'Bahasa Inggris',
   // Generic
   LAINNYA: 'Lainnya',
 }
@@ -63,7 +66,7 @@ const CATEGORY_COLOR: Record<string, string> = {
   VIZ: 'bg-rose-100 text-rose-600 border-rose-200',
   PS:  'bg-pink-100 text-pink-600 border-pink-200',
   WM:  'bg-violet-100 text-violet-600 border-violet-200',
-  // PLN
+  // PLN GAT
   NUM:    'bg-yellow-100 text-yellow-700 border-yellow-200',
   VER:    'bg-amber-100 text-amber-700 border-amber-200',
   SIL:    'bg-orange-100 text-orange-600 border-orange-200',
@@ -72,6 +75,9 @@ const CATEGORY_COLOR: Record<string, string> = {
   PU:     'bg-blue-100 text-blue-600 border-blue-200',
   LA:     'bg-indigo-100 text-indigo-600 border-indigo-200',
   AKHLAK: 'bg-purple-100 text-purple-600 border-purple-200',
+  // PLN Tahap 2
+  AKDING: 'bg-brand/10 text-brand-700 border-brand/30',
+  BI:     'bg-sky-100 text-sky-700 border-sky-200',
   // Generic
   LAINNYA: 'bg-gray-100 text-gray-600 border-gray-200',
 }
@@ -79,7 +85,7 @@ const CATEGORY_COLOR: Record<string, string> = {
 // Urutan tampil per tipe paket
 const ORDERED_SUBTESTS: Record<string, string[]> = {
   ASTRA: ['QR', 'DR', 'RC', 'IR', 'VIZ', 'PS', 'WM'],
-  PLN:   ['NUM', 'VER', 'SIL', 'DER', 'FIG', 'PU', 'LA', 'AKHLAK'],
+  PLN:   ['NUM', 'VER', 'SIL', 'DER', 'FIG', 'PU', 'LA', 'AKHLAK', 'AKDING', 'BI'],
 }
 
 // Subtes PLN yang pakai sistem poin (bukan MCQ biasa)

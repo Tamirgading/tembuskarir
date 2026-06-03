@@ -40,12 +40,18 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
     { value: 'WM',  label: 'WM — Working Memory' },
   ],
   PLN: [
-    { value: 'NUM', label: 'NUM — Numerik' },
-    { value: 'VER', label: 'VER — Verbal' },
-    { value: 'SIL', label: 'SIL — Silogisme' },
-    { value: 'DER', label: 'DER — Deret Angka' },
-    { value: 'FIG', label: 'FIG — Figural' },
-    { value: 'PU',  label: 'PU — Pengetahuan Umum PLN' },
+    // GAT sub-tes
+    { value: 'NUM',    label: 'NUM — Numerik' },
+    { value: 'VER',    label: 'VER — Verbal' },
+    { value: 'SIL',    label: 'SIL — Silogisme' },
+    { value: 'DER',    label: 'DER — Deret Angka' },
+    { value: 'FIG',    label: 'FIG — Figural' },
+    { value: 'PU',     label: 'PU — Pengetahuan Umum PLN' },
+    { value: 'LA',     label: 'LA — Learning Agility' },
+    { value: 'AKHLAK', label: 'AKHLAK — Nilai AKHLAK' },
+    // Tahap 2: Akademik Kedinasan & BI
+    { value: 'AKDING', label: 'AKDING — Akademik Kedinasan' },
+    { value: 'BI',     label: 'BI — Bahasa Inggris' },
   ],
   DEFAULT: [
     { value: 'LAINNYA', label: 'LAINNYA' },
@@ -112,7 +118,8 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
     setError(null)
 
     if (!content.trim()) { setError('Pertanyaan wajib diisi.'); return }
-    for (const key of OPTION_KEYS) {
+    // Opsi A–D wajib, opsi E opsional (4-opsi cukup untuk AKDING/BI/dll.)
+    for (const key of ['A', 'B', 'C', 'D'] as const) {
       if (!options[key].trim()) { setError(`Opsi ${key} wajib diisi.`); return }
     }
 
@@ -132,10 +139,10 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
       setUploadedExplImageUrl(finalExplImageUrl)
     }
 
-    const optionsArray = OPTION_KEYS.map((key) => ({
-      key,
-      text: options[key].trim(),
-    }))
+    // Sertakan opsi E hanya jika diisi (soal 4-opsi tidak perlu E)
+    const optionsArray = OPTION_KEYS
+      .filter((key) => key !== 'E' || options['E'].trim() !== '')
+      .map((key) => ({ key, text: options[key].trim() }))
 
     setIsSaving(true)
     const res = await fetch('/api/admin/questions/update', {
