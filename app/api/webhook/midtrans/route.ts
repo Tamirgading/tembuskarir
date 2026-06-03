@@ -3,6 +3,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { verifyMidtransSignature, getTransactionStatus } from '@/lib/midtrans'
 import { sendPaymentSuccessEmail, sendPackagePaymentEmail, sendAdminNotificationEmail } from '@/lib/resend'
 import type { UserRow, SubscriptionRow } from '@/lib/utils'
+import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 
 // Durasi plan dalam hari (0 = permanen / tidak expire)
 const PLAN_DURATION: Record<string, number> = {
@@ -52,14 +53,14 @@ export async function POST(req: NextRequest) {
     // Service client — bypass RLS untuk semua operasi webhook
     const supabase = createServiceClient()
 
-    // 3. Cari subscription record
+    // 3. Cari subscription record — sertakan bidang untuk PLN plans
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: subData } = await (supabase.from('subscriptions') as any)
-      .select('id, user_id, plan_type, status, amount')
+      .select('id, user_id, plan_type, status, amount, bidang')
       .eq('midtrans_order_id', order_id)
       .single()
 
-    const sub = subData as Pick<SubscriptionRow, 'id' | 'user_id' | 'plan_type' | 'status' | 'amount'> | null
+    const sub = subData as (Pick<SubscriptionRow, 'id' | 'user_id' | 'plan_type' | 'status' | 'amount'> & { bidang?: string | null }) | null
 
     if (!sub) {
       console.error('[Webhook] Subscription not found for order:', order_id)
@@ -169,33 +170,52 @@ export async function POST(req: NextRequest) {
           }
         }
       } else {
-        // Langganan: aktifkan premium di tabel users
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase.from('users') as any)
-          .update({
-            plan: 'premium',
-            plan_expires_at: expiresAt!.toISOString(),
-          })
-          .eq('id', sub.user_id)
+        // Langganan (premium generik ATAU PLN bidang-specific)
+        const isPLNPlan = planType.startsWith('pln_')
 
+        if (isPLNPlan) {
+          // ── PLN plans: JANGAN update users.plan ─────────────────────────────
+          // Akses PLN dikontrol lewat subscriptions.bidang + subscriptions.expires_at
+          // yang sudah di-update di atas (status=paid, expires_at).
+          // Jika update users.plan='premium', user dapat akses ke SEMUA paket
+          // premium (ASTRA dll.) yang bukan haknya.
+          const bidangName = sub.bidang ? (BIDANG_BY_SLUG[sub.bidang]?.name ?? sub.bidang) : null
+          console.log('[Webhook] ✅ PLN plan activated:', planType,
+            bidangName ? `| bidang: ${bidangName}` : '',
+            '| user:', sub.user_id, '| expires:', expiresAt)
+        } else {
+          // ── Premium generik: update users.plan ──────────────────────────────
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (supabase.from('users') as any)
+            .update({
+              plan: 'premium',
+              plan_expires_at: expiresAt!.toISOString(),
+            })
+            .eq('id', sub.user_id)
+
+          console.log('[Webhook] ✅ Premium activated for user:', sub.user_id, 'until:', expiresAt)
+        }
+
+        // ── Label untuk email ────────────────────────────────────────────────
+        const bidangName = sub.bidang ? (BIDANG_BY_SLUG[sub.bidang]?.name ?? sub.bidang) : null
         const planLabelMap: Record<string, string> = {
           monthly:              'Premium Bulanan',
           yearly:               'Premium Tahunan',
           premium_monthly:      'Premium Bulanan',
           premium_quarterly:    'Premium 3 Bulan',
-          pln_gat_monthly:      'PLN Tahap 1 GAT Bulanan',
-          pln_tahap2_monthly:   'PLN Tahap 2 Bulanan',
-          pln_complete_monthly: 'PLN Complete Bulanan',
+          pln_gat_monthly:      'PLN Tahap 1 — GAT',
+          pln_tahap2_monthly:   'PLN Tahap 2' + (bidangName ? ` — ${bidangName}` : ''),
+          pln_complete_monthly: 'PLN Complete' + (bidangName ? ` — ${bidangName}` : ''),
         }
         const planLabel = planLabelMap[planType] ?? planType
 
-        // Email ke user: konfirmasi langganan
+        // Email ke user
         try {
           if (user?.email) {
             await sendPaymentSuccessEmail(
               user.email,
               user.full_name ?? 'Sobat',
-              planType,
+              planLabel,
               expiresAt!.toISOString(),
               sub.amount,
             )
@@ -217,8 +237,6 @@ export async function POST(req: NextRequest) {
         } catch (emailErr) {
           console.error('[Webhook] Admin notify error:', emailErr)
         }
-
-        console.log('[Webhook] ✅ Premium activated for user:', sub.user_id, 'until:', expiresAt)
       }
     } else if (isFailed) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
