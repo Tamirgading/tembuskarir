@@ -1,4 +1,5 @@
 import type React from 'react'
+import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -36,6 +37,9 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default async function HomePage() {
   const { isLoggedIn } = await getAuthState()
+
+  // User sudah login → langsung ke dashboard
+  if (isLoggedIn) redirect('/dashboard')
 
   return (
     <>

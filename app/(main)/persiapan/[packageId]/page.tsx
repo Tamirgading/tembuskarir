@@ -91,8 +91,27 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   }
 
   const isAstra = pkg.category === 'ASTRA'
-  const backHref = isAstra ? '/portal/astra' : '/paket'
-  const backLabel = isAstra ? 'Portal ASTRA' : 'Paket Soal'
+
+  // Back-link berdasarkan tipe paket
+  let backHref = '/paket'
+  let backLabel = 'Paket Soal'
+  if (isAstra) {
+    backHref = '/portal/astra'
+    backLabel = 'Portal ASTRA'
+  } else if (pkg.slug?.startsWith('gat-')) {
+    backHref = '/portal/pln/gat'
+    backLabel = 'Portal PLN GAT'
+  } else if (pkg.slug?.startsWith('bi-pln-')) {
+    backHref = '/portal/pln/tahap2'
+    backLabel = 'Portal Tahap 2'
+  } else if (pkg.slug?.startsWith('akding-')) {
+    // Ekstrak bidang dari slug: akding-{bidang}-paket-N / akding-{bidang}-demo
+    const bidangSlug = pkg.slug
+      .replace(/^akding-/, '')
+      .replace(/-(?:paket-\d+|demo|full)$/, '')
+    backHref = `/portal/pln/tahap2/${bidangSlug}`
+    backLabel = 'Portal Bidang'
+  }
 
   // Hitung total durasi dari sub-tes aktual (lebih akurat dari pkg.duration_minutes)
   const displayDuration = isAstra

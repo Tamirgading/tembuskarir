@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Inbox } from 'lucide-react'
+import { Inbox, Rss, ExternalLink } from 'lucide-react'
 
 type InfoSeleksi = {
   id: string
@@ -13,29 +13,23 @@ type InfoSeleksi = {
   crawled_at: string
 }
 
-type CrawlLog = {
-  ran_at: string
-  status: string
-  items_inserted: number
+const INSTITUSI_CONFIG: Record<string, { label: string; pill: string; dot: string }> = {
+  OJK:  { label: 'OJK',          pill: 'bg-emerald-100 text-emerald-700 border-emerald-200',  dot: 'bg-emerald-500' },
+  BI:   { label: 'Bank Indonesia',pill: 'bg-red-100 text-red-700 border-red-200',              dot: 'bg-red-500' },
+  PLN:  { label: 'PLN',           pill: 'bg-brand/10 text-brand-700 border-brand/20',          dot: 'bg-brand' },
+  RBB:  { label: 'RBB / BUMN',   pill: 'bg-violet-100 text-violet-700 border-violet-200',     dot: 'bg-violet-500' },
+  ASTRA:{ label: 'Astra',         pill: 'bg-sky-100 text-sky-700 border-sky-200',              dot: 'bg-sky-500' },
 }
 
-const INSTITUSI_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
-  OJK:  { label: 'OJK', color: 'bg-green-100 text-green-800', dot: 'bg-green-500' },
-  BI:   { label: 'Bank Indonesia', color: 'bg-red-100 text-red-800', dot: 'bg-red-500' },
-  PLN:  { label: 'PLN', color: 'bg-yellow-100 text-yellow-800', dot: 'bg-yellow-500' },
-  RBB:  { label: 'RBB / BUMN', color: 'bg-purple-100 text-purple-800', dot: 'bg-purple-500' },
-  ASTRA:{ label: 'Astra', color: 'bg-orange-100 text-orange-800', dot: 'bg-orange-500' },
+const KATEGORI_CONFIG: Record<string, { label: string; pill: string }> = {
+  pengumuman:  { label: 'Pengumuman',  pill: 'bg-blue-50 text-blue-700 border-blue-200' },
+  jadwal:      { label: 'Jadwal',      pill: 'bg-brand/10 text-brand-700 border-brand/20' },
+  soal:        { label: 'Contoh Soal', pill: 'bg-violet-50 text-violet-700 border-violet-200' },
+  tips:        { label: 'Tips',        pill: 'bg-amber-50 text-amber-700 border-amber-200' },
+  'kisi-kisi': { label: 'Kisi-Kisi',  pill: 'bg-rose-50 text-rose-700 border-rose-200' },
 }
 
-const KATEGORI_CONFIG: Record<string, { label: string; color: string }> = {
-  pengumuman: { label: 'Pengumuman', color: 'bg-blue-50 text-blue-700' },
-  jadwal:     { label: 'Jadwal', color: 'bg-green-50 text-green-700' },
-  soal:       { label: 'Contoh Soal', color: 'bg-purple-50 text-purple-700' },
-  tips:       { label: 'Tips', color: 'bg-yellow-50 text-yellow-700' },
-  'kisi-kisi':{ label: 'Kisi-Kisi', color: 'bg-red-50 text-red-700' },
-}
-
-export const revalidate = 3600 // revalidate setiap 1 jam
+export const revalidate = 3600
 
 export default async function InfoSeleksiPage({
   searchParams,
@@ -43,213 +37,197 @@ export default async function InfoSeleksiPage({
   searchParams: { institusi?: string; kategori?: string }
 }) {
   const supabase = await createClient()
-
   const institusiFilter = searchParams.institusi?.toUpperCase()
-  const kategoriFilter = searchParams.kategori
+  const kategoriFilter  = searchParams.kategori
 
-  let query = supabase
-    .from('info_seleksi')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query = (supabase.from('info_seleksi') as any)
     .select('id, institusi, kategori, judul, ringkasan, url_sumber, tanggal_publikasi, crawled_at')
     .eq('is_active', true)
     .order('tanggal_publikasi', { ascending: false })
-    .limit(50)
+    .limit(60)
 
   if (institusiFilter) query = query.eq('institusi', institusiFilter)
-  if (kategoriFilter) query = query.eq('kategori', kategoriFilter)
+  if (kategoriFilter)  query = query.eq('kategori', kategoriFilter)
 
   const { data: rawItems, error } = await query
   const items = rawItems as InfoSeleksi[] | null
 
-  // Ambil log crawl terakhir
-  const { data: rawLastCrawl } = await supabase
-    .from('crawl_log')
-    .select('ran_at, status, items_inserted')
-    .order('ran_at', { ascending: false })
-    .limit(1)
-    .single()
-  const lastCrawl = rawLastCrawl as CrawlLog | null
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '-'
-    return new Date(dateStr).toLocaleDateString('id-ID', {
-      day: 'numeric', month: 'long', year: 'numeric',
-    })
+  function fmtDate(d: string | null) {
+    if (!d) return '—'
+    return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
   }
 
-  const institusiList = Object.keys(INSTITUSI_CONFIG)
-  const kategoriList = Object.keys(KATEGORI_CONFIG)
+  function buildUrl(params: { institusi?: string; kategori?: string }) {
+    const p = new URLSearchParams()
+    if (params.institusi) p.set('institusi', params.institusi.toLowerCase())
+    if (params.kategori)  p.set('kategori', params.kategori)
+    const q = p.toString()
+    return q ? `/info-seleksi?${q}` : '/info-seleksi'
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto space-y-5">
 
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Info Seleksi Terbaru
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Data diperbarui otomatis setiap hari pukul 06.00 WIB dari sumber resmi masing-masing institusi.
+      {/* ── Header ────────────────────────────────────────────────────────── */}
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-heading font-bold text-ink">Info Seleksi</h1>
+          <p className="text-sm text-ink-muted mt-0.5">
+            Pengumuman, jadwal, dan tips rekrutmen dari sumber resmi — diperbarui harian.
           </p>
-          {lastCrawl && (
-            <p className="text-xs text-gray-400 mt-1">
-              Update terakhir: {new Date(lastCrawl.ran_at).toLocaleString('id-ID')} •{' '}
-              <span className={lastCrawl.status === 'success' ? 'text-green-600' : 'text-yellow-600'}>
-                {lastCrawl.status}
-              </span>
-            </p>
-          )}
         </div>
+        <Rss className="w-5 h-5 text-brand mt-1 shrink-0" />
+      </div>
 
-        {/* Filter Institusi */}
-        <div className="mb-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Institusi</p>
-          <div className="flex flex-wrap gap-2">
+      {/* ── Filter ────────────────────────────────────────────────────────── */}
+      <div className="bg-white rounded-3xl border border-hairline shadow-soft px-5 py-4 space-y-3">
+
+        {/* Filter institusi */}
+        <div>
+          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-2">Institusi</p>
+          <div className="flex flex-wrap gap-1.5">
             <Link
               href="/info-seleksi"
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                !institusiFilter ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 border hover:bg-gray-50'
+              className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
+                !institusiFilter
+                  ? 'bg-ink text-white border-ink'
+                  : 'bg-paper text-ink-muted border-hairline hover:bg-paper-soft hover:text-ink'
               }`}
             >
               Semua
             </Link>
-            {institusiList.map((inst) => {
-              const cfg = INSTITUSI_CONFIG[inst]
-              const isActive = institusiFilter === inst
-              return (
-                <Link
-                  key={inst}
-                  href={`/info-seleksi?institusi=${inst.toLowerCase()}${kategoriFilter ? `&kategori=${kategoriFilter}` : ''}`}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    isActive ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 border hover:bg-gray-50'
-                  }`}
-                >
-                  <span className={`inline-block w-2 h-2 rounded-full ${cfg.dot} mr-1.5 align-middle`} />{cfg.label}
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Filter Kategori */}
-        <div className="mb-6">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Kategori</p>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/info-seleksi${institusiFilter ? `?institusi=${institusiFilter.toLowerCase()}` : ''}`}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                !kategoriFilter ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 border hover:bg-gray-50'
-              }`}
-            >
-              Semua
-            </Link>
-            {kategoriList.map((kat) => {
-              const cfg = KATEGORI_CONFIG[kat]
-              const isActive = kategoriFilter === kat
-              return (
-                <Link
-                  key={kat}
-                  href={`/info-seleksi?${institusiFilter ? `institusi=${institusiFilter.toLowerCase()}&` : ''}kategori=${kat}`}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    isActive ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 border hover:bg-gray-50'
-                  }`}
-                >
-                  {cfg.label}
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Daftar Item */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
-            Gagal memuat data. Silakan refresh halaman.
-          </div>
-        )}
-
-        {!error && items?.length === 0 && (
-          <div className="text-center py-16 text-gray-400">
-            <div className="flex justify-center mb-3"><Inbox className="w-10 h-10 text-gray-300" /></div>
-            <p className="font-medium">Belum ada data untuk filter ini.</p>
-            <p className="text-sm mt-1">Data akan muncul setelah cron job berjalan pertama kali.</p>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {items?.map((item) => {
-            const instCfg = INSTITUSI_CONFIG[item.institusi]
-            const katCfg = KATEGORI_CONFIG[item.kategori]
-
-            return (
-              <div
-                key={item.id}
-                className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow"
+            {Object.entries(INSTITUSI_CONFIG).map(([key, cfg]) => (
+              <Link
+                key={key}
+                href={buildUrl({ institusi: key, kategori: kategoriFilter })}
+                className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
+                  institusiFilter === key
+                    ? 'bg-ink text-white border-ink'
+                    : `${cfg.pill} hover:opacity-80`
+                }`}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    {/* Badges */}
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      {instCfg && (
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${instCfg.color}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${instCfg.dot} shrink-0`} />{instCfg.label}
-                        </span>
-                      )}
-                      {katCfg && (
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${katCfg.color}`}>
-                          {katCfg.label}
-                        </span>
-                      )}
-                    </div>
+                <span className={`inline-block w-1.5 h-1.5 rounded-full ${cfg.dot} mr-1.5 align-middle`} />
+                {cfg.label}
+              </Link>
+            ))}
+          </div>
+        </div>
 
-                    {/* Judul */}
-                    <h2 className="font-semibold text-gray-900 leading-snug mb-1">
-                      {item.url_sumber ? (
-                        <a
-                          href={item.url_sumber}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-blue-600 transition-colors"
-                        >
-                          {item.judul}
-                        </a>
-                      ) : (
-                        item.judul
-                      )}
-                    </h2>
+        {/* Divider */}
+        <div className="border-t border-hairline" />
 
-                    {/* Ringkasan */}
-                    {item.ringkasan && (
-                      <p className="text-sm text-gray-500 line-clamp-2">{item.ringkasan}</p>
-                    )}
-                  </div>
+        {/* Filter kategori */}
+        <div>
+          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-2">Kategori</p>
+          <div className="flex flex-wrap gap-1.5">
+            <Link
+              href={buildUrl({ institusi: institusiFilter })}
+              className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
+                !kategoriFilter
+                  ? 'bg-ink text-white border-ink'
+                  : 'bg-paper text-ink-muted border-hairline hover:bg-paper-soft hover:text-ink'
+              }`}
+            >
+              Semua
+            </Link>
+            {Object.entries(KATEGORI_CONFIG).map(([key, cfg]) => (
+              <Link
+                key={key}
+                href={buildUrl({ institusi: institusiFilter, kategori: key })}
+                className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
+                  kategoriFilter === key
+                    ? 'bg-ink text-white border-ink'
+                    : `${cfg.pill} hover:opacity-80`
+                }`}
+              >
+                {cfg.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
 
-                  {/* Tanggal */}
-                  <div className="text-right shrink-0">
-                    <p className="text-xs font-medium text-gray-700">
-                      {formatDate(item.tanggal_publikasi)}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      Crawled {new Date(item.crawled_at).toLocaleDateString('id-ID')}
-                    </p>
-                  </div>
-                </div>
+      {/* ── Error ─────────────────────────────────────────────────────────── */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 text-red-700 text-sm">
+          Gagal memuat data. Silakan refresh halaman.
+        </div>
+      )}
 
-                {item.url_sumber && (
+      {/* ── Empty ─────────────────────────────────────────────────────────── */}
+      {!error && items?.length === 0 && (
+        <div className="text-center py-16 text-ink-muted bg-white rounded-3xl border border-hairline">
+          <Inbox className="w-10 h-10 text-hairline mx-auto mb-3" />
+          <p className="font-semibold text-sm">Belum ada data untuk filter ini.</p>
+          <p className="text-xs mt-1 text-ink-muted">Data muncul setelah cron job berjalan.</p>
+        </div>
+      )}
+
+      {/* ── List ──────────────────────────────────────────────────────────── */}
+      <div className="space-y-2">
+        {items?.map((item) => {
+          const instCfg = INSTITUSI_CONFIG[item.institusi]
+          const katCfg  = KATEGORI_CONFIG[item.kategori]
+
+          return (
+            <div
+              key={item.id}
+              className="bg-white rounded-2xl border border-hairline px-5 py-4 hover:shadow-soft hover:border-brand/20 transition-all"
+            >
+              {/* Badges */}
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {instCfg && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border inline-flex items-center gap-1 ${instCfg.pill}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${instCfg.dot} shrink-0`} />
+                    {instCfg.label}
+                  </span>
+                )}
+                {katCfg && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${katCfg.pill}`}>
+                    {katCfg.label}
+                  </span>
+                )}
+                <span className="text-[10px] text-ink-muted ml-auto shrink-0 self-center">
+                  {fmtDate(item.tanggal_publikasi)}
+                </span>
+              </div>
+
+              {/* Judul */}
+              <h2 className="font-semibold text-ink text-sm leading-snug">
+                {item.url_sumber ? (
                   <a
                     href={item.url_sumber}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-3"
+                    className="hover:text-brand transition-colors"
                   >
-                    Baca selengkapnya →
+                    {item.judul}
                   </a>
-                )}
-              </div>
-            )
-          })}
-        </div>
+                ) : item.judul}
+              </h2>
+
+              {/* Ringkasan */}
+              {item.ringkasan && (
+                <p className="text-xs text-ink-muted leading-relaxed mt-1 line-clamp-2">{item.ringkasan}</p>
+              )}
+
+              {/* Link */}
+              {item.url_sumber && (
+                <a
+                  href={item.url_sumber}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-brand hover:text-brand-700 mt-2 font-medium transition-colors"
+                >
+                  Baca selengkapnya <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+          )
+        })}
       </div>
+
     </div>
   )
 }
