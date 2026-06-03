@@ -104,6 +104,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   } else if (pkg.slug?.startsWith('bi-pln-')) {
     backHref = '/portal/pln/tahap2'
     backLabel = 'Portal Tahap 2'
+  } else if (pkg.slug?.startsWith('bumn-')) {
+    backHref = '/portal/bumn'
+    backLabel = 'Portal BUMN'
   } else if (pkg.slug?.startsWith('akding-')) {
     // Ekstrak bidang dari slug: akding-{bidang}-paket-N / akding-{bidang}-demo
     const bidangSlug = pkg.slug

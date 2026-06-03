@@ -53,6 +53,11 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
     { value: 'AKDING', label: 'AKDING — Akademik Kedinasan' },
     { value: 'BI',     label: 'BI — Bahasa Inggris' },
   ],
+  BUMN: [
+    { value: 'TWK', label: 'TWK — Tes Wawasan Kebangsaan' },
+    { value: 'TIU', label: 'TIU — Tes Intelegensia Umum' },
+    { value: 'TKP', label: 'TKP — Tes Karakteristik Pribadi (poin)' },
+  ],
   DEFAULT: [
     { value: 'LAINNYA', label: 'LAINNYA' },
   ],

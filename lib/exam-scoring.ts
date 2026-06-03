@@ -198,8 +198,48 @@ export function computeScore(
       maxScore: questions.length,
     }
 
+  } else if (pkgCategory === 'BUMN') {
+    // ── BUMN TKD Scoring ─────────────────────────────────────────────────────
+    // TWK + TIU: MCQ +1 benar, 0 salah/kosong.
+    // TKP: berbasis poin per opsi (1–5), tidak ada jawaban salah.
+    const catStats: Record<string, CategoryStats> = {}
+
+    for (const q of questions) {
+      const cat = (q.category ?? 'TWK').toUpperCase()
+      if (!catStats[cat]) catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
+
+      const userAnswer = answers[q.id]
+      const isPointBased = cat === 'TKP'
+
+      if (!userAnswer) {
+        emptyCount++
+        catStats[cat].empty++
+      } else if (isPointBased) {
+        const selectedOpt = (q.options ?? []).find((o) => o.key === userAnswer)
+        const point = selectedOpt?.point ?? 0
+        catStats[cat].correct++
+        catStats[cat].rawScore += point
+        correctCount++
+      } else if (userAnswer === q.correct_answer) {
+        correctCount++
+        catStats[cat].correct++
+        catStats[cat].rawScore++
+      } else {
+        wrongCount++
+        catStats[cat].wrong++
+      }
+    }
+
+    const totalRaw = Object.values(catStats).reduce((sum, c) => sum + c.rawScore, 0)
+    score = Math.round(totalRaw)
+    scoreDetails = {
+      type: 'BUMN',
+      categories: catStats,
+      totalQuestions: questions.length,
+    }
+
   } else {
-    // ── Simple Scoring (non-PLN, non-ASTRA) ──────────────────────────────────
+    // ── Simple Scoring (non-PLN, non-ASTRA, non-BUMN) ────────────────────────
     const totalQuestions = questions.length
     for (const q of questions) {
       const userAnswer = answers[q.id]

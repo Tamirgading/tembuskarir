@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
   User, Settings, Ticket, LogOut, ChevronDown, Menu, X, Sparkles,
-  ChevronLeft, ChevronRight, BookOpen,
+  ChevronLeft, ChevronRight, BookOpen, Building2,
 } from 'lucide-react'
 
 interface AppShellProps {
@@ -28,6 +28,7 @@ const NAV: Group[] = [
       { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap },
       { href: '/portal/pln/gat', label: 'Tahap 1 — GAT', icon: Zap, sub: true },
       { href: '/portal/pln/tahap2', label: 'Tahap 2 — Akademik', icon: BookOpen, sub: true },
+      { href: '/portal/bumn', label: 'Rekrutmen BUMN', icon: Building2 },
       { href: '/paket', label: 'Semua Paket', icon: Package },
     ],
   },
