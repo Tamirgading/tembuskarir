@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { X, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
@@ -89,13 +90,18 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         }`}
       >
         {/* Garis dekorasi atas */}
-        <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+        <div className="h-1 w-full bg-gradient-to-r from-brand-700 via-brand to-brand-300" />
 
         {/* Header */}
         <div className="flex items-start justify-between px-6 pt-6 pb-2">
-          <div>
-            <h2 className="text-xl font-extrabold text-gray-900 leading-tight">Masuk</h2>
-            <p className="text-sm text-gray-400 mt-0.5">ke akun TembusKarir kamu</p>
+          <div className="flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-paper-soft border border-hairline grid place-items-center shrink-0">
+              <Image src="/iconlogo.png" alt="TembusKarir" width={26} height={26} className="w-[26px] h-[26px]" />
+            </span>
+            <div>
+              <h2 className="text-xl font-extrabold text-gray-900 leading-tight">Masuk</h2>
+              <p className="text-sm text-gray-400 mt-0.5">ke akun TembusKarir kamu</p>
+            </div>
           </div>
           <button
             onClick={() => !loading && onClose()}

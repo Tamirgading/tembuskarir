@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LupaPasswordPage() {
@@ -53,8 +54,10 @@ export default function LupaPasswordPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-blue-600">TryOut Platform</h1>
-          <p className="text-gray-500 mt-1">Reset password akun kamu</p>
+          <Link href="/" className="inline-block">
+            <Image src="/logotk.png" alt="TembusKarir" width={200} height={36} className="h-9 w-auto mx-auto" priority />
+          </Link>
+          <p className="text-gray-500 mt-3">Reset password akun kamu</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">

@@ -80,7 +80,7 @@ export default async function HomePage({
   // ── Guest view ─────────────────────────────────────────────────────────────
   if (!user) {
     return (
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-6 fade-up">
         <div>
           <h1 className="text-2xl font-heading font-extrabold text-ink">Selamat datang di TembusKarir 👋</h1>
           <p className="text-ink-muted text-sm mt-1">
@@ -101,7 +101,7 @@ export default async function HomePage({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link href="/portal/astra"
-            className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 hover:shadow-md transition-all">
+            className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 card-hover">
             <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
               <Briefcase className="w-5 h-5 text-brand" />
             </div>
@@ -109,7 +109,7 @@ export default async function HomePage({
             <p className="text-xs text-ink-muted mt-1">80 soal · 7 sub-tes · 41 menit — lihat paketnya tanpa login.</p>
           </Link>
           <Link href="/portal/pln"
-            className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 hover:shadow-md transition-all">
+            className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 card-hover">
             <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
               <Zap className="w-5 h-5 text-brand" />
             </div>
@@ -199,7 +199,7 @@ export default async function HomePage({
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6 fade-up">
 
       {/* Payment banners */}
       {payment === 'success' && (

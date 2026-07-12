@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
 export default function RegisterPage() {
@@ -95,8 +96,10 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-blue-600">TryOut Platform</h1>
-          <p className="text-gray-500 mt-1">Buat akun gratis sekarang</p>
+          <Link href="/" className="inline-block">
+            <Image src="/logotk.png" alt="TembusKarir" width={200} height={36} className="h-9 w-auto mx-auto" priority />
+          </Link>
+          <p className="text-gray-500 mt-3">Buat akun gratis sekarang</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">

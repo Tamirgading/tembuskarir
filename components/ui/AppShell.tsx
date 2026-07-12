@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -102,7 +103,9 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
           className="flex items-center gap-2.5"
           onClick={() => isMobile && setDrawer(false)}
         >
-          <span className="w-8 h-8 rounded-[9px] bg-brand grid place-items-center text-white font-heading font-extrabold text-base shrink-0">T</span>
+          <span className="w-8 h-8 rounded-[9px] bg-white grid place-items-center shrink-0 shadow-soft">
+            <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
+          </span>
           {(!collapsed || isMobile) && (
             <span className="font-heading font-bold text-[17px] text-white whitespace-nowrap">TembusKarir</span>
           )}
@@ -110,7 +113,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden -mx-1 px-1 space-y-0.5">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden -mx-1 px-1 space-y-0.5 nice-scroll">
         {NAV.map((group, gi) => (
           <div key={gi}>
             {group.section && (!collapsed || isMobile) && (
@@ -269,7 +272,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
     <div className="min-h-screen bg-paper flex">
       {/* ===== Desktop sidebar ===== */}
       <aside
-        className={`hidden lg:flex flex-col bg-ink text-white sticky top-0 h-screen shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out ${
+        className={`hidden lg:flex flex-col bg-sidebar text-white sticky top-0 h-screen shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out ${
           collapsed ? 'w-[68px] px-3 py-4' : 'w-[256px] p-4'
         }`}
       >
@@ -280,7 +283,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
       {drawer && (
         <>
           <div className="lg:hidden fixed inset-0 z-40 bg-ink/50 backdrop-blur-sm" onClick={() => setDrawer(false)} />
-          <aside className="lg:hidden fixed inset-y-0 left-0 z-50 w-[270px] bg-ink text-white p-4 flex flex-col shadow-2xl">
+          <aside className="lg:hidden fixed inset-y-0 left-0 z-50 w-[270px] bg-sidebar text-white p-4 flex flex-col shadow-2xl">
             <button onClick={() => setDrawer(false)} className="absolute top-4 right-4 text-white/60 hover:text-white">
               <X className="w-5 h-5" />
             </button>
@@ -313,9 +316,8 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
             </button>
 
             {/* Logo — mobile only */}
-            <Link href="/" className="lg:hidden flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-brand grid place-items-center text-white font-heading font-extrabold text-sm">T</span>
-              <span className="font-heading font-bold text-ink">TembusKarir</span>
+            <Link href="/" className="lg:hidden flex items-center">
+              <Image src="/logotk.png" alt="TembusKarir" width={132} height={24} className="h-6 w-auto" priority />
             </Link>
 
             {/* Right: guest → masuk/daftar; login → premium badge + avatar */}
