@@ -160,7 +160,7 @@ export default async function ProfilPage() {
       {/* ── Link cepat ─────────────────────────────────────────────────────── */}
       <div className="bg-white rounded-3xl border border-hairline shadow-soft overflow-hidden divide-y divide-hairline">
         {[
-          { href: '/dashboard', label: 'Kembali ke Dashboard' },
+          { href: '/', label: 'Kembali ke Beranda' },
           { href: '/harga', label: 'Lihat Paket Harga' },
           { href: '/portal/pln', label: 'Portal PLN' },
           { href: '/portal/astra', label: 'Portal ASTRA' },

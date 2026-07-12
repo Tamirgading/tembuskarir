@@ -50,7 +50,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     .from('attempts').select('*').eq('id', attemptId).single()
 
   const attempt = attemptData as AttemptRow | null
-  if (!attempt || attempt.user_id !== user.id) redirect('/dashboard')
+  if (!attempt || attempt.user_id !== user.id) redirect('/')
   if (attempt.status === 'ongoing') redirect(`/ujian/${attempt.package_id}`)
 
   const { data: pkgData } = await supabase
@@ -196,8 +196,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         <Link href="/paket" className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">
           <Grid2x2 className="w-4 h-4" /> Paket Lain
         </Link>
-        <Link href="/dashboard" className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">
-          <LayoutDashboard className="w-4 h-4" /> Dashboard
+        <Link href="/" className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">
+          <LayoutDashboard className="w-4 h-4" /> Beranda
         </Link>
       </div>
 

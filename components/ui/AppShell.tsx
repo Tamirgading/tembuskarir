@@ -6,11 +6,13 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
-  User, Settings, Ticket, LogOut, ChevronDown, Menu, X, Sparkles,
+  User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Sparkles,
   ChevronLeft, ChevronRight, BookOpen, Building2,
 } from 'lucide-react'
+import LoginModal from '@/components/ui/LoginModal'
 
 interface AppShellProps {
+  isLoggedIn: boolean
   userName: string | null
   userPlan: 'free' | 'premium'
   children: React.ReactNode
@@ -20,7 +22,7 @@ type Item = { href: string; label: string; icon: React.ComponentType<{ className
 type Group = { section: string | null; items: Item[] }
 
 const NAV: Group[] = [
-  { section: null, items: [{ href: '/dashboard', label: 'Beranda', icon: Home }] },
+  { section: null, items: [{ href: '/', label: 'Beranda', icon: Home }] },
   {
     section: 'Latihan',
     items: [
@@ -35,7 +37,7 @@ const NAV: Group[] = [
   {
     section: 'Akun',
     items: [
-      { href: '/dashboard?tab=pembelian', label: 'Riwayat & Pembelian', icon: ReceiptText },
+      { href: '/?tab=pembelian', label: 'Riwayat & Pembelian', icon: ReceiptText },
       { href: '/info-seleksi', label: 'Info Seleksi', icon: Newspaper },
       { href: '/harga', label: 'Langganan', icon: CreditCard },
     ],
@@ -43,20 +45,21 @@ const NAV: Group[] = [
 ]
 
 const TABS: Item[] = [
-  { href: '/dashboard', label: 'Beranda', icon: Home },
+  { href: '/', label: 'Beranda', icon: Home },
   { href: '/paket', label: 'Latihan', icon: Package },
   { href: '/info-seleksi', label: 'Info', icon: Newspaper },
   { href: '/harga', label: 'Langganan', icon: CreditCard },
   { href: '/profil', label: 'Profil', icon: User },
 ]
 
-export function AppShell({ userName, userPlan, children }: AppShellProps) {
+export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellProps) {
   const pathname = usePathname() ?? ''
   const router = useRouter()
   const [drawer, setDrawer] = useState(false)
   const [menu, setMenu] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const [showLogin, setShowLogin] = useState(false)
 
   // Pulihkan preferensi sidebar dari localStorage
   useEffect(() => {
@@ -75,7 +78,7 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U'
   const isActive = (href: string) => {
     const base = href.split('?')[0]
-    if (base === '/dashboard') return pathname === '/dashboard'
+    if (base === '/') return pathname === '/'
     // Hub PLN: hanya aktif di halaman /portal/pln persis (bukan sub-routes)
     if (base === '/portal/pln') return pathname === '/portal/pln'
     return pathname === base || pathname.startsWith(base + '/')
@@ -95,7 +98,7 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
       {/* Brand */}
       <div className={`flex items-center gap-2.5 pb-5 ${collapsed && !isMobile ? 'justify-center px-0' : 'px-2'}`}>
         <Link
-          href="/dashboard"
+          href="/"
           className="flex items-center gap-2.5"
           onClick={() => isMobile && setDrawer(false)}
         >
@@ -189,7 +192,28 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
         </Link>
       )}
 
-      {/* User chip */}
+      {/* User chip — guest: CTA masuk/daftar */}
+      {!isLoggedIn ? (
+        <div className="mt-3 pt-3 border-t border-white/10 space-y-1.5">
+          {(!collapsed || isMobile) ? (
+            <>
+              <Link href="/register" onClick={() => isMobile && setDrawer(false)}
+                className="flex items-center justify-center gap-2 text-sm font-bold text-white bg-brand hover:bg-brand-700 rounded-xl py-2.5 transition-colors">
+                <UserPlus className="w-4 h-4" /> Daftar Gratis
+              </Link>
+              <button onClick={() => { setShowLogin(true); if (isMobile) setDrawer(false) }}
+                className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-white/80 hover:text-white hover:bg-white/[0.07] rounded-xl py-2.5 transition-colors">
+                <LogIn className="w-4 h-4" /> Masuk
+              </button>
+            </>
+          ) : (
+            <button onClick={() => setShowLogin(true)} title="Masuk"
+              className="w-9 h-9 rounded-xl bg-brand hover:bg-brand-700 grid place-items-center mx-auto text-white transition-colors">
+              <LogIn className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      ) : (
       <div className="mt-3 pt-3 border-t border-white/10">
         {(!collapsed || isMobile) ? (
           <>
@@ -237,6 +261,7 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
           </div>
         )}
       </div>
+      )}
     </>
   )
 
@@ -288,12 +313,24 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
             </button>
 
             {/* Logo — mobile only */}
-            <Link href="/dashboard" className="lg:hidden flex items-center gap-2">
+            <Link href="/" className="lg:hidden flex items-center gap-2">
               <span className="w-7 h-7 rounded-lg bg-brand grid place-items-center text-white font-heading font-extrabold text-sm">T</span>
               <span className="font-heading font-bold text-ink">TembusKarir</span>
             </Link>
 
-            {/* Right: premium badge + avatar */}
+            {/* Right: guest → masuk/daftar; login → premium badge + avatar */}
+            {!isLoggedIn ? (
+              <div className="ml-auto flex items-center gap-2">
+                <button onClick={() => setShowLogin(true)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-ink text-xs font-bold rounded-lg border border-hairline bg-white hover:bg-paper-soft transition-colors">
+                  <LogIn className="w-3.5 h-3.5" />Masuk
+                </button>
+                <Link href="/register"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-lg hover:bg-brand-700 transition-colors">
+                  <UserPlus className="w-3.5 h-3.5" />Daftar
+                </Link>
+              </div>
+            ) : (
             <div className="ml-auto flex items-center gap-2.5">
               {userPlan === 'premium' ? (
                 <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand/10 text-brand-700 text-xs font-bold rounded-full">
@@ -339,6 +376,7 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
                 )}
               </div>
             </div>
+            )}
           </div>
         </header>
 
@@ -362,6 +400,9 @@ export function AppShell({ userName, userPlan, children }: AppShellProps) {
           })}
         </nav>
       </div>
+
+      {/* Modal login (guest) */}
+      <LoginModal isOpen={showLogin} onClose={() => setShowLogin(false)} />
     </div>
   )
 }

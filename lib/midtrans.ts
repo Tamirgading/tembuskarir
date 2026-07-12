@@ -52,9 +52,9 @@ export async function createSnapTransaction(params: SnapTransactionParams): Prom
       },
     ],
     callbacks: {
-      finish: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?payment=success`,
+      finish: `${process.env.NEXT_PUBLIC_APP_URL}/?payment=success`,
       error: `${process.env.NEXT_PUBLIC_APP_URL}/harga?payment=error`,
-      pending: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?payment=pending`,
+      pending: `${process.env.NEXT_PUBLIC_APP_URL}/?payment=pending`,
     },
   }
 

@@ -42,8 +42,8 @@ tryout-platform/
 │   │   ├── login/
 │   │   ├── register/
 │   │   └── lupa-password/
-│   ├── (main)/               # Route group — halaman utama (ada navbar)
-│   │   ├── dashboard/
+│   ├── (main)/               # Route group — halaman utama (AppShell sidebar)
+│   │   ├── page.tsx          # ★ Beranda/dashboard di root / (guest-aware; landing page dihapus)
 │   │   ├── paket/
 │   │   ├── paket/[packageId]/leaderboard/
 │   │   ├── persiapan/[packageId]/   # Halaman persiapan sebelum ujian (fase B)
@@ -68,8 +68,7 @@ tryout-platform/
 │   │   └── cron/
 │   │       ├── crawl-seleksi/  # GET — crawl info seleksi harian
 │   │       └── cleanup/        # GET — auto-finish expired attempts + expire pending subs
-│   ├── layout.tsx
-│   └── page.tsx              # Landing page (TembusKarir brand, hero 2-col, bg-grid-slate)
+│   └── layout.tsx            # (tidak ada app/page.tsx — root / dilayani app/(main)/page.tsx)
 ├── components/
 │   ├── ui/
 │   │   └── LatexContent.tsx  # Render konten dengan LaTeX support
@@ -359,6 +358,7 @@ ADMIN_EMAILS=email@admin.com           # Comma-separated admin emails
 | Sprint 6 | Webhook expire → status 'expired' | Beda dari 'failed' (cancel/deny bank) |
 | Sprint 6 | lucide-react untuk semua icon UI | Tidak pakai emoji keyboard, lebih branded |
 | Sprint 6 | Card images (card-ojk.png dll) di coming soon | Asset unik, bukan emoji generik |
+| Jul 2026 | Landing page dihapus — root `/` = beranda/dashboard (guest-aware) | Flow lama; mengikuti pola TembusASN. Route `/dashboard` di-redirect ke `/` via next.config.mjs. AppShell mendukung guest (CTA Masuk/Daftar via LoginModal) |
 
 ---
 
@@ -405,10 +405,7 @@ npx supabase gen types typescript --local > types/database.ts
 
 ## Hal yang Belum Dikerjakan / Backlog
 
-- [ ] SQL migration untuk kolom `score_details` di tabel `attempts` (jalankan manual di Supabase SQL Editor):
-  ```sql
-  ALTER TABLE public.attempts ADD COLUMN IF NOT EXISTS score_details jsonb DEFAULT '{}';
-  ```
+- [x] SQL migration kolom `score_details` di tabel `attempts` — SUDAH ada di production (diverifikasi Jul 2026)
 - [ ] Notifikasi email saat premium akan expired (H-3 sebelum expired)
 - [ ] Halaman `/hasil` yang lebih detail dengan grafik radar per kategori
 - [ ] Progressive Web App (PWA) untuk offline support

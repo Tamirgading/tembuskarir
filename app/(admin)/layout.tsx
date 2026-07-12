@@ -8,7 +8,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/')
-  if (!isAdmin(user.email)) redirect('/dashboard')
+  if (!isAdmin(user.email)) redirect('/')
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
         <div className="flex items-center gap-4 text-sm">
           <span className="text-gray-400">{user.email}</span>
-          <Link href="/dashboard" className="text-gray-300 hover:text-white">
+          <Link href="/" className="text-gray-300 hover:text-white">
             ← Ke App
           </Link>
         </div>

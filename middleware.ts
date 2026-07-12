@@ -20,10 +20,9 @@ export async function middleware(request: NextRequest) {
   })
 
   // Route group (main) + admin — wajib login
-  // Catatan: /harga dan /paket bisa diakses publik (guest bisa lihat)
-  // tapi /ujian, /hasil, /dashboard, /profil, /admin butuh login
+  // Catatan: / (beranda), /harga, dan /paket bisa diakses publik (guest bisa lihat)
+  // tapi /ujian, /hasil, /profil, /admin butuh login
   const isMainRoute =
-    pathname.startsWith('/dashboard') ||
     pathname.startsWith('/ujian') ||
     pathname.startsWith('/hasil') ||
     pathname.startsWith('/profil') ||
@@ -35,14 +34,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Sudah login tapi akses halaman auth — redirect ke dashboard
+  // Sudah login tapi akses halaman auth — redirect ke beranda
   const isAuthRoute =
     pathname === '/register' ||
     pathname === '/lupa-password'
 
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/'
     return NextResponse.redirect(url)
   }
 

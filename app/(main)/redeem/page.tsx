@@ -127,10 +127,10 @@ export default function RedeemPage() {
 
         {result?.success && (
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/')}
             className="mt-4 w-full text-center text-sm text-blue-600 hover:underline font-medium"
           >
-            Kembali ke Dashboard →
+            Kembali ke Beranda →
           </button>
         )}
       </div>

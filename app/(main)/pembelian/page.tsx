@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function PembelianPage() {
-  redirect('/dashboard?tab=pembelian')
+  redirect('/?tab=pembelian')
 }

@@ -77,11 +77,11 @@ export function BuyButton({
           if (onSuccess) {
             onSuccess()
           } else {
-            router.push('/dashboard?payment=success')
+            router.push('/?payment=success')
           }
         },
         onPending: () => {
-          router.push('/dashboard?payment=pending')
+          router.push('/?payment=pending')
         },
         onError: () => {
           setError('Pembayaran gagal. Silakan coba lagi.')

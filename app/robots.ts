@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api/', '/dashboard', '/profil', '/ujian/', '/hasil/'],
+        disallow: ['/admin', '/api/', '/profil', '/ujian/', '/hasil/'],
       },
     ],
     sitemap: 'https://tembuskarir.id/sitemap.xml',

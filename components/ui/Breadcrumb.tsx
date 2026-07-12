@@ -12,7 +12,7 @@ interface BreadcrumbProps {
 
 /**
  * Breadcrumb navigasi – pill style.
- * Selalu dimulai dengan ikon rumah → /dashboard.
+ * Selalu dimulai dengan ikon rumah → / (beranda).
  * Item terakhir dianggap halaman aktif (tidak ada href).
  */
 export function Breadcrumb({ items }: BreadcrumbProps) {
@@ -24,9 +24,9 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
                  px-3 py-1.5 text-xs"
       style={{ scrollbarWidth: 'none' }}
     >
-      {/* Rumah — selalu link ke /dashboard */}
+      {/* Rumah — selalu link ke beranda */}
       <Link
-        href="/dashboard"
+        href="/"
         className="shrink-0 p-0.5 rounded-full text-ink-muted hover:text-brand hover:bg-brand/10 transition-colors"
         aria-label="Beranda"
       >

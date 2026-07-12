@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
   CheckCircle2, Clock, FileText, ChevronRight, ArrowRight,
@@ -9,6 +8,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
+import GuestLoginCta from '@/components/ui/GuestLoginCta'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
@@ -64,17 +64,62 @@ function extractMastery(attempts: AttemptPreview[]): { code: string; pct: number
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
-export default async function DashboardPage({
+export default async function HomePage({
   searchParams,
 }: {
   searchParams: Promise<{ payment?: string; tab?: string }>
 }) {
   const { payment, tab } = await searchParams
-  const activeTab = tab === 'pembelian' ? 'pembelian' : 'beranda'
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/')
+
+  // Tab pembelian hanya relevan untuk user login
+  const activeTab = user && tab === 'pembelian' ? 'pembelian' : 'beranda'
+
+  // ── Guest view ─────────────────────────────────────────────────────────────
+  if (!user) {
+    return (
+      <div className="max-w-5xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-2xl font-heading font-extrabold text-ink">Selamat datang di TembusKarir 👋</h1>
+          <p className="text-ink-muted text-sm mt-1">
+            Simulasi tes rekrutmen PLN, ASTRA, dan BUMN dengan format persis seperti tes aslinya.
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-8 text-center">
+          <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Briefcase className="w-7 h-7 text-brand" />
+          </div>
+          <h2 className="text-lg font-heading font-bold text-ink">Mulai simulasi pertamamu</h2>
+          <p className="text-ink-muted text-sm mt-1 mb-5 max-w-md mx-auto">
+            Daftar gratis, kerjakan satu simulasi, dan lihat peta kesiapanmu per sub-tes.
+          </p>
+          <GuestLoginCta />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link href="/portal/astra"
+            className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 hover:shadow-md transition-all">
+            <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
+              <Briefcase className="w-5 h-5 text-brand" />
+            </div>
+            <p className="font-heading font-bold text-ink">Psikotes ASTRA</p>
+            <p className="text-xs text-ink-muted mt-1">80 soal · 7 sub-tes · 41 menit — lihat paketnya tanpa login.</p>
+          </Link>
+          <Link href="/portal/pln"
+            className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 hover:shadow-md transition-all">
+            <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
+              <Zap className="w-5 h-5 text-brand" />
+            </div>
+            <p className="font-heading font-bold text-ink">Rekrutmen PLN</p>
+            <p className="text-xs text-ink-muted mt-1">GAT + Tahap 2 Akademik — format per sub-tes seperti aslinya.</p>
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const { data: profileData } = await supabase
     .from('users').select('full_name').eq('id', user.id).single()
@@ -194,7 +239,7 @@ export default async function DashboardPage({
       {/* Tabs */}
       <div className="flex gap-1 bg-paper-soft rounded-xl p-1 w-fit border border-hairline">
         {[{ id: 'beranda', label: 'Beranda' }, { id: 'pembelian', label: 'Pembelian' }].map((t) => (
-          <Link key={t.id} href={t.id === 'beranda' ? '/dashboard' : `/dashboard?tab=${t.id}`}
+          <Link key={t.id} href={t.id === 'beranda' ? '/' : `/?tab=${t.id}`}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${activeTab === t.id ? 'bg-white text-ink shadow-sm' : 'text-ink-muted hover:text-ink'}`}>
             {t.label}
           </Link>

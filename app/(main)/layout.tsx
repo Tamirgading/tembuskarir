@@ -20,7 +20,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <AppShell userName={userName} userPlan={userPlan}>
+    <AppShell isLoggedIn={!!user} userName={userName} userPlan={userPlan}>
       {children}
     </AppShell>
   )

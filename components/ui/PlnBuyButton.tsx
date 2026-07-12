@@ -76,8 +76,8 @@ export function PlnBuyButton({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(window.snap as any).pay(data.snapToken, {
-        onSuccess: () => { if (onSuccess) { onSuccess() } else { router.push('/dashboard?payment=success') } },
-        onPending: () => { router.push('/dashboard?payment=pending') },
+        onSuccess: () => { if (onSuccess) { onSuccess() } else { router.push('/?payment=success') } },
+        onPending: () => { router.push('/?payment=pending') },
         onError: () => { setError('Pembayaran gagal. Coba lagi.'); setLoading(false) },
         onClose: () => { setLoading(false) },
       })

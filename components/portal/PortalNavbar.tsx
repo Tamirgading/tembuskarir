@@ -164,7 +164,7 @@ export default function PortalNavbar({ isLoggedIn, userName, userPlan }: PortalN
 
   const menuItems = [
     { href: '/profil',     label: 'Profil',     icon: User },
-    { href: '/dashboard',  label: 'Dashboard',  icon: LayoutDashboard },
+    { href: '/',           label: 'Beranda',    icon: LayoutDashboard },
     { href: '/pengaturan', label: 'Pengaturan', icon: Settings },
   ]
 
