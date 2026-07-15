@@ -239,18 +239,38 @@ export function computeScore(
     }
 
   } else {
-    // ── Simple Scoring (non-PLN, non-ASTRA, non-BUMN) ────────────────────────
+    // ── Simple Scoring (non-PLN, non-ASTRA, non-BUMN; mis. BI/OJK) ───────────
+    // Skor = persentase benar. Breakdown per sub-tes tetap direkam agar
+    // Rapor & analisis penguasaan berfungsi untuk kategori ini.
     const totalQuestions = questions.length
+    const catStats: Record<string, CategoryStats> = {}
+
     for (const q of questions) {
+      const cat = (q.category ?? 'UMUM').toUpperCase()
+      if (!catStats[cat]) catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
+
       const userAnswer = answers[q.id]
-      if (!userAnswer) emptyCount++
-      else if (userAnswer === q.correct_answer) correctCount++
-      else wrongCount++
+      if (!userAnswer) {
+        emptyCount++
+        catStats[cat].empty++
+      } else if (userAnswer === q.correct_answer) {
+        correctCount++
+        catStats[cat].correct++
+        catStats[cat].rawScore++
+      } else {
+        wrongCount++
+        catStats[cat].wrong++
+      }
     }
+
     score = totalQuestions > 0
       ? Math.round((correctCount / totalQuestions) * 100)
       : 0
-    scoreDetails = { type: 'simple' }
+    scoreDetails = {
+      type: 'simple',
+      categories: catStats,
+      totalQuestions,
+    }
   }
 
   return { score, correctCount, wrongCount, emptyCount, scoreDetails }
