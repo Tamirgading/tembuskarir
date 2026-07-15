@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
   User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Sparkles,
-  ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark,
+  ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3,
 } from 'lucide-react'
 import LoginModal from '@/components/ui/LoginModal'
 
@@ -38,6 +38,7 @@ const NAV: Group[] = [
   {
     section: 'Akun',
     items: [
+      { href: '/rapor', label: 'Rapor Belajar', icon: BarChart3 },
       { href: '/riwayat', label: 'Riwayat Tes', icon: History },
       { href: '/soal-tersimpan', label: 'Soal Tersimpan', icon: Bookmark },
       { href: '/?tab=pembelian', label: 'Pembelian', icon: ReceiptText },

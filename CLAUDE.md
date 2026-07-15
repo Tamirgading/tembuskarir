@@ -55,6 +55,7 @@ tryout-platform/
 │   │   ├── harga/
 │   │   ├── kebijakan-privasi/       # Halaman legal (publik, link di footer AppShell)
 │   │   ├── syarat-ketentuan/        # Halaman legal (publik, link di footer AppShell)
+│   │   ├── rapor/                   # Rapor belajar: tren skor + penguasaan sub-tes (wajib login)
 │   │   ├── riwayat/                 # Riwayat tes (wajib login; tab per kategori)
 │   │   ├── soal-tersimpan/          # Bookmark soal (wajib login; tabel saved_questions)
 │   │   └── profil/
@@ -413,7 +414,7 @@ npx supabase gen types typescript --local > types/database.ts
 
 - [x] SQL migration kolom `score_details` di tabel `attempts` — SUDAH ada di production (diverifikasi Jul 2026)
 - [ ] Notifikasi email saat premium akan expired (H-3 sebelum expired)
-- [ ] Halaman `/hasil` yang lebih detail dengan grafik radar per kategori
+- [x] Analitik progres per sub-tes — halaman `/rapor` (Jul 2026)
 - [ ] Progressive Web App (PWA) untuk offline support
 - [x] Fitur bookmark soal persistent — tabel `saved_questions` + /soal-tersimpan (Jul 2026)
 - [ ] A/B test harga paket premium
