@@ -17,7 +17,7 @@ export default function LupaPasswordPage() {
     const supabase = createClient()
     // Selalu tampilkan sukses (security best practice — tidak membedakan email terdaftar/tidak)
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
     })
 
     setSubmitted(true)

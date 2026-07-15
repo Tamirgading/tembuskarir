@@ -383,7 +383,17 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
         </header>
 
         {/* Main */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-10">{children}</main>
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 pb-4 lg:pb-6">{children}</main>
+
+        {/* Footer */}
+        <footer className="px-4 sm:px-6 lg:px-8 pb-24 lg:pb-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11.5px] text-ink-muted border-t border-hairline pt-4">
+            <span>© 2026 TembusKarir</span>
+            <Link href="/kebijakan-privasi" className="hover:text-ink transition-colors">Kebijakan Privasi</Link>
+            <Link href="/syarat-ketentuan" className="hover:text-ink transition-colors">Syarat &amp; Ketentuan</Link>
+            <a href="mailto:support@tembuskarir.id" className="hover:text-ink transition-colors">support@tembuskarir.id</a>
+          </div>
+        </footer>
 
         {/* Mobile bottom tabs */}
         <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-hairline grid grid-cols-5">

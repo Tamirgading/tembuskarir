@@ -39,9 +39,11 @@
 tryout-platform/
 ├── app/
 │   ├── (auth)/               # Route group — halaman auth (tidak ada navbar)
-│   │   ├── login/
+│   │   ├── login/            # (redirect ke / — login via LoginModal)
 │   │   ├── register/
-│   │   └── lupa-password/
+│   │   ├── lupa-password/    # redirectTo → /auth/callback
+│   │   └── reset-password/   # Set password baru (session dari /auth/callback)
+│   ├── auth/callback/        # GET — tukar code Supabase → session; deteksi recovery flow
 │   ├── (main)/               # Route group — halaman utama (AppShell sidebar)
 │   │   ├── page.tsx          # ★ Beranda/dashboard di root / (guest-aware; landing page dihapus)
 │   │   ├── paket/
@@ -51,6 +53,8 @@ tryout-platform/
 │   │   ├── hasil/[attemptId]/
 │   │   ├── info-seleksi/            # Info rekrutmen dari crawl OJK/PLN/BUMN dll
 │   │   ├── harga/
+│   │   ├── kebijakan-privasi/       # Halaman legal (publik, link di footer AppShell)
+│   │   ├── syarat-ketentuan/        # Halaman legal (publik, link di footer AppShell)
 │   │   └── profil/
 │   ├── (admin)/              # Route group — admin panel
 │   │   └── admin/
