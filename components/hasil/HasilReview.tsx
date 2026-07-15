@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { LatexContent } from '@/components/ui/LatexContent'
+import SaveButton from '@/components/ui/SaveButton'
 
 interface QuestionOption {
   key: string
@@ -48,6 +49,37 @@ const POINT_LABEL: Record<number, string> = {
 export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [filter, setFilter] = useState<FilterMode>('semua')
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
+  const [savingId, setSavingId] = useState<string | null>(null)
+
+  // Muat daftar soal tersimpan milik user
+  useEffect(() => {
+    fetch('/api/saved-questions')
+      .then((r) => r.json())
+      .then((d: { saved_ids?: string[] }) => setSavedIds(new Set(d.saved_ids ?? [])))
+      .catch(() => {/* ignore */})
+  }, [])
+
+  async function toggleSave(questionId: string) {
+    if (savingId) return
+    setSavingId(questionId)
+    try {
+      const res = await fetch('/api/saved-questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question_id: questionId }),
+      })
+      const d = await res.json() as { saved?: boolean }
+      setSavedIds((prev) => {
+        const next = new Set(prev)
+        if (d.saved) next.add(questionId)
+        else next.delete(questionId)
+        return next
+      })
+    } catch {/* ignore */} finally {
+      setSavingId(null)
+    }
+  }
 
   // Deteksi apakah soal berbasis poin (ada field point pada options)
   function isPointQuestion(q: ReviewQuestion): boolean {
@@ -241,6 +273,12 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
               </span>
             )}
             {statusBadge}
+            <SaveButton
+              questionId={currentQuestion.id}
+              saved={savedIds.has(currentQuestion.id)}
+              loading={savingId === currentQuestion.id}
+              onToggle={toggleSave}
+            />
           </div>
 
           {/* Pertanyaan */}

@@ -55,6 +55,8 @@ tryout-platform/
 │   │   ├── harga/
 │   │   ├── kebijakan-privasi/       # Halaman legal (publik, link di footer AppShell)
 │   │   ├── syarat-ketentuan/        # Halaman legal (publik, link di footer AppShell)
+│   │   ├── riwayat/                 # Riwayat tes (wajib login; tab per kategori)
+│   │   ├── soal-tersimpan/          # Bookmark soal (wajib login; tabel saved_questions)
 │   │   └── profil/
 │   ├── (admin)/              # Route group — admin panel
 │   │   └── admin/
@@ -413,6 +415,6 @@ npx supabase gen types typescript --local > types/database.ts
 - [ ] Notifikasi email saat premium akan expired (H-3 sebelum expired)
 - [ ] Halaman `/hasil` yang lebih detail dengan grafik radar per kategori
 - [ ] Progressive Web App (PWA) untuk offline support
-- [ ] Fitur catatan/bookmark soal yang persistent (saat ini hanya in-memory)
+- [x] Fitur bookmark soal persistent — tabel `saved_questions` + /soal-tersimpan (Jul 2026)
 - [ ] A/B test harga paket premium
 - [ ] Analytics dashboard untuk admin (jumlah ujian per hari, rata-rata skor)

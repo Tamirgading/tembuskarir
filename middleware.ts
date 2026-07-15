@@ -26,6 +26,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/ujian') ||
     pathname.startsWith('/hasil') ||
     pathname.startsWith('/profil') ||
+    pathname.startsWith('/riwayat') ||
+    pathname.startsWith('/soal-tersimpan') ||
     pathname.startsWith('/admin')
 
   if (isMainRoute && !user) {
