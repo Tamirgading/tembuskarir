@@ -75,7 +75,21 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     questionsData = (qData ?? []) as QuestionWithAnswer[]
   }
 
-  const questions = questionsData.sort((a, b) => a.order_index - b.order_index)
+  // Sort: urutan sub-tes dulu (sesuai definisi ASTRA/PLN), lalu order_index dalam sub-tes
+  const subtestOrder =
+    pkg?.category === 'ASTRA' ? Object.keys(ASTRA_SUBTESTS) :
+    pkg?.category === 'PLN'   ? Object.keys(PLN_SUBTESTS)   : []
+
+  const questions = questionsData.sort((a, b) => {
+    if (subtestOrder.length > 0) {
+      const iA = subtestOrder.indexOf((a.category ?? '').toUpperCase())
+      const iB = subtestOrder.indexOf((b.category ?? '').toUpperCase())
+      const posA = iA === -1 ? 999 : iA
+      const posB = iB === -1 ? 999 : iB
+      if (posA !== posB) return posA - posB
+    }
+    return a.order_index - b.order_index
+  })
   const userAnswers = (attempt.answers ?? {}) as Record<string, string>
   const score = attempt.score ?? 0
   const correct = attempt.correct_count ?? 0
