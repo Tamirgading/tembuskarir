@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
-  User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Sparkles,
+  User, Settings, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Crown,
   ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3,
 } from 'lucide-react'
 import LoginModal from '@/components/ui/LoginModal'
@@ -181,20 +181,24 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
         <Link
           href="/harga"
           onClick={() => isMobile && setDrawer(false)}
-          className="mt-3 block rounded-2xl bg-white/[0.07] border border-white/10 p-3.5 hover:bg-white/10 transition-colors"
+          className="mt-3 flex items-center gap-3 rounded-2xl bg-white/[0.07] border border-white/10 p-3.5 hover:bg-white/10 transition-colors"
         >
-          <div className="flex items-center gap-2 text-white font-semibold text-sm mb-1">
-            <Sparkles className="w-4 h-4 text-brand-300" /> Naik ke Premium
+          <div className="w-8 h-8 rounded-xl bg-amber-400/20 grid place-items-center shrink-0">
+            <Crown className="w-4 h-4 text-amber-300" />
           </div>
-          <p className="text-white/55 text-xs leading-snug">Buka semua paket & analisis kesiapan lengkap.</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-semibold text-sm leading-none mb-0.5">Naik ke Premium</p>
+            <p className="text-white/45 text-[11px] leading-snug">Buka semua paket & analisis kesiapan lengkap.</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-white/30 shrink-0" />
         </Link>
       )}
 
       {/* Upgrade icon-only (free, collapsed) */}
       {userPlan === 'free' && collapsed && !isMobile && (
         <Link href="/harga" title="Naik ke Premium"
-          className="mt-3 w-9 h-9 rounded-xl bg-white/10 hover:bg-white/15 grid place-items-center mx-auto transition-colors">
-          <Sparkles className="w-4 h-4 text-brand-300" />
+          className="mt-3 w-9 h-9 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 grid place-items-center mx-auto transition-colors">
+          <Crown className="w-4 h-4 text-amber-300" />
         </Link>
       )}
 
@@ -223,42 +227,38 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
       <div className="mt-3 pt-3 border-t border-white/10">
         {(!collapsed || isMobile) ? (
           <>
-            <div className="flex items-center gap-2.5 px-1">
+            {/* User chip */}
+            <Link href="/profil" onClick={() => isMobile && setDrawer(false)}
+              className="flex items-center gap-2.5 px-2 py-2 rounded-xl hover:bg-white/[0.07] transition-colors group">
               <span className="w-9 h-9 rounded-full bg-brand grid place-items-center text-white font-bold shrink-0">{initial}</span>
               <div className="min-w-0 flex-1">
-                <p className="text-white text-[13.5px] font-semibold truncate">{userName ?? 'Pengguna'}</p>
+                <p className="text-white text-[13px] font-semibold truncate">{userName ?? 'Pengguna'}</p>
                 <p className="text-white/45 text-[11px]">{userPlan === 'premium' ? 'Premium' : 'Paket Gratis'}</p>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-1.5 mt-2.5">
-              <Link href="/profil" onClick={() => isMobile && setDrawer(false)}
-                className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors">
-                <User className="w-3.5 h-3.5" /> Profil
-              </Link>
+              <ChevronDown className="w-4 h-4 text-white/30 shrink-0" />
+            </Link>
+            {/* Quick actions */}
+            <div className="mt-1 space-y-0.5">
               <Link href="/pengaturan" onClick={() => isMobile && setDrawer(false)}
-                className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors">
-                <Settings className="w-3.5 h-3.5" /> Pengaturan
-              </Link>
-              <Link href="/redeem" onClick={() => isMobile && setDrawer(false)}
-                className="flex items-center justify-center gap-1.5 text-xs text-white/70 hover:text-white hover:bg-white/[0.07] rounded-lg py-2 transition-colors">
-                <Ticket className="w-3.5 h-3.5" /> Voucher
+                className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-xs text-white/60 hover:text-white hover:bg-white/[0.07] transition-colors">
+                <Settings className="w-3.5 h-3.5 shrink-0" /> Pengaturan
               </Link>
               <button onClick={signOut} disabled={signingOut}
-                className="flex items-center justify-center gap-1.5 text-xs text-red-300/80 hover:text-red-200 hover:bg-red-500/10 rounded-lg py-2 transition-colors disabled:opacity-50">
-                <LogOut className="w-3.5 h-3.5" /> {signingOut ? '...' : 'Keluar'}
+                className="flex items-center gap-2.5 w-full px-3 py-2 rounded-[10px] text-xs text-red-300/70 hover:text-red-200 hover:bg-red-500/10 transition-colors disabled:opacity-50">
+                <LogOut className="w-3.5 h-3.5 shrink-0" /> {signingOut ? 'Keluar...' : 'Keluar'}
               </button>
             </div>
           </>
         ) : (
-          /* Collapsed: hanya ikon-ikon vertikal */
+          /* Collapsed: ikon vertikal */
           <div className="flex flex-col items-center gap-1.5">
-            <span title={userName ?? 'Pengguna'}
-              className="w-9 h-9 rounded-full bg-brand grid place-items-center text-white font-bold cursor-default">
+            <Link href="/profil" title={userName ?? 'Pengguna'}
+              className="w-9 h-9 rounded-full bg-brand grid place-items-center text-white font-bold">
               {initial}
-            </span>
-            <Link href="/profil" title="Profil"
+            </Link>
+            <Link href="/pengaturan" title="Pengaturan"
               className="w-9 h-9 rounded-xl hover:bg-white/10 grid place-items-center text-white/70 hover:text-white transition-colors">
-              <User className="w-4 h-4" />
+              <Settings className="w-4 h-4" />
             </Link>
             <button onClick={signOut} disabled={signingOut} title="Keluar"
               className="w-9 h-9 rounded-xl hover:bg-red-500/10 grid place-items-center text-red-300/80 hover:text-red-200 transition-colors disabled:opacity-50">
