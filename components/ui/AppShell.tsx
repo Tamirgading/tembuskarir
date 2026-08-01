@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
-  User, Settings, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Crown, Sparkles,
+  User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Crown, Sparkles,
   ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3,
 } from 'lucide-react'
 import LoginModal from '@/components/ui/LoginModal'
