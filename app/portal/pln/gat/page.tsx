@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Zap, Package, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { Zap, Package, ChevronRight, CheckCircle2, Hash, BookMarked, Heart } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -182,14 +182,16 @@ export default async function PlnGatPage() {
             <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
             <div className="space-y-3">
               {[
-                { icon: '🧮', text: 'Numerik & Deret: skip soal sulit, kembali nanti' },
-                { icon: '📚', text: 'Verbal: kuasai istilah umum dan ketenagalistrikan' },
-                { icon: '⚡', text: 'Pengetahuan PLN: sejarah, struktur, proyek strategis' },
-                { icon: '🌟', text: 'AKHLAK: jujur dan natural, cerminkan 6 core values BUMN' },
-              ].map((t) => (
-                <div key={t.text} className="flex items-start gap-2.5 text-xs text-ink-soft">
-                  <span className="shrink-0 text-sm">{t.icon}</span>
-                  <p className="leading-relaxed">{t.text}</p>
+                { Icon: Hash,       text: 'Numerik & Deret: skip soal sulit, kembali nanti' },
+                { Icon: BookMarked, text: 'Verbal: kuasai istilah umum dan ketenagalistrikan' },
+                { Icon: Zap,        text: 'Pengetahuan PLN: sejarah, struktur, proyek strategis' },
+                { Icon: Heart,      text: 'AKHLAK: jujur dan natural, cerminkan 6 core values BUMN' },
+              ].map(({ Icon, text }) => (
+                <div key={text} className="flex items-start gap-2.5">
+                  <div className="w-6 h-6 rounded-md bg-paper-soft border border-hairline flex items-center justify-center shrink-0 mt-0.5">
+                    <Icon className="w-3.5 h-3.5 text-ink-soft" />
+                  </div>
+                  <p className="text-xs text-ink-soft leading-relaxed">{text}</p>
                 </div>
               ))}
             </div>

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Briefcase, Package, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { Briefcase, Package, ChevronRight, CheckCircle2, Zap, Brain, Box, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -186,14 +186,16 @@ export default async function AstraPortalPage() {
             <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
             <div className="space-y-3">
               {[
-                { icon: '⚡', text: 'Perceptual Speed: 30 soal 2 menit — latih kecepatan baca karakter' },
-                { icon: '🧠', text: 'Working Memory: buat asosiasi mental kata-angka saat menghafal' },
-                { icon: '📐', text: 'Visualization & Inductive: pelajari pola rotasi & jaring-jaring' },
-                { icon: '📖', text: 'Reading: baca sekali dengan fokus, jawab tanpa kembali ke teks' },
-              ].map((t) => (
-                <div key={t.text} className="flex items-start gap-2.5 text-xs text-ink-soft">
-                  <span className="shrink-0 text-sm">{t.icon}</span>
-                  <p className="leading-relaxed">{t.text}</p>
+                { Icon: Zap,      text: 'Perceptual Speed: 30 soal 2 menit — latih kecepatan baca karakter' },
+                { Icon: Brain,    text: 'Working Memory: buat asosiasi mental kata-angka saat menghafal' },
+                { Icon: Box,      text: 'Visualization & Inductive: pelajari pola rotasi & jaring-jaring' },
+                { Icon: BookOpen, text: 'Reading: baca sekali dengan fokus, jawab tanpa kembali ke teks' },
+              ].map(({ Icon, text }) => (
+                <div key={text} className="flex items-start gap-2.5">
+                  <div className="w-6 h-6 rounded-md bg-paper-soft border border-hairline flex items-center justify-center shrink-0 mt-0.5">
+                    <Icon className="w-3.5 h-3.5 text-ink-soft" />
+                  </div>
+                  <p className="text-xs text-ink-soft leading-relaxed">{text}</p>
                 </div>
               ))}
             </div>
