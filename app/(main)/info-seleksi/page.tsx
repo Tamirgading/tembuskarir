@@ -74,7 +74,7 @@ export default async function InfoSeleksiPage({
         <div>
           <h1 className="text-xl font-heading font-bold text-ink">Info Seleksi</h1>
           <p className="text-sm text-ink-muted mt-0.5">
-            Pengumuman, jadwal, dan tips rekrutmen dari sumber resmi — diperbarui harian.
+            Pengumuman, jadwal, dan tips rekrutmen dari sumber resmi. Diperbarui harian.
           </p>
         </div>
         <Rss className="w-5 h-5 text-brand mt-1 shrink-0" />

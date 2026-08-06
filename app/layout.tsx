@@ -40,13 +40,13 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     url: APP_URL,
     siteName: 'TembusKarir',
-    title: 'TembusKarir — Platform Simulasi Tes Kerja BUMN & Swasta',
+    title: 'TembusKarir · Platform Simulasi Tes Kerja BUMN & Swasta',
     description:
       'Latihan simulasi tes rekrutmen kerja PLN, Astra, BUMN, dan perusahaan lainnya dengan ribuan soal berkualitas. Timer realistis, pembahasan lengkap, dan analisis progress.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TembusKarir — Platform Simulasi Tes Kerja BUMN & Swasta',
+    title: 'TembusKarir · Platform Simulasi Tes Kerja BUMN & Swasta',
     description:
       'Latihan simulasi tes rekrutmen kerja PLN, Astra, BUMN, dan perusahaan lainnya dengan ribuan soal berkualitas.',
   },

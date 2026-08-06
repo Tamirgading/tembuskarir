@@ -154,7 +154,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
   const statusBadge = {
     correct:  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 ml-auto">✓ Benar</span>,
     wrong:    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 ml-auto">✗ Salah</span>,
-    empty:    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-500 ml-auto">— Tidak dijawab</span>,
+    empty:    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-500 ml-auto">Tidak dijawab</span>,
     answered: (
       <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 ml-auto">
         {pointEarned} poin
@@ -220,7 +220,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                 <button
                   key={q.id}
                   onClick={() => goTo(idx)}
-                  title={`Soal ${idx + 1}${isPointQ ? ' (poin)' : ''} — ${
+                  title={`Soal ${idx + 1}${isPointQ ? ' (poin)' : ''}: ${
                     s === 'correct' ? 'Benar' :
                     s === 'wrong' ? 'Salah' :
                     s === 'answered' ? 'Dijawab' : 'Kosong'

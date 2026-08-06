@@ -33,9 +33,9 @@ export default async function ProfilPage() {
   const bidangInfo = plnStatus.bidang ? BIDANG_BY_SLUG[plnStatus.bidang] : null
 
   const planLabelMap: Record<string, string> = {
-    pln_gat_monthly:      'PLN Tahap 1 — GAT',
-    pln_tahap2_monthly:   'PLN Tahap 2' + (bidangInfo ? ` — ${bidangInfo.name}` : ''),
-    pln_complete_monthly: 'PLN Complete' + (bidangInfo ? ` — ${bidangInfo.name}` : ''),
+    pln_gat_monthly:      'PLN Tahap 1: GAT',
+    pln_tahap2_monthly:   'PLN Tahap 2' + (bidangInfo ? `: ${bidangInfo.name}` : ''),
+    pln_complete_monthly: 'PLN Complete' + (bidangInfo ? `: ${bidangInfo.name}` : ''),
   }
 
   return (

@@ -111,7 +111,7 @@ export default async function BumnPortalPage() {
               </h1>
               <p className="text-white/65 text-sm mt-2 max-w-lg leading-relaxed">
                 Tes Kemampuan Dasar (TKD) yang digunakan dalam seleksi Rekrutmen Bersama BUMN (RBB).
-                Mencakup TWK, TIU, dan TKP — standar Kementerian BUMN.
+                Mencakup TWK, TIU, dan TKP, standar Kementerian BUMN.
               </p>
             </div>
           </div>
@@ -157,7 +157,7 @@ export default async function BumnPortalPage() {
       {isLoggedIn && !hasPremium && (
         <div className="flex items-center justify-between gap-4 bg-violet-50 border border-violet-200 rounded-2xl px-5 py-3.5">
           <p className="text-sm text-violet-800">
-            <span className="font-bold">Premium</span> — akses semua paket BUMN, ASTRA, OJK, PLN GAT sekaligus.
+            <span className="font-bold">Premium:</span> akses semua paket BUMN, ASTRA, OJK, PLN GAT sekaligus.
           </p>
           <Link
             href="/harga"

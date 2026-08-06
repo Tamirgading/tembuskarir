@@ -24,8 +24,8 @@ interface UnlockRow { id: string; package_id: string; created_at: string }
 interface CatStat { correct: number; wrong: number; empty: number; rawScore: number }
 
 const PLAN_LABEL: Record<string, string> = {
-  premium_monthly:   'Langganan Premium — 1 Bulan',
-  premium_quarterly: 'Langganan Premium — 3 Bulan',
+  premium_monthly:   'Langganan Premium: 1 Bulan',
+  premium_quarterly: 'Langganan Premium: 3 Bulan',
   package:           'Paket Satuan',
 }
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
@@ -99,7 +99,7 @@ export default async function HomePage({
               <Briefcase className="w-5 h-5 text-brand" />
             </div>
             <p className="font-heading font-bold text-ink">Psikotes ASTRA</p>
-            <p className="text-xs text-ink-muted mt-1">80 soal · 7 sub-tes · 41 menit — lihat paketnya tanpa login.</p>
+            <p className="text-xs text-ink-muted mt-1">80 soal · 7 sub-tes · 41 menit. Lihat paketnya tanpa login.</p>
           </Link>
           <Link href="/portal/pln"
             className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 card-hover">
@@ -107,7 +107,7 @@ export default async function HomePage({
               <Zap className="w-5 h-5 text-brand" />
             </div>
             <p className="font-heading font-bold text-ink">Rekrutmen PLN</p>
-            <p className="text-xs text-ink-muted mt-1">GAT + Tahap 2 Akademik — format per sub-tes seperti aslinya.</p>
+            <p className="text-xs text-ink-muted mt-1">GAT + Tahap 2 Akademik, format per sub-tes seperti aslinya.</p>
           </Link>
         </div>
       </div>

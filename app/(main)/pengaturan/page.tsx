@@ -12,7 +12,7 @@ export default function PengaturanPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center text-gray-400 text-sm">
-        Segera hadir — pengaturan akun, preferensi notifikasi, dan lainnya.
+        Segera hadir: pengaturan akun, preferensi notifikasi, dan lainnya.
       </div>
     </div>
   )

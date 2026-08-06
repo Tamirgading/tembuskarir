@@ -58,7 +58,7 @@ export default async function PlnGatPage() {
           <nav className="flex items-center gap-2 text-xs text-white/50 mb-4">
             <Link href="/portal/pln" className="hover:text-white transition-colors">Rekrutmen PLN</Link>
             <span>›</span>
-            <span className="text-white/80">Tahap 1 — GAT</span>
+            <span className="text-white/80">Tahap 1: GAT</span>
           </nav>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
@@ -71,7 +71,7 @@ export default async function PlnGatPage() {
             <span className="ml-auto text-[11px] font-bold px-3 py-1 bg-brand/20 text-brand-300 rounded-full">GAT</span>
           </div>
           <p className="text-white/60 text-sm">
-            Simulasi GAT PLN dengan format per-sub-tes berurutan dan timer terpisah — persis seperti tes aslinya. 8 sub-tes, 210 soal, 180 menit.
+            Simulasi GAT PLN dengan format per-sub-tes berurutan dan timer terpisah, persis seperti tes aslinya. 8 sub-tes, 210 soal, 180 menit.
           </p>
           <div className="flex gap-3 mt-5 flex-wrap">
             {[{ v: '210', l: 'total soal' }, { v: '8', l: 'sub-tes' }, { v: '180', l: 'menit' }, { v: '+1', l: 'per benar' }].map((s) => (

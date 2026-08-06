@@ -29,7 +29,7 @@ export default function PlnTahap2SelectionPage() {
           <nav className="flex items-center gap-2 text-xs text-white/50 mb-4">
             <Link href="/portal/pln" className="hover:text-white transition-colors">Rekrutmen PLN</Link>
             <span>›</span>
-            <span className="text-white/80">Tahap 2 — Akademik</span>
+            <span className="text-white/80">Tahap 2: Akademik</span>
           </nav>
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -59,12 +59,12 @@ export default function PlnTahap2SelectionPage() {
         <div className="bg-white px-6 py-4 flex items-center gap-5 flex-wrap">
           <div className="flex items-center gap-2 text-sm text-ink-soft">
             <Languages className="w-4 h-4 text-brand shrink-0" />
-            <span><strong className="text-ink">Bahasa Inggris</strong> — 1 paket, sama untuk semua bidang</span>
+            <span><strong className="text-ink">Bahasa Inggris</strong>: 1 paket, sama untuk semua bidang</span>
           </div>
           <div className="h-4 w-px bg-hairline shrink-0" />
           <div className="flex items-center gap-2 text-sm text-ink-soft">
             <BookOpen className="w-4 h-4 text-brand shrink-0" />
-            <span><strong className="text-ink">Akademik (AKDING)</strong> — 12 bidang tersedia</span>
+            <span><strong className="text-ink">Akademik (AKDING)</strong>: 12 bidang tersedia</span>
           </div>
         </div>
       </div>
@@ -111,11 +111,11 @@ export default function PlnTahap2SelectionPage() {
           </div>
           <div className="bg-white rounded-xl border border-hairline p-3.5">
             <p className="font-semibold text-ink mb-0.5">Satuan <span className="font-num">Rp 10.000</span></p>
-            <p className="text-xs text-ink-muted">Beli 1 paket saja — akses permanen</p>
+            <p className="text-xs text-ink-muted">Beli 1 paket saja, akses permanen</p>
           </div>
           <div className="bg-brand rounded-xl p-3.5 text-white">
             <p className="font-semibold mb-0.5">Langganan <span className="font-num">Rp 30.000</span>/bln</p>
-            <p className="text-xs text-white/70">Tahap 2 penuh — BI + Akademik 1 bidang</p>
+            <p className="text-xs text-white/70">Tahap 2 penuh: BI + Akademik 1 bidang</p>
           </div>
         </div>
       </div>

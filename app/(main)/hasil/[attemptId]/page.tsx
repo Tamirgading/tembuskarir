@@ -35,7 +35,7 @@ const SUBTEST_FULL: Record<string, string> = Object.fromEntries([
 
 function tier(pct: number): { title: string; note: string } {
   if (pct >= 85) return { title: 'Hasil yang luar biasa', note: 'Kamu sudah sangat siap. Pertahankan ritme latihanmu.' }
-  if (pct >= 70) return { title: 'Hasil yang bagus', note: 'Sedikit lagi menuju level aman — fokuskan ke sub-tes terlemah.' }
+  if (pct >= 70) return { title: 'Hasil yang bagus', note: 'Sedikit lagi menuju level aman. Fokuskan ke sub-tes terlemah.' }
   if (pct >= 50) return { title: 'Terus menanjak', note: 'Pondasimu mulai terbentuk. Latih bagian yang masih merah di bawah.' }
   return { title: 'Awal yang baik', note: 'Setiap latihan menambah kesiapanmu. Pelajari pembahasan, lalu coba lagi.' }
 }

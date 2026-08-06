@@ -27,7 +27,7 @@ function PackageRow({
 }) {
   if (!pkg) return (
     <div className="flex items-center gap-4 bg-paper-soft rounded-2xl border border-hairline px-5 py-4 text-sm text-ink-muted opacity-60">
-      {icon} Paket belum tersedia — segera hadir
+      {icon} Paket belum tersedia, segera hadir
     </div>
   )
 
@@ -169,7 +169,7 @@ export default async function PlnBidangPage({ params }: Props) {
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-white/55 text-xs font-semibold uppercase tracking-wider">Akademik — Bidang</p>
+              <p className="text-white/55 text-xs font-semibold uppercase tracking-wider">Akademik · Bidang</p>
               <h1 className="text-xl font-heading font-extrabold text-white">{bidang.name}</h1>
             </div>
           </div>
@@ -197,7 +197,7 @@ export default async function PlnBidangPage({ params }: Props) {
           icon={<Languages className="w-4 h-4 text-brand" />}
           iconBg="bg-brand/10"
           title="Bahasa Inggris PLN"
-          subtitle="Sama untuk semua bidang — cukup beli sekali"
+          subtitle="Sama untuk semua bidang. Cukup beli sekali."
         />
 
         <PackageRow
@@ -231,7 +231,7 @@ export default async function PlnBidangPage({ params }: Props) {
         <SectionHeader
           icon={<BookOpen className={`w-4 h-4 ${bidang.color.split(' ')[1]}`} />}
           iconBg={bidang.color.split(' ')[0]}
-          title={`Akademik — ${bidang.name}`}
+          title={`Akademik: ${bidang.name}`}
           subtitle="Materi sesuai keilmuan bidang ini"
         />
 
@@ -258,7 +258,7 @@ export default async function PlnBidangPage({ params }: Props) {
             <Sparkles className="w-4 h-4 text-brand" />
             <p className="font-semibold text-ink text-sm">Akses penuh tanpa beli satuan-satuan?</p>
           </div>
-          <p className="text-xs text-ink-muted">Langganan PLN Tahap 2 — BI + Akademik {bidang.short} mulai <span className="font-num font-semibold">Rp 30.000</span>/bulan</p>
+          <p className="text-xs text-ink-muted">Langganan PLN Tahap 2: BI + Akademik {bidang.short} mulai <span className="font-num font-semibold">Rp 30.000</span>/bulan</p>
         </div>
         <Link href={`/harga?plnBidang=${slug}`}
           className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">

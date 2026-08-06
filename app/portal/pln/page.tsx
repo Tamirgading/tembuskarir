@@ -40,7 +40,7 @@ export default function PlnHubPage() {
               </div>
             </div>
             <p className="text-white/60 text-xs leading-relaxed mb-4">
-              Tes Aptitude umum — 8 sub-tes kognitif berurutan. Wajib untuk semua pelamar PLN, tanpa terkecuali.
+              Tes Aptitude umum: 8 sub-tes kognitif berurutan. Wajib untuk semua pelamar PLN, tanpa terkecuali.
             </p>
             {/* Sub-tes grid kecil */}
             <div className="flex flex-wrap gap-1 mb-4">
@@ -80,7 +80,7 @@ export default function PlnHubPage() {
               </div>
             </div>
             <p className="text-white/60 text-xs leading-relaxed mb-4">
-              Tes bidang keilmuan + Bahasa Inggris. Materi Akademik berbeda per bidang — pilih bidangmu terlebih dahulu.
+              Tes bidang keilmuan + Bahasa Inggris. Materi Akademik berbeda per bidang; pilih bidangmu terlebih dahulu.
             </p>
             <div className="flex gap-1 mb-4">
               {['Akademik', 'Bahasa Inggris'].map((l) => (
@@ -118,12 +118,12 @@ export default function PlnHubPage() {
           <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-ink text-white text-xs font-num font-bold flex items-center justify-center shrink-0">2</span>
-            <span><strong className="text-ink">Tahap 1 — GAT</strong> (semua pelamar)</span>
+            <span><strong className="text-ink">Tahap 1: GAT</strong> (semua pelamar)</span>
           </div>
           <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-ink text-white text-xs font-num font-bold flex items-center justify-center shrink-0">3</span>
-            <span><strong className="text-ink">Tahap 2 — Akademik + BI</strong> (yang lolos Tahap 1)</span>
+            <span><strong className="text-ink">Tahap 2: Akademik + BI</strong> (yang lolos Tahap 1)</span>
           </div>
           <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
           <div className="flex items-center gap-2">
@@ -138,14 +138,14 @@ export default function PlnHubPage() {
         <div className="bg-white rounded-xl border border-hairline p-4 flex items-center gap-3">
           <Clock className="w-5 h-5 text-brand shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-ink">Tahap 1 — 180 menit total</p>
+            <p className="text-sm font-semibold text-ink">Tahap 1 · 180 menit total</p>
             <p className="text-xs text-ink-muted">8 sub-tes dengan timer terpisah, dikerjakan berurutan</p>
           </div>
         </div>
         <div className="bg-white rounded-xl border border-hairline p-4 flex items-center gap-3">
           <Clock className="w-5 h-5 text-brand shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-ink">Tahap 2 — 100 menit total</p>
+            <p className="text-sm font-semibold text-ink">Tahap 2 · 100 menit total</p>
             <p className="text-xs text-ink-muted">50 mnt Akademik + 50 mnt Bahasa Inggris, urutan bebas</p>
           </div>
         </div>

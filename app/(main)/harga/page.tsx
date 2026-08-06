@@ -11,7 +11,7 @@ import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/ac
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 
 export const metadata: Metadata = {
-  title: 'Langganan & Harga — TembusKarir',
+  title: 'Langganan & Harga · TembusKarir',
   description: 'Akses semua paket simulasi seleksi kerja. Beli per-paket atau berlangganan mulai Rp 30.000/bulan.',
 }
 
@@ -47,7 +47,7 @@ const PLN_PLANS = [
     priceLabel: 'Rp 30.000',
     period: '/ bulan',
     badge: null,
-    title: 'Tahap 1 — GAT',
+    title: 'Tahap 1: GAT',
     description: 'Akses semua paket GAT PLN selama 30 hari. 8 sub-tes kognitif, AKHLAK & LA.',
     features: ['Semua paket GAT PLN', '8 sub-tes berurutan', 'AKHLAK & LA (sistem poin)', 'Riwayat & analisis skor'],
     requiresBidang: false,
@@ -59,7 +59,7 @@ const PLN_PLANS = [
     priceLabel: 'Rp 30.000',
     period: '/ bulan',
     badge: null,
-    title: 'Tahap 2 — Akademik',
+    title: 'Tahap 2: Akademik',
     description: 'BI + AKDING 1 bidang pilihanmu selama 30 hari. Pilih bidang sebelum bayar.',
     features: ['Bahasa Inggris PLN (full)', 'AKDING 1 bidang (full)', 'Pilih bidang saat checkout', '1 bidang per subscription'],
     requiresBidang: true,
@@ -158,7 +158,7 @@ export default async function HargaPage({
       {urlBidang && (
         <div className="bg-paper-soft border border-hairline rounded-xl px-4 py-3 flex items-center gap-3 text-sm">
           <BookOpen className="w-4 h-4 text-brand shrink-0" />
-          <span className="text-ink-soft">Bidang dipilih: <strong className="text-ink">{BIDANG_BY_SLUG[urlBidang].name}</strong> — akan otomatis terisi saat checkout Tahap 2 / Complete.</span>
+          <span className="text-ink-soft">Bidang dipilih: <strong className="text-ink">{BIDANG_BY_SLUG[urlBidang].name}</strong>; akan otomatis terisi saat checkout Tahap 2 / Complete.</span>
         </div>
       )}
 
@@ -219,7 +219,7 @@ export default async function HargaPage({
         {/* Info anti-sharing */}
         <div className="bg-paper-soft border border-hairline rounded-xl px-4 py-3 mb-4 flex items-start gap-2.5 text-xs text-ink-muted">
           <Zap className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
-          <span>Plan PLN Tahap 2 & Complete terikat 1 bidang akademik per subscription — sesuai format ujian asli (1 orang = 1 bidang).</span>
+          <span>Plan PLN Tahap 2 & Complete terikat 1 bidang akademik per subscription, sesuai format ujian asli (1 orang = 1 bidang).</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

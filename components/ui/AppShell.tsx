@@ -29,8 +29,8 @@ const NAV: Group[] = [
     items: [
       { href: '/portal/astra', label: 'Psikotes ASTRA', icon: Briefcase, tag: 'Populer' },
       { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap },
-      { href: '/portal/pln/gat', label: 'Tahap 1 — GAT', icon: Zap, sub: true },
-      { href: '/portal/pln/tahap2', label: 'Tahap 2 — Akademik', icon: BookOpen, sub: true },
+      { href: '/portal/pln/gat', label: 'Tahap 1: GAT', icon: Zap, sub: true },
+      { href: '/portal/pln/tahap2', label: 'Tahap 2: Akademik', icon: BookOpen, sub: true },
       { href: '/portal/bumn', label: 'Rekrutmen BUMN', icon: Building2 },
       { href: '/paket', label: 'Semua Paket', icon: Package },
     ],

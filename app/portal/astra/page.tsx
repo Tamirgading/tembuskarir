@@ -65,7 +65,7 @@ export default async function AstraPortalPage() {
             </span>
           </div>
           <p className="text-white/60 text-sm mt-2">
-            Simulasi Tes Psikologi Rekrutmen PT Astra International — format per-sub-tes dengan timer terpisah persis tes aslinya.
+            Simulasi Tes Psikologi Rekrutmen PT Astra International, dengan format per-sub-tes dan timer terpisah persis tes aslinya.
           </p>
           {/* Stats */}
           <div className="flex gap-3 mt-5 flex-wrap">
@@ -175,7 +175,7 @@ export default async function AstraPortalPage() {
               ))}
               <div className="pt-2 border-t border-hairline">
                 <p className="text-[11px] text-brand font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Tidak ada penalti — jawab semua!
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Tidak ada penalti. Jawab semua!
                 </p>
               </div>
             </div>
@@ -186,7 +186,7 @@ export default async function AstraPortalPage() {
             <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
             <div className="space-y-3">
               {[
-                { Icon: Zap,      text: 'Perceptual Speed: 30 soal 2 menit — latih kecepatan baca karakter' },
+                { Icon: Zap,      text: 'Perceptual Speed: 30 soal dalam 2 menit. Latih kecepatan baca karakter.' },
                 { Icon: Brain,    text: 'Working Memory: buat asosiasi mental kata-angka saat menghafal' },
                 { Icon: Box,      text: 'Visualization & Inductive: pelajari pola rotasi & jaring-jaring' },
                 { Icon: BookOpen, text: 'Reading: baca sekali dengan fokus, jawab tanpa kembali ke teks' },
