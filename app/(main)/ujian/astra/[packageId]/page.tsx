@@ -167,6 +167,7 @@ export default function AstraUjianPage() {
 
   // Refs untuk menghindari stale closure di timer
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const autoNextRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const answersRef = useRef<Answers>({})
   const subtestKeysRef = useRef<string[]>([])
   const currentSubtestIdxRef = useRef(0)
@@ -362,8 +363,8 @@ export default function AstraUjianPage() {
     setPhase('in-progress')
   }
 
-  async function selectAnswer(questionId: string, key: string) {
-    const updated = { ...answers, [questionId]: key }
+  async function selectAnswer(questionId: string, optKey: string) {
+    const updated = { ...answers, [questionId]: optKey }
     setAnswers(updated)
     if (attemptId) localStorage.setItem(`astra_${attemptId}`, JSON.stringify(updated))
     // Simpan ke DB secara background
@@ -372,6 +373,12 @@ export default function AstraUjianPage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('attempts') as any).update({ answers: updated }).eq('id', attemptId)
     } catch { /* ignore */ }
+
+    // PS: auto-advance ke soal berikutnya setelah 200ms (jeda visual singkat)
+    if (subtestKeysRef.current[currentSubtestIdxRef.current] === 'PS') {
+      if (autoNextRef.current) clearTimeout(autoNextRef.current)
+      autoNextRef.current = setTimeout(() => { handleNext() }, 200)
+    }
   }
 
   function handleNext() {
@@ -641,30 +648,36 @@ export default function AstraUjianPage() {
             })}
           </div>
 
-          {/* Tombol next */}
-          <div className="flex items-center justify-between pt-2">
-            {!isAnswered ? (
-              <p className="text-xs text-amber-600 flex items-center gap-1">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Pilih jawaban untuk melanjutkan
-              </p>
-            ) : (
-              <span />
-            )}
-            <button
-              onClick={handleNext}
-              disabled={!isAnswered || isSubmitting}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                isAnswered && !isSubmitting
-                  ? 'bg-brand text-white hover:bg-brand-700 shadow-soft'
-                  : 'bg-paper-soft text-ink-muted cursor-not-allowed'
-              }`}
-            >
-              {isLastQ
-                ? (isLastSubtest ? 'Selesai & Kirim Hasil ✓' : 'Selesai Sub-tes →')
-                : isWm ? 'Hafal & Lanjut →' : 'Berikutnya →'}
-            </button>
-          </div>
+          {/* Tombol next / hint PS */}
+          {key === 'PS' ? (
+            <p className="text-xs text-ink-muted text-center pt-1">
+              Pilih jawaban — soal berikutnya tampil otomatis
+            </p>
+          ) : (
+            <div className="flex items-center justify-between pt-2">
+              {!isAnswered ? (
+                <p className="text-xs text-amber-600 flex items-center gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  Pilih jawaban untuk melanjutkan
+                </p>
+              ) : (
+                <span />
+              )}
+              <button
+                onClick={handleNext}
+                disabled={!isAnswered || isSubmitting}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  isAnswered && !isSubmitting
+                    ? 'bg-brand text-white hover:bg-brand-700 shadow-soft'
+                    : 'bg-paper-soft text-ink-muted cursor-not-allowed'
+                }`}
+              >
+                {isLastQ
+                  ? (isLastSubtest ? 'Selesai & Kirim Hasil ✓' : 'Selesai Sub-tes →')
+                  : isWm ? 'Hafal & Lanjut →' : 'Berikutnya →'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ── Modal Konfirmasi Selesai Sub-tes ── */}

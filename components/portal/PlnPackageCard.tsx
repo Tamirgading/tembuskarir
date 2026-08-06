@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Lock, CheckCircle2 } from 'lucide-react'
+import { Lock, CheckCircle2, Clock, FileText } from 'lucide-react'
 import type { PackageRow } from '@/lib/utils'
 import LoginModal from '@/components/ui/LoginModal'
 import { BuyButton } from '@/components/ui/BuyButton'
@@ -14,22 +14,12 @@ interface PlnPackageCardProps {
   index: number
 }
 
-const PLN_SUBTEST_TAGS = [
-  { label: 'NUM', cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  { label: 'VER', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
-  { label: 'SIL', cls: 'bg-orange-50 text-orange-600 border-orange-200' },
-  { label: 'DER', cls: 'bg-red-50 text-red-500 border-red-200' },
-  { label: 'FIG', cls: 'bg-rose-50 text-rose-600 border-rose-200' },
-  { label: 'PU',  cls: 'bg-sky-50 text-sky-600 border-sky-200' },
-  { label: 'LA',  cls: 'bg-violet-50 text-violet-600 border-violet-200' },
-  { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-600 border-purple-200' },
-]
+const PLN_SUBTEST_LABELS = ['NUM', 'VER', 'SIL', 'DER', 'FIG', 'PU', 'LA', 'AKHLAK']
 
 export default function PlnPackageCard({
   pkg,
   isLoggedIn,
   isUnlocked,
-  index,
 }: PlnPackageCardProps) {
   const router = useRouter()
   const [showLoginModal, setShowLoginModal] = useState(false)
@@ -46,55 +36,52 @@ export default function PlnPackageCard({
 
   return (
     <>
-      <div className={`group relative bg-white rounded-2xl border-2 transition-all duration-200 overflow-hidden ${
-        isLocked
-          ? 'border-hairline hover:border-brand/30 hover:shadow-md'
-          : 'border-hairline hover:border-brand/50 hover:shadow-lg hover:-translate-y-0.5'
-      }`}>
-        {/* Accent bar kiri — brand */}
-        <div className={`absolute left-0 top-0 h-full w-1 rounded-l-2xl transition-colors ${
-          pkg.is_free ? 'bg-brand group-hover:bg-brand-700'
-          : isUnlocked ? 'bg-brand group-hover:bg-brand-700'
-          : 'bg-ink group-hover:bg-ink-soft'
-        }`} />
-
-        <div className="pl-5 pr-5 py-4 flex items-center gap-4">
-          {/* Nomor */}
-          <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-num font-bold ${
-            pkg.is_free ? 'bg-brand/10 text-brand-700'
-            : isUnlocked ? 'bg-brand/10 text-brand-700'
-            : 'bg-paper-soft text-ink-soft'
-          }`}>
-            {isUnlocked && !pkg.is_free
-              ? <CheckCircle2 className="w-4 h-4 text-brand" />
-              : String(index + 1).padStart(2, '0')}
-          </div>
+      <div className="group bg-white rounded-2xl border border-hairline shadow-soft hover:shadow-md hover:border-brand/30 transition-all duration-200">
+        <div className="px-5 py-4 flex items-center gap-5">
 
           {/* Konten */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-2 mb-1.5">
-              <h3 className="font-bold text-ink text-sm leading-snug flex-1">{pkg.name}</h3>
-              <span className={`shrink-0 text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                pkg.is_free ? 'bg-brand/10 text-brand-700'
-                : isUnlocked ? 'bg-brand/10 text-brand-700'
-                : 'bg-amber-100 text-amber-700'
-              }`}>
-                {pkg.is_free ? 'GRATIS' : isUnlocked ? '✓ DIMILIKI' : '✦ PREMIUM'}
-              </span>
+            {/* Baris nama + status */}
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h3 className="font-heading font-bold text-ink text-[15px] leading-snug">{pkg.name}</h3>
+              {pkg.is_free && (
+                <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full shrink-0">
+                  Gratis
+                </span>
+              )}
+              {!pkg.is_free && isUnlocked && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-brand shrink-0">
+                  <CheckCircle2 className="w-3 h-3" /> Dimiliki
+                </span>
+              )}
+              {!pkg.is_free && !isUnlocked && isLoggedIn && (
+                <span className="text-[10px] font-semibold text-ink-muted shrink-0">Premium</span>
+              )}
             </div>
 
+            {/* Deskripsi */}
             {pkg.description && (
-              <p className="text-xs text-ink-muted mb-2 leading-relaxed line-clamp-1">{pkg.description}</p>
+              <p className="text-xs text-ink-muted leading-relaxed line-clamp-1 mb-2.5">{pkg.description}</p>
             )}
 
-            <div className="flex gap-1.5 flex-wrap">
-              {PLN_SUBTEST_TAGS.map((s) => (
-                <span key={s.label} className={`text-xs px-2 py-0.5 rounded-md border font-semibold ${s.cls}`}>
-                  {s.label}
+            {/* Meta: subtest tags + durasi + jumlah soal */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {PLN_SUBTEST_LABELS.map((label) => (
+                <span
+                  key={label}
+                  className="text-[10px] font-semibold text-ink-soft bg-paper-soft border border-hairline px-1.5 py-0.5 rounded-md"
+                >
+                  {label}
                 </span>
               ))}
-              <span className="text-xs px-2 py-0.5 rounded-md bg-paper-soft text-ink-muted border border-hairline font-num">
+              <span className="text-ink-muted/40 text-xs mx-0.5">·</span>
+              <span className="flex items-center gap-1 text-xs text-ink-muted">
+                <Clock className="w-3 h-3" />
                 {pkg.duration_minutes} mnt
+              </span>
+              <span className="flex items-center gap-1 text-xs text-ink-muted">
+                <FileText className="w-3 h-3" />
+                {pkg.total_questions} soal
               </span>
             </div>
           </div>
@@ -104,22 +91,19 @@ export default function PlnPackageCard({
             <button
               onClick={handleStart}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                canAccess
-                  ? 'bg-brand text-white hover:bg-brand-700 shadow-soft'
-                  : !isLoggedIn
+                canAccess || !isLoggedIn
                   ? 'bg-brand text-white hover:bg-brand-700 shadow-soft'
                   : 'bg-ink text-white hover:bg-ink-soft shadow-soft'
               }`}
             >
-              {!isLoggedIn ? 'Mulai'
-                : !canAccess ? <><Lock className="w-3.5 h-3.5" /> Beli</>
+              {!isLoggedIn
+                ? 'Mulai →'
+                : !canAccess
+                ? <><Lock className="w-3.5 h-3.5" /> Beli</>
                 : 'Mulai →'}
             </button>
             {isLocked && (
-              <span className="text-[10px] text-ink-muted font-semibold">Rp 10.000</span>
-            )}
-            {!isLocked && (
-              <span className="text-xs text-ink-muted font-num">{pkg.total_questions} soal</span>
+              <span className="text-[10px] text-ink-muted">Rp 10.000</span>
             )}
           </div>
         </div>
