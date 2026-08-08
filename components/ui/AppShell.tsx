@@ -360,7 +360,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
                       <Link href={crumb.href!}
                         className="hidden sm:flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink transition-colors rounded-lg px-1.5 py-1 hover:bg-black/5 shrink-0">
                         <CrumbIcon className="w-3.5 h-3.5" />
-                        {crumb.label}
+                        {crumb.href !== '/' && crumb.label}
                       </Link>
                     )}
                   </Fragment>
