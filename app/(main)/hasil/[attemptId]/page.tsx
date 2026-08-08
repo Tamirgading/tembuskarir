@@ -131,22 +131,22 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
       {/* ══ HERO ══ */}
       <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
         <div className="px-6 sm:px-8 py-7 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
-          <div className="flex flex-col sm:flex-row items-center gap-6">
+          <div className="flex flex-row items-start gap-3 sm:gap-6">
             {/* Ring skor */}
-            <div className="relative w-[128px] h-[128px] shrink-0">
-              <svg width="128" height="128" viewBox="0 0 128 128" className="-rotate-90">
+            <div className="relative w-[80px] h-[80px] sm:w-[128px] sm:h-[128px] shrink-0">
+              <svg width="100%" height="100%" viewBox="0 0 128 128" className="-rotate-90">
                 <circle cx="64" cy="64" r={R} fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="11" />
                 <circle cx="64" cy="64" r={R} fill="none" stroke="#34D399" strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={offset} />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-num font-bold text-[34px] leading-none">{score}</span>
-                <span className="text-[11px] text-white/60 mt-0.5">{denom}</span>
+                <span className="font-num font-bold text-[22px] sm:text-[34px] leading-none">{score}</span>
+                <span className="text-[9px] sm:text-[11px] text-white/60 mt-0.5">{denom}</span>
               </div>
             </div>
             {/* Teks */}
-            <div className="text-center sm:text-left flex-1">
+            <div className="text-left flex-1 min-w-0">
               <p className="text-white/55 text-xs uppercase tracking-wider font-semibold mb-1">{pkg?.name ?? 'Hasil Simulasi'}</p>
-              <h1 className="text-2xl font-heading font-extrabold mb-1.5">{t.title}</h1>
+              <h1 className="text-xl sm:text-2xl font-heading font-extrabold mb-1.5">{t.title}</h1>
               <p className="text-white/70 text-sm max-w-md">{t.note}</p>
               <div className="inline-flex items-center gap-1.5 mt-3 bg-white/10 rounded-full px-3 py-1 text-xs">
                 <Clock className="w-3.5 h-3.5 text-white/70" />

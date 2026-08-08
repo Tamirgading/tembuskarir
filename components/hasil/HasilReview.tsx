@@ -202,7 +202,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
         <div className="bg-white rounded-xl border border-hairline shadow-soft p-3.5 lg:sticky lg:top-20 space-y-3">
           <p className="text-[10px] font-bold text-ink-muted uppercase tracking-wider">Soal</p>
 
-          <div className="grid grid-cols-5 gap-1.5 max-h-[420px] overflow-y-auto">
+          <div className="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 lg:grid lg:grid-cols-5 lg:overflow-x-visible lg:overflow-y-auto lg:max-h-[420px]">
             {questions.map((q, idx) => {
               const s = getStatus(q)
               const isCurrent = idx === currentIndex
@@ -225,7 +225,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                     s === 'wrong' ? 'Salah' :
                     s === 'answered' ? 'Dijawab' : 'Kosong'
                   }`}
-                  className={`w-full aspect-square rounded-lg text-xs font-num font-bold transition-all hover:scale-105 ${cls}`}
+                  className={`w-8 h-8 flex-none lg:w-full lg:h-auto lg:aspect-square rounded-lg text-xs font-num font-bold transition-all hover:scale-105 ${cls}`}
                 >
                   {idx + 1}
                 </button>
@@ -238,7 +238,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
             {[
               { color: 'bg-green-100 border-green-200', label: `Benar (${correctCount})` },
               { color: 'bg-red-100 border-red-200',     label: `Salah (${wrongCount})` },
-              { color: 'bg-violet-100 border-violet-200', label: `Poin (${pointAnsweredCount})` },
+              ...(pointAnsweredCount > 0 ? [{ color: 'bg-violet-100 border-violet-200', label: `Poin (${pointAnsweredCount})` }] : []),
               { color: 'bg-paper-soft border-hairline', label: `Kosong (${emptyCount})` },
               { color: 'bg-ink',                        label: 'Soal aktif' },
             ].map((item) => (
