@@ -22,6 +22,7 @@ export default async function AdminQuestionsPage({
   const { formTab } = await searchParams
   const supabase = createServiceClient()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: pkgData } = await (supabase.from('packages') as any)
     .select('*')
     .eq('id', packageId)
@@ -30,6 +31,7 @@ export default async function AdminQuestionsPage({
   if (!pkgData) notFound()
   const pkg = pkgData as PackageRow
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: questionsData } = await (supabase.from('questions') as any)
     .select('id, content, options, correct_answer, explanation, explanation_image_url, difficulty, category, order_index, image_url, created_at')
     .eq('package_id', packageId)

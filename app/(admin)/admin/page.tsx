@@ -7,15 +7,18 @@ export default async function AdminDashboardPage() {
   const supabase = createServiceClient()
 
   // Stats: total users
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { count: totalUsers } = await (supabase.from('users') as any)
     .select('*', { count: 'exact', head: true })
 
   // Stats: premium users
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { count: premiumUsers } = await (supabase.from('users') as any)
     .select('*', { count: 'exact', head: true })
     .eq('plan', 'premium')
 
   // Stats: total paid subscriptions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: paidSubs } = await (supabase.from('subscriptions') as any)
     .select('amount, plan_type, paid_at')
     .eq('status', 'paid')
@@ -26,11 +29,13 @@ export default async function AdminDashboardPage() {
   const totalRevenue = subs.reduce((sum, s) => sum + s.amount, 0)
 
   // Stats: total attempts
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { count: totalAttempts } = await (supabase.from('attempts') as any)
     .select('*', { count: 'exact', head: true })
     .eq('status', 'finished')
 
   // Recent 5 users
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: recentUsersData } = await (supabase.from('users') as any)
     .select('id, email, full_name, plan, created_at')
     .order('created_at', { ascending: false })

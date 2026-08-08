@@ -8,6 +8,7 @@ export default async function AdminPackagesPage() {
   // Pakai service client agar semua paket terlihat (termasuk yang is_published=false)
   const supabase = createServiceClient()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: packagesData } = await (supabase.from('packages') as any)
     .select('*')
     .order('created_at', { ascending: false })
