@@ -7,12 +7,13 @@ import 'katex/dist/katex.min.css'
 type Part =
   | { t: 'text'; v: string }
   | { t: 'bold'; v: string }
+  | { t: 'italic'; v: string }
   | { t: 'inline'; v: string }
   | { t: 'block'; v: string }
 
 function parse(text: string): Part[] {
   const parts: Part[] = []
-  const re = /(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$|\*\*[^*]+?\*\*)/g
+  const re = /(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$|\*\*[^*]+?\*\*|\*[^*\n]+?\*)/g
   let last = 0
   let m: RegExpExecArray | null
 
@@ -21,6 +22,7 @@ function parse(text: string): Part[] {
     const matched = m[0]
     if (matched.startsWith('$$')) parts.push({ t: 'block', v: matched.slice(2, -2) })
     else if (matched.startsWith('**')) parts.push({ t: 'bold', v: matched.slice(2, -2) })
+    else if (matched.startsWith('*')) parts.push({ t: 'italic', v: matched.slice(1, -1) })
     else parts.push({ t: 'inline', v: matched.slice(1, -1) })
     last = m.index + matched.length
   }
@@ -44,6 +46,7 @@ function InlineParts({ text }: { text: string }) {
       {parts.map((part, i) => {
         if (part.t === 'text') return <span key={i}>{part.v}</span>
         if (part.t === 'bold') return <strong key={i}>{part.v}</strong>
+        if (part.t === 'italic') return <em key={i}>{part.v}</em>
         if (part.t === 'block') return (
           <span key={i} className="block my-2 overflow-x-auto"
             dangerouslySetInnerHTML={{ __html: renderMath(part.v, true) }} />
@@ -140,6 +143,7 @@ export function LatexContent({ content, className }: LatexContentProps) {
             {parts.map((part, i) => {
               if (part.t === 'text') return <span key={i} style={{ whiteSpace: 'pre-wrap' }}>{part.v}</span>
               if (part.t === 'bold') return <strong key={i}>{part.v}</strong>
+              if (part.t === 'italic') return <em key={i}>{part.v}</em>
               if (part.t === 'block') return (
                 <span key={i} className="block my-2 overflow-x-auto"
                   dangerouslySetInnerHTML={{ __html: renderMath(part.v, true) }} />
