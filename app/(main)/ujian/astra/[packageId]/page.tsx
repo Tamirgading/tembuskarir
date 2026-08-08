@@ -363,21 +363,23 @@ export default function AstraUjianPage() {
     setPhase('in-progress')
   }
 
-  async function selectAnswer(questionId: string, optKey: string) {
+  function selectAnswer(questionId: string, optKey: string) {
     const updated = { ...answers, [questionId]: optKey }
     setAnswers(updated)
     if (attemptId) localStorage.setItem(`astra_${attemptId}`, JSON.stringify(updated))
-    // Simpan ke DB secara background
-    try {
-      const supabase = createClient()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from('attempts') as any).update({ answers: updated }).eq('id', attemptId)
-    } catch { /* ignore */ }
 
-    // PS: auto-advance ke soal berikutnya setelah 200ms (jeda visual singkat)
+    // PS: advance dulu tanpa menunggu DB — soal muncul langsung setelah 200ms
     if (subtestKeysRef.current[currentSubtestIdxRef.current] === 'PS') {
       if (autoNextRef.current) clearTimeout(autoNextRef.current)
       autoNextRef.current = setTimeout(() => { handleNext() }, 200)
+    }
+
+    // DB save berjalan di background — tidak diblok await
+    const aid = attemptId
+    if (aid) {
+      const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      void (supabase.from('attempts') as any).update({ answers: updated }).eq('id', aid)
     }
   }
 

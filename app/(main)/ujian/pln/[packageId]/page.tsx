@@ -309,15 +309,17 @@ export default function PlnUjianPage() {
     setPhase('in-progress')
   }
 
-  async function selectAnswer(questionId: string, key: string) {
+  function selectAnswer(questionId: string, key: string) {
     const updated = { ...answers, [questionId]: key }
     setAnswers(updated)
     if (attemptId) localStorage.setItem(`pln_${attemptId}`, JSON.stringify(updated))
-    try {
+    // DB save di background — tidak diblok await agar UI tetap responsif
+    const aid = attemptId
+    if (aid) {
       const supabase = createClient()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from('attempts') as any).update({ answers: updated }).eq('id', attemptId)
-    } catch { /* ignore */ }
+      void (supabase.from('attempts') as any).update({ answers: updated }).eq('id', aid)
+    }
   }
 
   function handleNext() {
