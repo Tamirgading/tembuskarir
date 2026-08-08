@@ -229,7 +229,7 @@ export async function GET(request: NextRequest) {
               'Segera perpanjang agar tetap bisa akses semua paket latihan.',
               '/harga'
             )
-            days === 7 ? notifResults.h7++ : notifResults.h3++
+            if (days === 7) { notifResults.h7++ } else { notifResults.h3++ }
           }
         } catch {
           notifResults.errors++

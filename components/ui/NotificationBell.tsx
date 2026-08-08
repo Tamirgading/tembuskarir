@@ -59,6 +59,7 @@ export function NotificationBell() {
   async function load() {
     try {
       const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data } = await (supabase.from('notifications') as any)
         .select('id,type,title,body,link,is_read,created_at')
         .order('created_at', { ascending: false })
@@ -74,6 +75,7 @@ export function NotificationBell() {
       const ids = notifs.filter((n) => !n.is_read).map((n) => n.id)
       try {
         const supabase = createClient()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase.from('notifications') as any).update({ is_read: true }).in('id', ids)
         setNotifs((prev) => prev.map((n) => ({ ...n, is_read: true })))
       } catch { /* ignore */ }
