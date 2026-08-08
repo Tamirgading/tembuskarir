@@ -6,7 +6,6 @@ import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
 import { HasilReview } from '@/components/hasil/HasilReview'
-import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 interface QuestionWithAnswer {
   id: string
@@ -128,12 +127,6 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
   return (
     <div className="max-w-5xl mx-auto space-y-5">
-
-      <Breadcrumb items={[
-        { label: 'Paket Soal', href: '/paket' },
-        { label: pkg?.name ?? 'Paket', href: attempt.package_id ? `/persiapan/${attempt.package_id}` : undefined },
-        { label: 'Hasil' },
-      ]} />
 
       {/* ══ HERO ══ */}
       <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
