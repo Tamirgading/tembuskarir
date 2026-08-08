@@ -267,8 +267,8 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
       <div className="flex flex-col flex-1 min-w-0 min-h-screen">
 
         {/* ── Topbar ── */}
-        <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-hairline">
-          <div className="flex items-center gap-2 h-14 px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-3 z-30 mx-3 lg:mx-4 rounded-2xl bg-white/95 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-hairline">
+          <div className="flex items-center gap-2 h-12 px-3 sm:px-4">
 
             {/* Mobile hamburger */}
             <button onClick={() => setDrawer(true)}
