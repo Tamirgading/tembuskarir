@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { isAdmin } from '@/lib/admin'
 
 export async function POST(req: NextRequest) {
@@ -16,8 +16,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'packageId required' }, { status: 400 })
   }
 
+  // Gunakan service client agar tidak diblokir RLS (tidak ada UPDATE policy untuk packages)
+  const service = createServiceClient()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase.from('packages') as any)
+  const { error } = await (service.from('packages') as any)
     .update({ is_published: publish })
     .eq('id', packageId)
 
