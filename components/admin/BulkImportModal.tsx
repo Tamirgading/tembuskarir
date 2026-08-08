@@ -2,6 +2,8 @@
 
 import { useState, useRef, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { Check, Copy } from 'lucide-react'
+import { GEMINI_PROMPT } from '@/lib/question-csv'
 
 interface ParsedQuestion {
   rowNum: number
@@ -144,7 +146,14 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
   const [parseError, setParseError] = useState<string | null>(null)
   const [isParsing, setIsParsing] = useState(false)
   const [importResult, setImportResult] = useState<{ imported: number; errors: string[] } | null>(null)
+  const [promptCopied, setPromptCopied] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function copyGeminiPrompt() {
+    await navigator.clipboard.writeText(GEMINI_PROMPT)
+    setPromptCopied(true)
+    window.setTimeout(() => setPromptCopied(false), 2000)
+  }
 
   const validQuestions = parsedQuestions?.filter((q) => !q.error) ?? []
   const invalidQuestions = parsedQuestions?.filter((q) => q.error) ?? []
@@ -216,10 +225,17 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
               <p>• Isi <code className="bg-white/60 px-1 rounded">correct_answer</code> dengan salah satu A–E</p>
               <p>• <code className="bg-white/60 px-1 rounded">category</code> = kode sub-tes (mis. NUM, VER) — boleh dikosongkan</p>
             </div>
-            <button onClick={downloadTemplate}
-              className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-              ⬇️ Download template_soal.csv
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={downloadTemplate}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                ⬇️ Download template_soal.csv
+              </button>
+              <button type="button" onClick={copyGeminiPrompt}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-blue-300 text-blue-700 text-xs font-semibold rounded-lg hover:bg-blue-50 transition-colors">
+                {promptCopied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+                {promptCopied ? 'Prompt tersalin' : 'Salin prompt Gemini'}
+              </button>
+            </div>
           </div>
 
           {/* Langkah 2 */}

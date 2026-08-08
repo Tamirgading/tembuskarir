@@ -2,8 +2,10 @@
 
 import { useState, useTransition, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, ClipboardPaste } from 'lucide-react'
 import { LatexContent } from '@/components/ui/LatexContent'
 import { RichTextarea } from '@/components/ui/RichTextarea'
+import { parseQuestionSnippet } from '@/lib/question-csv'
 
 interface AddQuestionFormProps {
   packageId: string
@@ -55,6 +57,9 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
+  const [showSnippetImporter, setShowSnippetImporter] = useState(false)
+  const [snippet, setSnippet] = useState('')
+  const [snippetMessage, setSnippetMessage] = useState<{ type: 'success' | 'warning' | 'error'; text: string } | null>(null)
 
   // Gambar pembahasan
   const [explImageFile, setExplImageFile] = useState<File | null>(null)
@@ -75,10 +80,30 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     setImagePreviewUrl(null)
     setUploadedImageUrl(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
+    setSnippet('')
+    setSnippetMessage(null)
+    setShowSnippetImporter(false)
     setExplImageFile(null)
     setExplImagePreviewUrl(null)
     setUploadedExplImageUrl(null)
     if (explFileInputRef.current) explFileInputRef.current.value = ''
+  }
+
+  function handleApplySnippet() {
+    setSnippetMessage(null)
+    setError(null)
+    setSuccess(false)
+    try {
+      const parsed = parseQuestionSnippet(snippet)
+      setContent(parsed.content)
+      setOptions(parsed.options)
+      setCorrectAnswer(parsed.correctAnswer)
+      setCategory(parsed.category)
+      setExplanation(parsed.explanation)
+      setSnippetMessage({ type: 'success', text: 'Snippet berhasil dimasukkan. Periksa kembali sebelum menyimpan.' })
+    } catch (err) {
+      setSnippetMessage({ type: 'error', text: err instanceof Error ? err.message : 'Snippet tidak dapat dibaca.' })
+    }
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -231,6 +256,51 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
       {/* ── EDIT MODE ── */}
       {!showPreview && (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Tempel Snippet */}
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50/60 overflow-hidden">
+            <button type="button"
+              onClick={() => setShowSnippetImporter((v) => !v)}
+              className="w-full flex items-center gap-2 px-3 py-3 text-left text-indigo-900 hover:bg-indigo-50 transition-colors">
+              <ClipboardPaste className="w-4 h-4 shrink-0" />
+              <span className="flex-1 text-xs font-semibold">Tempel Snippet</span>
+              {showSnippetImporter ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {showSnippetImporter && (
+              <div className="border-t border-indigo-200 px-3 py-3 space-y-2.5">
+                <textarea
+                  value={snippet}
+                  onChange={(e) => { setSnippet(e.target.value); setSnippetMessage(null) }}
+                  rows={5}
+                  placeholder={'Tempel satu baris CSV soal di sini...\n\n"Pertanyaan...","Opsi A","Opsi B","Opsi C","Opsi D","Opsi E","C","QR","Pembahasan..."'}
+                  className="w-full resize-y rounded-lg border border-indigo-200 bg-white px-3 py-2 font-mono text-xs leading-relaxed text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+                <p className="text-[11px] leading-relaxed text-indigo-600">
+                  9 kolom: content, A, B, C, D, E, correct_answer, category, explanation. Mendukung <code className="font-mono">[[NL]]</code> dan LaTeX.
+                </p>
+                <button type="button" onClick={handleApplySnippet}
+                  className="w-full rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700 transition-colors">
+                  Isi Form dari Snippet
+                </button>
+
+                {snippetMessage && (
+                  <div className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-xs leading-relaxed ${
+                    snippetMessage.type === 'success'
+                      ? 'border-green-200 bg-green-50 text-green-700'
+                      : snippetMessage.type === 'warning'
+                        ? 'border-amber-200 bg-amber-50 text-amber-700'
+                        : 'border-red-200 bg-red-50 text-red-700'
+                  }`}>
+                    {snippetMessage.type === 'success'
+                      ? <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      : <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />}
+                    <span>{snippetMessage.text}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Pertanyaan */}
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1">

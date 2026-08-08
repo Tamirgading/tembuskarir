@@ -6,6 +6,7 @@ import type { PackageRow, QuestionRow } from '@/lib/utils'
 import { AddQuestionForm } from '@/components/admin/AddQuestionForm'
 import { QuestionList } from '@/components/admin/QuestionList'
 import { ImportButton } from '@/components/admin/ImportButton'
+import { AdminExamPreview } from '@/components/admin/AdminExamPreview'
 import { WmPairsManager } from '@/components/admin/WmPairsManager'
 import { PlnSpecialForms } from '@/components/admin/PlnSpecialForms'
 import { BumnAkhlakForm } from '@/components/admin/BumnAkhlakForm'
@@ -32,11 +33,11 @@ export default async function AdminQuestionsPage({
 
   const { data: questionsData } = await supabase
     .from('questions')
-    .select('id, content, options, correct_answer, explanation, difficulty, category, order_index, image_url, created_at')
+    .select('id, content, options, correct_answer, explanation, explanation_image_url, difficulty, category, order_index, image_url, created_at')
     .eq('package_id', packageId)
     .order('order_index', { ascending: true })
 
-  type FullQuestion = Pick<QuestionRow, 'id' | 'content' | 'options' | 'correct_answer' | 'explanation' | 'difficulty' | 'category' | 'order_index' | 'image_url' | 'created_at'>
+  type FullQuestion = Pick<QuestionRow, 'id' | 'content' | 'options' | 'correct_answer' | 'explanation' | 'difficulty' | 'category' | 'order_index' | 'image_url' | 'created_at'> & { explanation_image_url?: string | null }
   const questions = (questionsData ?? []) as FullQuestion[]
 
   const total = questions.length
@@ -96,7 +97,10 @@ export default async function AdminQuestionsPage({
           <div className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h2 className="font-semibold text-gray-900">Daftar Soal</h2>
-              <ImportButton packageId={packageId} startIndex={total + 1} />
+              <div className="flex items-center gap-2">
+                <AdminExamPreview packageName={pkg.name} pkgCategory={pkg.category} questions={questions} />
+                <ImportButton packageId={packageId} startIndex={total + 1} />
+              </div>
             </div>
             <QuestionList questions={questions} packageId={packageId} pkgCategory={pkg.category} />
           </div>

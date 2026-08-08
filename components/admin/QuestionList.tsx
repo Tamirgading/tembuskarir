@@ -2,9 +2,10 @@
 
 import { useState, useTransition, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, ChevronsUpDown, Pencil } from 'lucide-react'
+import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, ChevronsUpDown, Copy, Check, Pencil } from 'lucide-react'
 import { LatexContent } from '@/components/ui/LatexContent'
 import { EditQuestionModal } from './EditQuestionModal'
+import { serializeQuestionSnippet } from '@/lib/question-csv'
 
 interface Option {
   key: string
@@ -117,6 +118,7 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const [expandedDetailId, setExpandedDetailId] = useState<string | null>(null)
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   // Group + sort per kategori, respecting subtest order
   const groups = useMemo(() => {
@@ -198,6 +200,14 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
       return
     }
     startTransition(() => router.refresh())
+  }
+
+  function handleCopySnippet(q: Question) {
+    const text = serializeQuestionSnippet(q)
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedId(q.id)
+      setTimeout(() => setCopiedId(null), 2000)
+    })
   }
 
   if (questions.length === 0) {
@@ -353,6 +363,19 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
                             className="text-xs text-gray-400 hover:text-blue-600 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
                           >
                             {isDetailExpanded ? 'Tutup' : 'Detail'}
+                          </button>
+
+                          {/* Salin snippet */}
+                          <button
+                            type="button"
+                            onClick={() => handleCopySnippet(q)}
+                            title="Salin soal sebagai snippet CSV"
+                            className="text-xs text-gray-400 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition-colors flex items-center gap-1"
+                          >
+                            {copiedId === q.id
+                              ? <Check className="w-3 h-3 text-green-600" />
+                              : <Copy className="w-3 h-3" />}
+                            {copiedId === q.id ? 'Disalin!' : 'Salin'}
                           </button>
 
                           {/* Edit */}
