@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { isAdmin } from '@/lib/admin'
 
 export async function POST(req: NextRequest) {
@@ -27,8 +27,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Nama dan slug wajib diisi.' }, { status: 400 })
   }
 
+  const service = createServiceClient()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase.from('packages') as any)
+  const { data, error } = await (service.from('packages') as any)
     .insert({
       name: name.trim(),
       slug: slug.trim(),
