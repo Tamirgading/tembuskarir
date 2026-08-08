@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
   User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Crown,
-  ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3,
+  ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3, PanelLeft,
 } from 'lucide-react'
 import LoginModal from '@/components/ui/LoginModal'
 import { NotificationBell } from '@/components/ui/NotificationBell'
@@ -58,30 +58,27 @@ const TABS: Item[] = [
 ]
 
 // ── Page title mapping (untuk topbar) ───────────────────────────────────────
-type PageMeta = {
-  pattern: string | RegExp
-  label: string
-  Icon: React.ComponentType<{ className?: string }>
-  back?: { label: string; href?: string } // href opsional → pakai router.back()
-}
+type IconType = React.ComponentType<{ className?: string }>
+type BackInfo = { label: string; href?: string; Icon?: IconType }
+type PageMeta = { pattern: string | RegExp; label: string; Icon: IconType; back?: BackInfo }
 
 const PAGE_META: PageMeta[] = [
-  { pattern: '/',                      label: 'Ringkasan belajarmu hari ini', Icon: Home       },
-  { pattern: /^\/portal\/astra/,       label: 'Psikotes ASTRA',              Icon: Briefcase  },
-  { pattern: /^\/portal\/pln\/gat/,    label: 'PLN: GAT',                    Icon: Zap        },
-  { pattern: /^\/portal\/pln\/tahap2/, label: 'PLN: Tahap 2',                Icon: BookOpen   },
-  { pattern: /^\/portal\/pln/,         label: 'Rekrutmen PLN',               Icon: Zap        },
-  { pattern: /^\/portal\/bumn/,        label: 'Rekrutmen BUMN',              Icon: Building2  },
-  { pattern: /^\/paket/,               label: 'Semua Paket',                 Icon: Package    },
-  { pattern: /^\/rapor/,               label: 'Rapor Belajar',               Icon: BarChart3  },
-  { pattern: /^\/riwayat/,             label: 'Riwayat Tes',                 Icon: History    },
-  { pattern: /^\/soal-tersimpan/,      label: 'Soal Tersimpan',              Icon: Bookmark   },
-  { pattern: /^\/harga/,               label: 'Langganan & Harga',           Icon: CreditCard },
-  { pattern: /^\/info-seleksi/,        label: 'Info Seleksi',                Icon: Newspaper  },
-  { pattern: /^\/profil/,              label: 'Profil Saya',                 Icon: User       },
-  { pattern: /^\/pengaturan/,          label: 'Pengaturan',                  Icon: Settings   },
-  { pattern: /^\/persiapan/,           label: 'Persiapan Ujian',             Icon: Package,   back: { label: 'Portal' }              },
-  { pattern: /^\/hasil/,               label: 'Hasil Ujian',                 Icon: BarChart3, back: { label: 'Riwayat', href: '/riwayat' } },
+  { pattern: '/',                      label: 'Ringkasan belajarmu hari ini', Icon: Home                                                                     },
+  { pattern: /^\/portal\/astra/,       label: 'Psikotes ASTRA',              Icon: Briefcase, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/portal\/pln\/gat/,    label: 'PLN: GAT',                    Icon: Zap,       back: { label: 'Rekrutmen PLN', href: '/portal/pln', Icon: Zap       } },
+  { pattern: /^\/portal\/pln\/tahap2/, label: 'PLN: Tahap 2',                Icon: BookOpen,  back: { label: 'Rekrutmen PLN', href: '/portal/pln', Icon: Zap       } },
+  { pattern: /^\/portal\/pln/,         label: 'Rekrutmen PLN',               Icon: Zap,       back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/portal\/bumn/,        label: 'Rekrutmen BUMN',              Icon: Building2, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/paket/,               label: 'Semua Paket',                 Icon: Package,   back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/rapor/,               label: 'Rapor Belajar',               Icon: BarChart3, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/riwayat/,             label: 'Riwayat Tes',                 Icon: History,   back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/soal-tersimpan/,      label: 'Soal Tersimpan',              Icon: Bookmark,  back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/harga/,               label: 'Langganan & Harga',           Icon: CreditCard,back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/info-seleksi/,        label: 'Info Seleksi',                Icon: Newspaper, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/profil/,              label: 'Profil Saya',                 Icon: User,      back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/pengaturan/,          label: 'Pengaturan',                  Icon: Settings,  back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/persiapan/,           label: 'Persiapan Ujian',             Icon: Package,   back: { label: 'Kembali'                                            } },
+  { pattern: /^\/hasil/,               label: 'Hasil Ujian',                 Icon: BarChart3, back: { label: 'Riwayat',     href: '/riwayat',    Icon: History   } },
 ]
 
 function getPageMeta(pathname: string) {
@@ -137,15 +134,38 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
   const SidebarBody = (isMobile = false) => (
     <>
       {/* Brand */}
-      <div className={`flex items-center gap-2.5 pb-5 ${collapsed && !isMobile ? 'justify-center px-0' : 'px-2'}`}>
-        <Link href="/" className="flex items-center gap-2.5" onClick={() => isMobile && setDrawer(false)}>
-          <span className="w-8 h-8 rounded-[9px] bg-white grid place-items-center shrink-0 shadow-soft">
-            <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
-          </span>
-          {(!collapsed || isMobile) && (
-            <span className="font-heading font-bold text-[17px] text-white whitespace-nowrap">TembusKarir</span>
-          )}
-        </Link>
+      <div className={`pb-5 ${collapsed && !isMobile ? 'px-0' : 'px-2'}`}>
+        {/* Expanded: logo + name + PanelLeft toggle */}
+        {(!collapsed || isMobile) && (
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2.5 flex-1 min-w-0" onClick={() => isMobile && setDrawer(false)}>
+              <span className="w-8 h-8 rounded-[9px] bg-white grid place-items-center shrink-0 shadow-soft">
+                <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
+              </span>
+              <span className="font-heading font-bold text-[17px] text-white whitespace-nowrap truncate">TembusKarir</span>
+            </Link>
+            {!isMobile && (
+              <button onClick={toggleSidebar} title="Sembunyikan sidebar"
+                className="p-1.5 rounded-lg text-white/35 hover:text-white hover:bg-white/10 transition-colors shrink-0">
+                <PanelLeft className="w-[18px] h-[18px]" />
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Collapsed: logo → hover reveals PanelLeft */}
+        {collapsed && !isMobile && (
+          <div className="relative w-8 h-8 mx-auto group/logo">
+            <Link href="/"
+              className="absolute inset-0 grid place-items-center bg-white rounded-[9px] shadow-soft group-hover/logo:opacity-0 group-hover/logo:pointer-events-none transition-opacity duration-150">
+              <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
+            </Link>
+            <button onClick={toggleSidebar} title="Tampilkan sidebar"
+              className="absolute inset-0 grid place-items-center bg-white/15 rounded-[9px] text-white opacity-0 group-hover/logo:opacity-100 transition-opacity duration-150">
+              <PanelLeft className="w-[18px] h-[18px]" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Nav */}
@@ -283,37 +303,28 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Desktop sidebar toggle */}
-            <button onClick={toggleSidebar} title={collapsed ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}
-              className="hidden lg:flex p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-black/5 transition-colors">
-              {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-            </button>
-
-            {/* Page title / breadcrumb */}
+            {/* Desktop: back button berdasarkan hirarki halaman */}
             {pageMeta.back ? (
-              <div className="flex items-center gap-1 flex-1 min-w-0">
-                <button
-                  onClick={() => pageMeta.back?.href ? router.push(pageMeta.back.href) : router.back()}
-                  className="flex items-center gap-1 text-ink-muted hover:text-ink transition-colors shrink-0 rounded-lg px-1.5 py-1 hover:bg-black/5">
-                  <ChevronLeft className="w-4 h-4" />
-                  <span className="text-sm font-medium hidden sm:block">{pageMeta.back.label}</span>
-                </button>
-                <ChevronRight className="w-3.5 h-3.5 text-ink-muted/40 shrink-0" />
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
-                    <PageIcon className="w-3.5 h-3.5 text-ink-muted" />
-                  </div>
-                  <span className="text-sm text-ink font-semibold truncate hidden sm:block">{pageMeta.label}</span>
-                </div>
-              </div>
+              <button
+                onClick={() => pageMeta.back?.href ? router.push(pageMeta.back.href) : router.back()}
+                title={`Kembali ke ${pageMeta.back.label}`}
+                className="hidden lg:flex items-center gap-1.5 -ml-1 px-2.5 py-1.5 rounded-xl text-ink-muted hover:text-ink hover:bg-black/5 transition-colors shrink-0">
+                {pageMeta.back.Icon
+                  ? <pageMeta.back.Icon className="w-4 h-4" />
+                  : <ChevronLeft className="w-4 h-4" />}
+                <span className="text-sm font-medium">{pageMeta.back.label}</span>
+              </button>
             ) : (
-              <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
-                  <PageIcon className="w-3.5 h-3.5 text-ink-muted" />
-                </div>
-                <span className="text-sm text-ink-soft font-medium truncate hidden sm:block">{pageMeta.label}</span>
-              </div>
+              <span className="hidden lg:block w-1 shrink-0" />
             )}
+
+            {/* Page title */}
+            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
+                <PageIcon className="w-3.5 h-3.5 text-ink-muted" />
+              </div>
+              <span className="text-sm text-ink-soft font-medium truncate hidden sm:block">{pageMeta.label}</span>
+            </div>
 
             {/* Right actions */}
             {!isLoggedIn ? (
