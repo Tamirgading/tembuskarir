@@ -107,7 +107,22 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
 
   // Tren skor — maksimal 8 titik terakhir
   const trend = attempts.slice(-8).map((a) => ({ d: fmtDate(a.started_at), v: a.score ?? 0 }))
-  const maxTrend = Math.max(...trend.map((t) => t.v), 1)
+
+  // SVG line chart prep
+  const CW = 280, CH = 72, pL = 4, pR = 4, pT = 16, pB = 2
+  const n = trend.length
+  const minV = Math.min(...trend.map(t => t.v))
+  const maxV = Math.max(...trend.map(t => t.v), minV + 1)
+  const rangeV = maxV - minV
+  const xOf = (i: number) => pL + (n > 1 ? (i / (n - 1)) * (CW - pL - pR) : (CW - pL - pR) / 2)
+  const yOf = (v: number) => pT + (1 - (v - minV) / rangeV) * (CH - pT - pB)
+  const chartPts = trend.map((t, i) => ({ x: xOf(i), y: yOf(t.v), d: t.d, v: t.v }))
+  const chartLine = chartPts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const chartArea = `M ${chartPts[0].x.toFixed(1)},${CH} ` +
+    chartPts.map(p => `L ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ') +
+    ` L ${chartPts[n - 1].x.toFixed(1)},${CH} Z`
+  const chartLast = chartPts[n - 1]
+  const gradId = `tg-${category}`
 
   // Agregasi penguasaan per sub-tes dari seluruh attempts kategori ini
   const agg: Record<string, CatStats> = {}
@@ -157,18 +172,36 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
           </div>
           <p className="text-[11.5px] text-ink-muted mt-1">Simulasi {fmtDate(last.started_at)}</p>
 
-          {/* Mini bar chart tren */}
-          <div className="flex items-end gap-1.5 h-20 mt-4">
-            {trend.map((t, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
-                <div
-                  className={`w-full rounded-t-md ${i === trend.length - 1 ? 'bg-brand' : 'bg-brand/25'}`}
-                  style={{ height: `${Math.max(8, (t.v / maxTrend) * 100)}%` }}
-                  title={`${t.d}: ${t.v}`}
-                />
-                <span className="text-[9px] text-ink-muted truncate w-full text-center">{t.d}</span>
-              </div>
-            ))}
+          {/* SVG line chart tren */}
+          <div className="mt-4">
+            <svg viewBox={`0 0 ${CW} ${CH}`} width="100%" height={CH} className="overflow-visible">
+              <defs>
+                <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#0E9F6E" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#0E9F6E" stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
+              <path d={chartArea} fill={`url(#${gradId})`} />
+              {n > 1 && (
+                <polyline points={chartLine} fill="none" stroke="#0E9F6E" strokeWidth="2"
+                  strokeLinejoin="round" strokeLinecap="round" />
+              )}
+              {chartPts.map((p, i) => (
+                <circle key={i} cx={p.x} cy={p.y}
+                  r={i === n - 1 ? 4 : 2.5}
+                  fill={i === n - 1 ? '#0E9F6E' : 'white'}
+                  stroke="#0E9F6E" strokeWidth="2" />
+              ))}
+              <text x={chartLast.x} y={chartLast.y - 8}
+                textAnchor="middle" fontSize="9" fontWeight="600" fill="#0E9F6E">
+                {chartLast.v}
+              </text>
+            </svg>
+            <div className="flex mt-1">
+              {trend.map((t, i) => (
+                <div key={i} className="flex-1 text-center text-[9px] text-ink-muted truncate px-0.5">{t.d}</div>
+              ))}
+            </div>
           </div>
         </div>
 
