@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle2, AlertTriangle } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import type { PackageRow, QuestionRow } from '@/lib/utils'
 import { AddQuestionForm } from '@/components/admin/AddQuestionForm'
 import { QuestionList } from '@/components/admin/QuestionList'
@@ -20,10 +20,9 @@ export default async function AdminQuestionsPage({
 }) {
   const { packageId } = await params
   const { formTab } = await searchParams
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
-  const { data: pkgData } = await supabase
-    .from('packages')
+  const { data: pkgData } = await (supabase.from('packages') as any)
     .select('*')
     .eq('id', packageId)
     .single()
@@ -31,8 +30,7 @@ export default async function AdminQuestionsPage({
   if (!pkgData) notFound()
   const pkg = pkgData as PackageRow
 
-  const { data: questionsData } = await supabase
-    .from('questions')
+  const { data: questionsData } = await (supabase.from('questions') as any)
     .select('id, content, options, correct_answer, explanation, explanation_image_url, difficulty, category, order_index, image_url, created_at')
     .eq('package_id', packageId)
     .order('order_index', { ascending: true })

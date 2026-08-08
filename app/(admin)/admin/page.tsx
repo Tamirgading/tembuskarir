@@ -1,25 +1,22 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Package, Users, Ticket } from 'lucide-react'
 import type { SubscriptionRow, UserRow } from '@/lib/utils'
 
 export default async function AdminDashboardPage() {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   // Stats: total users
-  const { count: totalUsers } = await supabase
-    .from('users')
+  const { count: totalUsers } = await (supabase.from('users') as any)
     .select('*', { count: 'exact', head: true })
 
   // Stats: premium users
-  const { count: premiumUsers } = await supabase
-    .from('users')
+  const { count: premiumUsers } = await (supabase.from('users') as any)
     .select('*', { count: 'exact', head: true })
     .eq('plan', 'premium')
 
   // Stats: total paid subscriptions
-  const { data: paidSubs } = await supabase
-    .from('subscriptions')
+  const { data: paidSubs } = await (supabase.from('subscriptions') as any)
     .select('amount, plan_type, paid_at')
     .eq('status', 'paid')
     .order('paid_at', { ascending: false })
@@ -29,14 +26,12 @@ export default async function AdminDashboardPage() {
   const totalRevenue = subs.reduce((sum, s) => sum + s.amount, 0)
 
   // Stats: total attempts
-  const { count: totalAttempts } = await supabase
-    .from('attempts')
+  const { count: totalAttempts } = await (supabase.from('attempts') as any)
     .select('*', { count: 'exact', head: true })
     .eq('status', 'finished')
 
   // Recent 5 users
-  const { data: recentUsersData } = await supabase
-    .from('users')
+  const { data: recentUsersData } = await (supabase.from('users') as any)
     .select('id, email, full_name, plan, created_at')
     .order('created_at', { ascending: false })
     .limit(5)

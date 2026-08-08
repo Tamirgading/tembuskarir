@@ -1,14 +1,14 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Package, Lightbulb } from 'lucide-react'
 import type { PackageRow } from '@/lib/utils'
 import { PackageActions } from '@/components/admin/PackageActions'
 
 export default async function AdminPackagesPage() {
-  const supabase = await createClient()
+  // Pakai service client agar semua paket terlihat (termasuk yang is_published=false)
+  const supabase = createServiceClient()
 
-  const { data: packagesData } = await supabase
-    .from('packages')
+  const { data: packagesData } = await (supabase.from('packages') as any)
     .select('*')
     .order('created_at', { ascending: false })
 

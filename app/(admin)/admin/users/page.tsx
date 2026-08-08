@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import type { UserRow, SubscriptionRow } from '@/lib/utils'
 
 export default async function AdminUsersPage({
@@ -7,7 +7,7 @@ export default async function AdminUsersPage({
   searchParams: Promise<{ q?: string; plan?: string }>
 }) {
   const { q, plan } = await searchParams
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   // Query users
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,8 +37,8 @@ export default async function AdminUsersPage({
   }
 
   // Ambil semua transaksi paid untuk summary revenue
-  const { data: subData } = await supabase
-    .from('subscriptions')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: subData } = await (supabase.from('subscriptions') as any)
     .select('amount, plan_type, paid_at, status')
     .eq('status', 'paid')
     .order('paid_at', { ascending: false })
