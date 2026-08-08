@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
@@ -114,6 +114,28 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
   const initial  = userName ? userName.charAt(0).toUpperCase() : 'U'
   const pageMeta = getPageMeta(pathname)
   const PageIcon = pageMeta.Icon
+
+  // Bangun breadcrumb trail: root → ... → current
+  type Crumb = { label: string; href?: string; Icon: IconType; useBack?: boolean }
+  const breadcrumbs: Crumb[] = (() => {
+    const crumbs: Crumb[] = []
+    const parentChain: (BackInfo & { useBack?: boolean })[] = []
+    let curr = pageMeta
+    while (curr.back) {
+      if (curr.back.href) {
+        parentChain.unshift({ ...curr.back })
+        curr = getPageMeta(curr.back.href)
+      } else {
+        parentChain.unshift({ ...curr.back, useBack: true })
+        break
+      }
+    }
+    for (const p of parentChain) {
+      crumbs.push({ label: p.label, href: p.href, Icon: p.Icon ?? Home, useBack: p.useBack })
+    }
+    crumbs.push({ label: pageMeta.label, Icon: PageIcon })
+    return crumbs
+  })()
 
   const isActive = (href: string) => {
     const base = href.split('?')[0]
@@ -303,27 +325,47 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Desktop: back button berdasarkan hirarki halaman */}
-            {pageMeta.back ? (
-              <button
-                onClick={() => pageMeta.back?.href ? router.push(pageMeta.back.href) : router.back()}
-                title={`Kembali ke ${pageMeta.back.label}`}
-                className="hidden lg:flex items-center gap-1.5 -ml-1 px-2.5 py-1.5 rounded-xl text-ink-muted hover:text-ink hover:bg-black/5 transition-colors shrink-0">
-                {pageMeta.back.Icon
-                  ? <pageMeta.back.Icon className="w-4 h-4" />
-                  : <ChevronLeft className="w-4 h-4" />}
-                <span className="text-sm font-medium">{pageMeta.back.label}</span>
-              </button>
-            ) : (
-              <span className="hidden lg:block w-1 shrink-0" />
-            )}
-
-            {/* Page title */}
-            <div className="flex items-center gap-2.5 flex-1 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
-                <PageIcon className="w-3.5 h-3.5 text-ink-muted" />
-              </div>
-              <span className="text-sm text-ink-soft font-medium truncate hidden sm:block">{pageMeta.label}</span>
+            {/* Breadcrumb trail */}
+            <div className="flex items-center gap-0.5 flex-1 min-w-0 overflow-hidden">
+              {breadcrumbs.map((crumb, i) => {
+                const isLast = i === breadcrumbs.length - 1
+                const CrumbIcon = crumb.Icon
+                if (isLast) {
+                  return (
+                    <Fragment key={i}>
+                      {breadcrumbs.length > 1 && (
+                        <ChevronRight className="w-3 h-3 text-ink-muted/30 shrink-0 mx-0.5 hidden sm:block" />
+                      )}
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <div className="w-6 h-6 rounded-md bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
+                          <CrumbIcon className="w-3 h-3 text-ink-muted" />
+                        </div>
+                        <span className="text-sm text-ink-soft font-medium truncate">{crumb.label}</span>
+                      </div>
+                    </Fragment>
+                  )
+                }
+                return (
+                  <Fragment key={i}>
+                    {i > 0 && (
+                      <ChevronRight className="w-3 h-3 text-ink-muted/30 shrink-0 mx-0.5 hidden sm:block" />
+                    )}
+                    {crumb.useBack ? (
+                      <button onClick={() => router.back()}
+                        className="hidden sm:flex items-center gap-1 text-sm text-ink-muted hover:text-ink transition-colors rounded-lg px-1.5 py-1 hover:bg-black/5 shrink-0">
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        {crumb.label}
+                      </button>
+                    ) : (
+                      <Link href={crumb.href!}
+                        className="hidden sm:flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink transition-colors rounded-lg px-1.5 py-1 hover:bg-black/5 shrink-0">
+                        <CrumbIcon className="w-3.5 h-3.5" />
+                        {crumb.label}
+                      </Link>
+                    )}
+                  </Fragment>
+                )
+              })}
             </div>
 
             {/* Right actions */}
