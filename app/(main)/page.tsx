@@ -373,7 +373,7 @@ export default async function HomePage({
                     aria-hidden="true"
                     width={140}
                     height={140}
-                    className="absolute bottom-0 right-0 w-20 sm:w-28 md:w-36 h-auto object-contain pointer-events-none select-none"
+                    className="absolute bottom-0 right-0 w-28 sm:w-32 md:w-40 h-auto object-contain pointer-events-none select-none"
                   />
                 </div>
               </div>
