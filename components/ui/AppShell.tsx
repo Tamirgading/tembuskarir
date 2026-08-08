@@ -58,7 +58,14 @@ const TABS: Item[] = [
 ]
 
 // ── Page title mapping (untuk topbar) ───────────────────────────────────────
-const PAGE_META: { pattern: string | RegExp; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
+type PageMeta = {
+  pattern: string | RegExp
+  label: string
+  Icon: React.ComponentType<{ className?: string }>
+  back?: { label: string; href?: string } // href opsional → pakai router.back()
+}
+
+const PAGE_META: PageMeta[] = [
   { pattern: '/',                      label: 'Ringkasan belajarmu hari ini', Icon: Home       },
   { pattern: /^\/portal\/astra/,       label: 'Psikotes ASTRA',              Icon: Briefcase  },
   { pattern: /^\/portal\/pln\/gat/,    label: 'PLN: GAT',                    Icon: Zap        },
@@ -73,16 +80,16 @@ const PAGE_META: { pattern: string | RegExp; label: string; Icon: React.Componen
   { pattern: /^\/info-seleksi/,        label: 'Info Seleksi',                Icon: Newspaper  },
   { pattern: /^\/profil/,              label: 'Profil Saya',                 Icon: User       },
   { pattern: /^\/pengaturan/,          label: 'Pengaturan',                  Icon: Settings   },
-  { pattern: /^\/persiapan/,           label: 'Persiapan Ujian',             Icon: Package    },
-  { pattern: /^\/hasil/,               label: 'Hasil Ujian',                 Icon: BarChart3  },
+  { pattern: /^\/persiapan/,           label: 'Persiapan Ujian',             Icon: Package,   back: { label: 'Portal' }              },
+  { pattern: /^\/hasil/,               label: 'Hasil Ujian',                 Icon: BarChart3, back: { label: 'Riwayat', href: '/riwayat' } },
 ]
 
 function getPageMeta(pathname: string) {
-  for (const { pattern, label, Icon } of PAGE_META) {
+  for (const { pattern, label, Icon, back } of PAGE_META) {
     const hit = typeof pattern === 'string' ? pathname === pattern : pattern.test(pathname)
-    if (hit) return { label, Icon }
+    if (hit) return { label, Icon, back }
   }
-  return { label: 'TembusKarir', Icon: Home }
+  return { label: 'TembusKarir', Icon: Home, back: undefined }
 }
 
 export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellProps) {
@@ -282,13 +289,31 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
               {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
             </button>
 
-            {/* Page title */}
-            <div className="flex items-center gap-2.5 flex-1 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
-                <PageIcon className="w-3.5 h-3.5 text-ink-muted" />
+            {/* Page title / breadcrumb */}
+            {pageMeta.back ? (
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <button
+                  onClick={() => pageMeta.back?.href ? router.push(pageMeta.back.href) : router.back()}
+                  className="flex items-center gap-1 text-ink-muted hover:text-ink transition-colors shrink-0 rounded-lg px-1.5 py-1 hover:bg-black/5">
+                  <ChevronLeft className="w-4 h-4" />
+                  <span className="text-sm font-medium hidden sm:block">{pageMeta.back.label}</span>
+                </button>
+                <ChevronRight className="w-3.5 h-3.5 text-ink-muted/40 shrink-0" />
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-7 h-7 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
+                    <PageIcon className="w-3.5 h-3.5 text-ink-muted" />
+                  </div>
+                  <span className="text-sm text-ink font-semibold truncate hidden sm:block">{pageMeta.label}</span>
+                </div>
               </div>
-              <span className="text-sm text-ink-soft font-medium truncate hidden sm:block">{pageMeta.label}</span>
-            </div>
+            ) : (
+              <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                <div className="w-7 h-7 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
+                  <PageIcon className="w-3.5 h-3.5 text-ink-muted" />
+                </div>
+                <span className="text-sm text-ink-soft font-medium truncate hidden sm:block">{pageMeta.label}</span>
+              </div>
+            )}
 
             {/* Right actions */}
             {!isLoggedIn ? (
