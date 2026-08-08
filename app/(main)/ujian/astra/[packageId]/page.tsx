@@ -644,11 +644,7 @@ export default function AstraUjianPage() {
           </div>
 
           {/* Tombol next / hint PS */}
-          {key === 'PS' ? (
-            <p className="text-xs text-ink-muted text-center pt-1">
-              Pilih jawaban — soal berikutnya tampil otomatis
-            </p>
-          ) : (
+          {key === 'PS' ? null : (
             <div className="flex items-center justify-between pt-2">
               {!isAnswered ? (
                 <p className="text-xs text-amber-600 flex items-center gap-1">
