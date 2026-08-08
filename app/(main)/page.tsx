@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   CheckCircle2, Clock, FileText, ChevronRight, ArrowRight,
@@ -344,7 +345,7 @@ export default async function HomePage({
                 </div>
 
                 {/* Right card — next step */}
-                <div className="rounded-3xl p-6 text-white flex flex-col" style={{ background: 'linear-gradient(180deg,#132d45,#0e2035)' }}>
+                <div className="rounded-3xl p-6 text-white flex flex-col relative overflow-hidden" style={{ background: 'linear-gradient(180deg,#132d45,#0e2035)' }}>
                   <p className="text-[10px] uppercase tracking-widest text-white/45 font-bold mb-3">Langkah Berikutnya</p>
                   <h3 className="text-[17px] font-heading font-bold text-white mb-1.5 leading-snug">
                     Simulasi Psikotes ASTRA
@@ -366,6 +367,14 @@ export default async function HomePage({
                     className="mt-auto inline-flex items-center gap-2 bg-brand hover:bg-brand-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-colors w-fit">
                     Mulai Sekarang <ArrowRight className="w-4 h-4"/>
                   </Link>
+                  <Image
+                    src="/checkbox.png"
+                    alt=""
+                    aria-hidden="true"
+                    width={140}
+                    height={140}
+                    className="absolute bottom-0 right-0 w-20 sm:w-28 md:w-36 h-auto object-contain pointer-events-none select-none"
+                  />
                 </div>
               </div>
 
