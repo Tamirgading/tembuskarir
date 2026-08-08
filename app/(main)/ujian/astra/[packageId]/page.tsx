@@ -529,11 +529,6 @@ export default function AstraUjianPage() {
               <p className="text-amber-900 text-sm leading-relaxed">{info?.tip}</p>
             </div>
 
-            <div className="flex items-start gap-2 text-xs text-ink-muted bg-paper-soft rounded-xl px-4 py-3 border border-hairline">
-              <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <p>Timer dimulai saat kamu klik &quot;Mulai&quot;. Soal dikerjakan satu per satu &mdash; tidak bisa kembali ke soal sebelumnya.</p>
-            </div>
-
             <button
               onClick={handleStartSubtest}
               className="w-full py-4 bg-brand text-white font-bold text-base rounded-2xl hover:bg-brand-700 transition-all shadow-soft active:scale-[0.98]"
