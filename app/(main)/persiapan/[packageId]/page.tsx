@@ -7,7 +7,6 @@ import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { computeScore, isAttemptExpired, ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 import { checkPackageAccess } from '@/lib/access'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
-import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 interface OngoingInfo {
   id: string
@@ -123,12 +122,6 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
   return (
     <div className="max-w-3xl mx-auto space-y-5">
-
-      <Breadcrumb items={[
-        { label: backLabel, href: backHref },
-        { label: pkg.name, href: undefined },
-        { label: 'Persiapan' },
-      ]} />
 
       {/* ── Hero card ── */}
       <div className="bg-white rounded-3xl border border-hairline overflow-hidden shadow-soft">
