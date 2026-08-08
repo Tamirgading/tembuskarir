@@ -13,6 +13,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { computeScore, isAttemptExpired, transformPlnAkhlakForScoring, transformPlnLaForScoring } from '@/lib/exam-scoring'
 import type { QuestionPointRow } from '@/lib/exam-scoring'
 import type { PackageRow, AttemptRow, SubscriptionRow } from '@/lib/utils'
+import { notify, hasRecentNotif } from '@/lib/notifications'
 
 const BATCH_SIZE = 50 // proses maksimal 50 attempt per run
 const PENDING_EXPIRE_HOURS = 48 // pending > 48 jam → expired
@@ -195,6 +196,50 @@ export async function GET(request: NextRequest) {
     console.error('[Cron/Cleanup] Error in subscriptions task:', err)
   }
 
-  console.log('[Cron/Cleanup] Done:', JSON.stringify(results))
-  return NextResponse.json({ ok: true, results })
+  // ════════════════════════════════════════════════════════════════════════════
+  // TASK 3: Notifikasi premium akan expired (H-7 dan H-3)
+  // ════════════════════════════════════════════════════════════════════════════
+  const notifResults = { h7: 0, h3: 0, errors: 0 }
+  try {
+    const now = new Date()
+
+    // Jendela H-7: expires in 6–8 hari dari sekarang
+    const h7lo = new Date(now.getTime() + 6 * 86_400_000).toISOString()
+    const h7hi = new Date(now.getTime() + 8 * 86_400_000).toISOString()
+    // Jendela H-3: expires in 2–4 hari dari sekarang
+    const h3lo = new Date(now.getTime() + 2 * 86_400_000).toISOString()
+    const h3hi = new Date(now.getTime() + 4 * 86_400_000).toISOString()
+
+    for (const [lo, hi, days] of [[h7lo, h7hi, 7], [h3lo, h3hi, 3]] as [string, string, number][]) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: users } = await (supabase.from('users') as any)
+        .select('id, plan_expires_at')
+        .eq('plan', 'premium')
+        .gte('plan_expires_at', lo)
+        .lte('plan_expires_at', hi)
+
+      for (const u of (users ?? []) as { id: string; plan_expires_at: string }[]) {
+        try {
+          const alreadySent = await hasRecentNotif(u.id, 'premium_expiring', 48)
+          if (!alreadySent) {
+            await notify(
+              u.id,
+              'premium_expiring',
+              `Premium berakhir dalam ${days} hari`,
+              'Segera perpanjang agar tetap bisa akses semua paket latihan.',
+              '/harga'
+            )
+            days === 7 ? notifResults.h7++ : notifResults.h3++
+          }
+        } catch {
+          notifResults.errors++
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[Cron/Cleanup] Error in premium-expiring notification task:', err)
+  }
+
+  console.log('[Cron/Cleanup] Done:', JSON.stringify({ ...results, notifResults }))
+  return NextResponse.json({ ok: true, results, notifResults })
 }

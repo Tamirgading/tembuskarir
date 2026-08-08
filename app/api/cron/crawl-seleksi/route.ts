@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { notifyAll } from '@/lib/notifications'
 import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
@@ -211,6 +212,16 @@ export async function GET(request: Request) {
         const counts = await upsertItems(items, source.institusi, source.kategori)
         inserted = counts.inserted
         skipped = counts.skipped
+
+        // Kirim notifikasi ke semua user jika ada konten baru
+        if (inserted > 0) {
+          await notifyAll(
+            'new_info_seleksi',
+            `Info Seleksi ${source.institusi} Baru`,
+            `${inserted} pengumuman baru tersedia dari ${source.label}.`,
+            '/info-seleksi'
+          ).catch(() => { /* jangan gagalkan cron jika notif error */ })
+        }
       }
     } catch (err) {
       status = 'failed'
