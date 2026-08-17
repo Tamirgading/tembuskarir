@@ -110,9 +110,10 @@ export function parseQuestionSnippet(value: string): QuestionSnippet {
   const [content, A, B, C, D, E, rawCorrectAnswer, rawCategory, explanation = ''] = cells
 
   if (!content) throw new Error('Pertanyaan tidak boleh kosong.')
+  // A dan B wajib; C–E boleh kosong (soal 2 opsi seperti PS)
+  if (!A) throw new Error('Pilihan jawaban A tidak boleh kosong.')
+  if (!B) throw new Error('Pilihan jawaban B tidak boleh kosong.')
   const opts = { A, B, C, D, E }
-  const emptyOpt = OPTION_KEYS.find((k) => !opts[k])
-  if (emptyOpt) throw new Error(`Pilihan jawaban ${emptyOpt} tidak boleh kosong.`)
 
   const correctAnswer = rawCorrectAnswer.toUpperCase()
   if (!OPTION_KEYS.includes(correctAnswer as (typeof OPTION_KEYS)[number])) {

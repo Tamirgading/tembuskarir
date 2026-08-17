@@ -84,7 +84,8 @@ function buildQuestion(cells: string[], rowNum: number): ParsedQuestion {
 
   const errors: string[] = []
   if (!content) errors.push('Pertanyaan kosong')
-  if (!A || !B || !C || !D || !E) errors.push('Ada opsi yang kosong')
+  // A dan B wajib; C–E boleh kosong (soal 2 opsi seperti PS)
+  if (!A || !B) errors.push('Opsi A dan B wajib diisi')
 
   const validAnswer = ['A', 'B', 'C', 'D', 'E']
   if (!validAnswer.includes(correct_answer.toUpperCase())) {
@@ -179,10 +180,10 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
 
     const questions = validQuestions.map((q, i) => ({
       content: q.content,
-      options: (['A', 'B', 'C', 'D', 'E'] as const).map((key) => ({
-        key,
-        text: q[key],
-      })),
+      // Filter opsi kosong agar tidak tersimpan sebagai opsi kosong di DB
+      options: (['A', 'B', 'C', 'D', 'E'] as const)
+        .filter((key) => q[key])
+        .map((key) => ({ key, text: q[key] })),
       correctAnswer: q.correct_answer,
       category: q.category || null,
       explanation: q.explanation || null,
