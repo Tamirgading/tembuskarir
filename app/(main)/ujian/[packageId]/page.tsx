@@ -26,6 +26,11 @@ interface Question {
 type Answers    = Record<string, string>
 type RaguRaguSet = Set<string>
 
+// ─── Theme per kategori ────────────────────────────────────────────────────
+type ThemeConfig = { headerGradient: string; accentBg: string; accentHover: string; progressBar: string; numBadge: string; sidebarHeader: string }
+const THEME_DEFAULT: ThemeConfig = { headerGradient: 'from-blue-700 via-blue-500 to-indigo-600', accentBg: 'bg-blue-700', accentHover: 'hover:bg-blue-800', progressBar: 'bg-blue-500', numBadge: 'bg-blue-600', sidebarHeader: 'bg-blue-700' }
+const THEME_ANTAM: ThemeConfig  = { headerGradient: 'from-green-800 via-green-600 to-emerald-700', accentBg: 'bg-green-700', accentHover: 'hover:bg-green-800', progressBar: 'bg-green-500', numBadge: 'bg-green-700', sidebarHeader: 'bg-green-700' }
+
 
 // ─── Timer ──────────────────────────────────────────────────────────────────
 function Timer({ secondsLeft, isUrgent }: { secondsLeft: number; isUrgent: boolean }) {
@@ -55,6 +60,7 @@ export default function UjianPage() {
   const [showConfirm, setShowConfirm]   = useState(false)
   const [loadError, setLoadError]       = useState('')
   const [isLoading, setIsLoading]       = useState(true)
+  const [theme, setTheme]               = useState<ThemeConfig>(THEME_DEFAULT)
 
   const timerRef        = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoSubmitRef   = useRef(false)
@@ -105,16 +111,18 @@ export default function UjianPage() {
 
         const { data: pkgData, error: pkgErr } = await supabase
           .from('packages')
-          .select('name, duration_minutes, total_questions, is_free, category')
+          .select('name, slug, duration_minutes, total_questions, is_free, category')
           .eq('id', packageId)
           .single()
 
         if (pkgErr || !pkgData) { setLoadError('Paket tidak ditemukan.'); setIsLoading(false); return }
 
-        const pkgTyped = pkgData as { name: string; duration_minutes: number; total_questions: number; is_free: boolean; category: string }
+        const pkgTyped = pkgData as { name: string; slug: string; duration_minutes: number; total_questions: number; is_free: boolean; category: string }
 
         if (pkgTyped.category === 'ASTRA') { router.replace(`/ujian/astra/${packageId}`); return }
         if (pkgTyped.category === 'PLN')   { router.replace(`/ujian/pln/${packageId}`);   return }
+
+        if (pkgTyped.category === 'ANTAM') setTheme(THEME_ANTAM)
 
         if (!pkgTyped.is_free) {
           try {
@@ -172,9 +180,13 @@ export default function UjianPage() {
           }
           setTimeLeft(remaining)
         } else {
+          const insertPayload: Record<string, unknown> = { user_id: user.id, package_id: packageId }
+          if (pkgTyped.category === 'ANTAM' && pkgTyped.slug) {
+            insertPayload.selected_stream = pkgTyped.slug.replace(/^antam-/, '').toUpperCase()
+          }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const { data: newAttempt, error: attemptErr } = await (supabase.from('attempts') as any)
-            .insert({ user_id: user.id, package_id: packageId })
+            .insert(insertPayload)
             .select('id')
             .single()
 
@@ -300,7 +312,7 @@ export default function UjianPage() {
       {/* ══ STICKY HEADER — Glassmorphism ════════════════════════════════════ */}
       <div className="sticky top-0 z-40">
         {/* Layer gradasi biru di belakang */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-500 to-indigo-600 opacity-90" />
+        <div className={`absolute inset-0 bg-gradient-to-r ${theme.headerGradient} opacity-90`} />
         {/* Blur layer */}
         <div className="absolute inset-0 backdrop-blur-md bg-white/10" />
         {/* Garis bawah transparan */}
@@ -411,7 +423,7 @@ export default function UjianPage() {
           {/* ── SIDEBAR KIRI: hanya desktop (lg+) ────────────────────────── */}
           <aside className="hidden lg:flex w-56 shrink-0 sticky top-[68px] flex-col gap-3">
             <div className="bg-white rounded-xl border border-hairline overflow-hidden shadow-soft">
-              <div className="bg-blue-700 px-3 py-2">
+              <div className={`${theme.sidebarHeader} px-3 py-2`}>
                 <p className="text-xs font-bold text-white tracking-wide uppercase">Daftar Soal</p>
               </div>
               {/* Legenda */}
@@ -455,7 +467,7 @@ export default function UjianPage() {
             {/* Progress bar */}
             <div className="h-1.5 w-full bg-gray-200 rounded-t-xl overflow-hidden">
               <div
-                className="h-full bg-blue-500 transition-all duration-300"
+                className={`h-full ${theme.progressBar} transition-all duration-300`}
                 style={{ width: `${questions.length > 0 ? (answeredCount / questions.length) * 100 : 0}%` }}
               />
             </div>
@@ -463,7 +475,7 @@ export default function UjianPage() {
             {/* Card soal */}
             <div className="bg-white border border-t-0 border-hairline rounded-b-xl px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
               <div className="text-gray-900 leading-relaxed text-sm space-y-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold shadow-sm">
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${theme.numBadge} text-white text-xs font-bold shadow-sm`}>
                   Nomor {currentIndex + 1}
                 </span>
                 <div><LatexContent content={currentQuestion.content} /></div>
@@ -537,7 +549,7 @@ export default function UjianPage() {
                 <button
                   onClick={() => setShowConfirm(true)}
                   disabled={isSubmitting}
-                  className="px-3 sm:px-5 py-2 bg-blue-700 text-white font-semibold rounded-lg text-sm hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className={`px-3 sm:px-5 py-2 ${theme.accentBg} text-white font-semibold rounded-lg text-sm ${theme.accentHover} disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   <span className="hidden sm:inline">Selesaikan Soal ✓</span>
                   <span className="sm:hidden">Selesai ✓</span>
@@ -546,7 +558,7 @@ export default function UjianPage() {
                 <button
                   onClick={() => setCurrentIndex((i) => Math.min(questions.length - 1, i + 1))}
                   disabled={isSubmitting}
-                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 bg-blue-700 text-white font-semibold rounded-lg text-sm hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 ${theme.accentBg} text-white font-semibold rounded-lg text-sm ${theme.accentHover} disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   <span className="hidden sm:inline">Soal Selanjutnya</span>
                   <span className="sm:hidden">Next</span>

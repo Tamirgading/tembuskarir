@@ -238,6 +238,37 @@ export function computeScore(
       totalQuestions: questions.length,
     }
 
+  } else if (pkgCategory === 'ANTAM') {
+    // ── ANTAM IMPACT Scoring ─────────────────────────────────────────────────
+    // Semua MCQ: +1 benar, 0 salah/kosong. Skor = jumlah benar.
+    const catStats: Record<string, CategoryStats> = {}
+
+    for (const q of questions) {
+      const cat = (q.category ?? 'UMUM').toUpperCase()
+      if (!catStats[cat]) catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
+
+      const userAnswer = answers[q.id]
+      if (!userAnswer) {
+        emptyCount++
+        catStats[cat].empty++
+      } else if (userAnswer === q.correct_answer) {
+        correctCount++
+        catStats[cat].correct++
+        catStats[cat].rawScore++
+      } else {
+        wrongCount++
+        catStats[cat].wrong++
+      }
+    }
+
+    score = correctCount
+    scoreDetails = {
+      type: 'ANTAM',
+      categories: catStats,
+      totalQuestions: questions.length,
+      maxScore: questions.length,
+    }
+
   } else {
     // ── Simple Scoring (non-PLN, non-ASTRA, non-BUMN; mis. BI/OJK) ───────────
     // Skor = persentase benar. Breakdown per sub-tes tetap direkam agar

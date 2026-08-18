@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Zap, Package, ChevronRight, CheckCircle2, Hash, BookMarked, Heart } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
@@ -6,8 +7,11 @@ import { formatDate } from '@/lib/utils'
 import PlnPackageCard from '@/components/portal/PlnPackageCard'
 import { getUnlockedPackageIds } from '@/lib/access'
 import { PLN_SUBTESTS } from '@/lib/exam-scoring'
+import { getFeatureFlags } from '@/lib/site-settings'
 
 export default async function PlnGatPage() {
+  const flags = await getFeatureFlags()
+  if (!flags.feature_portal_pln) redirect('/')
   let packages: PackageRow[] = []
   let isLoggedIn = false
   let unlockedPackageIds: string[] = []

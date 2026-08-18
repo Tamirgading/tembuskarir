@@ -1,12 +1,13 @@
 import type React from 'react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Lightbulb } from 'lucide-react'
+import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Lightbulb, Mountain } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { computeScore, isAttemptExpired, ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 import { checkPackageAccess } from '@/lib/access'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
+import { getStreamBySlug } from '@/lib/antam-config'
 
 interface OngoingInfo {
   id: string
@@ -44,6 +45,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free, pkg.slug)
   if (accessStatus === 'locked') {
     if (pkg.category === 'ASTRA') redirect('/portal/astra')
+    else if (pkg.category === 'ANTAM') redirect('/portal/antam')
     else redirect('/harga')
   }
 
@@ -90,6 +92,8 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   }
 
   const isAstra = pkg.category === 'ASTRA'
+  const isAntam = pkg.category === 'ANTAM'
+  const antamStream = isAntam ? getStreamBySlug(pkg.slug) : null
 
   // Back-link berdasarkan tipe paket
   let backHref = '/paket'
@@ -97,6 +101,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   if (isAstra) {
     backHref = '/portal/astra'
     backLabel = 'Portal ASTRA'
+  } else if (isAntam) {
+    backHref = '/portal/antam'
+    backLabel = 'Portal ANTAM'
   } else if (pkg.slug?.startsWith('gat-')) {
     backHref = '/portal/pln/gat'
     backLabel = 'Portal PLN GAT'
@@ -107,7 +114,6 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
     backHref = '/portal/bumn'
     backLabel = 'Portal BUMN'
   } else if (pkg.slug?.startsWith('akding-')) {
-    // Ekstrak bidang dari slug: akding-{bidang}-paket-N / akding-{bidang}-demo
     const bidangSlug = pkg.slug
       .replace(/^akding-/, '')
       .replace(/-(?:paket-\d+|demo|full)$/, '')
@@ -125,13 +131,16 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
       {/* ── Hero card ── */}
       <div className="bg-white rounded-3xl border border-hairline overflow-hidden shadow-soft">
-        {/* Header navy */}
-        <div className="px-7 py-8 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+        {/* Header */}
+        <div className="px-7 py-8 text-white" style={{ background: isAntam ? 'linear-gradient(135deg,#1a472a,#0d2818)' : 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 {isAstra && (
                   <span className="px-2.5 py-0.5 bg-white/15 text-white text-xs font-bold rounded-full border border-white/20">Psikotes ASTRA</span>
+                )}
+                {isAntam && (
+                  <span className="px-2.5 py-0.5 bg-white/15 text-white text-xs font-bold rounded-full border border-white/20">ANTAM IMPACT</span>
                 )}
                 <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${
                   pkg.is_free ? 'bg-brand text-white' : 'bg-amber-400 text-ink'
@@ -140,12 +149,15 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                 </span>
               </div>
               <h1 className="text-2xl font-heading font-extrabold leading-snug">{pkg.name}</h1>
+              {antamStream && (
+                <p className="text-white/50 text-xs font-semibold mt-1">Jurusan: {antamStream.jurusan}</p>
+              )}
               {pkg.description && (
                 <p className="text-white/60 text-sm mt-2 max-w-lg leading-relaxed">{pkg.description}</p>
               )}
             </div>
             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
-              <FileText className="w-8 h-8 text-white/80" />
+              {isAntam ? <Mountain className="w-8 h-8 text-white/80" /> : <FileText className="w-8 h-8 text-white/80" />}
             </div>
           </div>
 
@@ -155,7 +167,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
               { icon: <Clipboard className="w-5 h-5 text-brand-300" />, label: 'Soal', value: `${pkg.total_questions}` },
               { icon: <Clock className="w-5 h-5 text-brand-300" />, label: 'Durasi', value: `${displayDuration} mnt` },
               { icon: <Trophy className="w-5 h-5 text-brand-300" />, label: 'Skor Max', value: `${pkg.total_questions}` },
-              { icon: <BarChart2 className="w-5 h-5 text-brand-300" />, label: 'Sub-tes', value: isAstra ? '7' : '-' },
+              { icon: <BarChart2 className="w-5 h-5 text-brand-300" />, label: isAntam ? 'Topik' : 'Sub-tes', value: isAstra ? '7' : isAntam && antamStream ? `${antamStream.topics.length}` : '-' },
             ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
                 <div className="flex justify-center mb-0.5">{s.icon}</div>
@@ -187,7 +199,22 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             </div>
           )}
 
-          {/* Tata tertib — bookmark dihapus untuk ASTRA (soal satu arah, tidak bisa kembali) */}
+          {/* Topik kisi-kisi (ANTAM) */}
+          {isAntam && antamStream && (
+            <div>
+              <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Kisi-kisi Materi ({antamStream.topics.length} Topik)</h2>
+              <div className="space-y-2">
+                {antamStream.topics.map((topic, i) => (
+                  <div key={i} className="rounded-xl border border-hairline bg-paper-soft px-4 py-3">
+                    <p className="text-sm font-semibold text-ink">{topic.name}</p>
+                    <p className="text-xs text-ink-muted mt-1 leading-relaxed">{topic.subtopics.join(' · ')}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tata tertib */}
           <div>
             <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sebelum Memulai</h2>
             <div className="space-y-2">

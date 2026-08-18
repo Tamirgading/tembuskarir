@@ -16,8 +16,8 @@ interface PersiapanActionsProps {
 /** Tentukan URL runner ujian berdasarkan kategori + slug paket */
 function getUjianHref(packageId: string, pkgCategory: string, pkgSlug: string): string {
   if (pkgCategory === 'ASTRA') return `/ujian/astra/${packageId}`
+  if (pkgCategory === 'ANTAM') return `/ujian/${packageId}`
   if (pkgCategory === 'PLN') {
-    // AKDING & BI PLN pakai runner generik MCQ (bukan runner GAT)
     if (pkgSlug.startsWith('akding-') || pkgSlug.startsWith('bi-pln-')) {
       return `/ujian/${packageId}`
     }

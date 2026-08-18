@@ -1,9 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { AppShell } from '@/components/ui/AppShell'
+import { getFeatureFlags } from '@/lib/site-settings'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const [{ data: { user } }, featureFlags] = await Promise.all([
+    supabase.auth.getUser(),
+    getFeatureFlags(),
+  ])
 
   let userName: string | null = null
   let userPlan: 'free' | 'premium' = 'free'
@@ -20,7 +24,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <AppShell isLoggedIn={!!user} userName={userName} userPlan={userPlan}>
+    <AppShell isLoggedIn={!!user} userName={userName} userPlan={userPlan} featureFlags={featureFlags}>
       {children}
     </AppShell>
   )

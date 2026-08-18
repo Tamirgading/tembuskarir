@@ -1,7 +1,9 @@
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Languages, BarChart3, Scale, MessageCircle, Users, Database, Heart, Zap, Truck, Monitor, Leaf, Cog, Building2 } from 'lucide-react'
 import { AKDING_BIDANG } from '@/lib/bidang-config'
 import type { LucideIcon } from 'lucide-react'
+import { getFeatureFlags } from '@/lib/site-settings'
 
 // Ikon per bidang — dipilih berdasarkan relevansi keilmuan
 const BIDANG_ICONS: Record<string, LucideIcon> = {
@@ -19,7 +21,9 @@ const BIDANG_ICONS: Record<string, LucideIcon> = {
   'teknik-sipil':          Building2,
 }
 
-export default function PlnTahap2SelectionPage() {
+export default async function PlnTahap2SelectionPage() {
+  const flags = await getFeatureFlags()
+  if (!flags.feature_portal_pln) redirect('/')
   return (
     <div className="max-w-4xl mx-auto space-y-7">
 

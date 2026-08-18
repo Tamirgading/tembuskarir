@@ -1,6 +1,8 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Inbox, Rss, ExternalLink } from 'lucide-react'
+import { getFeatureFlags } from '@/lib/site-settings'
 
 type InfoSeleksi = {
   id: string
@@ -36,6 +38,9 @@ export default async function InfoSeleksiPage({
 }: {
   searchParams: { institusi?: string; kategori?: string }
 }) {
+  const flags = await getFeatureFlags()
+  if (!flags.feature_info_seleksi) redirect('/')
+
   const supabase = await createClient()
   const institusiFilter = searchParams.institusi?.toUpperCase()
   const kategoriFilter  = searchParams.kategori

@@ -44,7 +44,7 @@ export type Database = {
           id: string
           name: string
           slug: string
-          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'BUMN' | 'KEDINASAN' | 'LAINNYA'
+          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'BUMN' | 'KEDINASAN' | 'ANTAM' | 'LAINNYA'
           description: string | null
           duration_minutes: number
           total_questions: number
@@ -56,7 +56,7 @@ export type Database = {
           id?: string
           name: string
           slug: string
-          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'BUMN' | 'KEDINASAN' | 'LAINNYA'
+          category: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'BUMN' | 'KEDINASAN' | 'ANTAM' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions: number
@@ -68,7 +68,7 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
-          category?: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'LAINNYA'
+          category?: 'BI' | 'OJK' | 'ASTRA' | 'PLN' | 'ANTAM' | 'LAINNYA'
           description?: string | null
           duration_minutes?: number
           total_questions?: number
@@ -142,6 +142,8 @@ export type Database = {
           status: 'ongoing' | 'finished'
           started_at: string
           finished_at: string | null
+          score_details: Json | null
+          selected_stream: string | null
         }
         Insert: {
           id?: string
@@ -156,6 +158,8 @@ export type Database = {
           status?: 'ongoing' | 'finished'
           started_at?: string
           finished_at?: string | null
+          score_details?: Json | null
+          selected_stream?: string | null
         }
         Update: {
           id?: string
@@ -170,6 +174,8 @@ export type Database = {
           status?: 'ongoing' | 'finished'
           started_at?: string
           finished_at?: string | null
+          score_details?: Json | null
+          selected_stream?: string | null
         }
         Relationships: [
           {

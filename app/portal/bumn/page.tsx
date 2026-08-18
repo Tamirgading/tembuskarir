@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Building2, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
@@ -5,6 +6,7 @@ import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import BumnPackageCard from '@/components/portal/BumnPackageCard'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
+import { getFeatureFlags } from '@/lib/site-settings'
 
 const BUMN_SUBTESTS = [
   {
@@ -52,6 +54,8 @@ const BUMN_SUBTESTS = [
 ]
 
 export default async function BumnPortalPage() {
+  const flags = await getFeatureFlags()
+  if (!flags.feature_portal_bumn) redirect('/')
   let packages: PackageRow[] = []
   let isLoggedIn = false
   let hasPremium = false

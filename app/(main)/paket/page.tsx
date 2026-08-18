@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { FileText, Clock, Trophy } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { UserRow, PackageRow } from '@/lib/utils'
+import { getFeatureFlags } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
   title: 'Paket Soal Simulasi Tes Kerja',
@@ -11,6 +12,9 @@ export const metadata: Metadata = {
 }
 
 export default async function PaketPage() {
+  const flags = await getFeatureFlags()
+  if (!flags.feature_semua_paket) redirect('/')
+
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()

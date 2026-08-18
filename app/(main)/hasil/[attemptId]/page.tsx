@@ -103,7 +103,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   // Denominator & persen ring sesuai tipe
   let denom = '/ 100'
   let pct = Math.min(100, Math.max(0, score))
-  if (sd?.type === 'ASTRA') {
+  if (sd?.type === 'ASTRA' || sd?.type === 'ANTAM') {
     const max = sd.maxScore ?? pkg?.total_questions ?? 0
     denom = max ? `/ ${max}` : 'poin'
     pct = max ? Math.round((score / max) * 100) : 0
@@ -130,7 +130,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
       {/* ══ HERO ══ */}
       <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
-        <div className="px-6 sm:px-8 py-7 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
+        <div className="px-6 sm:px-8 py-7 text-white" style={{ background: pkg?.category === 'ANTAM' ? 'linear-gradient(135deg,#1a472a,#0d2818)' : 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <div className="flex flex-row items-start gap-3 sm:gap-6">
             {/* Ring skor */}
             <div className="relative w-[80px] h-[80px] sm:w-[128px] sm:h-[128px] shrink-0">
@@ -200,7 +200,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         <Link href={`/persiapan/${attempt.package_id}`} className="flex items-center justify-center gap-2 py-3 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
           <RotateCcw className="w-4 h-4" /> Coba Lagi
         </Link>
-        <Link href="/paket" className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">
+        <Link href={pkg?.category === 'ANTAM' ? '/portal/antam' : pkg?.category === 'ASTRA' ? '/portal/astra' : '/paket'} className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">
           <Grid2x2 className="w-4 h-4" /> Paket Lain
         </Link>
         <Link href="/" className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">

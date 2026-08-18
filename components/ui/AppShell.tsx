@@ -8,19 +8,22 @@ import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
   User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Crown,
-  ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3, PanelLeft,
+  ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3, PanelLeft, Mountain,
 } from 'lucide-react'
 import LoginModal from '@/components/ui/LoginModal'
 import { NotificationBell } from '@/components/ui/NotificationBell'
+import type { FeatureFlags } from '@/lib/site-settings'
 
 interface AppShellProps {
   isLoggedIn: boolean
   userName: string | null
   userPlan: 'free' | 'premium'
   children: React.ReactNode
+  featureFlags?: FeatureFlags
 }
 
-type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string; sub?: boolean }
+type FeatureKey = keyof import('@/lib/site-settings').FeatureFlags
+type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string; sub?: boolean; featureKey?: FeatureKey }
 type Group = { section: string | null; items: Item[] }
 
 const NAV: Group[] = [
@@ -29,11 +32,12 @@ const NAV: Group[] = [
     section: 'Latihan',
     items: [
       { href: '/portal/astra', label: 'Psikotes ASTRA', icon: Briefcase, tag: 'Populer' },
-      { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap },
-      { href: '/portal/pln/gat', label: 'Tahap 1: GAT', icon: Zap, sub: true },
-      { href: '/portal/pln/tahap2', label: 'Tahap 2: Akademik', icon: BookOpen, sub: true },
-      { href: '/portal/bumn', label: 'Rekrutmen BUMN', icon: Building2 },
-      { href: '/paket', label: 'Semua Paket', icon: Package },
+      { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap, featureKey: 'feature_portal_pln' },
+      { href: '/portal/pln/gat', label: 'Tahap 1: GAT', icon: Zap, sub: true, featureKey: 'feature_portal_pln' },
+      { href: '/portal/pln/tahap2', label: 'Tahap 2: Akademik', icon: BookOpen, sub: true, featureKey: 'feature_portal_pln' },
+      { href: '/portal/bumn', label: 'Rekrutmen BUMN', icon: Building2, featureKey: 'feature_portal_bumn' },
+      { href: '/portal/antam', label: 'ANTAM IMPACT', icon: Mountain, featureKey: 'feature_portal_antam' },
+      { href: '/paket', label: 'Semua Paket', icon: Package, featureKey: 'feature_semua_paket' },
     ],
   },
   {
@@ -43,16 +47,16 @@ const NAV: Group[] = [
       { href: '/riwayat', label: 'Riwayat Tes', icon: History },
       { href: '/soal-tersimpan', label: 'Soal Tersimpan', icon: Bookmark },
       { href: '/?tab=pembelian', label: 'Pembelian', icon: ReceiptText },
-      { href: '/info-seleksi', label: 'Info Seleksi', icon: Newspaper },
+      { href: '/info-seleksi', label: 'Info Seleksi', icon: Newspaper, featureKey: 'feature_info_seleksi' },
       { href: '/harga', label: 'Langganan', icon: CreditCard },
     ],
   },
 ]
 
-const TABS: Item[] = [
+const ALL_TABS: Item[] = [
   { href: '/', label: 'Beranda', icon: Home },
-  { href: '/paket', label: 'Latihan', icon: Package },
-  { href: '/info-seleksi', label: 'Info', icon: Newspaper },
+  { href: '/paket', label: 'Latihan', icon: Package, featureKey: 'feature_semua_paket' },
+  { href: '/info-seleksi', label: 'Info', icon: Newspaper, featureKey: 'feature_info_seleksi' },
   { href: '/harga', label: 'Langganan', icon: CreditCard },
   { href: '/profil', label: 'Profil', icon: User },
 ]
@@ -69,6 +73,7 @@ const PAGE_META: PageMeta[] = [
   { pattern: /^\/portal\/pln\/tahap2/, label: 'PLN: Tahap 2',                Icon: BookOpen,  back: { label: 'Rekrutmen PLN', href: '/portal/pln', Icon: Zap       } },
   { pattern: /^\/portal\/pln/,         label: 'Rekrutmen PLN',               Icon: Zap,       back: { label: 'Beranda',      href: '/',           Icon: Home      } },
   { pattern: /^\/portal\/bumn/,        label: 'Rekrutmen BUMN',              Icon: Building2, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/portal\/antam/,       label: 'ANTAM IMPACT',                Icon: Mountain,  back: { label: 'Beranda',      href: '/',           Icon: Home      } },
   { pattern: /^\/paket/,               label: 'Semua Paket',                 Icon: Package,   back: { label: 'Beranda',      href: '/',           Icon: Home      } },
   { pattern: /^\/rapor/,               label: 'Rapor Belajar',               Icon: BarChart3, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
   { pattern: /^\/riwayat/,             label: 'Riwayat Tes',                 Icon: History,   back: { label: 'Beranda',      href: '/',           Icon: Home      } },
@@ -89,7 +94,7 @@ function getPageMeta(pathname: string) {
   return { label: 'TembusKarir', Icon: Home, back: undefined }
 }
 
-export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellProps) {
+export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlags }: AppShellProps) {
   const pathname = usePathname() ?? ''
   const router   = useRouter()
   const [drawer,     setDrawer]     = useState(false)
@@ -97,6 +102,8 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
   const [signingOut, setSigningOut] = useState(false)
   const [collapsed,  setCollapsed]  = useState(false)
   const [showLogin,  setShowLogin]  = useState(false)
+
+  const isFeatureEnabled = (key?: FeatureKey) => !key || featureFlags?.[key] !== false
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -192,13 +199,16 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden -mx-1 px-1 space-y-0.5 nice-scroll">
-        {NAV.map((group, gi) => (
+        {NAV.map((group, gi) => {
+          const visibleItems = group.items.filter(it => isFeatureEnabled(it.featureKey))
+          if (visibleItems.length === 0) return null
+          return (
           <div key={gi}>
             {group.section && (!collapsed || isMobile) && (
               <p className="text-[11px] uppercase tracking-wider text-white/40 px-3 pt-4 pb-1.5 font-semibold">{group.section}</p>
             )}
             {group.section && collapsed && !isMobile && <div className="pt-3" />}
-            {group.items.map((it) => {
+            {visibleItems.map((it) => {
               const Icon   = it.icon
               const active = isActive(it.href)
 
@@ -239,7 +249,8 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
               )
             })}
           </div>
-        ))}
+          )
+        })}
       </nav>
 
       {/* Upgrade banner (free, expanded) */}
@@ -451,8 +462,9 @@ export function AppShell({ isLoggedIn, userName, userPlan, children }: AppShellP
         </footer>
 
         {/* Mobile bottom tabs */}
-        <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-hairline grid grid-cols-5">
-          {TABS.map((t) => {
+        <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-hairline grid"
+          style={{ gridTemplateColumns: `repeat(${ALL_TABS.filter(t => isFeatureEnabled(t.featureKey)).length}, minmax(0, 1fr))` }}>
+          {ALL_TABS.filter(t => isFeatureEnabled(t.featureKey)).map((t) => {
             const Icon   = t.icon
             const active = isActive(t.href)
             return (

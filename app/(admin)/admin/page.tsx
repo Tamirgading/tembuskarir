@@ -2,6 +2,8 @@ import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Package, Users, Ticket } from 'lucide-react'
 import type { SubscriptionRow, UserRow } from '@/lib/utils'
+import { getFeatureFlags } from '@/lib/site-settings'
+import FeatureToggles from '@/components/admin/FeatureToggles'
 
 export default async function AdminDashboardPage() {
   const supabase = createServiceClient()
@@ -43,6 +45,8 @@ export default async function AdminDashboardPage() {
 
   type RecentUser = Pick<UserRow, 'id' | 'email' | 'full_name' | 'plan' | 'created_at'>
   const recentUsers = (recentUsersData ?? []) as RecentUser[]
+
+  const featureFlags = await getFeatureFlags()
 
   function formatRupiah(amount: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount)
@@ -94,6 +98,9 @@ export default async function AdminDashboardPage() {
           <p className="text-sm text-gray-500 mt-1">Buat dan pantau penggunaan kode voucher</p>
         </Link>
       </div>
+
+      {/* Feature toggles */}
+      <FeatureToggles initial={featureFlags} />
 
       {/* Recent users */}
       <div className="bg-white rounded-xl border border-gray-200">

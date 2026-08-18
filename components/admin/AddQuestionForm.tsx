@@ -6,10 +6,12 @@ import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, ClipboardPaste } fro
 import { LatexContent } from '@/components/ui/LatexContent'
 import { RichTextarea } from '@/components/ui/RichTextarea'
 import { parseQuestionSnippet } from '@/lib/question-csv'
+import { getStreamBySlug } from '@/lib/antam-config'
 
 interface AddQuestionFormProps {
   packageId: string
   pkgCategory: string
+  pkgSlug?: string
 }
 
 // Pilihan kategori per tipe paket
@@ -36,10 +38,22 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
   ],
 }
 
+function getAntamCategoryOptions(slug?: string): { value: string; label: string }[] {
+  if (!slug) return CATEGORY_OPTIONS.DEFAULT
+  const stream = getStreamBySlug(slug)
+  if (!stream) return CATEGORY_OPTIONS.DEFAULT
+  return stream.topics.map((t, i) => ({
+    value: `T${i + 1}`,
+    label: `T${i + 1} — ${t.name}`,
+  }))
+}
+
 const OPTION_KEYS = ['A', 'B', 'C', 'D', 'E'] as const
 
-export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps) {
-  const categoryOptions = CATEGORY_OPTIONS[pkgCategory] ?? CATEGORY_OPTIONS.DEFAULT
+export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestionFormProps) {
+  const categoryOptions = pkgCategory === 'ANTAM'
+    ? getAntamCategoryOptions(pkgSlug)
+    : (CATEGORY_OPTIONS[pkgCategory] ?? CATEGORY_OPTIONS.DEFAULT)
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)

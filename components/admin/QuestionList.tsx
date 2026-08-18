@@ -60,6 +60,9 @@ const SUBTEST_FULL: Record<string, string> = {
   WC:     'Word Classification',
   NS:     'Number Sequence',
   DIAG:   'Diagram Reasoning',
+  // ANTAM (topik per stream, T1–T8)
+  T1: 'Topik 1', T2: 'Topik 2', T3: 'Topik 3', T4: 'Topik 4',
+  T5: 'Topik 5', T6: 'Topik 6', T7: 'Topik 7', T8: 'Topik 8',
   // Generic
   LAINNYA: 'Lainnya',
 }
@@ -91,6 +94,15 @@ const CATEGORY_COLOR: Record<string, string> = {
   WC:     'bg-blue-100 text-blue-700 border-blue-200',
   NS:     'bg-cyan-100 text-cyan-700 border-cyan-200',
   DIAG:   'bg-teal-100 text-teal-700 border-teal-200',
+  // ANTAM (topik per stream)
+  T1: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  T2: 'bg-teal-100 text-teal-700 border-teal-200',
+  T3: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+  T4: 'bg-sky-100 text-sky-700 border-sky-200',
+  T5: 'bg-lime-100 text-lime-700 border-lime-200',
+  T6: 'bg-green-100 text-green-700 border-green-200',
+  T7: 'bg-amber-100 text-amber-700 border-amber-200',
+  T8: 'bg-yellow-100 text-yellow-700 border-yellow-200',
   // Generic
   LAINNYA: 'bg-gray-100 text-gray-600 border-gray-200',
 }
@@ -100,6 +112,7 @@ const ORDERED_SUBTESTS: Record<string, string[]> = {
   ASTRA: ['QR', 'DR', 'RC', 'IR', 'VIZ', 'PS', 'WM'],
   PLN:   ['NUM', 'VER', 'SIL', 'DER', 'FIG', 'PU', 'LA', 'AKHLAK', 'AKDING', 'BI'],
   BUMN:  ['TWK', 'VLR', 'WC', 'NS', 'DIAG', 'AKHLAK'],
+  ANTAM: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8'],
 }
 
 // Subtes PLN yang pakai sistem poin (bukan MCQ biasa)

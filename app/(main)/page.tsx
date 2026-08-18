@@ -3,10 +3,11 @@ import Link from 'next/link'
 import {
   CheckCircle2, Clock, FileText, ChevronRight, ArrowRight,
   TrendingUp, Trophy, Package, ShoppingBag, CalendarDays,
-  Briefcase, Zap, Sparkles, CheckCircle, Target,
+  Briefcase, Zap, Sparkles, CheckCircle, Target, Mountain,
 } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
+import { getFeatureFlags } from '@/lib/site-settings'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
 import GuestLoginCta from '@/components/ui/GuestLoginCta'
@@ -70,7 +71,10 @@ export default async function HomePage({
 }) {
   const { payment, tab } = await searchParams
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const [{ data: { user } }, featureFlags] = await Promise.all([
+    supabase.auth.getUser(),
+    getFeatureFlags(),
+  ])
   const activeTab = user && tab === 'pembelian' ? 'pembelian' : 'beranda'
 
   // ── Guest view ─────────────────────────────────────────────────────────────
@@ -102,6 +106,7 @@ export default async function HomePage({
             <p className="font-heading font-bold text-ink">Psikotes ASTRA</p>
             <p className="text-xs text-ink-muted mt-1">80 soal · 7 sub-tes · 41 menit. Lihat paketnya tanpa login.</p>
           </Link>
+          {featureFlags.feature_portal_pln && (
           <Link href="/portal/pln"
             className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 card-hover">
             <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
@@ -110,6 +115,17 @@ export default async function HomePage({
             <p className="font-heading font-bold text-ink">Rekrutmen PLN</p>
             <p className="text-xs text-ink-muted mt-1">GAT + Tahap 2 Akademik, format per sub-tes seperti aslinya.</p>
           </Link>
+          )}
+          {featureFlags.feature_portal_antam && (
+          <Link href="/portal/antam"
+            className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 card-hover">
+            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3">
+              <Mountain className="w-5 h-5 text-green-600" />
+            </div>
+            <p className="font-heading font-bold text-ink">ANTAM IMPACT 2026</p>
+            <p className="text-xs text-ink-muted mt-1">14 job stream · 40 soal · 50 menit per stream.</p>
+          </Link>
+          )}
         </div>
       </div>
     )
@@ -265,9 +281,16 @@ export default async function HomePage({
                 <Link href="/portal/astra" className="inline-flex items-center gap-2 bg-brand text-white font-bold px-5 py-2.5 rounded-xl hover:bg-brand-700 transition-colors">
                   <Briefcase className="w-4 h-4" /> Psikotes ASTRA
                 </Link>
+                {featureFlags.feature_portal_pln && (
                 <Link href="/portal/pln" className="inline-flex items-center gap-2 bg-white border border-hairline text-ink font-semibold px-5 py-2.5 rounded-xl hover:bg-paper-soft transition-colors">
                   <Zap className="w-4 h-4" /> Rekrutmen PLN
                 </Link>
+                )}
+                {featureFlags.feature_portal_antam && (
+                <Link href="/portal/antam" className="inline-flex items-center gap-2 bg-white border border-hairline text-ink font-semibold px-5 py-2.5 rounded-xl hover:bg-paper-soft transition-colors">
+                  <Mountain className="w-4 h-4" /> ANTAM IMPACT
+                </Link>
+                )}
               </div>
             </div>
           ) : (

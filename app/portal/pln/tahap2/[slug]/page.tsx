@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getUnlockedPackageIds } from '@/lib/access'
@@ -8,6 +8,7 @@ import {
   ArrowRight, Clock, FileText, Languages, BookOpen,
   CheckCircle2, Lock, Sparkles,
 } from 'lucide-react'
+import { getFeatureFlags } from '@/lib/site-settings'
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -119,6 +120,9 @@ function SectionHeader({
 }
 
 export default async function PlnBidangPage({ params }: Props) {
+  const flags = await getFeatureFlags()
+  if (!flags.feature_portal_pln) redirect('/')
+
   const { slug } = await params
   const bidang = BIDANG_BY_SLUG[slug]
   if (!bidang) notFound()

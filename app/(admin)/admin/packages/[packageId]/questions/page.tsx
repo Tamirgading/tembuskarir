@@ -10,6 +10,7 @@ import { AdminExamPreview } from '@/components/admin/AdminExamPreview'
 import { WmPairsManager } from '@/components/admin/WmPairsManager'
 import { PlnSpecialForms } from '@/components/admin/PlnSpecialForms'
 import { BumnAkhlakForm } from '@/components/admin/BumnAkhlakForm'
+import { getStreamBySlug } from '@/lib/antam-config'
 
 export default async function AdminQuestionsPage({
   params,
@@ -191,6 +192,23 @@ export default async function AdminQuestionsPage({
                   <AddQuestionForm packageId={packageId} pkgCategory={pkg.category} />
                 </>
               )}
+            </>
+          ) : pkg.category === 'ANTAM' ? (
+            <>
+              {(() => {
+                const stream = getStreamBySlug(pkg.slug)
+                return stream ? (
+                  <div className="mb-4">
+                    <h2 className="font-semibold text-gray-900">+ Tambah Soal — {stream.name}</h2>
+                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                      Stream <strong>{stream.code}</strong> · {stream.topics.length} topik · Pilih topik di dropdown Sub-tes.
+                    </p>
+                  </div>
+                ) : (
+                  <h2 className="font-semibold text-gray-900 mb-4">+ Tambah Soal</h2>
+                )
+              })()}
+              <AddQuestionForm packageId={packageId} pkgCategory={pkg.category} pkgSlug={pkg.slug} />
             </>
           ) : (
             <>
