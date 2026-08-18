@@ -234,7 +234,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
           </div>
 
           {/* Legenda */}
-          <div className="space-y-1.5 pt-2.5 border-t border-hairline">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 pt-2.5 border-t border-hairline">
             {[
               { color: 'bg-green-100 border-green-200', label: `Benar (${correctCount})` },
               { color: 'bg-red-100 border-red-200',     label: `Salah (${wrongCount})` },
@@ -242,9 +242,9 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
               { color: 'bg-paper-soft border-hairline', label: `Kosong (${emptyCount})` },
               { color: 'bg-ink',                        label: 'Soal aktif' },
             ].map((item) => (
-              <div key={item.label} className="flex items-center gap-2 text-[10px] text-ink-muted">
+              <div key={item.label} className="flex items-center gap-1.5 text-[10px] text-ink-muted">
                 <span className={`w-3 h-3 rounded-[4px] shrink-0 border ${item.color}`} />
-                {item.label}
+                <span className="truncate">{item.label}</span>
               </div>
             ))}
           </div>
