@@ -19,6 +19,8 @@ export interface SavedQuestionRow {
     explanation_image_url: string | null
     category: string | null
     image_url: string | null
+    order_index: number
+    packages: { id: string; name: string; category: string } | null
   }
 }
 
@@ -67,7 +69,14 @@ function QuestionCard({ row, onUnsave }: { row: SavedQuestionRow; onUnsave: (id:
       <div className="flex items-start gap-3 p-4">
         <button onClick={() => setExpanded(e => !e)} className="flex-1 text-left min-w-0">
           <div className="text-sm font-medium text-ink leading-snug">
-            <LatexContent content={q.content} />
+            <LatexContent content={q.content} plain={q.category?.toUpperCase() === 'PS'} />
+          </div>
+          <div className="flex items-center gap-1 mt-1.5 text-[11px] text-ink-muted flex-wrap">
+            {q.packages?.name && <span>{q.packages.name}</span>}
+            {q.packages?.name && <span>·</span>}
+            <span>{CATEGORY_LABEL[q.category ?? ''] ?? q.category ?? 'Lainnya'}</span>
+            <span>·</span>
+            <span>No. {q.order_index}</span>
           </div>
         </button>
         <div className="flex items-center gap-2 shrink-0 mt-0.5">

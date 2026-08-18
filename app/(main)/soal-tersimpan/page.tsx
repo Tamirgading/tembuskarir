@@ -23,7 +23,8 @@ export default async function SoalTersimpanPage() {
       question_id,
       questions:question_id (
         id, content, options, correct_answer, explanation,
-        explanation_image_url, category, image_url
+        explanation_image_url, category, image_url, order_index,
+        packages:package_id ( id, name, category )
       )
     `)
     .eq('user_id', user.id)
