@@ -55,16 +55,16 @@ function TimerDisplay({ seconds, isUrgent }: { seconds: number; isUrgent: boolea
 }
 
 // ─── Konten soal dengan line-break per baris ────────────────────────────────────
-function QuestionContent({ content }: { content: string }) {
+function QuestionContent({ content, plain }: { content: string; plain?: boolean }) {
   const lines = content.split('\n').filter(l => l.trim() !== '')
   if (lines.length <= 1) {
-    return <LatexContent content={content} />
+    return <LatexContent content={content} plain={plain} />
   }
   return (
     <div className="space-y-2">
       {lines.map((line, i) => (
         <p key={i} className="leading-relaxed">
-          <LatexContent content={line} />
+          <LatexContent content={line} plain={plain} />
         </p>
       ))}
     </div>
@@ -611,7 +611,7 @@ export default function AstraUjianPage() {
         <div className="bg-white rounded-2xl border border-hairline shadow-soft p-6 space-y-5">
           {/* Konten soal */}
           <div className="text-ink leading-relaxed">
-            <QuestionContent content={currentQ.content} />
+            <QuestionContent content={currentQ.content} plain={currentQ.category?.toUpperCase() === 'PS'} />
           </div>
 
           {/* Gambar soal */}
@@ -639,7 +639,7 @@ export default function AstraUjianPage() {
                   }`}>
                     {opt.key}
                   </span>
-                  <span className="leading-relaxed"><LatexContent content={opt.text} /></span>
+                  <span className="leading-relaxed"><LatexContent content={opt.text} plain={currentQ.category?.toUpperCase() === 'PS'} /></span>
                 </button>
               )
             })}

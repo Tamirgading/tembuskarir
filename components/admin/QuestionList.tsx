@@ -310,7 +310,7 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
                         {/* Konten soal */}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-gray-800 leading-snug line-clamp-2">
-                            <LatexContent content={q.content} />
+                            <LatexContent content={q.content} plain={key === 'PS'} />
                           </p>
                           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                             {isPointBased ? (
@@ -430,7 +430,7 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
                                     {opt.key}.
                                   </span>
                                   <span className="flex-1">
-                                    <LatexContent content={opt.text} />
+                                    <LatexContent content={opt.text} plain={key === 'PS'} />
                                   </span>
                                   {isPointBased && opt.point !== undefined && (
                                     <span className="ml-auto shrink-0 text-xs font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-600">

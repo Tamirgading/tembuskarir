@@ -126,8 +126,10 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
     setError(null)
 
     if (!content.trim()) { setError('Pertanyaan wajib diisi.'); return }
-    // Opsi A–D wajib, opsi E opsional (4-opsi cukup untuk AKDING/BI/dll.)
-    for (const key of ['A', 'B', 'C', 'D'] as const) {
+    // PS hanya butuh A dan B; lainnya A–D wajib (E opsional)
+    const isPS = category === 'PS'
+    const requiredKeys = isPS ? (['A', 'B'] as const) : (['A', 'B', 'C', 'D'] as const)
+    for (const key of requiredKeys) {
       if (!options[key].trim()) { setError(`Opsi ${key} wajib diisi.`); return }
     }
 
@@ -147,9 +149,9 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
       setUploadedExplImageUrl(finalExplImageUrl)
     }
 
-    // Sertakan opsi E hanya jika diisi (soal 4-opsi tidak perlu E)
+    // PS: sertakan hanya opsi yang diisi; lainnya: A–D selalu, E jika diisi
     const optionsArray = OPTION_KEYS
-      .filter((key) => key !== 'E' || options['E'].trim() !== '')
+      .filter((key) => isPS ? options[key].trim() !== '' : (key !== 'E' || options['E'].trim() !== ''))
       .map((key) => ({ key, text: options[key].trim() }))
 
     setIsSaving(true)
@@ -273,21 +275,24 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
               <p className="text-xs font-semibold text-gray-600">
                 Pilihan Jawaban <span className="text-red-500">*</span>
               </p>
-              {OPTION_KEYS.map((key) => (
-                <div key={key} className="flex items-center gap-2">
-                  <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${
-                    correctAnswer === key ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
-                  }`}>{key}</span>
-                  <input
-                    type="text"
-                    value={options[key]}
-                    onChange={(e) => setOptions((prev) => ({ ...prev, [key]: e.target.value }))}
-                    placeholder={`Opsi ${key}`}
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    required
-                  />
-                </div>
-              ))}
+              {OPTION_KEYS.map((key) => {
+                const isRequired = category === 'PS' ? (key === 'A' || key === 'B') : key !== 'E'
+                return (
+                  <div key={key} className="flex items-center gap-2">
+                    <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${
+                      correctAnswer === key ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
+                    }`}>{key}</span>
+                    <input
+                      type="text"
+                      value={options[key]}
+                      onChange={(e) => setOptions((prev) => ({ ...prev, [key]: e.target.value }))}
+                      placeholder={isRequired ? `Opsi ${key}` : `Opsi ${key} (opsional)`}
+                      className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      required={isRequired}
+                    />
+                  </div>
+                )
+              })}
             </div>
 
             {/* Jawaban Benar */}

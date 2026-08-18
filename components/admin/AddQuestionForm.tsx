@@ -141,7 +141,9 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
     setSuccess(false)
 
     if (!content.trim()) { setError('Pertanyaan wajib diisi.'); return }
-    for (const key of OPTION_KEYS) {
+    const isPS = category === 'PS'
+    const requiredKeys = isPS ? (['A', 'B'] as const) : OPTION_KEYS
+    for (const key of requiredKeys) {
       if (!options[key].trim()) { setError(`Opsi ${key} wajib diisi.`); return }
     }
 
@@ -159,10 +161,9 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
       setUploadedExplImageUrl(finalExplImageUrl)
     }
 
-    const optionsArray = OPTION_KEYS.map((key) => ({
-      key,
-      text: options[key].trim(),
-    }))
+    const optionsArray = OPTION_KEYS
+      .filter((key) => isPS ? options[key].trim() !== '' : true)
+      .map((key) => ({ key, text: options[key].trim() }))
 
     const res = await fetch('/api/admin/questions/create', {
       method: 'POST',
@@ -215,7 +216,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
           <div className="bg-white rounded-lg p-3 border border-gray-200">
             <p className="text-xs text-gray-400 mb-1">Pertanyaan:</p>
             <div className="text-gray-900 text-sm leading-relaxed">
-              {content ? <LatexContent content={content} /> : <span className="text-gray-300 italic">Belum ada pertanyaan...</span>}
+              {content ? <LatexContent content={content} plain={category === 'PS'} /> : <span className="text-gray-300 italic">Belum ada pertanyaan...</span>}
             </div>
             {imagePreviewUrl && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -233,7 +234,7 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
                     isCorrect ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
                   }`}>{key}</span>
                   <span className="flex-1 text-gray-700">
-                    {options[key] ? <LatexContent content={options[key]} /> : <span className="text-gray-300 italic">Kosong</span>}
+                    {options[key] ? <LatexContent content={options[key]} plain={category === 'PS'} /> : <span className="text-gray-300 italic">Kosong</span>}
                   </span>
                   {isCorrect && <span className="ml-auto shrink-0 text-green-500 text-xs">✓ Benar</span>}
                 </div>
@@ -368,21 +369,24 @@ export function AddQuestionForm({ packageId, pkgCategory }: AddQuestionFormProps
             <p className="text-xs font-semibold text-gray-600">
               Pilihan Jawaban <span className="text-red-500">*</span>
             </p>
-            {OPTION_KEYS.map((key) => (
-              <div key={key} className="flex items-center gap-2">
-                <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${
-                  correctAnswer === key ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
-                }`}>{key}</span>
-                <input
-                  type="text"
-                  value={options[key]}
-                  onChange={(e) => setOptions((prev) => ({ ...prev, [key]: e.target.value }))}
-                  placeholder={`Opsi ${key} — bisa pakai $LaTeX$`}
-                  className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  required
-                />
-              </div>
-            ))}
+            {OPTION_KEYS.map((key) => {
+              const isRequired = category === 'PS' ? (key === 'A' || key === 'B') : true
+              return (
+                <div key={key} className="flex items-center gap-2">
+                  <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${
+                    correctAnswer === key ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
+                  }`}>{key}</span>
+                  <input
+                    type="text"
+                    value={options[key]}
+                    onChange={(e) => setOptions((prev) => ({ ...prev, [key]: e.target.value }))}
+                    placeholder={isRequired ? `Opsi ${key} — bisa pakai $LaTeX$` : `Opsi ${key} (opsional)`}
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required={isRequired}
+                  />
+                </div>
+              )
+            })}
           </div>
 
           {/* Jawaban Benar */}

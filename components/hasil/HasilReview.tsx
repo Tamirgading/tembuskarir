@@ -283,7 +283,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
 
           {/* Pertanyaan */}
           <div className="text-gray-900 leading-relaxed text-sm">
-            <LatexContent content={currentQuestion.content} />
+            <LatexContent content={currentQuestion.content} plain={currentQuestion.category?.toUpperCase() === 'PS'} />
           </div>
 
           {/* Gambar soal */}
@@ -322,7 +322,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                       {opt.key}
                     </span>
                     <span className="flex-1 leading-relaxed text-gray-700">
-                      <LatexContent content={opt.text} />
+                      <LatexContent content={opt.text} plain={currentQuestion.category?.toUpperCase() === 'PS'} />
                     </span>
                     <div className="shrink-0 flex flex-col items-end gap-0.5 mt-0.5">
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${pc.bg} ${pc.text} ${pc.border}`}>
@@ -351,7 +351,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                     {opt.key}
                   </span>
                   <span className="flex-1 leading-relaxed">
-                    <LatexContent content={opt.text} />
+                    <LatexContent content={opt.text} plain={currentQuestion.category?.toUpperCase() === 'PS'} />
                   </span>
                   <span className="shrink-0 text-xs font-semibold mt-0.5">
                     {isRight && '✓ Benar'}

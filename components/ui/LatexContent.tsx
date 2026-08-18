@@ -93,18 +93,13 @@ function groupLines(text: string): LineGroup[] {
 interface LatexContentProps {
   content: string
   className?: string
+  /** Jika true, tampilkan teks mentah tanpa parsing LaTeX/markdown (untuk soal PS dll.) */
+  plain?: boolean
 }
 
-/**
- * Render teks + LaTeX + list markdown.
- * - Inline math: $...$
- * - Block math:  $$...$$
- * - Bold: **...**
- * - Numbered list: 1. item / 1) item
- * - Bullet list:   - item / * item / • item
- */
-export function LatexContent({ content, className }: LatexContentProps) {
+export function LatexContent({ content, className, plain }: LatexContentProps) {
   if (!content) return null
+  if (plain) return <span className={className}>{content}</span>
 
   const groups = groupLines(content)
 
