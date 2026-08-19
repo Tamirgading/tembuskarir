@@ -1,10 +1,12 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock } from 'lucide-react'
+import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock, Trophy } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
+import { buildLeaderboard } from '@/lib/leaderboard'
+import type { LeaderboardAttempt } from '@/lib/leaderboard'
 import { HasilReview } from '@/components/hasil/HasilReview'
 
 interface QuestionWithAnswer {
@@ -55,6 +57,22 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const { data: pkgData } = await supabase
     .from('packages').select('name, total_questions, category').eq('id', attempt.package_id).single()
   const pkg = pkgData as { name: string; total_questions: number; category: string } | null
+
+  // Leaderboard ANTAM: posisi user berdasarkan skor percobaan PERTAMA
+  let antamRank = 0
+  let antamTotal = 0
+  if (pkg?.category === 'ANTAM') {
+    const { data: antamAttempts } = await supabase
+      .from('attempts')
+      .select('user_id, score, started_at')
+      .eq('package_id', attempt.package_id)
+      .eq('status', 'finished')
+      .not('score', 'is', null)
+    const entries = buildLeaderboard((antamAttempts ?? []) as LeaderboardAttempt[], 'first')
+    antamTotal = entries.length
+    const idx = entries.findIndex((e) => e.user_id === user.id)
+    if (idx >= 0) antamRank = idx + 1
+  }
 
   // Soal + pembahasan (fallback jika kolom explanation_image_url belum ada)
   let questionsData: QuestionWithAnswer[] | null = null
@@ -171,6 +189,36 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
           ))}
         </div>
       </div>
+
+      {/* ══ Leaderboard ANTAM ══ */}
+      {pkg?.category === 'ANTAM' && (
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0">
+                <Trophy className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-ink">Leaderboard</p>
+                <p className="text-xs text-ink-muted">
+                  {antamRank > 0
+                    ? <>Posisi kamu <b className="text-ink">#{antamRank}</b> dari <b className="text-ink">{antamTotal}</b> peserta</>
+                    : <>Belum ada peserta di leaderboard ini</>}
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/paket/${attempt.package_id}/leaderboard`}
+              className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-colors"
+            >
+              <Trophy className="w-3.5 h-3.5" /> Lihat Leaderboard
+            </Link>
+          </div>
+          <p className="text-[11px] text-ink-muted mt-3 border-t border-hairline pt-3">
+            Hanya nilai percobaan pertama (yang dikerjakan sampai selesai) yang dihitung di leaderboard.
+          </p>
+        </div>
+      )}
 
       {/* ══ Rincian per sub-tes ══ */}
       {subtests.length > 0 && (

@@ -2,13 +2,14 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Trophy, Flag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { buildLeaderboard } from '@/lib/leaderboard'
 import type { PackageRow } from '@/lib/utils'
 
 interface LeaderboardEntry {
   user_id: string
   full_name: string | null
   avatar_url: string | null
-  best_score: number
+  score: number
   attempt_count: number
 }
 
@@ -33,42 +34,30 @@ export default async function LeaderboardPage({
   if (!pkgData) redirect('/paket')
   const pkg = pkgData as Pick<PackageRow, 'id' | 'name' | 'category' | 'total_questions'>
 
-  // Query leaderboard: skor terbaik per user untuk paket ini
-  // Supabase tidak support GROUP BY langsung via client, jadi pakai RPC atau raw query via view
-  // Workaround: ambil semua finished attempts, group di JS
+  // ANTAM: leaderboard memakai skor percobaan PERTAMA per user.
+  // Kategori lain: skor terbaik (MAX).
+  const isAntam = pkg.category === 'ANTAM'
+
+  // Ambil semua finished attempts, group di JS
   const { data: attemptsData } = await supabase
     .from('attempts')
-    .select('user_id, score')
+    .select('user_id, score, started_at')
     .eq('package_id', packageId)
     .eq('status', 'finished')
     .not('score', 'is', null)
 
-  type AttemptEntry = { user_id: string; score: number }
+  type AttemptEntry = { user_id: string; score: number; started_at: string }
   const attempts = (attemptsData ?? []) as AttemptEntry[]
 
-  // Group by user_id — hitung best_score & attempt_count
-  const userMap = new Map<string, { best_score: number; attempt_count: number }>()
-  for (const a of attempts) {
-    const existing = userMap.get(a.user_id)
-    if (!existing) {
-      userMap.set(a.user_id, { best_score: a.score, attempt_count: 1 })
-    } else {
-      userMap.set(a.user_id, {
-        best_score: Math.max(existing.best_score, a.score),
-        attempt_count: existing.attempt_count + 1,
-      })
-    }
-  }
+  const entries = buildLeaderboard(attempts, isAntam ? 'first' : 'best')
 
-  // Ambil top 20 user_id terurut
-  const topEntries = Array.from(userMap.entries())
-    .sort((a, b) => b[1].best_score - a[1].best_score)
-    .slice(0, 20)
+  // Ambil top 20
+  const topEntries = entries.slice(0, 20)
 
   // Fetch profil user untuk nama & avatar
   let leaderboard: LeaderboardEntry[] = []
   if (topEntries.length > 0) {
-    const topUserIds = topEntries.map(([uid]) => uid)
+    const topUserIds = topEntries.map((e) => e.user_id)
     const { data: usersData } = await supabase
       .from('users')
       .select('id, full_name, avatar_url')
@@ -79,19 +68,20 @@ export default async function LeaderboardPage({
       ((usersData ?? []) as UserEntry[]).map((u) => [u.id, u])
     )
 
-    leaderboard = topEntries.map(([uid, stats]) => {
-      const u = usersMap.get(uid)
+    leaderboard = topEntries.map((e) => {
+      const u = usersMap.get(e.user_id)
       return {
-        user_id: uid,
+        user_id: e.user_id,
         full_name: u?.full_name ?? null,
         avatar_url: u?.avatar_url ?? null,
-        best_score: stats.best_score,
-        attempt_count: stats.attempt_count,
+        score: e.score,
+        attempt_count: e.attempt_count,
       }
     })
   }
 
-  const myRank = leaderboard.findIndex((e) => e.user_id === user.id) + 1
+  // Posisi user dihitung dari seluruh peserta (bukan hanya top 20)
+  const myRank = entries.findIndex((e) => e.user_id === user.id) + 1
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -104,7 +94,10 @@ export default async function LeaderboardPage({
 
       <div>
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Trophy className="w-6 h-6 text-amber-500" /> Leaderboard</h1>
-        <p className="text-gray-500 mt-1">{pkg.name}</p>
+        <p className="text-gray-500 mt-1">
+          {pkg.name}
+          {isAntam && ' — hanya skor percobaan pertama yang dihitung.'}
+        </p>
       </div>
 
       {/* Rank saya */}
@@ -121,7 +114,7 @@ export default async function LeaderboardPage({
           <div className="text-center py-16 text-gray-400 space-y-2">
             <div className="flex justify-center mb-2"><Flag className="w-10 h-10 text-gray-300" /></div>
             <p>Belum ada peserta. Jadilah yang pertama!</p>
-            <Link href={`/ujian/${packageId}`} className="inline-block mt-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+            <Link href={isAntam ? `/persiapan/${packageId}` : `/ujian/${packageId}`} className="inline-block mt-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
               Mulai Try Out
             </Link>
           </div>
@@ -131,7 +124,7 @@ export default async function LeaderboardPage({
               <tr className="text-left text-gray-500 border-b border-gray-100 bg-gray-50">
                 <th className="px-5 py-3 font-medium w-12">#</th>
                 <th className="px-5 py-3 font-medium">Peserta</th>
-                <th className="px-5 py-3 font-medium text-right">Skor Terbaik</th>
+                <th className="px-5 py-3 font-medium text-right">{isAntam ? 'Skor Percobaan 1' : 'Skor Terbaik'}</th>
                 <th className="px-5 py-3 font-medium text-right hidden sm:table-cell">Percobaan</th>
               </tr>
             </thead>
@@ -178,8 +171,8 @@ export default async function LeaderboardPage({
                       </div>
                     </td>
                     <td className="px-5 py-3 text-right">
-                      <span className={`font-bold text-base ${entry.best_score >= 75 ? 'text-green-600' : 'text-gray-700'}`}>
-                        {entry.best_score}
+                      <span className={`font-bold text-base ${entry.score >= 75 ? 'text-green-600' : 'text-gray-700'}`}>
+                        {entry.score}
                       </span>
                     </td>
                     <td className="px-5 py-3 text-right text-gray-400 hidden sm:table-cell">
@@ -196,7 +189,7 @@ export default async function LeaderboardPage({
       {/* CTA */}
       <div className="flex gap-3">
         <Link
-          href={`/ujian/${packageId}`}
+          href={isAntam ? `/persiapan/${packageId}` : `/ujian/${packageId}`}
           className="px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
         >
           Mulai / Ulangi Try Out
