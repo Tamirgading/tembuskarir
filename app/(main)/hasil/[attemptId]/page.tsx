@@ -63,6 +63,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   // (termasuk entri dummy yang diisi admin)
   let antamRank = 0
   let antamTotal = 0
+  let leaderboardRows: LeaderboardRow[] = []
   if (pkg?.category === 'ANTAM') {
     const { data: antamAttempts } = await supabase
       .from('attempts')
@@ -97,6 +98,30 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     antamTotal = allRows.length
     const idx = allRows.findIndex((r) => r.user_id === user.id)
     if (idx >= 0) antamRank = idx + 1
+
+    // Top 5 + nama peserta (real user)
+    const topRows = allRows.slice(0, 5)
+    const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
+    leaderboardRows = topRows
+    if (realTopIds.length > 0) {
+      const { data: usersData } = await supabase
+        .from('users')
+        .select('id, full_name, avatar_url')
+        .in('id', realTopIds)
+      type UserEntry = { id: string; full_name: string | null; avatar_url: string | null }
+      const usersMap = new Map<string, UserEntry>(
+        ((usersData ?? []) as UserEntry[]).map((u) => [u.id, u])
+      )
+      leaderboardRows = topRows.map((r) => {
+        if (!r.user_id) return r
+        const u = usersMap.get(r.user_id)
+        return {
+          ...r,
+          display_name: u?.full_name ?? 'Anonim',
+          avatar_url: u?.avatar_url ?? null,
+        }
+      })
+    }
   }
 
   // Soal + pembahasan (fallback jika kolom explanation_image_url belum ada)
@@ -215,10 +240,13 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
       </div>
 
+      {/* ══ Leaderboard + Rincian per sub-tes (bersebelahan) ══ */}
+      {(pkg?.category === 'ANTAM' || subtests.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
       {/* ══ Leaderboard ANTAM ══ */}
       {pkg?.category === 'ANTAM' && (
-        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-6">
+          <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
                 <LeaderboardIllustration className="w-6 h-6" />
@@ -236,8 +264,49 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               href={`/paket/${attempt.package_id}/leaderboard`}
               className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-colors"
             >
-              Lihat Leaderboard <ArrowRight className="w-3.5 h-3.5" />
+              Lihat Semua <ArrowRight className="w-3.5 h-3.5" />
             </Link>
+          </div>
+
+          {/* Daftar peringkat langsung (top 5) */}
+          <div className="space-y-2">
+            {leaderboardRows.map((entry, i) => {
+              const rank = i + 1
+              const isMe = entry.user_id === user.id
+              const medalCls =
+                rank === 1 ? 'bg-amber-100 text-amber-700'
+                : rank === 2 ? 'bg-slate-100 text-slate-600'
+                : rank === 3 ? 'bg-orange-100 text-orange-700'
+                : 'bg-paper-soft text-ink-muted'
+              return (
+                <div
+                  key={entry.key}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-paper-soft'}`}
+                >
+                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${medalCls}`}>
+                    {rank}
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand-700 font-bold text-sm shrink-0 overflow-hidden">
+                    {entry.avatar_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={entry.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      (entry.display_name ?? 'U').charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <span className={`flex-1 min-w-0 truncate text-sm font-medium ${isMe ? 'text-green-800' : 'text-ink'}`}>
+                    {entry.display_name || 'Anonim'}
+                    {isMe && <span className="ml-1.5 text-xs text-green-600 font-semibold">(kamu)</span>}
+                  </span>
+                  <span className={`font-num font-bold text-base ${entry.score >= 75 ? 'text-green-600' : 'text-ink'}`}>
+                    {entry.score}
+                  </span>
+                </div>
+              )
+            })}
+            {leaderboardRows.length === 0 && (
+              <p className="text-center text-xs text-ink-muted py-6">Belum ada peserta. Jadilah yang pertama!</p>
+            )}
           </div>
           <p className="text-[11px] text-ink-muted mt-3 border-t border-hairline pt-3">
             Hanya nilai percobaan pertama (yang dikerjakan sampai selesai) yang dihitung di leaderboard.
@@ -265,6 +334,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               </div>
             ))}
           </div>
+        </div>
+      )}
         </div>
       )}
 
