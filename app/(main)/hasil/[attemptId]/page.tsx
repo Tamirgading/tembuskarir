@@ -64,10 +64,11 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   let antamRank = 0
   let antamTotal = 0
   let leaderboardRows: LeaderboardRow[] = []
+  let myRow: LeaderboardRow | null = null
   if (pkg?.category === 'ANTAM') {
     const { data: antamAttempts } = await supabase
       .from('attempts')
-      .select('user_id, score, started_at')
+      .select('user_id, score, started_at, duration_seconds')
       .eq('package_id', attempt.package_id)
       .eq('status', 'finished')
       .not('score', 'is', null)
@@ -102,12 +103,14 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     // Top 5 + nama peserta (real user)
     const topRows = allRows.slice(0, 5)
     const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
+    const myRaw = allRows.find((r) => r.user_id === user.id) ?? null
+    const myIds = Array.from(new Set([...realTopIds, ...(myRaw?.user_id ? [myRaw.user_id] : [])]))
     leaderboardRows = topRows
-    if (realTopIds.length > 0) {
+    if (myIds.length > 0) {
       const { data: usersData } = await supabase
         .from('users')
         .select('id, full_name, avatar_url')
-        .in('id', realTopIds)
+        .in('id', myIds)
       type UserEntry = { id: string; full_name: string | null; avatar_url: string | null }
       const usersMap = new Map<string, UserEntry>(
         ((usersData ?? []) as UserEntry[]).map((u) => [u.id, u])
@@ -121,6 +124,14 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
           avatar_url: u?.avatar_url ?? null,
         }
       })
+      if (myRaw) {
+        const mu = usersMap.get(myRaw.user_id!)
+        myRow = {
+          ...myRaw,
+          display_name: mu?.full_name ?? 'Anonim',
+          avatar_url: mu?.avatar_url ?? null,
+        }
+      }
     }
   }
 
@@ -242,34 +253,34 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
       {/* ══ Leaderboard + Rincian per sub-tes (bersebelahan) ══ */}
       {(pkg?.category === 'ANTAM' || subtests.length > 0) && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
       {/* ══ Leaderboard ANTAM ══ */}
       {pkg?.category === 'ANTAM' && (
-        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-6">
-          <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
-                <LeaderboardIllustration className="w-6 h-6" />
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-4 sm:p-5 flex flex-col">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
+                <LeaderboardIllustration className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-bold text-ink">Leaderboard</p>
-                <p className="text-xs text-ink-muted">
+                <p className="text-[13px] font-bold text-ink leading-tight">Leaderboard</p>
+                <p className="text-[11px] text-ink-muted">
                   {antamRank > 0
-                    ? <>Posisi kamu <b className="text-ink">#{antamRank}</b> dari <b className="text-ink">{antamTotal}</b> peserta</>
-                    : <>Belum ada peserta di leaderboard ini</>}
+                    ? <>Rank <b className="text-ink">#{antamRank}</b> / <b className="text-ink">{antamTotal}</b></>
+                    : <>Belum ada peserta</>}
                 </p>
               </div>
             </div>
             <Link
               href={`/paket/${attempt.package_id}/leaderboard`}
-              className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-colors"
+              className="shrink-0 flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white text-[11px] font-bold rounded-lg hover:bg-green-700 transition-colors"
             >
-              Lihat Semua <ArrowRight className="w-3.5 h-3.5" />
+              Lihat Semua <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
-          {/* Daftar peringkat langsung (top 5) */}
-          <div className="space-y-2">
+          {/* Daftar peringkat (top 5) — padat */}
+          <div className="flex-1 space-y-1">
             {leaderboardRows.map((entry, i) => {
               const rank = i + 1
               const isMe = entry.user_id === user.id
@@ -281,56 +292,76 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               return (
                 <div
                   key={entry.key}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-paper-soft'}`}
+                  className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border ${isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-paper-soft'}`}
                 >
-                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${medalCls}`}>
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${medalCls}`}>
                     {rank}
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand-700 font-bold text-sm shrink-0 overflow-hidden">
-                    {entry.avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={entry.avatar_url} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      (entry.display_name ?? 'U').charAt(0).toUpperCase()
-                    )}
-                  </div>
-                  <span className={`flex-1 min-w-0 truncate text-sm font-medium ${isMe ? 'text-green-800' : 'text-ink'}`}>
+                  <span className="flex-1 min-w-0 truncate text-xs font-medium text-ink">
                     {entry.display_name || 'Anonim'}
-                    {isMe && <span className="ml-1.5 text-xs text-green-600 font-semibold">(kamu)</span>}
+                    {isMe && <span className="ml-1 text-[10px] text-green-600 font-semibold">(kamu)</span>}
                   </span>
-                  <span className={`font-num font-bold text-base ${entry.score >= 75 ? 'text-green-600' : 'text-ink'}`}>
+                  {entry.duration_seconds != null && (
+                    <span className="text-[10px] text-ink-muted font-num shrink-0 hidden sm:block">
+                      {formatDuration(entry.duration_seconds)}
+                    </span>
+                  )}
+                  <span className={`font-num font-bold text-[13px] shrink-0 ${entry.score >= 75 ? 'text-green-600' : 'text-ink'}`}>
                     {entry.score}
                   </span>
                 </div>
               )
             })}
             {leaderboardRows.length === 0 && (
-              <p className="text-center text-xs text-ink-muted py-6">Belum ada peserta. Jadilah yang pertama!</p>
+              <p className="text-center text-[11px] text-ink-muted py-4">Belum ada peserta. Jadilah yang pertama!</p>
             )}
           </div>
-          <p className="text-[11px] text-ink-muted mt-3 border-t border-hairline pt-3">
-            Hanya nilai percobaan pertama (yang dikerjakan sampai selesai) yang dihitung di leaderboard.
+
+          {/* Rank kamu — paling bawah */}
+          {myRow && antamRank > 5 && (
+            <div className="mt-2 pt-2 border-t border-hairline">
+              <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-green-50 border border-green-200">
+                <span className="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                  {antamRank}
+                </span>
+                <span className="flex-1 min-w-0 truncate text-xs font-medium text-green-800">
+                  {myRow.display_name || 'Anonim'} <span className="text-[10px] text-green-600 font-semibold">(kamu)</span>
+                </span>
+                {myRow.duration_seconds != null && (
+                  <span className="text-[10px] text-green-600 font-num shrink-0 hidden sm:block">
+                    {formatDuration(myRow.duration_seconds)}
+                  </span>
+                )}
+                <span className={`font-num font-bold text-[13px] shrink-0 ${myRow.score >= 75 ? 'text-green-600' : 'text-green-700'}`}>
+                  {myRow.score}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <p className="text-[10px] text-ink-muted mt-2 border-t border-hairline pt-2">
+            Skor percobaan pertama yang dihitung.
           </p>
         </div>
       )}
 
       {/* ══ Rincian per sub-tes ══ */}
       {subtests.length > 0 && (
-        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-4 sm:p-5 flex flex-col">
+          <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Rincian per sub-tes</p>
-            {weakest && <span className="text-xs text-ink-muted">Terlemah: <b className="text-ink">{weakest.code}</b></span>}
+            {weakest && <span className="text-[11px] text-ink-muted">Terlemah: <b className="text-ink">{weakest.code}</b></span>}
           </div>
-          <div className="space-y-3">
+          <div className="flex-1 space-y-1.5">
             {subtests.map((s) => (
-              <div key={s.code} className="flex items-center gap-3">
-                <span className="w-12 text-[11px] font-bold text-center text-ink bg-paper-soft rounded-md py-1 shrink-0">{s.code}</span>
-                <span className="flex-1 text-[13.5px] text-ink-soft truncate min-w-0">{SUBTEST_FULL[s.code] ?? s.code}</span>
-                <span className="flex-1 max-w-[220px] h-2 bg-hairline rounded-full overflow-hidden shrink-0">
+              <div key={s.code} className="flex items-center gap-2">
+                <span className="w-10 text-[10px] font-bold text-center text-ink bg-paper-soft rounded-md py-1 shrink-0">{s.code}</span>
+                <span className="flex-1 text-xs text-ink-soft truncate min-w-0">{SUBTEST_FULL[s.code] ?? s.code}</span>
+                <span className="flex-1 max-w-[160px] h-1.5 bg-hairline rounded-full overflow-hidden shrink-0">
                   <span className="block h-full rounded-full" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F4B400' : '#0E9F6E' }} />
                 </span>
-                <span className="w-16 text-right font-num text-[13px] text-ink shrink-0">{s.correct}/{s.total}</span>
-                <span className="w-10 text-right font-num font-semibold text-[13px] text-ink shrink-0">{s.pct}%</span>
+                <span className="w-12 text-right font-num text-xs text-ink shrink-0">{s.correct}/{s.total}</span>
+                <span className="w-9 text-right font-num font-semibold text-xs text-ink shrink-0">{s.pct}%</span>
               </div>
             ))}
           </div>
