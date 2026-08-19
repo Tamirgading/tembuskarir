@@ -91,19 +91,12 @@ export default async function AntamPortalPage() {
 
   const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
 
-  // Paket per stream: cari semua slug dengan prefix antam-{stream.slug} (paket 1, 2, 3, dst.)
-  const streamPackages = (code: string, streamSlug: string) => {
-    const prefix = `antam-${streamSlug}`
+  // Paket per stream: cari semua slug dengan prefix stream.slug (mis. antam-exploration, antam-exploration-paket-2, dst.)
+  const streamPackages = (streamSlug: string) => {
+    const prefix = streamSlug
     return packages
       .filter((p) => p.slug === prefix || p.slug.startsWith(`${prefix}-paket-`))
       .sort((a, b) => a.created_at.localeCompare(b.created_at))
-  }
-
-  // Label paket: "Paket 2", "Paket 3", dst. Paket 1 tanpa label.
-  const packageLabel = (slug: string, streamSlug: string): string | null => {
-    const suffix = slug.slice(`antam-${streamSlug}-paket-`.length)
-    if (slug === `antam-${streamSlug}`) return null
-    return `Paket ${suffix}`
   }
 
   return (
@@ -185,15 +178,15 @@ export default async function AntamPortalPage() {
             const colorCls = STREAM_COLORS[stream.code] ?? 'bg-gray-50 text-gray-700 border-gray-200'
             const bgCls = colorCls.split(' ')[0]
             const textCls = colorCls.split(' ')[1]
-            const streamPkgs = streamPackages(stream.code, stream.slug)
-            const primary = streamPkgs[0]
+            const streamPkgs = streamPackages(stream.slug)
             const hasPackage = streamPkgs.length > 0
 
             return (
-              <div
+              <Link
                 key={stream.code}
+                href={`/portal/antam/${stream.slug}`}
                 className={`group flex items-center gap-3.5 bg-white rounded-2xl border border-hairline px-4 py-4 transition-all ${
-                  hasPackage ? 'hover:shadow-soft hover:border-green-300' : 'opacity-60'
+                  hasPackage ? 'hover:shadow-soft hover:border-green-300' : 'opacity-60 pointer-events-none'
                 }`}
               >
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${bgCls}`}>
@@ -205,37 +198,24 @@ export default async function AntamPortalPage() {
                     <span className="text-[9px] font-bold text-ink-muted bg-paper-soft px-1.5 py-0.5 rounded-full">{stream.code}</span>
                   </div>
                   <p className="text-[11px] text-ink-muted mt-0.5 line-clamp-1">{stream.jurusan}</p>
-                  {hasPackage && primary && (
+                  {hasPackage && streamPkgs[0] && (
                     <div className="flex items-center gap-3 text-[11px] text-ink-muted mt-1">
-                      <span className="flex items-center gap-1"><FileText className="w-3 h-3" /><span className="font-num">{primary.total_questions}</span> soal</span>
-                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /><span className="font-num">{primary.duration_minutes}</span> mnt</span>
-                    </div>
-                  )}
-                  {hasPackage && streamPkgs.length > 1 && (
-                    <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                      {streamPkgs.map((sp) => (
-                        <Link
-                          key={sp.id}
-                          href={`/persiapan/${sp.id}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-green-50 text-green-700 text-[11px] font-bold rounded-lg hover:bg-green-100 transition-colors border border-green-200"
-                        >
-                          {packageLabel(sp.slug, stream.slug) ?? 'Paket 1'} <ArrowRight className="w-3 h-3" />
-                        </Link>
-                      ))}
+                      <span className="flex items-center gap-1"><FileText className="w-3 h-3" /><span className="font-num">{streamPkgs.length}</span> paket</span>
+                      <span className="flex items-center gap-1"><FileText className="w-3 h-3" /><span className="font-num">{streamPkgs[0].total_questions}</span> soal</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /><span className="font-num">{streamPkgs[0].duration_minutes}</span> mnt</span>
                     </div>
                   )}
                 </div>
                 {hasPackage ? (
-                  <Link href={`/persiapan/${primary.id}`}
-                    className="shrink-0 flex items-center gap-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-colors">
-                    Mulai <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  <span className="shrink-0 flex items-center gap-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-xl group-hover:bg-green-700 transition-colors">
+                    Lihat Paket <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
                 ) : (
                   <span className="shrink-0 text-[10px] font-semibold text-ink-muted bg-paper-soft px-3 py-2 rounded-xl">
                     Segera Hadir
                   </span>
                 )}
-              </div>
+              </Link>
             )
           })}
         </div>
