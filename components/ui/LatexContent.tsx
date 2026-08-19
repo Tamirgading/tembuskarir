@@ -57,17 +57,31 @@ function InlineParts({ text }: { text: string }) {
   )
 }
 
-// ─── Line grouper (deteksi list markdown) ────────────────────────────────────
+// ─── Line grouper (deteksi list & tabel markdown) ────────────────────────────
 type LineGroup =
   | { type: 'ordered'; items: string[] }
   | { type: 'unordered'; items: string[] }
+  | { type: 'table'; rows: string[] }
   | { type: 'paragraph'; lines: string[] }
+
+function isTableLine(line: string): boolean {
+  const t = line.trim()
+  // baris tabel: diawali "|" dan diakhiri "|", minimal ada pembatas antar kolom
+  return /^\|.*\|\s*$/.test(t) && t.replace(/\|/g, '').trim().length > 0
+}
 
 function groupLines(text: string): LineGroup[] {
   const lines = text.split('\n')
   const groups: LineGroup[] = []
 
   for (const line of lines) {
+    if (isTableLine(line)) {
+      const last = groups[groups.length - 1]
+      if (last?.type === 'table') last.rows.push(line)
+      else groups.push({ type: 'table', rows: [line] })
+      continue
+    }
+
     const orderedMatch = line.match(/^\d+[.)]\s+(.*)/)
     const unorderedMatch = line.match(/^[-*•]\s+(.*)/)
 
@@ -89,6 +103,56 @@ function groupLines(text: string): LineGroup[] {
   return groups
 }
 
+// ─── Renderer tabel markdown ─────────────────────────────────────────────────
+function parseTableRow(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map((c) => c.trim())
+}
+
+function isSeparatorRow(cells: string[]): boolean {
+  return cells.length > 0 && cells.every((c) => /^:?-{2,}:?$/.test(c))
+}
+
+function TableBlock({ rows }: { rows: string[] }) {
+  const parsed = rows.map(parseTableRow)
+  const sepIdx = parsed.findIndex((cells) => isSeparatorRow(cells))
+  const header = sepIdx >= 0 ? parsed.slice(0, sepIdx).flat() : parsed[0] ?? []
+  const bodyStart = sepIdx >= 0 ? sepIdx + 1 : 1
+  const body = parsed.slice(bodyStart).filter((cells) => cells.length > 0 && !isSeparatorRow(cells))
+
+  const cellCls = 'border border-hairline px-2.5 py-1.5 align-top'
+  return (
+    <div className="my-2 overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr>
+            {header.map((h, i) => (
+              <th key={i} className={`${cellCls} bg-paper-soft text-left font-semibold`}>
+                <InlineParts text={h} />
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {body.map((row, ri) => (
+            <tr key={ri}>
+              {row.map((cell, ci) => (
+                <td key={ci} className={cellCls}>
+                  <InlineParts text={cell} />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 // ─── Komponen utama ───────────────────────────────────────────────────────────
 interface LatexContentProps {
   content: string
@@ -106,6 +170,9 @@ export function LatexContent({ content, className, plain }: LatexContentProps) {
   return (
     <span className={className}>
       {groups.map((group, gi) => {
+        if (group.type === 'table') {
+          return <TableBlock key={gi} rows={group.rows} />
+        }
         if (group.type === 'ordered') {
           return (
             <ol key={gi} className="list-none my-2 space-y-1">
