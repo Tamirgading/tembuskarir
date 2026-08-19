@@ -493,7 +493,15 @@ export default async function HomePage({
                       const d = new Date(a.started_at)
                       const day = d.getDate()
                       const mon = d.toLocaleDateString('id-ID', { month: 'short' }).replace('.', '').toUpperCase()
-                      const prevScore = i + 1 < attempts.length ? attempts[i + 1].score ?? 0 : null
+                      // Bandingkan dengan attempt LEBIH LAMA pada PAKET YANG SAMA saja
+                      // (jangan bandingkan antar paket/stream yang berbeda)
+                      let prevScore: number | null = null
+                      for (let j = i + 1; j < attempts.length; j++) {
+                        if (attempts[j].package_id === a.package_id && attempts[j].score != null) {
+                          prevScore = attempts[j].score
+                          break
+                        }
+                      }
                       const delta = prevScore !== null ? (a.score ?? 0) - prevScore : null
                       return (
                         <Link key={a.id} href={`/hasil/${a.id}`}
