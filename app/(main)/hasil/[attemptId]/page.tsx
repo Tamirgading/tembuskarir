@@ -1,13 +1,14 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock, Trophy } from 'lucide-react'
+import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
-import { buildLeaderboard } from '@/lib/leaderboard'
-import type { LeaderboardAttempt } from '@/lib/leaderboard'
+import { buildLeaderboard, mergeLeaderboard } from '@/lib/leaderboard'
+import type { LeaderboardAttempt, LeaderboardDummy, LeaderboardRow } from '@/lib/leaderboard'
 import { HasilReview } from '@/components/hasil/HasilReview'
+import { LeaderboardIllustration } from '@/components/ui/LeaderboardIllustration'
 
 interface QuestionWithAnswer {
   id: string
@@ -59,6 +60,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const pkg = pkgData as { name: string; total_questions: number; category: string } | null
 
   // Leaderboard ANTAM: posisi user berdasarkan skor percobaan PERTAMA
+  // (termasuk entri dummy yang diisi admin)
   let antamRank = 0
   let antamTotal = 0
   if (pkg?.category === 'ANTAM') {
@@ -69,8 +71,31 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
       .eq('status', 'finished')
       .not('score', 'is', null)
     const entries = buildLeaderboard((antamAttempts ?? []) as LeaderboardAttempt[], 'first')
-    antamTotal = entries.length
-    const idx = entries.findIndex((e) => e.user_id === user.id)
+
+    let antamDummies: LeaderboardDummy[] = []
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: dummyData } = await (supabase.from('leaderboard_entries') as any)
+        .select('id, display_name, score, duration_seconds')
+        .eq('package_id', attempt.package_id)
+        .eq('is_active', true)
+        .order('created_at', { ascending: true })
+      antamDummies = (dummyData ?? []) as LeaderboardDummy[]
+    } catch { /* tabel belum tersedia */ }
+
+    const realRows: LeaderboardRow[] = entries.map((e) => ({
+      key: `user-${e.user_id}`,
+      user_id: e.user_id,
+      display_name: '',
+      avatar_url: null,
+      score: e.score,
+      attempt_count: e.attempt_count,
+      duration_seconds: e.duration_seconds,
+      is_dummy: false,
+    }))
+    const allRows = mergeLeaderboard(realRows, antamDummies)
+    antamTotal = allRows.length
+    const idx = allRows.findIndex((r) => r.user_id === user.id)
     if (idx >= 0) antamRank = idx + 1
   }
 
@@ -195,8 +220,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0">
-                <Trophy className="w-5 h-5 text-amber-500" />
+              <div className="w-10 h-10 rounded-xl bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
+                <LeaderboardIllustration className="w-6 h-6" />
               </div>
               <div>
                 <p className="text-sm font-bold text-ink">Leaderboard</p>
@@ -211,7 +236,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               href={`/paket/${attempt.package_id}/leaderboard`}
               className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-colors"
             >
-              <Trophy className="w-3.5 h-3.5" /> Lihat Leaderboard
+              Lihat Leaderboard <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
           <p className="text-[11px] text-ink-muted mt-3 border-t border-hairline pt-3">

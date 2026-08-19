@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export function NewPackageForm() {
+interface NewPackageFormProps {
+  defaultCategory?: string
+}
+
+export function NewPackageForm({ defaultCategory = 'PLN' }: NewPackageFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -11,7 +15,7 @@ export function NewPackageForm() {
   const [form, setForm] = useState({
     name: '',
     slug: '',
-    category: 'PLN',
+    category: defaultCategory,
     description: '',
     duration_minutes: 90,
     total_questions: 100,
@@ -103,6 +107,8 @@ export function NewPackageForm() {
             {['PLN', 'ASTRA', 'BI', 'OJK', 'KEDINASAN', 'LAINNYA'].map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
+            <option value="BUMN">BUMN</option>
+            <option value="ANTAM">ANTAM</option>
           </select>
         </div>
 

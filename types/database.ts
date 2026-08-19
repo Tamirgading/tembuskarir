@@ -194,6 +194,47 @@ export type Database = {
           }
         ]
       }
+      leaderboard_entries: {
+        Row: {
+          id: string
+          package_id: string
+          display_name: string
+          score: number
+          duration_seconds: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          package_id: string
+          display_name: string
+          score?: number
+          duration_seconds?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          package_id?: string
+          display_name?: string
+          score?: number
+          duration_seconds?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'leaderboard_entries_package_id_fkey'
+            columns: ['package_id']
+            isOneToOne: false
+            referencedRelation: 'packages'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       questions_pln_akhlak: {
         Row: {
           id: string

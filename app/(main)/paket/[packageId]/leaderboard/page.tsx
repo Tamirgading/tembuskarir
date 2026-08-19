@@ -1,22 +1,21 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Trophy, Flag } from 'lucide-react'
+import { Flag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { buildLeaderboard } from '@/lib/leaderboard'
+import { buildLeaderboard, mergeLeaderboard } from '@/lib/leaderboard'
+import type { LeaderboardDummy, LeaderboardRow } from '@/lib/leaderboard'
+import { formatDuration } from '@/lib/utils'
 import type { PackageRow } from '@/lib/utils'
+import { LeaderboardIllustration } from '@/components/ui/LeaderboardIllustration'
 
-interface LeaderboardEntry {
-  user_id: string
-  full_name: string | null
-  avatar_url: string | null
-  score: number
-  attempt_count: number
-}
+const PAGE_SIZE = 10
 
 export default async function LeaderboardPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ packageId: string }>
+  searchParams?: { page?: string }
 }) {
   const { packageId } = await params
   const supabase = await createClient()
@@ -41,47 +40,79 @@ export default async function LeaderboardPage({
   // Ambil semua finished attempts, group di JS
   const { data: attemptsData } = await supabase
     .from('attempts')
-    .select('user_id, score, started_at')
+    .select('user_id, score, started_at, duration_seconds')
     .eq('package_id', packageId)
     .eq('status', 'finished')
     .not('score', 'is', null)
 
-  type AttemptEntry = { user_id: string; score: number; started_at: string }
+  type AttemptEntry = {
+    user_id: string
+    score: number
+    started_at: string
+    duration_seconds: number | null
+  }
   const attempts = (attemptsData ?? []) as AttemptEntry[]
+
+  // Entri dummy dari admin (aman jika tabel belum dibuat)
+  let dummies: LeaderboardDummy[] = []
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: dummyData } = await (supabase.from('leaderboard_entries') as any)
+      .select('id, display_name, score, duration_seconds')
+      .eq('package_id', packageId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: true })
+    dummies = (dummyData ?? []) as LeaderboardDummy[]
+  } catch { /* tabel belum tersedia */ }
 
   const entries = buildLeaderboard(attempts, isAntam ? 'first' : 'best')
 
-  // Ambil top 20
-  const topEntries = entries.slice(0, 20)
+  // Susun semua baris (real + dummy), urutkan by skor
+  const realRowsAll: LeaderboardRow[] = entries.map((e) => ({
+    key: `user-${e.user_id}`,
+    user_id: e.user_id,
+    display_name: '',
+    avatar_url: null,
+    score: e.score,
+    attempt_count: e.attempt_count,
+    duration_seconds: e.duration_seconds,
+    is_dummy: false,
+  }))
+  const allRows = mergeLeaderboard(realRowsAll, dummies)
 
-  // Fetch profil user untuk nama & avatar
-  let leaderboard: LeaderboardEntry[] = []
-  if (topEntries.length > 0) {
-    const topUserIds = topEntries.map((e) => e.user_id)
+  // Pagination: 10 peserta per halaman
+  const rawPage = parseInt(searchParams?.page ?? '1', 10)
+  const totalPages = Math.max(1, Math.ceil(allRows.length / PAGE_SIZE))
+  const page = Math.min(Math.max(Number.isFinite(rawPage) ? rawPage : 1, 1), totalPages)
+  const topRows = allRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  // Fetch nama & avatar untuk peserta di halaman ini (real user)
+  let leaderboard: LeaderboardRow[] = topRows
+  const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
+  if (realTopIds.length > 0) {
     const { data: usersData } = await supabase
       .from('users')
       .select('id, full_name, avatar_url')
-      .in('id', topUserIds)
+      .in('id', realTopIds)
 
     type UserEntry = { id: string; full_name: string | null; avatar_url: string | null }
     const usersMap = new Map<string, UserEntry>(
       ((usersData ?? []) as UserEntry[]).map((u) => [u.id, u])
     )
 
-    leaderboard = topEntries.map((e) => {
-      const u = usersMap.get(e.user_id)
+    leaderboard = topRows.map((r) => {
+      if (!r.user_id) return r
+      const u = usersMap.get(r.user_id)
       return {
-        user_id: e.user_id,
-        full_name: u?.full_name ?? null,
+        ...r,
+        display_name: u?.full_name ?? 'Anonim',
         avatar_url: u?.avatar_url ?? null,
-        score: e.score,
-        attempt_count: e.attempt_count,
       }
     })
   }
 
-  // Posisi user dihitung dari seluruh peserta (bukan hanya top 20)
-  const myRank = entries.findIndex((e) => e.user_id === user.id) + 1
+  // Posisi user dihitung dari seluruh peserta (real + dummy)
+  const myRank = allRows.findIndex((r) => r.user_id === user.id) + 1
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -93,7 +124,9 @@ export default async function LeaderboardPage({
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2"><Trophy className="w-6 h-6 text-amber-500" /> Leaderboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <LeaderboardIllustration className="w-7 h-7" /> Leaderboard
+        </h1>
         <p className="text-gray-500 mt-1">
           {pkg.name}
           {isAntam && ' — hanya skor percobaan pertama yang dihitung.'}
@@ -125,7 +158,8 @@ export default async function LeaderboardPage({
                 <th className="px-5 py-3 font-medium w-12">#</th>
                 <th className="px-5 py-3 font-medium">Peserta</th>
                 <th className="px-5 py-3 font-medium text-right">{isAntam ? 'Skor Percobaan 1' : 'Skor Terbaik'}</th>
-                <th className="px-5 py-3 font-medium text-right hidden sm:table-cell">Percobaan</th>
+                <th className="px-5 py-3 font-medium text-right hidden sm:table-cell">Waktu</th>
+                <th className="px-5 py-3 font-medium text-right hidden md:table-cell">Percobaan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -142,7 +176,7 @@ export default async function LeaderboardPage({
 
                 return (
                   <tr
-                    key={entry.user_id}
+                    key={entry.key}
                     className={`transition-colors ${isMe ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
                   >
                     <td className="px-5 py-3">
@@ -161,11 +195,11 @@ export default async function LeaderboardPage({
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={entry.avatar_url} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            (entry.full_name ?? 'U').charAt(0).toUpperCase()
+                            (entry.display_name ?? 'U').charAt(0).toUpperCase()
                           )}
                         </div>
                         <span className={`font-medium ${isMe ? 'text-blue-700' : 'text-gray-900'}`}>
-                          {entry.full_name ?? 'Anonim'}
+                          {entry.display_name}
                           {isMe && <span className="ml-1.5 text-xs text-blue-500 font-normal">(kamu)</span>}
                         </span>
                       </div>
@@ -175,8 +209,11 @@ export default async function LeaderboardPage({
                         {entry.score}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-right text-gray-400 hidden sm:table-cell">
-                      {entry.attempt_count}x
+                    <td className="px-5 py-3 text-right text-gray-500 hidden sm:table-cell font-num">
+                      {entry.duration_seconds != null ? formatDuration(entry.duration_seconds) : '—'}
+                    </td>
+                    <td className="px-5 py-3 text-right text-gray-400 hidden md:table-cell">
+                      {entry.is_dummy ? '—' : `${entry.attempt_count}x`}
                     </td>
                   </tr>
                 )
@@ -185,6 +222,33 @@ export default async function LeaderboardPage({
           </table>
         )}
       </div>
+
+      {/* Pagination */}
+      {leaderboard.length > 0 && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 text-sm">
+          {page > 1 ? (
+            <Link
+              href={`?page=${page - 1}`}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              ← Sebelumnya
+            </Link>
+          ) : (
+            <span className="px-4 py-2 border border-gray-200 text-gray-300 rounded-lg cursor-not-allowed">← Sebelumnya</span>
+          )}
+          <span className="text-gray-500">Halaman {page} dari {totalPages}</span>
+          {page < totalPages ? (
+            <Link
+              href={`?page=${page + 1}`}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Berikutnya →
+            </Link>
+          ) : (
+            <span className="px-4 py-2 border border-gray-200 text-gray-300 rounded-lg cursor-not-allowed">Berikutnya →</span>
+          )}
+        </div>
+      )}
 
       {/* CTA */}
       <div className="flex gap-3">

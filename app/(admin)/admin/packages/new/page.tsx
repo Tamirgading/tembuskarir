@@ -1,7 +1,11 @@
 import { NewPackageForm } from '@/components/admin/NewPackageForm'
 import Link from 'next/link'
 
-export default function NewPackagePage() {
+export default function NewPackagePage({
+  searchParams,
+}: {
+  searchParams?: { category?: string }
+}) {
   return (
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center gap-3">
@@ -12,7 +16,7 @@ export default function NewPackagePage() {
         <p className="text-gray-500 mt-1">Buat paket baru. Soal bisa ditambah via import JSON setelah paket dibuat.</p>
       </div>
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <NewPackageForm />
+        <NewPackageForm defaultCategory={searchParams?.category} />
       </div>
     </div>
   )
