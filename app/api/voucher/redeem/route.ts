@@ -108,6 +108,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Gagal mengaktifkan voucher. Coba lagi.' }, { status: 500 })
     }
 
+    // Insert record ke subscriptions agar semua cek akses premium (getPremiumSubscriptionStatus,
+    // checkPackageAccess) mengenali user ini sebagai subscribed. plan_type premium_quarterly
+    // (dalam PREMIUM_PLANS di lib/access.ts) berlaku untuk semua paket non-bidang.
+    const planType = voucher.duration_days >= 60 ? 'premium_quarterly' : 'premium_monthly'
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: subErr } = await (service.from('subscriptions') as any)
+      .insert({
+        user_id: user.id,
+        midtrans_order_id: `VOUCHER-${voucher.id}-${Date.now()}`,
+        plan_type: planType,
+        amount: 0,
+        status: 'paid',
+        paid_at: new Date().toISOString(),
+        expires_at: newExpiry.toISOString(),
+      })
+
+    if (subErr) {
+      console.error('[Voucher] Failed to insert subscription:', subErr)
+      return NextResponse.json({ error: 'Gagal mengaktifkan voucher. Coba lagi.' }, { status: 500 })
+    }
+
     // Catat penggunaan voucher
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (service.from('voucher_uses') as any)
