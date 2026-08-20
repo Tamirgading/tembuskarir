@@ -12,12 +12,12 @@ const SUBTEST_ORDER = ['QR', 'DR', 'RC', 'IR', 'VIZ', 'PS', 'WM'] as const
 
 const SUBTEST_INFO: Record<string, { desc: string; tip: string }> = {
   QR:  { desc: 'Temukan nilai yang hilang dari deretan angka atau tabel menggunakan pola matematika.', tip: 'Perhatikan pola perkalian, pembagian, atau kombinasi operasi antar angka.' },
-  DR:  { desc: 'Tentukan kesimpulan paling valid berdasarkan premis-premis logika yang diberikan.', tip: 'Gunakan logika deduktif murni — jangan berasumsi di luar premis.' },
+  DR:  { desc: 'Tentukan kesimpulan paling valid berdasarkan premis-premis logika yang diberikan.', tip: 'Gunakan logika deduktif murni, jangan berasumsi di luar premis.' },
   RC:  { desc: 'Baca teks yang tersedia, lalu jawab pertanyaan berdasarkan isi bacaan.', tip: 'Baca sekali dengan fokus penuh. Jawab berdasarkan teks, bukan pengetahuan umum.' },
   IR:  { desc: 'Temukan pola dalam rangkaian gambar atau bentuk, lalu tentukan pola selanjutnya.', tip: 'Perhatikan rotasi, perubahan bentuk, ukuran, atau jumlah elemen antar gambar.' },
   VIZ: { desc: 'Bayangkan dan manipulasi objek tiga dimensi. Tentukan hasil rotasi atau jaring-jaring yang sesuai.', tip: 'Visualisasikan pelipatan jaring-jaring dan rotasi benda secara mental.' },
-  PS:  { desc: 'Bandingkan dua deretan karakter — huruf, angka, dan simbol. Tentukan apakah keduanya SAMA (V) atau BERBEDA (X).', tip: 'Fokus cepat dari kiri ke kanan. Jangan terlalu lama pada satu pasang karakter.' },
-  WM:  { desc: 'Hafalkan pasangan kata–angka yang ditampilkan, lalu jawab pertanyaan berdasarkan hafalanmu.', tip: 'Buat asosiasi mental yang kuat antara kata dan angkanya saat menghafal.' },
+  PS:  { desc: 'Bandingkan dua deretan karakter, yaitu huruf, angka, dan simbol. Tentukan apakah keduanya SAMA (V) atau BERBEDA (X).', tip: 'Fokus cepat dari kiri ke kanan. Jangan terlalu lama pada satu pasang karakter.' },
+  WM:  { desc: 'Hafalkan pasangan kata dan angka yang ditampilkan, lalu jawab pertanyaan berdasarkan hafalanmu.', tip: 'Buat asosiasi mental yang kuat antara kata dan angkanya saat menghafal.' },
 }
 
 const SUBTEST_COLORS: Record<string, string> = {
