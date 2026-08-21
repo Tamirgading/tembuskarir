@@ -9,6 +9,9 @@
  *
  * CATATAN:
  *  - Jumlah soal di sini adalah CONTOH (5/seksi). Konten asli diimpor di Fase 2.
+ *  - Passing grade PILOT dibuat proporsional terhadap soal contoh (TKD 16/20,
+ *    AKHLAK 4/5, TWK 3/5) supaya status LOLOS/BELUM bisa diuji. Saat konten asli
+ *    diimpor (Fase 2), kembalikan ke angka resmi: TKD 58/100, AKHLAK 65/90, TWK 50/10.
  *  - PRASYARAT: tabel package_sections harus sudah dibuat (jalankan migration
  *    supabase/migrations/2026-08-21T01-00-00_package_sections.sql di SQL Editor).
  *
@@ -58,12 +61,12 @@ interface QuestionSeed {
 }
 
 const SECTIONS: SectionSeed[] = [
-  { kode: 'TKD-VLR', nama: 'Tes Kemampuan Dasar — Verbal Logical Reasoning', timer_mode: 'section', timer_seconds: 18 * 60, group_kode: 'TKD', passing_grade: 58 },
+  { kode: 'TKD-VLR', nama: 'Tes Kemampuan Dasar — Verbal Logical Reasoning', timer_mode: 'section', timer_seconds: 18 * 60, group_kode: 'TKD', passing_grade: 16 },
   { kode: 'TKD-NS',  nama: 'Tes Kemampuan Dasar — Number Sequence',           timer_mode: 'section', timer_seconds: 27 * 60, group_kode: 'TKD', passing_grade: null },
   { kode: 'TKD-WC',  nama: 'Tes Kemampuan Dasar — Word Classification',        timer_mode: 'section', timer_seconds: 9 * 60,  group_kode: 'TKD', passing_grade: null },
   { kode: 'TKD-DIAG',nama: 'Tes Kemampuan Dasar — Diagram Reasoning',          timer_mode: 'section', timer_seconds: 20 * 60, group_kode: 'TKD', passing_grade: null },
-  { kode: 'AKHLAK',  nama: 'Tes AKHLAK',                                       timer_mode: 'per_question', timer_seconds: 20, group_kode: null, passing_grade: 65 },
-  { kode: 'TWK',     nama: 'Tes Wawasan Kebangsaan',                           timer_mode: 'section', timer_seconds: 10 * 60, group_kode: null, passing_grade: 50 },
+  { kode: 'AKHLAK',  nama: 'Tes AKHLAK',                                       timer_mode: 'per_question', timer_seconds: 20, group_kode: null, passing_grade: 4 },
+  { kode: 'TWK',     nama: 'Tes Wawasan Kebangsaan',                           timer_mode: 'section', timer_seconds: 10 * 60, group_kode: null, passing_grade: 3 },
 ]
 
 const QUESTIONS: QuestionSeed[] = [
