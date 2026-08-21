@@ -23,6 +23,24 @@ const BUMN_SUBTESTS = [
   { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-700 border-purple-200', title: 'Nilai AKHLAK (poin)' },
 ]
 
+const TAHAP1_BADGES = [
+  { label: 'TKD',    cls: 'bg-indigo-50 text-indigo-700 border-indigo-200', title: 'Tes Kemampuan Dasar' },
+  { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-700 border-purple-200', title: 'Nilai AKHLAK' },
+  { label: 'TWK',    cls: 'bg-violet-50 text-violet-700 border-violet-200', title: 'Tes Wawasan Kebangsaan' },
+]
+
+const TAHAP2_BADGES = [
+  { label: 'ER', cls: 'bg-blue-50 text-blue-700 border-blue-200', title: 'Error Recognition' },
+  { label: 'RC', cls: 'bg-cyan-50 text-cyan-700 border-cyan-200', title: 'Reading Comprehension' },
+  { label: 'SC', cls: 'bg-indigo-50 text-indigo-700 border-indigo-200', title: 'Sentence Completion' },
+]
+
+function getBadges(slug: string) {
+  if (slug?.startsWith('rbb-bumn-tahap-2')) return TAHAP2_BADGES
+  if (slug?.startsWith('rbb-bumn-tahap-1')) return TAHAP1_BADGES
+  return BUMN_SUBTESTS
+}
+
 export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: BumnPackageCardProps) {
   const router = useRouter()
   const [showLoginModal, setShowLoginModal]   = useState(false)
@@ -78,15 +96,12 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
 
             {/* Sub-tes + durasi */}
             <div className="flex gap-1.5 flex-wrap items-center">
-              {!pkg.is_free && BUMN_SUBTESTS.map((s) => (
+              {getBadges(pkg.slug).map((s) => (
                 <span key={s.label} title={s.title}
                   className={`text-xs px-2 py-0.5 rounded-md border font-semibold ${s.cls}`}>
                   {s.label}
                 </span>
               ))}
-              {pkg.is_free && (
-                <span className="text-xs text-ink-muted">TWK · TIU · 20 soal sample</span>
-              )}
               <span className="text-xs px-2 py-0.5 rounded-md bg-paper text-ink-muted border border-hairline flex items-center gap-1">
                 <Clock className="w-3 h-3" /> {pkg.duration_minutes} mnt
               </span>
