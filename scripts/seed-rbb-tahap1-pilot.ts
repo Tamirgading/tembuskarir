@@ -66,7 +66,7 @@ const SECTIONS: SectionSeed[] = [
   { kode: 'TKD-WC',  nama: 'Tes Kemampuan Dasar — Word Classification',        timer_mode: 'section', timer_seconds: 9 * 60,  group_kode: 'TKD', passing_grade: null },
   { kode: 'TKD-DIAG',nama: 'Tes Kemampuan Dasar — Diagram Reasoning',          timer_mode: 'section', timer_seconds: 20 * 60, group_kode: 'TKD', passing_grade: null },
   { kode: 'AKHLAK',  nama: 'Tes AKHLAK',                                       timer_mode: 'per_question', timer_seconds: 20, group_kode: null, passing_grade: 4 },
-  { kode: 'TWK',     nama: 'Tes Wawasan Kebangsaan',                           timer_mode: 'section', timer_seconds: 10 * 60, group_kode: null, passing_grade: 3 },
+  { kode: 'TWK',     nama: 'Tes Wawasan Kebangsaan',                           timer_mode: 'section', timer_seconds: 10 * 60, group_kode: null, passing_grade: 5 },
 ]
 
 const QUESTIONS: QuestionSeed[] = [
