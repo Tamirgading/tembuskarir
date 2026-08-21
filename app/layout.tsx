@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Bricolage_Grotesque, Hanken_Grotesk, Space_Grotesk } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 // Body & UI — humanis, sangat terbaca
@@ -75,6 +76,7 @@ export default function RootLayout({
     <html lang="id" className="scroll-smooth">
       <body className={`${hanken.variable} ${bricolage.variable} ${spaceGrotesk.variable} font-sans antialiased bg-paper text-slate-600 overflow-x-hidden selection:bg-blue-100 selection:text-blue-700`}>
         {children}
+        <Analytics />
       </body>
     </html>
   )
