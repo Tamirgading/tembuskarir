@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
-import { getFeatureFlags } from '@/lib/site-settings'
+import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
 import GuestLoginCta from '@/components/ui/GuestLoginCta'
@@ -71,10 +71,8 @@ export default async function HomePage({
 }) {
   const { payment, tab } = await searchParams
   const supabase = await createClient()
-  const [{ data: { user } }, featureFlags] = await Promise.all([
-    supabase.auth.getUser(),
-    getFeatureFlags(),
-  ])
+  const { data: { user } } = await supabase.auth.getUser()
+  const featureFlags = await getEffectiveFeatureFlags(user?.email)
   const activeTab = user && tab === 'pembelian' ? 'pembelian' : 'beranda'
 
   // ── Guest view ─────────────────────────────────────────────────────────────

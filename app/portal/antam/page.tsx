@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
-import { getFeatureFlags } from '@/lib/site-settings'
+import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 import { ANTAM_STREAM_LIST } from '@/lib/antam-config'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
@@ -49,18 +49,17 @@ const STREAM_COLORS: Record<string, string> = {
 }
 
 export default async function AntamPortalPage() {
-  const flags = await getFeatureFlags()
-  if (!flags.feature_portal_antam) redirect('/')
-
   let packages: PackageRow[] = []
   let isLoggedIn = false
   let hasPremium = false
+  let userEmail: string | null = null
   let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
 
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     isLoggedIn = !!user
+    userEmail = user?.email ?? null
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pkgData } = await (supabase.from('packages') as any)
@@ -88,6 +87,9 @@ export default async function AntamPortalPage() {
       }
     }
   } catch { /* Supabase not configured */ }
+
+  const flags = await getEffectiveFeatureFlags(userEmail)
+  if (!flags.feature_portal_antam) redirect('/')
 
   const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
 

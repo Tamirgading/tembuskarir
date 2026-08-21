@@ -8,7 +8,7 @@ import {
   ArrowRight, Clock, FileText, Languages, BookOpen,
   CheckCircle2, Lock, Sparkles,
 } from 'lucide-react'
-import { getFeatureFlags } from '@/lib/site-settings'
+import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -120,14 +120,12 @@ function SectionHeader({
 }
 
 export default async function PlnBidangPage({ params }: Props) {
-  const flags = await getFeatureFlags()
-  if (!flags.feature_portal_pln) redirect('/')
-
   const { slug } = await params
   const bidang = BIDANG_BY_SLUG[slug]
   if (!bidang) notFound()
 
   let isLoggedIn = false
+  let userEmail: string | null = null
   let unlockedIds: string[] = []
   let biDemo: PackageRow | null = null
   let biFull: PackageRow | null = null
@@ -138,6 +136,7 @@ export default async function PlnBidangPage({ params }: Props) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     isLoggedIn = !!user
+    userEmail = user?.email ?? null
 
     if (user) unlockedIds = await getUnlockedPackageIds(user.id)
 
@@ -154,6 +153,9 @@ export default async function PlnBidangPage({ params }: Props) {
     akdingDemo = pkgMap[akdingSlug(slug, 'demo')] ?? null
     akdingFull = pkgMap[akdingSlug(slug, 'full')] ?? null
   } catch { /* ignore */ }
+
+  const flags = await getEffectiveFeatureFlags(userEmail)
+  if (!flags.feature_portal_pln) redirect('/')
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">

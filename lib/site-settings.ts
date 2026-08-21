@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server'
+import { isAdmin } from '@/lib/admin'
 
 export type FeatureKey =
   | 'feature_info_seleksi'
@@ -40,4 +41,19 @@ export async function setFeatureFlag(key: FeatureKey, enabled: boolean): Promise
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (supabase.from('site_settings') as any)
     .upsert({ key, value: enabled, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+}
+
+/**
+ * Feature flags "efektif" sesuai viewer.
+ * Admin selalu melihat SEMUA fitur (untuk preview pengembangan),
+ * terlepas dari status flag di Pengaturan Fitur. User biasa hanya
+ * melihat fitur yang diaktifkan admin.
+ */
+export async function getEffectiveFeatureFlags(userEmail?: string | null): Promise<FeatureFlags> {
+  if (isAdmin(userEmail)) {
+    return Object.fromEntries(
+      (Object.keys(DEFAULTS) as FeatureKey[]).map((k) => [k, true])
+    ) as FeatureFlags
+  }
+  return getFeatureFlags()
 }

@@ -366,6 +366,7 @@ ADMIN_EMAILS=email@admin.com           # Comma-separated admin emails
 | Sprint 6 | lucide-react untuk semua icon UI | Tidak pakai emoji keyboard, lebih branded |
 | Sprint 6 | Card images (card-ojk.png dll) di coming soon | Asset unik, bukan emoji generik |
 | Jul 2026 | Landing page dihapus — root `/` = beranda/dashboard (guest-aware) | Flow lama; mengikuti pola TembusASN. Route `/dashboard` di-redirect ke `/` via next.config.mjs. AppShell mendukung guest (CTA Masuk/Daftar via LoginModal) |
+| Agu 2026 | Admin bypass feature flags (`getEffectiveFeatureFlags`) | Admin login melihat SEMUA fitur (preview pengembangan) terlepas dari flag. User biasa hanya melihat fitur yang diaktifkan di Pengaturan Fitur. Flag asli tetap terlihat di dashboard admin (getFeatureFlags). |
 
 ---
 

@@ -7,13 +7,12 @@ import { formatDate } from '@/lib/utils'
 import PlnPackageCard from '@/components/portal/PlnPackageCard'
 import { getUnlockedPackageIds } from '@/lib/access'
 import { PLN_SUBTESTS } from '@/lib/exam-scoring'
-import { getFeatureFlags } from '@/lib/site-settings'
+import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 export default async function PlnGatPage() {
-  const flags = await getFeatureFlags()
-  if (!flags.feature_portal_pln) redirect('/')
   let packages: PackageRow[] = []
   let isLoggedIn = false
+  let userEmail: string | null = null
   let unlockedPackageIds: string[] = []
   let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
 
@@ -21,6 +20,7 @@ export default async function PlnGatPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     isLoggedIn = !!user
+    userEmail = user?.email ?? null
 
     // Hanya ambil paket GAT (slug prefix 'gat-')
     const { data: pkgData } = await supabase
@@ -50,6 +50,9 @@ export default async function PlnGatPage() {
       }
     }
   } catch { /* Supabase not configured */ }
+
+  const flags = await getEffectiveFeatureFlags(userEmail)
+  if (!flags.feature_portal_pln) redirect('/')
 
   const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
 

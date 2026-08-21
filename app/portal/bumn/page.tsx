@@ -6,7 +6,7 @@ import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import BumnPackageCard from '@/components/portal/BumnPackageCard'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
-import { getFeatureFlags } from '@/lib/site-settings'
+import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 const BUMN_SUBTESTS = [
   {
@@ -54,17 +54,17 @@ const BUMN_SUBTESTS = [
 ]
 
 export default async function BumnPortalPage() {
-  const flags = await getFeatureFlags()
-  if (!flags.feature_portal_bumn) redirect('/')
   let packages: PackageRow[] = []
   let isLoggedIn = false
   let hasPremium = false
+  let userEmail: string | null = null
   let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
 
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     isLoggedIn = !!user
+    userEmail = user?.email ?? null
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pkgData } = await (supabase.from('packages') as any)
@@ -93,6 +93,9 @@ export default async function BumnPortalPage() {
       }
     }
   } catch { /* Supabase not configured */ }
+
+  const flags = await getEffectiveFeatureFlags(userEmail)
+  if (!flags.feature_portal_bumn) redirect('/')
 
   const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
 

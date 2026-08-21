@@ -1,13 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { AppShell } from '@/components/ui/AppShell'
-import { getFeatureFlags } from '@/lib/site-settings'
+import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
-  const [{ data: { user } }, featureFlags] = await Promise.all([
-    supabase.auth.getUser(),
-    getFeatureFlags(),
-  ])
+  const { data: { user } } = await supabase.auth.getUser()
+  const featureFlags = await getEffectiveFeatureFlags(user?.email)
 
   let userName: string | null = null
   let userPlan: 'free' | 'premium' = 'free'

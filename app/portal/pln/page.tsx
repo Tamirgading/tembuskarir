@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Zap, BookOpen, ChevronRight, Clock, FileText, Layers } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
 import { PLN_SUBTESTS } from '@/lib/exam-scoring'
-import { getFeatureFlags } from '@/lib/site-settings'
+import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 const GAT_STATS = [
   { v: '8', l: 'sub-tes' },
@@ -16,7 +17,9 @@ const T2_STATS = [
 ]
 
 export default async function PlnHubPage() {
-  const flags = await getFeatureFlags()
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const flags = await getEffectiveFeatureFlags(user?.email)
   if (!flags.feature_portal_pln) redirect('/')
   return (
     <div className="max-w-4xl mx-auto space-y-6">
