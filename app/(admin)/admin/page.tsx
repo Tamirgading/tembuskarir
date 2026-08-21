@@ -1,6 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Package, Users, Ticket } from 'lucide-react'
+import { Package, Users, Ticket, BarChart3 } from 'lucide-react'
 import type { SubscriptionRow, UserRow } from '@/lib/utils'
 import { getFeatureFlags } from '@/lib/site-settings'
 import FeatureToggles from '@/components/admin/FeatureToggles'
@@ -87,8 +87,15 @@ export default async function AdminDashboardPage() {
           <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-purple-100 transition-colors">
             <Users className="w-5 h-5 text-purple-600" />
           </div>
-          <h2 className="font-semibold text-gray-900 group-hover:text-blue-600">Users & Revenue</h2>
-          <p className="text-sm text-gray-500 mt-1">Lihat daftar user dan riwayat transaksi</p>
+          <h2 className="font-semibold text-gray-900 group-hover:text-purple-600">Users</h2>
+          <p className="text-sm text-gray-500 mt-1">Daftar user, filter, dan detail tiap user</p>
+        </Link>
+        <Link href="/admin/revenue" className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors group">
+          <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-green-100 transition-colors">
+            <BarChart3 className="w-5 h-5 text-green-600" />
+          </div>
+          <h2 className="font-semibold text-gray-900 group-hover:text-green-600">Revenue & Analytics</h2>
+          <p className="text-sm text-gray-500 mt-1">Grafik, top pembayar, dan riwayat transaksi</p>
         </Link>
         <Link href="/admin/vouchers" className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors group">
           <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-green-100 transition-colors">

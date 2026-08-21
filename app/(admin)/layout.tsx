@@ -26,7 +26,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               Paket Soal
             </Link>
             <Link href="/admin/users" className="text-gray-300 hover:text-white transition-colors">
-              Users & Revenue
+              Users
+            </Link>
+            <Link href="/admin/revenue" className="text-gray-300 hover:text-white transition-colors">
+              Revenue
             </Link>
           </nav>
         </div>

@@ -20,3 +20,11 @@ export function formatDuration(seconds: number) {
   const s = seconds % 60
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
 }
+
+export function formatRupiah(amount: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(amount)
+}
