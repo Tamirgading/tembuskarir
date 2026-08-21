@@ -3,8 +3,10 @@
  *
  * Pemakaian:
  *   npx tsx scripts/import-questions.ts --package <slug> --category <kode> --file <soal.json>
+ *   npx tsx scripts/import-questions.ts --package <slug> --category <kode> --file <soal.json> --append
  *
- * Perilaku: menghapus soal existing pada kategori tsb di paket tsb, lalu insert baru.
+ * Tanpa --append: menghapus soal existing pada kategori tsb di paket tsb, lalu insert baru.
+ * Dengan --append: menambah soal di akhir (order_index berlanjut) — untuk membangun bank.
  * Format JSON: [{ content, options:[{key,text}], correct_answer, explanation }]
  */
 import { createClient } from '@supabase/supabase-js'
@@ -37,6 +39,7 @@ async function main() {
   const slug = arg('package')
   const category = arg('category')
   const file = arg('file')
+  const append = process.argv.includes('--append')
 
   if (!slug || !category || !file) {
     console.error('Usage: npx tsx scripts/import-questions.ts --package <slug> --category <kode> --file <soal.json>')
@@ -60,16 +63,27 @@ async function main() {
     explanation?: string
   }[]
 
-  // Hapus soal existing kategori tsb di paket ini
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count } = await (supabase.from('questions') as any)
-    .select('*', { count: 'exact', head: true })
-    .eq('package_id', pkg.id)
-    .eq('category', category)
-  if (count && count > 0) {
-    console.log(`Menghapus ${count} soal existing kategori ${category}...`)
+  // Hapus soal existing kategori tsb di paket ini (kecuali mode append)
+  let startIndex = 1
+  if (!append) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase.from('questions') as any).delete().eq('package_id', pkg.id).eq('category', category)
+    const { count } = await (supabase.from('questions') as any)
+      .select('*', { count: 'exact', head: true })
+      .eq('package_id', pkg.id)
+      .eq('category', category)
+    if (count && count > 0) {
+      console.log(`Menghapus ${count} soal existing kategori ${category}...`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase.from('questions') as any).delete().eq('package_id', pkg.id).eq('category', category)
+    }
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { count } = await (supabase.from('questions') as any)
+      .select('*', { count: 'exact', head: true })
+      .eq('package_id', pkg.id)
+      .eq('category', category)
+    startIndex = (count ?? 0) + 1
+    console.log(`Mode append — order_index mulai dari ${startIndex}`)
   }
 
   const rows = questions.map((q, i) => ({
@@ -80,7 +94,7 @@ async function main() {
     explanation: q.explanation?.trim() || null,
     category,
     difficulty: 'medium',
-    order_index: i + 1,
+    order_index: startIndex + i,
   }))
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
