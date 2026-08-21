@@ -6,8 +6,14 @@ import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import PlnPackageCard from '@/components/portal/PlnPackageCard'
 import { getUnlockedPackageIds } from '@/lib/access'
-import { PLN_SUBTESTS } from '@/lib/exam-scoring'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
+
+// Struktur asli GAT PLN (Tahap 1)
+const GAT_PARTS = [
+  { kode: 'TKD1', full: 'TKD 1 — Deret Bilangan', topik: 'Pola bilangan, deret angka', soal: 26, waktu: '30 dtk/soal', cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  { kode: 'TKD2', full: 'TKD 2 — Silogisme & Sinonim', topik: 'Silogisme (B/S/TDS), sinonim, antonim', soal: 36, waktu: '30 dtk/soal', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { kode: 'PU', full: 'Tes Pengetahuan PLN', topik: 'Sejarah, profil, proses bisnis PLN', soal: 15, waktu: '12 mnt', cls: 'bg-red-50 text-red-700 border-red-200' },
+]
 
 export default async function PlnGatPage() {
   let packages: PackageRow[] = []
@@ -78,10 +84,10 @@ export default async function PlnGatPage() {
             <span className="ml-auto text-[11px] font-bold px-3 py-1 bg-brand/20 text-brand-300 rounded-full">GAT</span>
           </div>
           <p className="text-white/60 text-sm">
-            Simulasi GAT PLN dengan format per-sub-tes berurutan dan timer terpisah, persis seperti tes aslinya. 8 sub-tes, 210 soal, 180 menit.
+            Simulasi GAT PLN sesuai tes aslinya: TKD 1 (Deret), TKD 2 (Silogisme &amp; Sinonim), dan Tes Pengetahuan PLN. Timer 30 detik per soal dengan auto-advance.
           </p>
           <div className="flex gap-3 mt-5 flex-wrap">
-            {[{ v: '210', l: 'total soal' }, { v: '8', l: 'sub-tes' }, { v: '180', l: 'menit' }, { v: '+1', l: 'per benar' }].map((s) => (
+            {[{ v: '77', l: 'total soal' }, { v: '3', l: 'bagian' }, { v: '62', l: 'menit' }, { v: '30', l: 'dtk/soal' }].map((s) => (
               <div key={s.l} className="bg-white/10 rounded-xl px-4 py-2 text-center">
                 <p className="font-num font-bold text-white">{s.v}</p>
                 <p className="text-white/55 text-[10px]">{s.l}</p>
@@ -90,16 +96,16 @@ export default async function PlnGatPage() {
           </div>
         </div>
 
-        {/* Sub-tes grid */}
+        {/* Bagian tes grid */}
         <div className="bg-white px-6 py-5">
-          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sub-tes GAT</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {Object.entries(PLN_SUBTESTS).map(([key, sub]) => (
-              <div key={key} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-hairline bg-paper-soft">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand/10 text-brand-700 border border-brand/20 shrink-0">{key}</span>
+          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Bagian Tes</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {GAT_PARTS.map((sub) => (
+              <div key={sub.kode} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border ${sub.cls}`}>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/60 border shrink-0">{sub.kode}</span>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-ink truncate">{sub.full}</p>
-                  <p className="text-[10px] text-ink-muted font-num">{sub.soal} soal · {sub.minutes} mnt</p>
+                  <p className="text-[10px] text-ink-muted font-num">{sub.topik}</p>
                 </div>
               </div>
             ))}
@@ -164,8 +170,8 @@ export default async function PlnGatPage() {
           <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
             <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sistem Penilaian</p>
             <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline mb-3">
-              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">6 Sub-tes Kognitif</p>
-              <p className="text-[10px] text-ink-muted">NUM · VER · SIL · DER · FIG · PU</p>
+              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">TKD 1 &amp; TKD 2</p>
+              <p className="text-[10px] text-ink-muted">Deret + Silogisme/Sinonim — timer 30 dtk/soal</p>
               {[{ l: 'Benar', v: '+1', c: 'text-brand font-bold' }, { l: 'Salah / Kosong', v: '0', c: 'text-ink-muted' }].map((r) => (
                 <div key={r.l} className="flex justify-between items-center text-xs">
                   <span className="text-ink-soft">{r.l}</span>
@@ -174,9 +180,9 @@ export default async function PlnGatPage() {
               ))}
             </div>
             <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline">
-              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">LA &amp; AKHLAK</p>
-              <p className="text-[10px] text-ink-muted">Sistem poin per opsi (1–5)</p>
-              {[{ l: 'Opsi paling tepat', v: '+5', c: 'text-brand font-bold' }, { l: 'Opsi kurang tepat', v: '+1', c: 'text-ink-muted' }].map((r) => (
+              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">Tes Pengetahuan PLN</p>
+              <p className="text-[10px] text-ink-muted">15 soal acak dari bank · 12 menit</p>
+              {[{ l: 'Benar', v: '+1', c: 'text-brand font-bold' }, { l: 'Salah / Kosong', v: '0', c: 'text-ink-muted' }].map((r) => (
                 <div key={r.l} className="flex justify-between items-center text-xs">
                   <span className="text-ink-soft">{r.l}</span>
                   <span className={`font-num ${r.c}`}>{r.v}</span>
@@ -189,10 +195,10 @@ export default async function PlnGatPage() {
             <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
             <div className="space-y-3">
               {[
-                { Icon: Hash,       text: 'Numerik & Deret: skip soal sulit, kembali nanti' },
-                { Icon: BookMarked, text: 'Verbal: kuasai istilah umum dan ketenagalistrikan' },
-                { Icon: Zap,        text: 'Pengetahuan PLN: sejarah, struktur, proyek strategis' },
-                { Icon: Heart,      text: 'AKHLAK: jujur dan natural, cerminkan 6 core values BUMN' },
+                { Icon: Hash,       text: 'Deret: cek selisih/pola antar angka — ada satu angka yang salah' },
+                { Icon: BookMarked, text: 'Silogisme: hanya simpulkan dari premis, jangan berasumsi' },
+                { Icon: Zap,        text: 'Sinonim: kuasai kosakata umum & istilah ketenagalistrikan' },
+                { Icon: Heart,      text: 'Pengetahuan PLN: sejarah, struktur, proyek strategis' },
               ].map(({ Icon, text }) => (
                 <div key={text} className="flex items-start gap-2.5">
                   <div className="w-6 h-6 rounded-md bg-paper-soft border border-hairline flex items-center justify-center shrink-0 mt-0.5">
