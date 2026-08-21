@@ -367,6 +367,7 @@ ADMIN_EMAILS=email@admin.com           # Comma-separated admin emails
 | Sprint 6 | Card images (card-ojk.png dll) di coming soon | Asset unik, bukan emoji generik |
 | Jul 2026 | Landing page dihapus — root `/` = beranda/dashboard (guest-aware) | Flow lama; mengikuti pola TembusASN. Route `/dashboard` di-redirect ke `/` via next.config.mjs. AppShell mendukung guest (CTA Masuk/Daftar via LoginModal) |
 | Agu 2026 | Admin bypass feature flags (`getEffectiveFeatureFlags`) | Admin login melihat SEMUA fitur (preview pengembangan) terlepas dari flag. User biasa hanya melihat fitur yang diaktifkan di Pengaturan Fitur. Flag asli tetap terlihat di dashboard admin (getFeatureFlags). |
+| Agu 2026 | Tahap ujian gabungan via tabel `package_sections` + runner `/ujian/stage/[packageId]` | Satu paket tahap = beberapa seksi (sub-tes) berurutan dengan timer terpisah (`section`/`per_question`), passing grade per seksi/grup (`group_kode`), soal inline di paket (kategori = kode seksi). Pilot: RBB BUMN Tahap 1. `lib/stage-config.ts` = types + evaluasi passing. `/api/submit` dukung `presentedQuestionIds` untuk random subset. |
 
 ---
 

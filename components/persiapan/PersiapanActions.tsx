@@ -8,13 +8,15 @@ interface PersiapanActionsProps {
   packageId: string
   pkgCategory: string
   pkgSlug: string
+  isStage?: boolean
   ongoingAttemptId: string | null
   ongoingAnsweredCount: number
   ongoingStartedAt: string | null
 }
 
 /** Tentukan URL runner ujian berdasarkan kategori + slug paket */
-function getUjianHref(packageId: string, pkgCategory: string, pkgSlug: string): string {
+function getUjianHref(packageId: string, pkgCategory: string, pkgSlug: string, isStage: boolean): string {
+  if (isStage) return `/ujian/stage/${packageId}`
   if (pkgCategory === 'ASTRA') return `/ujian/astra/${packageId}`
   if (pkgCategory === 'ANTAM') return `/ujian/${packageId}`
   if (pkgCategory === 'PLN') {
@@ -30,11 +32,12 @@ export function PersiapanActions({
   packageId,
   pkgCategory,
   pkgSlug,
+  isStage = false,
   ongoingAttemptId,
   ongoingAnsweredCount,
   ongoingStartedAt,
 }: PersiapanActionsProps) {
-  const ujianHref = getUjianHref(packageId, pkgCategory, pkgSlug)
+  const ujianHref = getUjianHref(packageId, pkgCategory, pkgSlug, isStage)
   const router = useRouter()
   const [isAbandonLoading, setIsAbandonLoading] = useState(false)
   const [error, setError] = useState('')

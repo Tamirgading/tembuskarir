@@ -9,6 +9,7 @@ import { buildLeaderboard, mergeLeaderboard } from '@/lib/leaderboard'
 import type { LeaderboardAttempt, LeaderboardDummy, LeaderboardRow } from '@/lib/leaderboard'
 import { HasilReview } from '@/components/hasil/HasilReview'
 import { LeaderboardIllustration } from '@/components/ui/LeaderboardIllustration'
+import { fetchStageSections, evaluateStagePassing } from '@/lib/stage-config'
 
 interface QuestionWithAnswer {
   id: string
@@ -58,6 +59,21 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const { data: pkgData } = await supabase
     .from('packages').select('name, total_questions, category').eq('id', attempt.package_id).single()
   const pkg = pkgData as { name: string; total_questions: number; category: string } | null
+
+  // Konfigurasi tahap gabungan (package_sections) + evaluasi passing grade
+  let stageSections: Awaited<ReturnType<typeof fetchStageSections>> = []
+  let stageGroups: ReturnType<typeof evaluateStagePassing>['groups'] = []
+  let stageOverall: ReturnType<typeof evaluateStagePassing>['overall'] = 'none'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rawAttemptDetails = (attempt as any).score_details as ScoreDetails | null | undefined
+  try {
+    stageSections = await fetchStageSections(supabase, attempt.package_id)
+    if (stageSections.length > 0) {
+      const ev = evaluateStagePassing(stageSections, rawAttemptDetails as Record<string, unknown> | null)
+      stageGroups = ev.groups
+      stageOverall = ev.overall
+    }
+  } catch { /* package_sections belum tersedia */ }
 
   // Leaderboard ANTAM: posisi user berdasarkan skor percobaan PERTAMA
   // (termasuk entri dummy yang diisi admin)
@@ -153,8 +169,9 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     questionsData = (qData ?? []) as QuestionWithAnswer[]
   }
 
-  // Sort: urutan sub-tes dulu (sesuai definisi ASTRA/PLN), lalu order_index dalam sub-tes
+  // Sort: urutan sub-tes dulu (sesuai definisi ASTRA/PLN/tahap), lalu order_index
   const subtestOrder =
+    stageSections.length > 0 ? stageSections.map((s) => s.kode) :
     pkg?.category === 'ASTRA' ? Object.keys(ASTRA_SUBTESTS) :
     pkg?.category === 'PLN'   ? Object.keys(PLN_SUBTESTS)   : []
 
@@ -187,6 +204,9 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     denom = max ? `/ ${max}` : 'poin'
     pct = max ? Math.round((score / max) * 100) : 0
   } else if (sd?.type === 'PLN') {
+    denom = 'poin'
+    pct = totalAll ? Math.round((correct / totalAll) * 100) : 0
+  } else if (sd?.type === 'BUMN' || stageSections.length > 0) {
     denom = 'poin'
     pct = totalAll ? Math.round((correct / totalAll) * 100) : 0
   }
@@ -250,6 +270,42 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
           ))}
         </div>
       </div>
+
+      {/* ══ Passing grade per seksi (paket tahap) ══ */}
+      {stageSections.length > 0 && stageGroups.length > 0 && (
+        <div className="bg-white rounded-2xl border border-hairline shadow-soft overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-hairline">
+            <h2 className="font-heading font-bold text-ink">Passing Grade per Seksi</h2>
+            {stageOverall !== 'none' && (
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                stageOverall === 'lolos' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
+              }`}>
+                {stageOverall === 'lolos' ? '✓ LOLOS' : '✗ BELUM LOLOS'}
+              </span>
+            )}
+          </div>
+          <div className="divide-y divide-hairline">
+            {stageGroups.map((g) => (
+              <div key={g.kode} className="flex items-center gap-3 px-5 py-3.5">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-ink truncate">{g.nama}</p>
+                  <p className="text-xs text-ink-muted font-num">{g.correct}/{g.total} benar</p>
+                </div>
+                <span className="text-xs font-semibold text-ink-muted shrink-0">
+                  PG: <span className="font-num">{g.passingGrade ?? '—'}</span>
+                </span>
+                {g.passed === null ? (
+                  <span className="text-[10px] font-medium text-ink-muted bg-paper-soft border border-hairline px-2.5 py-1 rounded-full shrink-0">Tanpa PG</span>
+                ) : g.passed ? (
+                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2.5 py-1 rounded-full shrink-0">LOLOS</span>
+                ) : (
+                  <span className="text-[10px] font-bold text-red-600 bg-red-100 px-2.5 py-1 rounded-full shrink-0">BELUM</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ══ Leaderboard + Rincian per sub-tes (bersebelahan) ══ */}
       {(pkg?.category === 'ANTAM' || subtests.length > 0) && (

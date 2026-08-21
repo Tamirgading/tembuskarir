@@ -209,7 +209,9 @@ export function computeScore(
       if (!catStats[cat]) catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
 
       const userAnswer = answers[q.id]
-      const isPointBased = cat === 'AKHLAK'
+      // AKHLAK berbasis poin hanya jika opsi menyimpan point (1–5).
+      // Jika tidak, diperlakukan sebagai MCQ biasa (+1 benar) — format RBB 2-opsi.
+      const isPointBased = cat === 'AKHLAK' && (q.options ?? []).some((o) => o.point != null)
 
       if (!userAnswer) {
         emptyCount++

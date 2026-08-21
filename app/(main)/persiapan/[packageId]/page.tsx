@@ -42,6 +42,13 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   const pkg = pkgData as PackageRow | null
   if (!pkg) redirect('/paket')
 
+  // Cek apakah paket ini ujian tahap gabungan (punya package_sections)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { count: sectionCount } = await (supabase.from('package_sections') as any)
+    .select('*', { count: 'exact', head: true })
+    .eq('package_id', packageId)
+  const isStage = (sectionCount ?? 0) > 0
+
   const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free, pkg.slug)
   if (accessStatus === 'locked') {
     if (pkg.category === 'ASTRA') redirect('/portal/astra')
@@ -110,6 +117,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   } else if (pkg.slug?.startsWith('bi-pln-')) {
     backHref = '/portal/pln/tahap2'
     backLabel = 'Portal Tahap 2'
+  } else if (pkg.slug?.startsWith('rbb-')) {
+    backHref = '/portal/bumn'
+    backLabel = 'Portal BUMN'
   } else if (pkg.slug?.startsWith('bumn-')) {
     backHref = '/portal/bumn'
     backLabel = 'Portal BUMN'
@@ -166,8 +176,8 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             {([
               { icon: <Clipboard className="w-5 h-5 text-brand-300" />, label: 'Soal', value: `${pkg.total_questions}` },
               { icon: <Clock className="w-5 h-5 text-brand-300" />, label: 'Durasi', value: `${displayDuration} mnt` },
-              { icon: <Trophy className="w-5 h-5 text-brand-300" />, label: 'Skor Max', value: `${pkg.total_questions}` },
-              { icon: <BarChart2 className="w-5 h-5 text-brand-300" />, label: isAntam ? 'Topik' : 'Sub-tes', value: isAstra ? '7' : isAntam && antamStream ? `${antamStream.topics.length}` : '-' },
+              { icon: <Trophy className="w-5 h-5 text-brand-300" />, label: 'Skor Max', value: isStage ? 'PG' : `${pkg.total_questions}` },
+              { icon: <BarChart2 className="w-5 h-5 text-brand-300" />, label: isAntam ? 'Topik' : 'Sub-tes', value: isStage ? `${sectionCount ?? 0}` : isAstra ? '7' : isAntam && antamStream ? `${antamStream.topics.length}` : '-' },
             ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
                 <div className="flex justify-center mb-0.5">{s.icon}</div>
@@ -248,6 +258,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           packageId={packageId}
           pkgCategory={pkg.category}
           pkgSlug={pkg.slug}
+          isStage={isStage}
           ongoingAttemptId={ongoingInfo?.id ?? null}
           ongoingAnsweredCount={ongoingInfo?.answeredCount ?? 0}
           ongoingStartedAt={ongoingInfo?.startedAt ?? null}

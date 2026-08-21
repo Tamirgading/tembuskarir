@@ -41,8 +41,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Terlalu banyak permintaan.' }, { status: 429 })
     }
 
-    const body = await request.json() as { attemptId?: string; answers?: Record<string, string> }
-    const { attemptId, answers } = body
+    const body = await request.json() as {
+      attemptId?: string
+      answers?: Record<string, string>
+      presentedQuestionIds?: string[]
+    }
+    const { attemptId, answers, presentedQuestionIds } = body
 
     if (!attemptId || typeof answers !== 'object') {
       return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 })
@@ -99,6 +103,13 @@ export async function POST(request: NextRequest) {
 
     type McqQuestion = { id: string; correct_answer: string; category?: string | null; options?: { key: string; text: string; point?: number }[] | null }
     let allQuestions: McqQuestion[] = mcqData as McqQuestion[]
+
+    // Untuk paket tahap: hanya nilai soal yang benar-benar disajikan
+    // (menangani random_select / question_count pada package_sections)
+    if (Array.isArray(presentedQuestionIds) && presentedQuestionIds.length > 0) {
+      const presented = new Set(presentedQuestionIds)
+      allQuestions = allQuestions.filter((q) => presented.has(q.id))
+    }
 
     // Untuk paket PLN: gabungkan soal AKHLAK & LA dari tabel terpisah
     if (pkgCategory === 'PLN') {
