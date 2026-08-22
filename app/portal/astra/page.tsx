@@ -4,12 +4,13 @@ import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import AstraPackageCard from '@/components/portal/AstraPackageCard'
-import { getUnlockedPackageIds } from '@/lib/access'
+import { getUnlockedPackageIds, getPremiumSubscriptionStatus } from '@/lib/access'
 import { ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 
 export default async function AstraPortalPage() {
   let packages: PackageRow[] = []
   let isLoggedIn = false
+  let hasPremium = false
   let unlockedPackageIds: string[] = []
   let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
 
@@ -28,6 +29,8 @@ export default async function AstraPortalPage() {
     packages = (pkgData ?? []) as PackageRow[]
 
     if (user) {
+      const premium = await getPremiumSubscriptionStatus(user.id)
+      hasPremium = premium.active
       unlockedPackageIds = await getUnlockedPackageIds(user.id)
       const ids = packages.map((p) => p.id)
       if (ids.length > 0) {
@@ -125,6 +128,7 @@ export default async function AstraPortalPage() {
                   key={pkg.id}
                   pkg={pkg}
                   isLoggedIn={isLoggedIn}
+                  hasPremium={hasPremium}
                   isUnlocked={unlockedPackageIds.includes(pkg.id)}
                   index={i}
                 />

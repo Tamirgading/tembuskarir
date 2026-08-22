@@ -10,6 +10,7 @@ import { BuyButton } from '@/components/ui/BuyButton'
 interface AstraPackageCardProps {
   pkg: PackageRow
   isLoggedIn: boolean
+  hasPremium?: boolean
   isUnlocked: boolean
   index: number
 }
@@ -19,13 +20,14 @@ const ASTRA_SUBTEST_LABELS = ['QR', 'DR', 'RC', 'IR', 'VIZ', 'PS', 'WM']
 export default function AstraPackageCard({
   pkg,
   isLoggedIn,
+  hasPremium = false,
   isUnlocked,
 }: AstraPackageCardProps) {
   const router = useRouter()
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showBuyModal, setShowBuyModal] = useState(false)
 
-  const canAccess = pkg.is_free || isUnlocked
+  const canAccess = pkg.is_free || isUnlocked || hasPremium
   const isLocked = isLoggedIn && !canAccess
 
   function handleStart() {

@@ -10,6 +10,7 @@ import { BuyButton } from '@/components/ui/BuyButton'
 interface PlnPackageCardProps {
   pkg: PackageRow
   isLoggedIn: boolean
+  hasPremium?: boolean
   isUnlocked: boolean
   index: number
 }
@@ -19,13 +20,14 @@ const PLN_SUBTEST_LABELS = ['NUM', 'VER', 'SIL', 'DER', 'FIG', 'PU', 'LA', 'AKHL
 export default function PlnPackageCard({
   pkg,
   isLoggedIn,
+  hasPremium = false,
   isUnlocked,
 }: PlnPackageCardProps) {
   const router = useRouter()
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showBuyModal, setShowBuyModal] = useState(false)
 
-  const canAccess = pkg.is_free || isUnlocked
+  const canAccess = pkg.is_free || isUnlocked || hasPremium
   const isLocked = isLoggedIn && !canAccess
 
   function handleStart() {

@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import PlnPackageCard from '@/components/portal/PlnPackageCard'
-import { getUnlockedPackageIds } from '@/lib/access'
+import { getUnlockedPackageIds, getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 // Struktur asli GAT PLN (Tahap 1)
@@ -19,6 +19,7 @@ export default async function PlnGatPage() {
   let packages: PackageRow[] = []
   let isLoggedIn = false
   let userEmail: string | null = null
+  let hasPremium = false
   let unlockedPackageIds: string[] = []
   let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
 
@@ -40,6 +41,11 @@ export default async function PlnGatPage() {
     packages = (pkgData ?? []) as PackageRow[]
 
     if (user) {
+      const premium = await getPremiumSubscriptionStatus(user.id)
+      const plnSub = await getPlnSubscriptionStatus(user.id)
+      // Akses GAT dari Premium generik ATAU plan PLN yang mencakup GAT
+      hasPremium = premium.active
+        || (plnSub.active && ['pln_gat_monthly', 'pln_complete_monthly'].includes(plnSub.planType ?? ''))
       unlockedPackageIds = await getUnlockedPackageIds(user.id)
 
       const ids = packages.map((p) => p.id)
@@ -135,6 +141,7 @@ export default async function PlnGatPage() {
                   key={pkg.id}
                   pkg={pkg}
                   isLoggedIn={isLoggedIn}
+                  hasPremium={hasPremium}
                   isUnlocked={unlockedPackageIds.includes(pkg.id)}
                   index={i}
                 />
