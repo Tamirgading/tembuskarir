@@ -21,13 +21,17 @@ interface SubRow {
 interface UserLite { id: string; email: string; full_name: string | null; plan: string; created_at: string }
 
 const PLAN_LABELS: Record<string, string> = {
-  premium_monthly: 'Premium 1 Bulan',
-  premium_quarterly: 'Premium 3 Bulan',
-  package: 'Paket Soal',
-  monthly: 'Paket Soal',
-  yearly: 'Paket Soal Tahunan',
-  pln_gat_monthly: 'PLN Tahap 1 GAT',
-  pln_tahap2_monthly: 'PLN Tahap 2',
+  premium_monthly:      'Premium All Access 1 Bulan',
+  premium_quarterly:    'Premium All Access 3 Bulan',
+  package:              'Paket Soal',
+  monthly:              'Paket Soal',
+  yearly:               'Paket Soal Tahunan',
+  astra_monthly:        'ASTRA Bulanan',
+  bumn_t1_monthly:      'BUMN Tahap 1 Bulanan',
+  bumn_t2_monthly:      'BUMN Tahap 2 Bulanan',
+  antam_monthly:        'ANTAM Bulanan',
+  pln_gat_monthly:      'PLN Tahap 1 GAT',
+  pln_tahap2_monthly:   'PLN Tahap 2',
   pln_complete_monthly: 'PLN Complete',
 }
 

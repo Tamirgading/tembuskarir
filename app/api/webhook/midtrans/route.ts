@@ -12,6 +12,10 @@ const PLAN_DURATION: Record<string, number> = {
   premium_monthly:      30,
   premium_quarterly:    90,
   package:              0,    // per-paket: permanen
+  astra_monthly:        30,
+  bumn_t1_monthly:      30,
+  bumn_t2_monthly:      30,
+  antam_monthly:        30,
   pln_gat_monthly:      30,
   pln_tahap2_monthly:   30,
   pln_complete_monthly: 30,
@@ -170,21 +174,20 @@ export async function POST(req: NextRequest) {
           }
         }
       } else {
-        // Langganan (premium generik ATAU PLN bidang-specific)
-        const isPLNPlan = planType.startsWith('pln_')
+        // Langganan (All Access / per-tahap / per-perusahaan / PLN)
+        const isPLNPlan      = planType.startsWith('pln_')
+        const isAllAccess    = planType === 'premium_monthly' || planType === 'premium_quarterly'
 
         if (isPLNPlan) {
           // ── PLN plans: JANGAN update users.plan ─────────────────────────────
           // Akses PLN dikontrol lewat subscriptions.bidang + subscriptions.expires_at
           // yang sudah di-update di atas (status=paid, expires_at).
-          // Jika update users.plan='premium', user dapat akses ke SEMUA paket
-          // premium (ASTRA dll.) yang bukan haknya.
           const bidangName = sub.bidang ? (BIDANG_BY_SLUG[sub.bidang]?.name ?? sub.bidang) : null
           console.log('[Webhook] ✅ PLN plan activated:', planType,
             bidangName ? `| bidang: ${bidangName}` : '',
             '| user:', sub.user_id, '| expires:', expiresAt)
-        } else {
-          // ── Premium generik: update users.plan ──────────────────────────────
+        } else if (isAllAccess) {
+          // ── Premium All Access: update users.plan ───────────────────────────
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (supabase.from('users') as any)
             .update({
@@ -194,6 +197,9 @@ export async function POST(req: NextRequest) {
             .eq('id', sub.user_id)
 
           console.log('[Webhook] ✅ Premium activated for user:', sub.user_id, 'until:', expiresAt)
+        } else {
+          // ── Plan per-tahap/perusahaan (astra/bumn/antam): akses via subscriptions
+          console.log('[Webhook] ✅ Company plan activated:', planType, '| user:', sub.user_id, '| expires:', expiresAt)
         }
 
         // ── Label untuk email ────────────────────────────────────────────────
@@ -201,8 +207,12 @@ export async function POST(req: NextRequest) {
         const planLabelMap: Record<string, string> = {
           monthly:              'Premium Bulanan',
           yearly:               'Premium Tahunan',
-          premium_monthly:      'Premium Bulanan',
-          premium_quarterly:    'Premium 3 Bulan',
+          premium_monthly:      'Premium All Access — Bulanan',
+          premium_quarterly:    'Premium All Access — 3 Bulan',
+          astra_monthly:        'ASTRA Bulanan',
+          bumn_t1_monthly:      'BUMN Tahap 1 Bulanan',
+          bumn_t2_monthly:      'BUMN Tahap 2 Bulanan',
+          antam_monthly:        'ANTAM Bulanan',
           pln_gat_monthly:      'PLN Tahap 1 — GAT',
           pln_tahap2_monthly:   'PLN Tahap 2' + (bidangName ? ` — ${bidangName}` : ''),
           pln_complete_monthly: 'PLN Complete' + (bidangName ? ` — ${bidangName}` : ''),
