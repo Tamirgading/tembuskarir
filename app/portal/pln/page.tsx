@@ -2,13 +2,12 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Zap, BookOpen, ChevronRight, Clock, FileText, Layers } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { PLN_SUBTESTS } from '@/lib/exam-scoring'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 const GAT_STATS = [
-  { v: '8', l: 'sub-tes' },
-  { v: '210', l: 'total soal' },
-  { v: '180', l: 'menit' },
+  { v: '3', l: 'bagian tes' },
+  { v: '77', l: 'total soal' },
+  { v: '62', l: 'menit' },
 ]
 const T2_STATS = [
   { v: '12', l: 'bidang' },
@@ -47,11 +46,11 @@ export default async function PlnHubPage() {
               </div>
             </div>
             <p className="text-white/60 text-xs leading-relaxed mb-4">
-              Tes Aptitude umum: 8 sub-tes kognitif berurutan. Wajib untuk semua pelamar PLN, tanpa terkecuali.
+              TKD 1 (Deret), TKD 2 (Silogisme &amp; Sinonim), dan Tes Pengetahuan PLN. Timer 30 detik per soal.
             </p>
-            {/* Sub-tes grid kecil */}
+            {/* Bagian tes grid kecil */}
             <div className="flex flex-wrap gap-1 mb-4">
-              {Object.keys(PLN_SUBTESTS).map((k) => (
+              {['TKD1', 'TKD2', 'Pengetahuan'].map((k) => (
                 <span key={k} className="text-[10px] font-bold px-1.5 py-0.5 bg-white/10 text-white/70 rounded">{k}</span>
               ))}
             </div>
@@ -145,8 +144,8 @@ export default async function PlnHubPage() {
         <div className="bg-white rounded-xl border border-hairline p-4 flex items-center gap-3">
           <Clock className="w-5 h-5 text-brand shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-ink">Tahap 1 · 180 menit total</p>
-            <p className="text-xs text-ink-muted">8 sub-tes dengan timer terpisah, dikerjakan berurutan</p>
+            <p className="text-sm font-semibold text-ink">Tahap 1 · ~62 menit total</p>
+            <p className="text-xs text-ink-muted">TKD1 &amp; TKD2 timer 30 dtk/soal, Pengetahuan PLN 12 mnt</p>
           </div>
         </div>
         <div className="bg-white rounded-xl border border-hairline p-4 flex items-center gap-3">
