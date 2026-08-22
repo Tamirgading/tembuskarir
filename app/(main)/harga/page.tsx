@@ -18,25 +18,64 @@ export const metadata: Metadata = {
 const PREMIUM_PLANS = [
   {
     id: 'premium_monthly' as const,
-    price: 39000,
-    priceLabel: 'Rp 39.000',
+    price: 49000,
+    priceLabel: 'Rp 49.000',
     period: '/ bulan',
     highlight: true,
     badge: 'Populer',
-    description: 'Akses semua paket ASTRA, BI, OJK, dan kategori lainnya selama 30 hari',
-    features: ['Psikotes ASTRA (7 sub-tes)', 'Paket OJK & BI', 'Pembahasan lengkap', 'Analisis skor per sub-tes'],
+    description: 'Akses SEMUA paket — ASTRA, BUMN (Tahap 1 & 2), PLN (GAT + Akademik semua bidang), OJK, dan ANTAM',
+    features: ['Psikotes ASTRA (semua paket)', 'RBB BUMN Tahap 1 & 2', 'PLN GAT + Akademik semua bidang', 'ANTAM semua stream', 'Pembahasan lengkap & analisis skor'],
     icon: Zap,
   },
   {
     id: 'premium_quarterly' as const,
-    price: 89000,
-    priceLabel: 'Rp 89.000',
+    price: 129000,
+    priceLabel: 'Rp 129.000',
     period: '/ 3 bulan',
     highlight: false,
-    badge: 'Hemat 24%',
-    description: 'Akses semua paket non-PLN selama 90 hari',
+    badge: 'Hemat 12%',
+    description: 'Semua akses Premium selama 90 hari',
     features: ['Semua fitur Bulanan', 'Hemat vs beli 3× bulanan', 'Akses fitur baru selama periode'],
     icon: Star,
+  },
+]
+
+const COMPANY_PLANS = [
+  {
+    id: 'astra_monthly' as const,
+    price: 30000,
+    priceLabel: 'Rp 30.000',
+    period: '/ bulan',
+    title: 'ASTRA Bulanan',
+    description: 'Akses semua paket Psikotes ASTRA selama 30 hari.',
+    icon: Zap,
+  },
+  {
+    id: 'bumn_t1_monthly' as const,
+    price: 35000,
+    priceLabel: 'Rp 35.000',
+    period: '/ bulan',
+    title: 'BUMN Tahap 1 Bulanan',
+    description: 'Akses paket RBB BUMN Tahap 1 (TKD · AKHLAK · TWK) selama 30 hari.',
+    icon: Star,
+  },
+  {
+    id: 'bumn_t2_monthly' as const,
+    price: 35000,
+    priceLabel: 'Rp 35.000',
+    period: '/ bulan',
+    title: 'BUMN Tahap 2 Bulanan',
+    description: 'Akses paket RBB BUMN Tahap 2 (Bahasa Inggris · LA) selama 30 hari.',
+    icon: BookOpen,
+  },
+  {
+    id: 'antam_monthly' as const,
+    price: 25000,
+    priceLabel: 'Rp 25.000',
+    period: '/ bulan',
+    title: 'ANTAM Bulanan',
+    description: 'Akses semua paket ANTAM IMPACT (semua stream) selama 30 hari.',
+    icon: Target,
   },
 ]
 
@@ -48,8 +87,8 @@ const PLN_PLANS = [
     period: '/ bulan',
     badge: null,
     title: 'Tahap 1: GAT',
-    description: 'Akses semua paket GAT PLN selama 30 hari. 8 sub-tes kognitif, AKHLAK & LA.',
-    features: ['Semua paket GAT PLN', '8 sub-tes berurutan', 'AKHLAK & LA (sistem poin)', 'Riwayat & analisis skor'],
+    description: 'Akses semua paket GAT PLN selama 30 hari. TKD 1 (Deret), TKD 2 (Silogisme & Sinonim), Pengetahuan PLN.',
+    features: ['Semua paket GAT PLN', 'Timer 30 dtk per soal', 'Tes Pengetahuan PLN', 'Riwayat & analisis skor'],
     requiresBidang: false,
     icon: Zap,
   },
@@ -167,7 +206,7 @@ export default async function HargaPage({
         <div className="flex items-center gap-3 mb-4">
           <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Langganan Premium</p>
           <div className="flex-1 h-px bg-hairline" />
-          <p className="text-[11px] text-ink-muted">ASTRA · OJK · BI · Lainnya</p>
+          <p className="text-[11px] text-ink-muted">ASTRA · BUMN · PLN · OJK · ANTAM</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {PREMIUM_PLANS.map((plan) => {
@@ -202,6 +241,44 @@ export default async function HargaPage({
                   ? <BuyButton planType={plan.id} planLabel={plan.id === 'premium_monthly' ? 'Mulai 1 Bulan' : 'Mulai 3 Bulan'} amount={plan.price} highlight={hl} />
                   : <Link href="/register" className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors">Daftar &amp; Mulai</Link>
                 }
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── SECTION: PLAN PER PERUSAHAAN ── */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Plan Per Tahap / Perusahaan</p>
+          <div className="flex-1 h-px bg-hairline" />
+          <p className="text-[11px] text-ink-muted">Cocok jika target satu seleksi</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {COMPANY_PLANS.map((plan) => {
+            const Icon = plan.icon
+            return (
+              <div key={plan.id} className="relative bg-white rounded-2xl border border-hairline p-5 space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
+                    <Icon className="w-4.5 h-4.5 text-brand" />
+                  </div>
+                  <div>
+                    <p className="font-num text-xl font-extrabold text-ink leading-none">{plan.priceLabel}</p>
+                    <p className="text-[11px] text-ink-muted mt-0.5">{plan.period}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-heading font-bold text-ink text-sm mb-1">{plan.title}</p>
+                  <p className="text-xs text-ink-muted leading-relaxed">{plan.description}</p>
+                </div>
+                {user ? (
+                  <BuyButton planType={plan.id} planLabel="Berlangganan" amount={plan.price} />
+                ) : (
+                  <Link href="/register" className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors">
+                    Daftar &amp; Mulai
+                  </Link>
+                )}
               </div>
             )
           })}
@@ -278,9 +355,9 @@ export default async function HargaPage({
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <h3 className="font-bold text-ink text-sm">Beli Per Paket</h3>
-            <span className="text-[11px] px-2 py-0.5 bg-paper-soft text-ink-muted rounded-full font-medium">Rp 10.000 · Akses Selamanya</span>
+            <span className="text-[11px] px-2 py-0.5 bg-paper-soft text-ink-muted rounded-full font-medium">Rp 10.000 – 15.000 · Akses Selamanya</span>
           </div>
-          <p className="text-xs text-ink-muted mb-3 leading-relaxed">Beli akses ke satu paket soal tanpa masa kedaluwarsa. Cocok jika hanya butuh satu paket tertentu.</p>
+          <p className="text-xs text-ink-muted mb-3 leading-relaxed">Beli akses ke satu paket soal tanpa masa kedaluwarsa. Rp 10.000 untuk ASTRA &amp; PLN GAT; Rp 15.000 untuk paket lainnya.</p>
           <Link href="/paket" className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand-700 transition-colors">
             Lihat semua paket <ArrowRight className="w-3.5 h-3.5" />
           </Link>

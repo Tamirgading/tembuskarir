@@ -4,22 +4,24 @@
  *
  * Hierarki akses:
  *   1. Paket gratis (is_free = true) → semua user
- *   2. Langganan Premium aktif (premium_monthly / premium_quarterly)
- *      → semua paket non-PLN-bidang (ASTRA, PLN GAT, dll.)
- *   3. Langganan PLN GAT (pln_gat_monthly)
- *      → paket slug prefix 'gat-pln-*'
- *   4. Langganan PLN Tahap 2 (pln_tahap2_monthly, bidang=X)
- *      → paket BI ('bi-pln-*') + AKDING bidang X ('akding-X-*')
- *   5. Langganan PLN Complete (pln_complete_monthly, bidang=X)
- *      → GAT + BI + AKDING bidang X
- *   6. Paket dibeli satuan (unlocked_packages)
+ *   2. Premium All Access aktif (premium_monthly / premium_quarterly)
+ *      → SEMUA paket (semua kategori, termasuk AKDING & ANTAM)
+ *   3. Plan per-tahap/perusahaan:
+ *      - astra_monthly            → paket 'astra-*'
+ *      - bumn_t1_monthly          → paket 'rbb-bumn-tahap-1*'
+ *      - bumn_t2_monthly          → paket 'rbb-bumn-tahap-2*'
+ *      - pln_gat_monthly          → paket 'gat-pln-*'
+ *      - pln_tahap2_monthly       → paket 'bi-pln-*' + 'akding-{bidang}-*'
+ *      - pln_complete_monthly     → GAT + BI + AKDING bidang
+ *      - antam_monthly            → paket 'antam-*'
+ *   4. Paket dibeli satuan (unlocked_packages)
  */
 
 import { createServiceClient } from '@/lib/supabase/server'
 import { BI_DEMO_SLUG, BI_FULL_SLUG, akdingSlug } from '@/lib/bidang-config'
 
-// Plan langganan premium generik (non-PLN-bidang)
-const PREMIUM_PLANS = ['premium_monthly', 'premium_quarterly']
+// Plan All Access (membuka SEMUA paket)
+const ALL_ACCESS_PLANS = ['premium_monthly', 'premium_quarterly']
 
 export type AccessStatus =
   | 'free'          // paket gratis
@@ -34,26 +36,36 @@ interface SubRow {
 }
 
 /**
- * Cek apakah paket dengan slug ini bisa diakses oleh PLN plan tertentu.
+ * Cek apakah paket dengan slug ini bisa diakses oleh plan tertentu.
  */
-function plnPlanCoversSlug(
+function planCoversSlug(
   planType: string,
   bidang: string | null,
   packageSlug: string
 ): boolean {
-  const isBI    = packageSlug.startsWith('bi-pln-')
-  const isGAT   = packageSlug.startsWith('gat-pln-')
+  const isBI     = packageSlug.startsWith('bi-pln-')   // Bahasa Inggris PLN
+  const isGAT    = packageSlug.startsWith('gat-pln-')
   const isAkding = bidang ? packageSlug.startsWith(`akding-${bidang}-`) : false
+  const isAstra  = packageSlug.startsWith('astra-')
+  const isBumn1  = packageSlug.startsWith('rbb-bumn-tahap-1')
+  const isBumn2  = packageSlug.startsWith('rbb-bumn-tahap-2')
+  const isAntam  = packageSlug.startsWith('antam-')
 
-  if (planType === 'pln_gat_monthly')      return isGAT
-  if (planType === 'pln_tahap2_monthly')   return isBI || isAkding
-  if (planType === 'pln_complete_monthly') return isGAT || isBI || isAkding
-  return false
+  switch (planType) {
+    case 'astra_monthly':       return isAstra
+    case 'bumn_t1_monthly':     return isBumn1
+    case 'bumn_t2_monthly':     return isBumn2
+    case 'antam_monthly':       return isAntam
+    case 'pln_gat_monthly':     return isGAT
+    case 'pln_tahap2_monthly':  return isBI || isAkding
+    case 'pln_complete_monthly':return isGAT || isBI || isAkding
+    default: return false
+  }
 }
 
 /**
  * Cek apakah user bisa akses satu paket tertentu.
- * packageSlug diperlukan untuk logika PLN bidang-specific.
+ * packageSlug diperlukan untuk logika plan per-tahap/perusahaan.
  */
 export async function checkPackageAccess(
   userId: string,
@@ -76,23 +88,16 @@ export async function checkPackageAccess(
 
   const activeSubs = (subs ?? []) as SubRow[]
 
-  // 1. Premium generik → akses semua kecuali bidang-specific AKDING
-  const hasPremium = activeSubs.some((s) => PREMIUM_PLANS.includes(s.plan_type))
-  if (hasPremium) {
-    // Premium generik tidak cover AKDING bidang-specific
-    const isAkdingFull = packageSlug ? (
-      packageSlug.startsWith('akding-') && !packageSlug.endsWith('-demo')
-    ) : false
-    if (!isAkdingFull) return 'subscribed'
-  }
+  // 1. Premium All Access → SEMUA paket
+  const hasPremium = activeSubs.some((s) => ALL_ACCESS_PLANS.includes(s.plan_type))
+  if (hasPremium) return 'subscribed'
 
-  // 2. PLN plans (perlu cek slug paket)
+  // 2. Plan per-tahap/perusahaan (perlu cek slug paket)
   if (packageSlug) {
-    const hasPlnAccess = activeSubs.some((s) =>
-      ['pln_gat_monthly', 'pln_tahap2_monthly', 'pln_complete_monthly'].includes(s.plan_type)
-      && plnPlanCoversSlug(s.plan_type, s.bidang, packageSlug)
+    const hasPlanAccess = activeSubs.some((s) =>
+      planCoversSlug(s.plan_type, s.bidang, packageSlug)
     )
-    if (hasPlnAccess) return 'subscribed'
+    if (hasPlanAccess) return 'subscribed'
   }
 
   // 3. Unlock satuan
@@ -109,7 +114,7 @@ export async function checkPackageAccess(
 }
 
 /**
- * Cek apakah user punya langganan Premium generik aktif.
+ * Cek apakah user punya langganan Premium All Access aktif.
  */
 export async function getPremiumSubscriptionStatus(userId: string): Promise<{
   active: boolean
@@ -123,7 +128,7 @@ export async function getPremiumSubscriptionStatus(userId: string): Promise<{
   const { data } = await (supabase.from('subscriptions') as any)
     .select('plan_type, expires_at')
     .eq('user_id', userId)
-    .in('plan_type', PREMIUM_PLANS)
+    .in('plan_type', ALL_ACCESS_PLANS)
     .eq('status', 'paid')
     .gt('expires_at', now)
     .order('expires_at', { ascending: false })

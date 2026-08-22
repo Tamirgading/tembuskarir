@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 
-type PlanType = 'premium_monthly' | 'premium_quarterly' | 'package'
+type PlanType = string
 
 interface BuyButtonProps {
   planType: PlanType

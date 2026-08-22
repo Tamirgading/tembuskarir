@@ -17,7 +17,6 @@ type InfoSeleksi = {
 
 const INSTITUSI_CONFIG: Record<string, { label: string; pill: string; dot: string }> = {
   OJK:  { label: 'OJK',          pill: 'bg-emerald-100 text-emerald-700 border-emerald-200',  dot: 'bg-emerald-500' },
-  BI:   { label: 'Bank Indonesia',pill: 'bg-red-100 text-red-700 border-red-200',              dot: 'bg-red-500' },
   PLN:  { label: 'PLN',           pill: 'bg-brand/10 text-brand-700 border-brand/20',          dot: 'bg-brand' },
   RBB:  { label: 'RBB / BUMN',   pill: 'bg-violet-100 text-violet-700 border-violet-200',     dot: 'bg-violet-500' },
   ASTRA:{ label: 'Astra',         pill: 'bg-sky-100 text-sky-700 border-sky-200',              dot: 'bg-sky-500' },

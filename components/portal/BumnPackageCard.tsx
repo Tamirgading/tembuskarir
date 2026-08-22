@@ -6,6 +6,7 @@ import { Lock, CheckCircle2, Clock, FileText } from 'lucide-react'
 import type { PackageRow } from '@/lib/utils'
 import LoginModal from '@/components/ui/LoginModal'
 import { BuyButton } from '@/components/ui/BuyButton'
+import { getSatuanPrice } from '@/lib/plans'
 
 interface BumnPackageCardProps {
   pkg: PackageRow
@@ -155,8 +156,8 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
 
               <BuyButton
                 planType="package"
-                planLabel="Beli Paket — Rp 10.000"
-                amount={10000}
+                planLabel={`Beli Paket — ${getSatuanPrice(pkg.slug).toLocaleString('id-ID')}`}
+                amount={getSatuanPrice(pkg.slug)}
                 packageId={pkg.id}
                 onSuccess={() => { setShowBuyModal(false); router.refresh() }}
                 className="bg-violet-600 text-white hover:bg-violet-700"
