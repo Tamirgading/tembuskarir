@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { setSessionNonce } from '@/lib/session-nonce'
 
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = req.nextUrl
@@ -21,6 +22,11 @@ export async function GET(req: NextRequest) {
 
       if (isRecoveryFlow) {
         return NextResponse.redirect(`${baseUrl}/reset-password`)
+      }
+
+      // Anti-sharing: tandai perangkat ini sebagai sesi aktif
+      if (user) {
+        try { await setSessionNonce(user.id) } catch { /* non-kritis */ }
       }
 
       // Catatan: welcome email TIDAK dikirim di sini — sudah dikirim saat register

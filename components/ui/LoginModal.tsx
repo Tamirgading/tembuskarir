@@ -64,6 +64,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       return
     }
 
+    // Anti-sharing: tandai perangkat ini sebagai sesi aktif
+    try { await fetch('/api/auth/session-nonce', { method: 'POST' }) } catch { /* non-kritis */ }
+
     onClose()
     router.refresh()
   }

@@ -60,6 +60,9 @@ export default function RegisterPage() {
       body: JSON.stringify({ email, name: fullName }),
     }).catch(() => {/* ignore */})
 
+    // Anti-sharing: tandai perangkat (jika signUp langsung membuka sesi)
+    try { await fetch('/api/auth/session-nonce', { method: 'POST' }) } catch { /* non-kritis */ }
+
     setSuccess(true)
     setLoading(false)
   }

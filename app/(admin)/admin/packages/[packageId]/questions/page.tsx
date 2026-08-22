@@ -10,6 +10,7 @@ import { AdminExamPreview } from '@/components/admin/AdminExamPreview'
 import { WmPairsManager } from '@/components/admin/WmPairsManager'
 import { PlnSpecialForms } from '@/components/admin/PlnSpecialForms'
 import { BumnAkhlakForm } from '@/components/admin/BumnAkhlakForm'
+import { SectionsManager } from '@/components/admin/SectionsManager'
 import { getStreamBySlug } from '@/lib/antam-config'
 
 export default async function AdminQuestionsPage({
@@ -53,6 +54,14 @@ export default async function AdminQuestionsPage({
 
   const hasWm = pkg.category === 'ASTRA' && wmRecallQuestions.length > 0
 
+  // Konfigurasi seksi tahap (package_sections)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: sectionsData } = await (supabase.from('package_sections') as any)
+    .select('*')
+    .eq('package_id', packageId)
+    .order('order_index', { ascending: true })
+  const stageSections = (sectionsData ?? []) as Parameters<typeof SectionsManager>[0]['sections']
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -91,6 +100,11 @@ export default async function AdminQuestionsPage({
         </div>
         <p className="text-xs text-right mt-1 text-gray-500">{pct}%</p>
       </div>
+
+      {/* Editor seksi tahap (jika paket memakai package_sections) */}
+      {stageSections.length > 0 && (
+        <SectionsManager sections={stageSections} />
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6 items-start">
         {/* Daftar soal + WM Pairs Manager */}

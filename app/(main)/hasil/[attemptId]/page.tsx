@@ -10,6 +10,8 @@ import type { LeaderboardAttempt, LeaderboardDummy, LeaderboardRow } from '@/lib
 import { HasilReview } from '@/components/hasil/HasilReview'
 import { LeaderboardIllustration } from '@/components/ui/LeaderboardIllustration'
 import { fetchStageSections, evaluateStagePassing } from '@/lib/stage-config'
+import { getPremiumSubscriptionStatus } from '@/lib/access'
+import { Lock, Sparkles } from 'lucide-react'
 
 interface QuestionWithAnswer {
   id: string
@@ -57,8 +59,12 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   if (attempt.status === 'ongoing') redirect(`/ujian/${attempt.package_id}`)
 
   const { data: pkgData } = await supabase
-    .from('packages').select('name, total_questions, category').eq('id', attempt.package_id).single()
-  const pkg = pkgData as { name: string; total_questions: number; category: string } | null
+    .from('packages').select('name, total_questions, category, is_free').eq('id', attempt.package_id).single()
+  const pkg = pkgData as { name: string; total_questions: number; category: string; is_free: boolean } | null
+
+  // Blur hasil untuk non-premium yang mengerjakan paket GRATIS (demo)
+  const premiumStatus = await getPremiumSubscriptionStatus(user.id)
+  const showBlur = pkg?.is_free === true && !premiumStatus.active
 
   // Konfigurasi tahap gabungan (package_sections) + evaluasi passing grade
   let stageSections: Awaited<ReturnType<typeof fetchStageSections>> = []
@@ -151,22 +157,24 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     }
   }
 
-  // Soal + pembahasan (fallback jika kolom explanation_image_url belum ada)
+  // Soal + pembahasan (tidak dikirim ke non-premium pada paket gratis — anti inspect)
   let questionsData: QuestionWithAnswer[] | null = null
-  const { data: qData, error: qErr } = await supabase
-    .from('questions')
-    .select('id, content, options, correct_answer, explanation, explanation_image_url, category, image_url, order_index')
-    .eq('package_id', attempt.package_id)
-    .order('order_index', { ascending: true })
-  if (qErr) {
-    const { data: qFallback } = await supabase
+  if (!showBlur) {
+    const { data: qData, error: qErr } = await supabase
       .from('questions')
-      .select('id, content, options, correct_answer, explanation, category, image_url, order_index')
+      .select('id, content, options, correct_answer, explanation, explanation_image_url, category, image_url, order_index')
       .eq('package_id', attempt.package_id)
       .order('order_index', { ascending: true })
-    questionsData = ((qFallback ?? []) as Omit<QuestionWithAnswer, 'explanation_image_url'>[]).map((q) => ({ ...q, explanation_image_url: null }))
-  } else {
-    questionsData = (qData ?? []) as QuestionWithAnswer[]
+    if (qErr) {
+      const { data: qFallback } = await supabase
+        .from('questions')
+        .select('id, content, options, correct_answer, explanation, category, image_url, order_index')
+        .eq('package_id', attempt.package_id)
+        .order('order_index', { ascending: true })
+      questionsData = ((qFallback ?? []) as Omit<QuestionWithAnswer, 'explanation_image_url'>[]).map((q) => ({ ...q, explanation_image_url: null }))
+    } else {
+      questionsData = (qData ?? []) as QuestionWithAnswer[]
+    }
   }
 
   // Sort: urutan sub-tes dulu (sesuai definisi ASTRA/PLN/tahap), lalu order_index
@@ -175,7 +183,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     pkg?.category === 'ASTRA' ? Object.keys(ASTRA_SUBTESTS) :
     pkg?.category === 'PLN'   ? Object.keys(PLN_SUBTESTS)   : []
 
-  const questions = questionsData.sort((a, b) => {
+  const questions = (questionsData ?? []).sort((a, b) => {
     if (subtestOrder.length > 0) {
       const iA = subtestOrder.indexOf((a.category ?? '').toUpperCase())
       const iB = subtestOrder.indexOf((b.category ?? '').toUpperCase())
@@ -271,8 +279,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
       </div>
 
-      {/* ══ Passing grade per seksi (paket tahap) ══ */}
-      {stageSections.length > 0 && stageGroups.length > 0 && (
+      {/* ══ Passing grade per seksi (paket tahap) — premium only ══ */}
+      {!showBlur && stageSections.length > 0 && stageGroups.length > 0 && (
         <div className="bg-white rounded-2xl border border-hairline shadow-soft overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-hairline">
             <h2 className="font-heading font-bold text-ink">Passing Grade per Seksi</h2>
@@ -401,8 +409,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
       )}
 
-      {/* ══ Rincian per sub-tes ══ */}
-      {subtests.length > 0 && (
+      {/* ══ Rincian per sub-tes (premium only) ══ */}
+      {!showBlur && subtests.length > 0 && (
         <div className="bg-white rounded-2xl border border-hairline shadow-soft p-4 sm:p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Rincian per sub-tes</p>
@@ -439,16 +447,36 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </Link>
       </div>
 
-      {/* ══ Review pembahasan ══ */}
-      <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft">
-        <div className="bg-ink px-5 py-3.5">
-          <h2 className="font-heading font-bold text-white text-sm">Review Pembahasan</h2>
-          <p className="text-white/55 text-xs mt-0.5">Pelajari tiap soal untuk menutup kelemahanmu.</p>
+      {/* ══ Upsell premium (paket gratis, non-premium) ══ */}
+      {showBlur && (
+        <div className="relative rounded-2xl overflow-hidden border border-hairline shadow-soft">
+          <div className="px-6 py-8 text-white text-center" style={{ background: 'linear-gradient(135deg,#4C1D95,#1e1b4b)' }}>
+            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <Lock className="w-6 h-6 text-white/80" />
+            </div>
+            <h2 className="font-heading font-extrabold text-lg">Buka Analisis &amp; Pembahasan Lengkap</h2>
+            <p className="text-white/65 text-sm mt-1.5 max-w-sm mx-auto">
+              Rincian per sub-tes, passing grade, dan pembahasan semua soal tersedia untuk member Premium.
+            </p>
+            <Link href="/harga" className="inline-flex items-center gap-2 mt-5 px-6 py-3 bg-white text-violet-700 text-sm font-bold rounded-xl hover:bg-violet-50 transition-colors">
+              <Sparkles className="w-4 h-4" /> Upgrade ke Premium
+            </Link>
+          </div>
         </div>
-        <div className="bg-paper p-3 sm:p-4">
-          <HasilReview questions={questions} userAnswers={userAnswers} />
+      )}
+
+      {/* ══ Review pembahasan (premium only) ══ */}
+      {!showBlur && (
+        <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft">
+          <div className="bg-ink px-5 py-3.5">
+            <h2 className="font-heading font-bold text-white text-sm">Review Pembahasan</h2>
+            <p className="text-white/55 text-xs mt-0.5">Pelajari tiap soal untuk menutup kelemahanmu.</p>
+          </div>
+          <div className="bg-paper p-3 sm:p-4">
+            <HasilReview questions={questions} userAnswers={userAnswers} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
