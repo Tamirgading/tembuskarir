@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, ChevronsUpDown, Copy, Check, Pencil } from 'lucide-react'
 import { LatexContent } from '@/components/ui/LatexContent'
 import { EditQuestionModal } from './EditQuestionModal'
-import { serializeQuestionSnippet } from '@/lib/question-csv'
+import { serializeQuestionSnippet, QUESTION_CSV_COLUMNS } from '@/lib/question-csv'
 
 interface Option {
   key: string
@@ -132,6 +132,7 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
   const [expandedDetailId, setExpandedDetailId] = useState<string | null>(null)
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [copiedGroupKey, setCopiedGroupKey] = useState<string | null>(null)
 
   // Group + sort per kategori, respecting subtest order
   const groups = useMemo(() => {
@@ -223,6 +224,15 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
     })
   }
 
+  function handleCopyGroup(key: string, qs: Question[]) {
+    const header = QUESTION_CSV_COLUMNS.join(',')
+    const rows = qs.map((q) => serializeQuestionSnippet(q)).join('\r\n')
+    navigator.clipboard.writeText(`${header}\r\n${rows}`).then(() => {
+      setCopiedGroupKey(key)
+      setTimeout(() => setCopiedGroupKey(null), 2500)
+    })
+  }
+
   if (questions.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-xl border border-gray-200 text-gray-400">
@@ -271,34 +281,50 @@ export function QuestionList({ questions, packageId, pkgCategory }: QuestionList
           <div key={key} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
 
             {/* ── Header grup (klik untuk expand/collapse) ── */}
-            <button
-              type="button"
-              onClick={() => toggleGroup(key)}
-              className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors text-left"
-            >
-              {isExpanded
-                ? <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
-                : <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />}
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => toggleGroup(key)}
+                className="flex-1 flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors text-left min-w-0"
+              >
+                {isExpanded
+                  ? <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+                  : <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />}
 
-              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border shrink-0 ${catCls}`}>
-                {key}
-              </span>
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border shrink-0 ${catCls}`}>
+                  {key}
+                </span>
 
-              <div className="flex-1 min-w-0 text-left">
-                <p className="text-sm font-semibold text-gray-800">{fullName}</p>
-                {isPointBased && (
-                  <p className="text-[10px] text-purple-500 mt-0.5">Sistem poin (1–5)</p>
-                )}
-              </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-sm font-semibold text-gray-800">{fullName}</p>
+                  {isPointBased && (
+                    <p className="text-[10px] text-purple-500 mt-0.5">Sistem poin (1–5)</p>
+                  )}
+                </div>
 
-              <span className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${
-                groupQs.length > 0
-                  ? 'bg-green-50 text-green-700 border border-green-200'
-                  : 'bg-gray-100 text-gray-400'
-              }`}>
-                {groupQs.length} soal
-              </span>
-            </button>
+                <span className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${
+                  groupQs.length > 0
+                    ? 'bg-green-50 text-green-700 border border-green-200'
+                    : 'bg-gray-100 text-gray-400'
+                }`}>
+                  {groupQs.length} soal
+                </span>
+              </button>
+
+              {groupQs.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => handleCopyGroup(key, groupQs)}
+                  title="Salin semua snippet sub-tes ini"
+                  className="shrink-0 flex items-center gap-1.5 mr-3 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors
+                    border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                >
+                  {copiedGroupKey === key
+                    ? <><Check className="w-3.5 h-3.5 text-green-600" /><span className="text-green-600">Tersalin</span></>
+                    : <><Copy className="w-3.5 h-3.5" /><span>Salin Semua</span></>}
+                </button>
+              )}
+            </div>
 
             {/* ── Body grup ── */}
             {isExpanded && (
