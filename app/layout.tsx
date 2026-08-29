@@ -75,7 +75,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className="scroll-smooth">
-      <body className={`${hanken.variable} ${bricolage.variable} ${spaceGrotesk.variable} font-sans antialiased bg-paper text-slate-600 overflow-x-hidden selection:bg-blue-100 selection:text-blue-700`}>
+      <body className={`${hanken.variable} ${bricolage.variable} ${spaceGrotesk.variable} font-sans antialiased bg-paper text-ink-soft overflow-x-hidden selection:bg-brand/20 selection:text-brand-700`}>
         {children}
         <VisitTracker />
         <Analytics />

@@ -39,7 +39,7 @@ export default function AstraPackageCard({
 
   return (
     <>
-      <div className="group bg-white rounded-2xl border border-hairline shadow-soft hover:shadow-md hover:border-orange-200 transition-all duration-200">
+      <div className="group bg-white rounded-2xl border border-hairline shadow-soft hover:shadow-md hover:border-brand/30 transition-all duration-200">
         <div className="px-5 py-4 flex items-center gap-5">
 
           {/* Konten */}
@@ -95,7 +95,7 @@ export default function AstraPackageCard({
               onClick={handleStart}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 canAccess || !isLoggedIn
-                  ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+                  ? 'bg-brand text-white hover:bg-brand-700 shadow-sm'
                   : 'bg-ink text-white hover:bg-ink-soft shadow-sm'
               }`}
             >
@@ -118,7 +118,7 @@ export default function AstraPackageCard({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowBuyModal(false)} />
           <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-soft border border-hairline overflow-hidden">
-            <div className="h-1 w-full bg-gradient-to-r from-orange-400 to-orange-500" />
+            <div className="h-1 w-full bg-gradient-to-r from-brand to-emerald-500" />
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -140,7 +140,7 @@ export default function AstraPackageCard({
                   amount={getSatuanPrice(pkg.slug)}
                   packageId={pkg.id}
                   onSuccess={() => { setShowBuyModal(false); router.refresh() }}
-                  className="bg-orange-500 text-white hover:bg-orange-600"
+                  className="bg-brand text-white hover:bg-brand-700"
                 />
               </div>
 

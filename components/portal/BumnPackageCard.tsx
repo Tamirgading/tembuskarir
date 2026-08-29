@@ -15,25 +15,27 @@ interface BumnPackageCardProps {
   index: number
 }
 
+const BADGE_TINT = 'bg-brand/10 text-brand-700 border-brand/20'
+
 const BUMN_SUBTESTS = [
-  { label: 'TWK',    cls: 'bg-violet-50 text-violet-700 border-violet-200', title: 'Tes Wawasan Kebangsaan' },
-  { label: 'VLR',    cls: 'bg-indigo-50 text-indigo-700 border-indigo-200', title: 'Verbal Logical Reasoning' },
-  { label: 'WC',     cls: 'bg-blue-50 text-blue-700 border-blue-200',       title: 'Word Classification' },
-  { label: 'NS',     cls: 'bg-cyan-50 text-cyan-700 border-cyan-200',       title: 'Number Sequence' },
-  { label: 'DIAG',   cls: 'bg-teal-50 text-teal-700 border-teal-200',       title: 'Diagram Reasoning' },
-  { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-700 border-purple-200', title: 'Nilai AKHLAK (poin)' },
+  { label: 'TWK',    cls: BADGE_TINT, title: 'Tes Wawasan Kebangsaan' },
+  { label: 'VLR',    cls: BADGE_TINT, title: 'Verbal Logical Reasoning' },
+  { label: 'WC',     cls: BADGE_TINT, title: 'Word Classification' },
+  { label: 'NS',     cls: BADGE_TINT, title: 'Number Sequence' },
+  { label: 'DIAG',   cls: BADGE_TINT, title: 'Diagram Reasoning' },
+  { label: 'AKHLAK', cls: BADGE_TINT, title: 'Nilai AKHLAK (poin)' },
 ]
 
 const TAHAP1_BADGES = [
-  { label: 'TKD',    cls: 'bg-indigo-50 text-indigo-700 border-indigo-200', title: 'Tes Kemampuan Dasar' },
-  { label: 'AKHLAK', cls: 'bg-purple-50 text-purple-700 border-purple-200', title: 'Nilai AKHLAK' },
-  { label: 'TWK',    cls: 'bg-violet-50 text-violet-700 border-violet-200', title: 'Tes Wawasan Kebangsaan' },
+  { label: 'TKD',    cls: BADGE_TINT, title: 'Tes Kemampuan Dasar' },
+  { label: 'AKHLAK', cls: BADGE_TINT, title: 'Nilai AKHLAK' },
+  { label: 'TWK',    cls: BADGE_TINT, title: 'Tes Wawasan Kebangsaan' },
 ]
 
 const TAHAP2_BADGES = [
-  { label: 'ER', cls: 'bg-blue-50 text-blue-700 border-blue-200', title: 'Error Recognition' },
-  { label: 'RC', cls: 'bg-cyan-50 text-cyan-700 border-cyan-200', title: 'Reading Comprehension' },
-  { label: 'SC', cls: 'bg-indigo-50 text-indigo-700 border-indigo-200', title: 'Sentence Completion' },
+  { label: 'ER', cls: BADGE_TINT, title: 'Error Recognition' },
+  { label: 'RC', cls: BADGE_TINT, title: 'Reading Comprehension' },
+  { label: 'SC', cls: BADGE_TINT, title: 'Sentence Completion' },
 ]
 
 function getBadges(slug: string) {
@@ -60,22 +62,22 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
     <>
       <div className={`group relative bg-white rounded-2xl border transition-all duration-200 overflow-hidden ${
         isLocked
-          ? 'border-hairline hover:border-violet-300 hover:shadow-soft'
-          : 'border-hairline hover:border-violet-400 hover:shadow-md hover:-translate-y-0.5'
+          ? 'border-hairline hover:border-brand/30 hover:shadow-soft'
+          : 'border-hairline hover:border-brand/40 hover:shadow-md hover:-translate-y-0.5'
       }`}>
         {/* Accent bar kiri */}
         <div className={`absolute left-0 top-0 h-full w-1 rounded-l-2xl transition-colors ${
           pkg.is_free ? 'bg-brand group-hover:bg-brand-700'
-          : hasPremium ? 'bg-violet-400 group-hover:bg-violet-500'
-          : 'bg-violet-300 group-hover:bg-violet-400'
+          : hasPremium ? 'bg-brand group-hover:bg-brand-700'
+          : 'bg-brand/40 group-hover:bg-brand/60'
         }`} />
 
         <div className="pl-5 pr-5 py-4 flex items-center gap-4">
           {/* Nomor */}
           <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold ${
             pkg.is_free ? 'bg-brand/10 text-brand'
-            : hasPremium ? 'bg-violet-50 text-violet-600'
-            : 'bg-violet-50 text-violet-400'
+            : hasPremium ? 'bg-brand/10 text-brand'
+            : 'bg-paper-soft text-ink-muted'
           }`}>
             {hasPremium && !pkg.is_free
               ? <CheckCircle2 className="w-4 h-4" />
@@ -88,7 +90,7 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
               <h3 className="font-bold text-ink text-sm leading-snug flex-1">{pkg.name}</h3>
               <span className={`shrink-0 text-xs font-bold px-2.5 py-0.5 rounded-full ${
                 pkg.is_free ? 'bg-brand/10 text-brand'
-                : hasPremium ? 'bg-violet-100 text-violet-700'
+                : hasPremium ? 'bg-brand/10 text-brand'
                 : 'bg-amber-100 text-amber-700'
               }`}>
                 {pkg.is_free ? 'GRATIS' : hasPremium ? '✓ DIMILIKI' : '✦ PREMIUM'}
@@ -115,10 +117,10 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
               onClick={handleStart}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 canAccess
-                  ? 'bg-violet-600 text-white hover:bg-violet-700 shadow-sm'
+                  ? 'bg-brand text-white hover:bg-brand-700 shadow-sm'
                   : !isLoggedIn
-                  ? 'bg-violet-600 text-white hover:bg-violet-700 shadow-sm'
-                  : 'bg-amber-500 text-white hover:bg-amber-600 shadow-sm'
+                  ? 'bg-brand text-white hover:bg-brand-700 shadow-sm'
+                  : 'bg-ink text-white hover:bg-ink-soft shadow-sm'
               }`}
             >
               {!isLoggedIn ? 'Mulai'
@@ -139,7 +141,7 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowBuyModal(false)} />
           <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="h-1 w-full bg-gradient-to-r from-violet-500 to-indigo-500" />
+            <div className="h-1 w-full bg-gradient-to-r from-brand to-emerald-500" />
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -160,7 +162,7 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
                 amount={getSatuanPrice(pkg.slug)}
                 packageId={pkg.id}
                 onSuccess={() => { setShowBuyModal(false); router.refresh() }}
-                className="bg-violet-600 text-white hover:bg-violet-700"
+                className="bg-brand text-white hover:bg-brand-700"
               />
 
               <p className="text-[10px] text-center text-ink-muted mt-3">

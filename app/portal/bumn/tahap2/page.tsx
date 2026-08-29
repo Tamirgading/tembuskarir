@@ -56,7 +56,7 @@ export default async function BumnTahap2Page() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft">
-        <div className="px-6 py-7 text-white" style={{ background: 'linear-gradient(135deg,#1e3a8a,#172554)' }}>
+        <div className="px-6 py-7 text-white" style={{ background: 'linear-gradient(135deg,#0C2338,#0a1f30)' }}>
           <nav className="flex items-center gap-2 text-xs text-white/50 mb-4">
             <Link href="/portal/bumn" className="hover:text-white transition-colors">Rekrutmen BUMN</Link>
             <span>›</span>
@@ -104,7 +104,7 @@ export default async function BumnTahap2Page() {
                   <p className="text-xs text-ink-muted">{formatDate(att.started_at)}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-num font-bold text-blue-600 text-base">{att.score ?? '—'}</span>
+                  <span className="font-num font-bold text-brand text-base">{att.score ?? '—'}</span>
                   <ChevronRight className="w-4 h-4 text-ink-muted" />
                 </div>
               </Link>

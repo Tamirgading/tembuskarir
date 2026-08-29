@@ -7,6 +7,7 @@ import {
 import { createClient } from '@/lib/supabase/server'
 import { BuyButton } from '@/components/ui/BuyButton'
 import { PlnBuyButton } from '@/components/ui/PlnBuyButton'
+import { CareerIllustration } from '@/components/illustrations/CareerIllustration'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 
@@ -147,9 +148,15 @@ export default async function HargaPage({
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      <div className="text-center">
-        <h1 className="text-2xl font-heading font-extrabold text-ink">Langganan &amp; Harga</h1>
-        <p className="text-ink-muted text-sm mt-1.5">Pilih paket sesuai persiapan seleksi kerjamu</p>
+      <div className="relative rounded-3xl overflow-hidden text-white p-8 text-center"
+        style={{ background: 'linear-gradient(135deg,#0F2C44 0%,#0a1f30 60%,#0B3D30 100%)' }}>
+        <CareerIllustration className="absolute right-6 bottom-0 w-40 sm:w-52 opacity-90 pointer-events-none select-none hidden sm:block" />
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-4">
+          <Sparkles className="w-3.5 h-3.5 text-brand-300" />
+          Investasi untuk kariermu
+        </span>
+        <h1 className="text-2xl sm:text-3xl font-heading font-extrabold">Langganan &amp; Harga</h1>
+        <p className="text-white/65 text-sm mt-2 max-w-md mx-auto">Pilih paket sesuai persiapan seleksi kerjamu</p>
       </div>
 
       {/* Payment banners */}

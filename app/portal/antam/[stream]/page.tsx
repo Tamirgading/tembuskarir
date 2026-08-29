@@ -106,12 +106,12 @@ export default async function AntamStreamPage({
 
       {/* ── Upgrade banner ── */}
       {user && (
-        <div className="flex items-center justify-between gap-4 bg-green-50 border border-green-200 rounded-2xl px-5 py-3.5">
-          <p className="text-sm text-green-800 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-green-600" />
+        <div className="flex items-center justify-between gap-4 bg-brand/5 border border-brand/20 rounded-2xl px-5 py-3.5">
+          <p className="text-sm text-brand-800 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-brand" />
             <span className="font-bold">Premium:</span> akses semua paket ANTAM sekaligus.
           </p>
-          <Link href="/harga" className="shrink-0 text-xs font-bold text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl transition-colors">
+          <Link href="/harga" className="shrink-0 text-xs font-bold text-white bg-brand hover:bg-brand-700 px-4 py-2 rounded-xl transition-colors">
             Lihat Harga
           </Link>
         </div>
@@ -134,14 +134,14 @@ export default async function AntamStreamPage({
 
               return (
                 <div key={p.id} className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-4 flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5 text-green-600" />
+                  <div className="w-11 h-11 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 text-brand" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-heading font-bold text-ink">{label}</p>
                       {p.is_free && (
-                        <span className="text-[9px] font-bold text-white bg-green-600 px-2 py-0.5 rounded-full">GRATIS</span>
+                        <span className="text-[9px] font-bold text-white bg-brand px-2 py-0.5 rounded-full">GRATIS</span>
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-[11px] text-ink-muted mt-1">
@@ -150,7 +150,7 @@ export default async function AntamStreamPage({
                     </div>
                   </div>
                   {!user ? (
-                    <Link href={`/persiapan/${p.id}`} className="shrink-0 inline-flex items-center gap-1 px-3.5 py-2 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-colors">
+                    <Link href={`/persiapan/${p.id}`} className="shrink-0 inline-flex items-center gap-1 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition-colors">
                       Mulai <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   ) : isLocked ? (
@@ -158,7 +158,7 @@ export default async function AntamStreamPage({
                       <CheckCircle2 className="w-3.5 h-3.5 text-ink-muted" /> Upgrade
                     </Link>
                   ) : (
-                    <Link href={`/persiapan/${p.id}`} className="shrink-0 inline-flex items-center gap-1 px-3.5 py-2 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-colors">
+                    <Link href={`/persiapan/${p.id}`} className="shrink-0 inline-flex items-center gap-1 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition-colors">
                       Mulai <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   )}

@@ -15,7 +15,7 @@ export default async function BumnHubPage() {
 
       {/* Header */}
       <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
-        <div className="px-6 py-8 text-white" style={{ background: 'linear-gradient(135deg,#4C1D95,#1e1b4b)' }}>
+        <div className="px-6 py-8 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
               <Building2 className="w-6 h-6 text-white/80" />
@@ -36,7 +36,7 @@ export default async function BumnHubPage() {
 
         {/* Tahap 1 — GAT */}
         <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft flex flex-col">
-          <div className="px-6 py-6 text-white flex-1" style={{ background: 'linear-gradient(135deg,#4C1D95,#312e81)' }}>
+          <div className="px-6 py-6 text-white flex-1" style={{ background: 'linear-gradient(135deg,#0F2C44,#0B3D30)' }}>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
                 <Zap className="w-4.5 h-4.5 text-white/80" />
@@ -66,16 +66,16 @@ export default async function BumnHubPage() {
           <Link href="/portal/bumn/tahap1"
             className="flex items-center justify-between px-6 py-4 bg-white hover:bg-paper-soft transition-colors border-t border-hairline group">
             <div className="flex items-center gap-2 text-sm font-semibold text-ink">
-              <FileText className="w-4 h-4 text-violet-600" />
+              <FileText className="w-4 h-4 text-brand" />
               Lihat Paket Simulasi Tahap 1
             </div>
-            <ChevronRight className="w-4 h-4 text-ink-muted group-hover:text-violet-600 transition-colors" />
+            <ChevronRight className="w-4 h-4 text-ink-muted group-hover:text-brand transition-colors" />
           </Link>
         </div>
 
         {/* Tahap 2 — Bahasa Inggris */}
         <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft flex flex-col">
-          <div className="px-6 py-6 flex-1" style={{ background: 'linear-gradient(135deg,#1e3a8a,#172554)' }}>
+          <div className="px-6 py-6 flex-1" style={{ background: 'linear-gradient(135deg,#0C2338,#0a1f30)' }}>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
                 <Languages className="w-4.5 h-4.5 text-white/80" />
@@ -105,10 +105,10 @@ export default async function BumnHubPage() {
           <Link href="/portal/bumn/tahap2"
             className="flex items-center justify-between px-6 py-4 bg-white hover:bg-paper-soft transition-colors border-t border-hairline group">
             <div className="flex items-center gap-2 text-sm font-semibold text-ink">
-              <BookOpen className="w-4 h-4 text-blue-600" />
+              <BookOpen className="w-4 h-4 text-brand-700" />
               Lihat Paket Simulasi Tahap 2
             </div>
-            <ChevronRight className="w-4 h-4 text-ink-muted group-hover:text-blue-600 transition-colors" />
+            <ChevronRight className="w-4 h-4 text-ink-muted group-hover:text-brand-700 transition-colors" />
           </Link>
         </div>
       </div>
@@ -123,12 +123,12 @@ export default async function BumnHubPage() {
           </div>
           <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
           <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-violet-600 text-white text-xs font-num font-bold flex items-center justify-center shrink-0">2</span>
+            <span className="w-6 h-6 rounded-full bg-brand-700 text-white text-xs font-num font-bold flex items-center justify-center shrink-0">2</span>
             <span><strong className="text-ink">Tahap 1: TKD + AKHLAK + TWK</strong></span>
           </div>
           <ChevronRight className="w-4 h-4 text-hairline shrink-0" />
           <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-num font-bold flex items-center justify-center shrink-0">3</span>
+            <span className="w-6 h-6 rounded-full bg-brand text-white text-xs font-num font-bold flex items-center justify-center shrink-0">3</span>
             <span><strong className="text-ink">Tahap 2: Bahasa Inggris</strong></span>
           </div>
           <ChevronRight className="w-4 h-4 text-hairline shrink-0" />

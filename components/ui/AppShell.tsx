@@ -396,7 +396,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
                 {/* Upgrade Premium (free only) */}
                 {userPlan !== 'premium' && (
                   <Link href="/harga"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 bg-green-500 text-white text-xs font-bold rounded-xl hover:bg-green-600 transition-colors">
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition-colors">
                     <Crown className="w-3.5 h-3.5" /> Upgrade Premium
                   </Link>
                 )}

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import {
   CheckCircle2, Clock, FileText, ChevronRight, ArrowRight,
   TrendingUp, Trophy, Package, ShoppingBag, CalendarDays,
-  Briefcase, Zap, Sparkles, CheckCircle, Target, Mountain,
+  Briefcase, Zap, Sparkles, CheckCircle, Target, Mountain, BarChart3,
 } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
@@ -11,6 +11,8 @@ import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
 import GuestLoginCta from '@/components/ui/GuestLoginCta'
+import { ExamIllustration } from '@/components/illustrations/ExamIllustration'
+import { SummitIllustration } from '@/components/illustrations/SummitIllustration'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
@@ -79,12 +81,59 @@ export default async function HomePage({
   if (!user) {
     return (
       <div className="max-w-5xl mx-auto space-y-6 fade-up">
-        <div>
-          <h1 className="text-2xl font-heading font-extrabold text-ink">Selamat datang di TembusKarir 👋</h1>
-          <p className="text-ink-muted text-sm mt-1">
-            Simulasi tes rekrutmen PLN, ASTRA, dan BUMN dengan format persis seperti tes aslinya.
-          </p>
+        {/* ── Hero ── */}
+        <div className="relative rounded-3xl overflow-hidden text-white p-8 sm:p-10"
+          style={{ background: 'linear-gradient(135deg,#0F2C44 0%,#0a1f30 55%,#0B3D30 100%)' }}>
+          <div className="relative z-10 max-w-xl">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-4">
+              <Sparkles className="w-3.5 h-3.5 text-brand-300" />
+              Simulasi tes rekrutmen PLN · ASTRA · BUMN · ANTAM
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-heading font-extrabold leading-tight">
+              Tembus seleksi kerja dengan <span className="text-brand-300">latihan yang tepat</span>
+            </h1>
+            <p className="text-white/65 text-sm sm:text-base mt-3 max-w-md leading-relaxed">
+              Kerjakan simulasi dengan format &amp; timer persis tes aslinya, lalu lihat peta kesiapanmu per sub-tes.
+              Mulai gratis, tanpa kartu kredit.
+            </p>
+            <div className="mt-6">
+              <GuestLoginCta />
+            </div>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 mt-6 text-xs text-white/50">
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-brand-300" /> 80+ soal gratis</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-brand-300" /> Analisis per sub-tes</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-brand-300" /> Timer realistis</span>
+            </div>
+          </div>
+          <ExamIllustration className="absolute -right-6 bottom-0 w-56 sm:w-72 lg:w-80 opacity-90 pointer-events-none select-none hidden sm:block" />
         </div>
+
+        {/* ── 3 value props ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+            <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
+              <FileText className="w-5 h-5 text-brand" />
+            </div>
+            <p className="font-heading font-bold text-ink">Format Persis Aslinya</p>
+            <p className="text-xs text-ink-muted mt-1 leading-relaxed">Sub-tes, timer, dan passing grade mengikuti tes rekrutmen sungguhan.</p>
+          </div>
+          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+            <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
+              <BarChart3 className="w-5 h-5 text-brand" />
+            </div>
+            <p className="font-heading font-bold text-ink">Peta Kesiapanmu</p>
+            <p className="text-xs text-ink-muted mt-1 leading-relaxed">Tahu sub-tes mana yang kuat dan mana yang perlu dilatih.</p>
+          </div>
+          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+            <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
+              <TrendingUp className="w-5 h-5 text-brand" />
+            </div>
+            <p className="font-heading font-bold text-ink">Progress Terukur</p>
+            <p className="text-xs text-ink-muted mt-1 leading-relaxed">Pantau peningkatan skor dari waktu ke waktu di Rapor Belajar.</p>
+          </div>
+        </div>
+
+        {/* ── CTA utama ── */}
         <div className="bg-white rounded-2xl border border-hairline shadow-soft p-8 text-center">
           <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Briefcase className="w-7 h-7 text-brand" />
@@ -95,6 +144,8 @@ export default async function HomePage({
           </p>
           <GuestLoginCta />
         </div>
+
+        {/* ── Katalog portal ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link href="/portal/astra"
             className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 card-hover">
@@ -117,8 +168,8 @@ export default async function HomePage({
           {featureFlags.feature_portal_antam && (
           <Link href="/portal/antam"
             className="bg-white rounded-2xl border border-hairline shadow-soft p-5 hover:border-brand/30 card-hover">
-            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3">
-              <Mountain className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3">
+              <Mountain className="w-5 h-5 text-brand" />
             </div>
             <p className="font-heading font-bold text-ink">ANTAM IMPACT 2026</p>
             <p className="text-xs text-ink-muted mt-1">14 job stream · 40 soal · 50 menit per stream.</p>
@@ -268,9 +319,7 @@ export default async function HomePage({
           {totalCount === 0 ? (
             /* Empty / onboarding state */
             <div className="bg-white rounded-2xl border border-hairline shadow-soft p-8 text-center">
-              <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Briefcase className="w-7 h-7 text-brand" />
-              </div>
+              <SummitIllustration className="w-40 h-32 mx-auto mb-2 pointer-events-none select-none" />
               <h2 className="text-lg font-heading font-bold text-ink">Mulai simulasi pertamamu</h2>
               <p className="text-ink-muted text-sm mt-1 mb-5 max-w-md mx-auto">
                 Kerjakan satu simulasi untuk melihat peta kesiapanmu dan kelemahan yang perlu dilatih.
@@ -403,8 +452,8 @@ export default async function HomePage({
               <div className="grid grid-cols-3 gap-4">
                 {/* Total Simulasi */}
                 <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 grid place-items-center mb-3">
-                    <FileText className="w-4.5 h-4.5 text-blue-500" />
+                  <div className="w-9 h-9 rounded-xl bg-brand/10 grid place-items-center mb-3">
+                    <FileText className="w-4.5 h-4.5 text-brand" />
                   </div>
                   <p className="text-ink-muted text-xs mb-1">Total Simulasi</p>
                   <p className="font-num font-bold text-[28px] text-ink leading-none">{totalCount}</p>

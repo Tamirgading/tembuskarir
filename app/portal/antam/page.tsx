@@ -32,20 +32,20 @@ const STREAM_ICONS: Record<string, LucideIcon> = {
 }
 
 const STREAM_COLORS: Record<string, string> = {
-  EXP: 'bg-amber-50 text-amber-700 border-amber-200',
-  MIN: 'bg-stone-100 text-stone-700 border-stone-200',
-  PRC: 'bg-purple-50 text-purple-700 border-purple-200',
-  ENG: 'bg-blue-50 text-blue-700 border-blue-200',
-  HSE: 'bg-green-50 text-green-700 border-green-200',
-  QC:  'bg-cyan-50 text-cyan-700 border-cyan-200',
-  MKT: 'bg-pink-50 text-pink-700 border-pink-200',
-  BDV: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-  SCM: 'bg-orange-50 text-orange-700 border-orange-200',
-  HCM: 'bg-teal-50 text-teal-700 border-teal-200',
-  LGL: 'bg-slate-100 text-slate-700 border-slate-200',
-  FIN: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  CRL: 'bg-rose-50 text-rose-700 border-rose-200',
-  IT:  'bg-violet-50 text-violet-700 border-violet-200',
+  EXP: 'bg-brand/10 text-brand-700 border-brand/20',
+  MIN: 'bg-brand/10 text-brand-700 border-brand/20',
+  PRC: 'bg-brand/10 text-brand-700 border-brand/20',
+  ENG: 'bg-brand/10 text-brand-700 border-brand/20',
+  HSE: 'bg-brand/10 text-brand-700 border-brand/20',
+  QC:  'bg-brand/10 text-brand-700 border-brand/20',
+  MKT: 'bg-brand/10 text-brand-700 border-brand/20',
+  BDV: 'bg-brand/10 text-brand-700 border-brand/20',
+  SCM: 'bg-brand/10 text-brand-700 border-brand/20',
+  HCM: 'bg-brand/10 text-brand-700 border-brand/20',
+  LGL: 'bg-brand/10 text-brand-700 border-brand/20',
+  FIN: 'bg-brand/10 text-brand-700 border-brand/20',
+  CRL: 'bg-brand/10 text-brand-700 border-brand/20',
+  IT:  'bg-brand/10 text-brand-700 border-brand/20',
 }
 
 export default async function AntamPortalPage() {
@@ -106,7 +106,7 @@ export default async function AntamPortalPage() {
 
       {/* ── Header ── */}
       <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
-        <div className="px-6 py-8 text-white" style={{ background: 'linear-gradient(135deg,#1a472a,#0d2818)' }}>
+        <div className="px-6 py-8 text-white" style={{ background: 'linear-gradient(135deg,#0F2C44,#0B3D30)' }}>
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
               <Mountain className="w-6 h-6 text-white/80" />
@@ -145,11 +145,11 @@ export default async function AntamPortalPage() {
           <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Tentang Tes</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-ink-soft">
             <div className="flex items-start gap-2">
-              <FileText className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+              <FileText className="w-4 h-4 text-brand shrink-0 mt-0.5" />
               <span><strong className="text-ink">Sesi 1</strong>: Tes teknis sesuai job stream (40 soal, 50 menit)</span>
             </div>
             <div className="flex items-start gap-2">
-              <Clock className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+              <Clock className="w-4 h-4 text-brand shrink-0 mt-0.5" />
               <span><strong className="text-ink">Format</strong>: Pilihan ganda, skor = jumlah benar</span>
             </div>
           </div>
@@ -158,13 +158,13 @@ export default async function AntamPortalPage() {
 
       {/* ── Upgrade banner ── */}
       {isLoggedIn && !hasPremium && (
-        <div className="flex items-center justify-between gap-4 bg-green-50 border border-green-200 rounded-2xl px-5 py-3.5">
-          <p className="text-sm text-green-800">
+        <div className="flex items-center justify-between gap-4 bg-brand/5 border border-brand/20 rounded-2xl px-5 py-3.5">
+          <p className="text-sm text-brand-800">
             <span className="font-bold">Premium:</span> akses semua paket ANTAM, ASTRA, PLN, dan BUMN sekaligus.
           </p>
           <Link
             href="/harga"
-            className="shrink-0 text-xs font-bold text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl transition-colors"
+            className="shrink-0 text-xs font-bold text-white bg-brand hover:bg-brand-700 px-4 py-2 rounded-xl transition-colors"
           >
             Lihat Harga
           </Link>
@@ -188,7 +188,7 @@ export default async function AntamPortalPage() {
                 key={stream.code}
                 href={`/portal/antam/${stream.slug}`}
                 className={`group flex items-center gap-3.5 bg-white rounded-2xl border border-hairline px-4 py-4 transition-all ${
-                  hasPackage ? 'hover:shadow-soft hover:border-green-300' : 'opacity-60 pointer-events-none'
+                  hasPackage ? 'hover:shadow-soft hover:border-brand/30' : 'opacity-60 pointer-events-none'
                 }`}
               >
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${bgCls}`}>
@@ -209,7 +209,7 @@ export default async function AntamPortalPage() {
                   )}
                 </div>
                 {hasPackage ? (
-                  <span className="shrink-0 flex items-center gap-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-xl group-hover:bg-green-700 transition-colors">
+                  <span className="shrink-0 flex items-center gap-1 px-3 py-2 bg-brand text-white text-xs font-bold rounded-xl group-hover:bg-brand-700 transition-colors">
                     Lihat Paket <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 ) : (
@@ -241,7 +241,7 @@ export default async function AntamPortalPage() {
                   <p className="text-xs text-ink-muted">{formatDate(att.started_at)}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-num font-bold text-green-600 text-base">{att.score ?? '—'}</span>
+                  <span className="font-num font-bold text-brand text-base">{att.score ?? '—'}</span>
                   <ChevronRight className="w-4 h-4 text-ink-muted" />
                 </div>
               </Link>

@@ -16,18 +16,18 @@ type InfoSeleksi = {
 }
 
 const INSTITUSI_CONFIG: Record<string, { label: string; pill: string; dot: string }> = {
-  OJK:  { label: 'OJK',          pill: 'bg-emerald-100 text-emerald-700 border-emerald-200',  dot: 'bg-emerald-500' },
-  PLN:  { label: 'PLN',           pill: 'bg-brand/10 text-brand-700 border-brand/20',          dot: 'bg-brand' },
-  RBB:  { label: 'RBB / BUMN',   pill: 'bg-violet-100 text-violet-700 border-violet-200',     dot: 'bg-violet-500' },
-  ASTRA:{ label: 'Astra',         pill: 'bg-sky-100 text-sky-700 border-sky-200',              dot: 'bg-sky-500' },
+  OJK:  { label: 'OJK',          pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
+  PLN:  { label: 'PLN',           pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
+  RBB:  { label: 'RBB / BUMN',   pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
+  ASTRA:{ label: 'Astra',         pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
 }
 
 const KATEGORI_CONFIG: Record<string, { label: string; pill: string }> = {
-  pengumuman:  { label: 'Pengumuman',  pill: 'bg-blue-50 text-blue-700 border-blue-200' },
+  pengumuman:  { label: 'Pengumuman',  pill: 'bg-brand/10 text-brand-700 border-brand/20' },
   jadwal:      { label: 'Jadwal',      pill: 'bg-brand/10 text-brand-700 border-brand/20' },
-  soal:        { label: 'Contoh Soal', pill: 'bg-violet-50 text-violet-700 border-violet-200' },
-  tips:        { label: 'Tips',        pill: 'bg-amber-50 text-amber-700 border-amber-200' },
-  'kisi-kisi': { label: 'Kisi-Kisi',  pill: 'bg-rose-50 text-rose-700 border-rose-200' },
+  soal:        { label: 'Contoh Soal', pill: 'bg-brand/10 text-brand-700 border-brand/20' },
+  tips:        { label: 'Tips',        pill: 'bg-brand/10 text-brand-700 border-brand/20' },
+  'kisi-kisi': { label: 'Kisi-Kisi',  pill: 'bg-brand/10 text-brand-700 border-brand/20' },
 }
 
 export const revalidate = 3600

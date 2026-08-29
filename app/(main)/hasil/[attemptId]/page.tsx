@@ -450,7 +450,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
       {/* ══ Upsell premium (paket gratis, non-premium) ══ */}
       {showBlur && (
         <div className="relative rounded-2xl overflow-hidden border border-hairline shadow-soft">
-          <div className="px-6 py-8 text-white text-center" style={{ background: 'linear-gradient(135deg,#4C1D95,#1e1b4b)' }}>
+          <div className="px-6 py-8 text-white text-center" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
             <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
               <Lock className="w-6 h-6 text-white/80" />
             </div>
@@ -458,7 +458,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             <p className="text-white/65 text-sm mt-1.5 max-w-sm mx-auto">
               Rincian per sub-tes, passing grade, dan pembahasan semua soal tersedia untuk member Premium.
             </p>
-            <Link href="/harga" className="inline-flex items-center gap-2 mt-5 px-6 py-3 bg-white text-violet-700 text-sm font-bold rounded-xl hover:bg-violet-50 transition-colors">
+            <Link href="/harga" className="inline-flex items-center gap-2 mt-5 px-6 py-3 bg-white text-brand text-sm font-bold rounded-xl hover:bg-brand/10 transition-colors">
               <Sparkles className="w-4 h-4" /> Upgrade ke Premium
             </Link>
           </div>
