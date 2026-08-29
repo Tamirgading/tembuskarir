@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Building2, Zap, Languages, ChevronRight, FileText, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 export default async function BumnHubPage() {
@@ -115,7 +116,7 @@ export default async function BumnHubPage() {
 
       {/* Info alur */}
       <div className="bg-paper-soft rounded-2xl border border-hairline p-5">
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Alur Rekrutmen Bersama BUMN</p>
+        <SectionLabel className="mb-3">Alur Rekrutmen Bersama BUMN</SectionLabel>
         <div className="flex items-center gap-3 flex-wrap text-sm text-ink-soft">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-brand text-white text-xs font-num font-bold flex items-center justify-center shrink-0">1</span>
@@ -141,7 +142,7 @@ export default async function BumnHubPage() {
 
       {/* BUMN yang pakai format ini */}
       <div className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-4">
-        <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">BUMN yang Menggunakan Format Ini</p>
+        <SectionLabel className="mb-3">BUMN yang Menggunakan Format Ini</SectionLabel>
         <div className="flex flex-wrap gap-2">
           {['Pertamina', 'PLN', 'Telkom', 'BRI', 'BNI', 'Mandiri', 'BTN', 'Bulog', 'Waskita', 'Wijaya Karya',
             'Adhi Karya', 'Hutama Karya', 'PTPN', 'Kimia Farma', 'Bio Farma', 'Pos Indonesia'].map((b) => (

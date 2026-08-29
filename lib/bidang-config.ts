@@ -11,19 +11,21 @@ export interface BidangInfo {
   color: string      // Tailwind accent color class untuk kartu
 }
 
+const BIDANG_TINT = 'bg-brand/10 text-brand-700 border-brand/20'
+
 export const AKDING_BIDANG: BidangInfo[] = [
-  { slug: 'akuntansi-keuangan',    name: 'Akuntansi & Keuangan',            short: 'Akuntansi',      color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  { slug: 'hukum-regulasi',        name: 'Hukum & Regulasi Energi',         short: 'Hukum',          color: 'bg-violet-50 text-violet-700 border-violet-200' },
-  { slug: 'komunikasi-humas',      name: 'Komunikasi & Hubungan Masyarakat',short: 'Komunikasi',     color: 'bg-pink-50 text-pink-700 border-pink-200' },
-  { slug: 'manajemen-bisnis',      name: 'Manajemen & Bisnis',              short: 'Manajemen',      color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  { slug: 'matematika-sains-data', name: 'Matematika & Sains Data',         short: 'Sains Data',     color: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
-  { slug: 'psikologi',             name: 'Psikologi',                       short: 'Psikologi',      color: 'bg-rose-50 text-rose-700 border-rose-200' },
-  { slug: 'teknik-elektro',        name: 'Teknik Elektro & Energi',         short: 'T. Elektro',     color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  { slug: 'teknik-industri',       name: 'Teknik Industri & Logistik',      short: 'T. Industri',    color: 'bg-orange-50 text-orange-700 border-orange-200' },
-  { slug: 'teknik-informatika',    name: 'Teknik Informatika',              short: 'Informatika',    color: 'bg-brand/10 text-brand-700 border-brand/20' },
-  { slug: 'teknik-kimia',          name: 'Teknik Kimia & Lingkungan',       short: 'T. Kimia',       color: 'bg-lime-50 text-lime-700 border-lime-200' },
-  { slug: 'teknik-mesin',          name: 'Teknik Mesin & Material',         short: 'T. Mesin',       color: 'bg-stone-50 text-stone-700 border-stone-200' },
-  { slug: 'teknik-sipil',          name: 'Teknik Sipil & Geoteknik',        short: 'T. Sipil',       color: 'bg-sky-50 text-sky-700 border-sky-200' },
+  { slug: 'akuntansi-keuangan',    name: 'Akuntansi & Keuangan',            short: 'Akuntansi',      color: BIDANG_TINT },
+  { slug: 'hukum-regulasi',        name: 'Hukum & Regulasi Energi',         short: 'Hukum',          color: BIDANG_TINT },
+  { slug: 'komunikasi-humas',      name: 'Komunikasi & Hubungan Masyarakat',short: 'Komunikasi',     color: BIDANG_TINT },
+  { slug: 'manajemen-bisnis',      name: 'Manajemen & Bisnis',              short: 'Manajemen',      color: BIDANG_TINT },
+  { slug: 'matematika-sains-data', name: 'Matematika & Sains Data',         short: 'Sains Data',     color: BIDANG_TINT },
+  { slug: 'psikologi',             name: 'Psikologi',                       short: 'Psikologi',      color: BIDANG_TINT },
+  { slug: 'teknik-elektro',        name: 'Teknik Elektro & Energi',         short: 'T. Elektro',     color: BIDANG_TINT },
+  { slug: 'teknik-industri',       name: 'Teknik Industri & Logistik',      short: 'T. Industri',    color: BIDANG_TINT },
+  { slug: 'teknik-informatika',    name: 'Teknik Informatika',              short: 'Informatika',    color: BIDANG_TINT },
+  { slug: 'teknik-kimia',          name: 'Teknik Kimia & Lingkungan',       short: 'T. Kimia',       color: BIDANG_TINT },
+  { slug: 'teknik-mesin',          name: 'Teknik Mesin & Material',         short: 'T. Mesin',       color: BIDANG_TINT },
+  { slug: 'teknik-sipil',          name: 'Teknik Sipil & Geoteknik',        short: 'T. Sipil',       color: BIDANG_TINT },
 ]
 
 /** Map slug → BidangInfo untuk lookup cepat */

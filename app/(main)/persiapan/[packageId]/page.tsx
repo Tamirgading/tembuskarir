@@ -7,6 +7,7 @@ import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { computeScore, isAttemptExpired, ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 import { checkPackageAccess } from '@/lib/access'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getStreamBySlug } from '@/lib/antam-config'
 
 interface OngoingInfo {
@@ -16,14 +17,15 @@ interface OngoingInfo {
 }
 
 // ── Konstanta sub-tes badge warna (untuk kartu sub-tes) ──────────────────────
+const SUBTEST_TINT = 'bg-brand/10 text-brand-700 border-brand/20'
 const SUBTEST_COLORS: Record<string, string> = {
-  QR:  'bg-orange-100 text-orange-700 border-orange-200',
-  DR:  'bg-amber-100 text-amber-700 border-amber-200',
-  RC:  'bg-yellow-100 text-yellow-700 border-yellow-200',
-  IR:  'bg-red-100 text-red-600 border-red-200',
-  VIZ: 'bg-rose-100 text-rose-600 border-rose-200',
-  PS:  'bg-pink-100 text-pink-600 border-pink-200',
-  WM:  'bg-purple-100 text-purple-600 border-purple-200',
+  QR:  SUBTEST_TINT,
+  DR:  SUBTEST_TINT,
+  RC:  SUBTEST_TINT,
+  IR:  SUBTEST_TINT,
+  VIZ: SUBTEST_TINT,
+  PS:  SUBTEST_TINT,
+  WM:  SUBTEST_TINT,
 }
 
 export default async function PersiapanPage({ params }: { params: Promise<{ packageId: string }> }) {
@@ -194,7 +196,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           {/* Sub-tes breakdown (ASTRA) — compact, 4 kolom */}
           {isAstra && (
             <div>
-              <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Pembagian Sub-tes</h2>
+              <SectionLabel className="mb-3">Pembagian Sub-tes</SectionLabel>
               <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
                 {Object.entries(ASTRA_SUBTESTS).map(([key, sub]) => (
                   <div key={key} className="rounded-xl border border-hairline bg-paper-soft p-2 text-center">
@@ -212,7 +214,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           {/* Topik kisi-kisi (ANTAM) */}
           {isAntam && antamStream && (
             <div>
-              <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Kisi-kisi Materi ({antamStream.topics.length} Topik)</h2>
+              <SectionLabel className="mb-3">Kisi-kisi Materi ({antamStream.topics.length} Topik)</SectionLabel>
               <div className="space-y-2">
                 {antamStream.topics.map((topic, i) => (
                   <div key={i} className="rounded-xl border border-hairline bg-paper-soft px-4 py-3">
@@ -226,7 +228,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
           {/* Tata tertib */}
           <div>
-            <h2 className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sebelum Memulai</h2>
+            <SectionLabel className="mb-3">Sebelum Memulai</SectionLabel>
             <div className="space-y-2">
               {([
                 { icon: <Clock className="w-4 h-4 text-brand" />, text: `Waktu ujian ${displayDuration} menit dan terus berjalan setelah dimulai`, show: true },

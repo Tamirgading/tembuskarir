@@ -6,6 +6,7 @@ import { AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 import { LatexContent } from '@/components/ui/LatexContent'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 
 // ─── Konstanta ─────────────────────────────────────────────────────────────────
 const SUBTEST_ORDER = ['QR', 'DR', 'RC', 'IR', 'VIZ', 'PS', 'WM'] as const
@@ -451,7 +452,7 @@ export default function AstraUjianPage() {
           </div>
 
           <div className="p-6 space-y-4">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Urutan Sub-tes</p>
+            <SectionLabel>Urutan Sub-tes</SectionLabel>
 
             <div className="space-y-2">
               {subtestKeys.map((key, i) => {
@@ -522,7 +523,7 @@ export default function AstraUjianPage() {
 
           <div className="p-6 space-y-4">
             <div className="bg-paper-soft rounded-2xl p-5 border border-hairline">
-              <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-2">Deskripsi</p>
+              <SectionLabel className="mb-2">Deskripsi</SectionLabel>
               <p className="text-ink-soft text-sm leading-relaxed">{info?.desc}</p>
             </div>
 

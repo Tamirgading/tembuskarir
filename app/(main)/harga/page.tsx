@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { BuyButton } from '@/components/ui/BuyButton'
 import { PlnBuyButton } from '@/components/ui/PlnBuyButton'
 import { CareerIllustration } from '@/components/illustrations/CareerIllustration'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 
@@ -210,11 +211,7 @@ export default async function HargaPage({
 
       {/* ── SECTION: PREMIUM (non-PLN) ── */}
       <div>
-        <div className="flex items-center gap-3 mb-4">
-          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Langganan Premium</p>
-          <div className="flex-1 h-px bg-hairline" />
-          <p className="text-[11px] text-ink-muted">ASTRA · BUMN · PLN · OJK · ANTAM</p>
-        </div>
+        <SectionLabel className="mb-4" trailing="ASTRA · BUMN · PLN · OJK · ANTAM">Langganan Premium</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {PREMIUM_PLANS.map((plan) => {
             const Icon = plan.icon
@@ -256,11 +253,7 @@ export default async function HargaPage({
 
       {/* ── SECTION: PLAN PER PERUSAHAAN ── */}
       <div>
-        <div className="flex items-center gap-3 mb-4">
-          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Plan Per Tahap / Perusahaan</p>
-          <div className="flex-1 h-px bg-hairline" />
-          <p className="text-[11px] text-ink-muted">Cocok jika target satu seleksi</p>
-        </div>
+        <SectionLabel className="mb-4" trailing="Cocok jika target satu seleksi">Plan Per Tahap / Perusahaan</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {COMPANY_PLANS.map((plan) => {
             const Icon = plan.icon
@@ -294,11 +287,7 @@ export default async function HargaPage({
 
       {/* ── SECTION: PLN ── */}
       <div>
-        <div className="flex items-center gap-3 mb-4">
-          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Khusus PLN</p>
-          <div className="flex-1 h-px bg-hairline" />
-          <p className="text-[11px] text-ink-muted">PT PLN (Persero) · GAT + Akademik</p>
-        </div>
+        <SectionLabel className="mb-4" trailing="PT PLN (Persero) · GAT + Akademik">Khusus PLN</SectionLabel>
 
         {/* Info anti-sharing */}
         <div className="bg-paper-soft border border-hairline rounded-xl px-4 py-3 mb-4 flex items-start gap-2.5 text-xs text-ink-muted">

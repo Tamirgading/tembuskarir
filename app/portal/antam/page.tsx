@@ -12,6 +12,7 @@ import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 import { ANTAM_STREAM_LIST } from '@/lib/antam-config'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import type { LucideIcon } from 'lucide-react'
 
 const STREAM_ICONS: Record<string, LucideIcon> = {
@@ -142,7 +143,7 @@ export default async function AntamPortalPage() {
 
         {/* Info strip */}
         <div className="bg-paper px-6 py-4">
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Tentang Tes</p>
+          <SectionLabel className="mb-3">Tentang Tes</SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-ink-soft">
             <div className="flex items-start gap-2">
               <FileText className="w-4 h-4 text-brand shrink-0 mt-0.5" />
@@ -252,7 +253,7 @@ export default async function AntamPortalPage() {
 
       {/* ── Info ANTAM ── */}
       <div className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-4">
-        <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Tentang ANTAM IMPACT</p>
+        <SectionLabel className="mb-3">Tentang ANTAM IMPACT</SectionLabel>
         <div className="space-y-2 text-sm text-ink-soft leading-relaxed">
           <p>
             <strong className="text-ink">ANTAM IMPACT</strong> (Innovative Minds Powering ANTAM for Career Transformation)

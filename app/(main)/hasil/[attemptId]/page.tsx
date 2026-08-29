@@ -4,6 +4,7 @@ import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle
 import { createClient } from '@/lib/supabase/server'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
 import { buildLeaderboard, mergeLeaderboard } from '@/lib/leaderboard'
 import type { LeaderboardAttempt, LeaderboardDummy, LeaderboardRow } from '@/lib/leaderboard'
@@ -413,7 +414,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
       {!showBlur && subtests.length > 0 && (
         <div className="bg-white rounded-2xl border border-hairline shadow-soft p-4 sm:p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Rincian per sub-tes</p>
+            <SectionLabel>Rincian per sub-tes</SectionLabel>
             {weakest && <span className="text-[11px] text-ink-muted">Terlemah: <b className="text-ink">{weakest.code}</b></span>}
           </div>
           <div className="flex-1 space-y-1.5">

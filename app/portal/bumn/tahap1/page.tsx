@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import BumnPackageCard from '@/components/portal/BumnPackageCard'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
@@ -78,7 +79,7 @@ export default async function BumnTahap1Page() {
       </div>
 
       <div>
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-widest mb-3">Paket Simulasi Tahap 1</p>
+        <SectionLabel className="mb-3">Paket Simulasi Tahap 1</SectionLabel>
         <div className="space-y-3">
           {packages.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-2xl border border-hairline text-ink-muted text-sm">

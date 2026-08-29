@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, Languages, BarChart3, Scale, MessageCircle, Users
 import { AKDING_BIDANG } from '@/lib/bidang-config'
 import type { LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 // Ikon per bidang — dipilih berdasarkan relevansi keilmuan
@@ -78,9 +79,7 @@ export default async function PlnTahap2SelectionPage() {
 
       {/* Grid 12 bidang */}
       <div>
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">
-          Pilih Bidang Akademikmu
-        </p>
+        <SectionLabel className="mb-3">Pilih Bidang Akademikmu</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {AKDING_BIDANG.map((b) => {
             const Icon = BIDANG_ICONS[b.slug] ?? BookOpen
@@ -110,7 +109,7 @@ export default async function PlnTahap2SelectionPage() {
 
       {/* Info harga ringkas */}
       <div className="bg-paper-soft rounded-2xl border border-hairline p-5">
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Info Akses</p>
+        <SectionLabel className="mb-3">Info Akses</SectionLabel>
         <div className="grid sm:grid-cols-3 gap-3 text-sm">
           <div className="bg-white rounded-xl border border-hairline p-3.5">
             <p className="font-semibold text-ink mb-0.5">Coba Gratis</p>

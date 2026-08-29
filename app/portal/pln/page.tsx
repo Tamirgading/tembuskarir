@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Zap, BookOpen, ChevronRight, Clock, FileText, Layers } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 const GAT_STATS = [
@@ -25,7 +26,7 @@ export default async function PlnHubPage() {
 
       {/* Header */}
       <div>
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1">Portal Seleksi</p>
+        <SectionLabel className="mb-1">Portal Seleksi</SectionLabel>
         <h1 className="text-2xl font-heading font-extrabold text-ink">Rekrutmen PLN</h1>
         <p className="text-ink-muted mt-1.5">Seleksi PT PLN (Persero) terdiri dari dua tahap. Pilih tahap yang ingin kamu persiapkan.</p>
       </div>
@@ -115,7 +116,7 @@ export default async function PlnHubPage() {
 
       {/* Info alur */}
       <div className="bg-paper-soft rounded-2xl border border-hairline p-5">
-        <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Alur Seleksi PLN</p>
+        <SectionLabel className="mb-3">Alur Seleksi PLN</SectionLabel>
         <div className="flex items-center gap-3 flex-wrap text-sm text-ink-soft">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-brand text-white text-xs font-num font-bold flex items-center justify-center shrink-0">1</span>

@@ -13,6 +13,7 @@ import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
 import GuestLoginCta from '@/components/ui/GuestLoginCta'
 import { ExamIllustration } from '@/components/illustrations/ExamIllustration'
 import { SummitIllustration } from '@/components/illustrations/SummitIllustration'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
@@ -599,7 +600,7 @@ export default async function HomePage({
 
           {activeSubs.length > 0 && (
             <div className="space-y-3">
-              <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Langganan Aktif</p>
+              <SectionLabel>Langganan Aktif</SectionLabel>
               {activeSubs.map((sub) => (
                 <div key={sub.id} className="bg-amber-50 border border-amber-200 rounded-2xl shadow-soft p-5 flex items-start gap-4">
                   <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
@@ -618,7 +619,7 @@ export default async function HomePage({
 
           {unlocks.length > 0 && (
             <div className="space-y-3">
-              <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Paket Satuan Dimiliki</p>
+              <SectionLabel>Paket Satuan Dimiliki</SectionLabel>
               <div className="bg-white rounded-2xl border border-hairline shadow-soft divide-y divide-hairline overflow-hidden">
                 {unlocks.map((unlock) => (
                   <div key={unlock.id} className="flex items-center gap-4 px-5 py-3.5">
@@ -637,7 +638,7 @@ export default async function HomePage({
           )}
 
           <div className="space-y-3">
-            <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Semua Transaksi</p>
+            <SectionLabel>Semua Transaksi</SectionLabel>
             {subs.length === 0 && unlocks.length === 0 ? (
               <div className="bg-white rounded-2xl border border-hairline shadow-soft p-10 text-center">
                 <div className="w-12 h-12 bg-paper-soft rounded-2xl flex items-center justify-center mx-auto mb-3">

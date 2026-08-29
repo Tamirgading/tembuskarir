@@ -5,14 +5,16 @@ import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import PlnPackageCard from '@/components/portal/PlnPackageCard'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getUnlockedPackageIds, getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 
 // Struktur asli GAT PLN (Tahap 1)
+const GAT_PART_TINT = 'bg-brand/10 text-brand-700 border-brand/20'
 const GAT_PARTS = [
-  { kode: 'TKD1', full: 'TKD 1 — Deret Bilangan', topik: 'Pola bilangan, deret angka', soal: 26, waktu: '30 dtk/soal', cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  { kode: 'TKD2', full: 'TKD 2 — Silogisme & Sinonim', topik: 'Silogisme (B/S/TDS), sinonim, antonim', soal: 36, waktu: '30 dtk/soal', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
-  { kode: 'PU', full: 'Tes Pengetahuan PLN', topik: 'Sejarah, profil, proses bisnis PLN', soal: 15, waktu: '12 mnt', cls: 'bg-red-50 text-red-700 border-red-200' },
+  { kode: 'TKD1', full: 'TKD 1 — Deret Bilangan', topik: 'Pola bilangan, deret angka', soal: 26, waktu: '30 dtk/soal', cls: GAT_PART_TINT },
+  { kode: 'TKD2', full: 'TKD 2 — Silogisme & Sinonim', topik: 'Silogisme (B/S/TDS), sinonim, antonim', soal: 36, waktu: '30 dtk/soal', cls: GAT_PART_TINT },
+  { kode: 'PU', full: 'Tes Pengetahuan PLN', topik: 'Sejarah, profil, proses bisnis PLN', soal: 15, waktu: '12 mnt', cls: GAT_PART_TINT },
 ]
 
 export default async function PlnGatPage() {
@@ -104,7 +106,7 @@ export default async function PlnGatPage() {
 
         {/* Bagian tes grid */}
         <div className="bg-white px-6 py-5">
-          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Bagian Tes</p>
+          <SectionLabel className="mb-3">Bagian Tes</SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {GAT_PARTS.map((sub) => (
               <div key={sub.kode} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border ${sub.cls}`}>
@@ -124,7 +126,7 @@ export default async function PlnGatPage() {
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Paket Simulasi</p>
+            <SectionLabel>Paket Simulasi</SectionLabel>
             <span className="text-xs text-ink-muted font-num">{packages.length} paket</span>
           </div>
 
@@ -152,7 +154,7 @@ export default async function PlnGatPage() {
           {/* Riwayat */}
           {isLoggedIn && recentAttempts.length > 0 && (
             <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-              <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Riwayat Simulasimu</p>
+              <SectionLabel className="mb-3">Riwayat Simulasimu</SectionLabel>
               <div className="divide-y divide-hairline">
                 {recentAttempts.map((a) => (
                   <Link key={a.id} href={`/hasil/${a.id}`}
@@ -175,7 +177,7 @@ export default async function PlnGatPage() {
         {/* Sidebar info */}
         <aside className="space-y-4 lg:sticky lg:top-20">
           <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sistem Penilaian</p>
+            <SectionLabel className="mb-3">Sistem Penilaian</SectionLabel>
             <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline mb-3">
               <p className="text-[11px] font-bold text-ink uppercase tracking-wide">TKD 1 &amp; TKD 2</p>
               <p className="text-[10px] text-ink-muted">Deret + Silogisme/Sinonim — timer 30 dtk/soal</p>
@@ -199,7 +201,7 @@ export default async function PlnGatPage() {
           </div>
 
           <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
+            <SectionLabel className="mb-3">Tips Sukses</SectionLabel>
             <div className="space-y-3">
               {[
                 { Icon: Hash,       text: 'Deret: cek selisih/pola antar angka — ada satu angka yang salah' },

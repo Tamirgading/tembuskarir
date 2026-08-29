@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { AlertTriangle, Play, ChevronLeft, ChevronRight, Clock, Flag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { LatexContent } from '@/components/ui/LatexContent'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { fetchStageSections, type StageSection } from '@/lib/stage-config'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -376,7 +377,7 @@ export default function StageUjianPage() {
           </div>
 
           <div className="p-6 space-y-4">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Urutan Seksi</p>
+            <SectionLabel>Urutan Seksi</SectionLabel>
             <div className="space-y-2">
               {sections.map((sec, i) => {
                 const qs = questionsByKode[sec.kode] ?? []

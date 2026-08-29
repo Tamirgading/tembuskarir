@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import AstraPackageCard from '@/components/portal/AstraPackageCard'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getUnlockedPackageIds, getPremiumSubscriptionStatus } from '@/lib/access'
 import { ASTRA_SUBTESTS } from '@/lib/exam-scoring'
 
@@ -88,7 +89,7 @@ export default async function AstraPortalPage() {
 
         {/* Sub-tes grid */}
         <div className="bg-white px-6 py-5">
-          <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sub-tes</p>
+          <SectionLabel className="mb-3">Sub-tes</SectionLabel>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {Object.entries(ASTRA_SUBTESTS).map(([key, sub]) => (
               <div key={key} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-hairline bg-paper-soft">
@@ -111,7 +112,7 @@ export default async function AstraPortalPage() {
         {/* Paket */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Paket Simulasi</p>
+            <SectionLabel>Paket Simulasi</SectionLabel>
             <span className="text-xs text-ink-muted font-num">{packages.length} paket</span>
           </div>
 
@@ -139,7 +140,7 @@ export default async function AstraPortalPage() {
           {/* Riwayat (user login) */}
           {isLoggedIn && recentAttempts.length > 0 && (
             <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-              <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Riwayat Simulasimu</p>
+              <SectionLabel className="mb-3">Riwayat Simulasimu</SectionLabel>
               <div className="divide-y divide-hairline">
                 {recentAttempts.map((a) => (
                   <Link key={a.id} href={`/hasil/${a.id}`}
@@ -164,7 +165,7 @@ export default async function AstraPortalPage() {
 
           {/* Sistem penilaian */}
           <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Sistem Penilaian</p>
+            <SectionLabel className="mb-3">Sistem Penilaian</SectionLabel>
             <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline">
               <p className="text-[11px] font-bold text-ink uppercase tracking-wide">Semua Sub-tes</p>
               {[
@@ -187,7 +188,7 @@ export default async function AstraPortalPage() {
 
           {/* Tips */}
           <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
-            <p className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-3">Tips Sukses</p>
+            <SectionLabel className="mb-3">Tips Sukses</SectionLabel>
             <div className="space-y-3">
               {[
                 { Icon: Zap,      text: 'Perceptual Speed: 30 soal dalam 2 menit. Latih kecepatan baca karakter.' },

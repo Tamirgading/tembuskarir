@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 
 export const metadata: Metadata = {
   title: 'Rapor Belajar',
@@ -160,7 +161,7 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
       <div className="grid lg:grid-cols-[1fr_1.2fr] gap-4 items-stretch">
         {/* Skor terakhir + tren */}
         <div className="bg-white border border-hairline rounded-2xl p-5 shadow-soft">
-          <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold mb-3">Skor terakhir</p>
+          <SectionLabel className="mb-3">Skor terakhir</SectionLabel>
           <div className="flex items-end gap-2">
             <span className="font-num font-bold text-[36px] leading-none text-ink">{lastScore}</span>
             {delta !== null && (
@@ -208,7 +209,7 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
         {/* Penguasaan sub-tes */}
         <div className="bg-white border border-hairline rounded-2xl p-5 shadow-soft">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Penguasaan sub-tes</p>
+            <SectionLabel>Penguasaan sub-tes</SectionLabel>
             <span className="text-[10.5px] text-ink-muted">agregat semua simulasi</span>
           </div>
           {mastery.length === 0 ? (
