@@ -161,7 +161,7 @@ export default async function HomePage({
 
               {/* Karakter hero */}
               <Image
-                src="/char_hero.png"
+                src="/hero.png"
                 alt="Ilustrasi belajar"
                 width={340}
                 height={340}
