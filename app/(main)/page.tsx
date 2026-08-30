@@ -10,8 +10,6 @@ import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/ac
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
 import { ASTRA_SUBTESTS, PLN_SUBTESTS } from '@/lib/exam-scoring'
-import GuestLoginCta from '@/components/ui/GuestLoginCta'
-import { ExamIllustration } from '@/components/illustrations/ExamIllustration'
 import { SummitIllustration } from '@/components/illustrations/SummitIllustration'
 import { SectionLabel } from '@/components/ui/SectionLabel'
 import type { AttemptRow } from '@/lib/utils'
