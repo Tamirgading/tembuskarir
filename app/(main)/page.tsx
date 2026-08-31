@@ -124,79 +124,16 @@ export default async function HomePage({
               </div>
             </div>
 
-            {/* Kanan: ilustrasi + mockup card — hanya tampil lg ke atas */}
-            <div className="hidden lg:block relative shrink-0 self-end" style={{ width: 480, height: 360 }}>
-
-              {/* Mockup card: Soal dalam progress */}
-              <div className="absolute top-4 left-0 z-20 w-[230px] bg-white rounded-2xl border border-hairline shadow-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-bold text-[10px] text-ink-muted tracking-wide">Simulasi · GAT</span>
-                  <span className="flex items-center gap-1 text-brand font-num font-bold text-[10px]">
-                    <Clock className="w-2.5 h-2.5" /> 25:30
-                  </span>
-                </div>
-                <p className="text-[9.5px] text-ink-muted mb-1.5 font-medium">Soal 12 / 80</p>
-                <p className="text-[10px] font-medium text-ink leading-snug mb-2.5">
-                  Jika semua A adalah B, dan semua B adalah C, maka dapat disimpulkan bahwa...
-                </p>
-                <div className="space-y-1">
-                  {[
-                    { k: 'A', t: 'Semua A adalah C',        active: false },
-                    { k: 'B', t: 'Semua C adalah A',        active: false },
-                    { k: 'C', t: 'Sebagian C adalah A',     active: true  },
-                    { k: 'D', t: 'Sebagian A adalah C',     active: false },
-                    { k: 'E', t: 'Tidak dapat disimpulkan', active: false },
-                  ].map((o) => (
-                    <div key={o.k} className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9.5px] ${o.active ? 'bg-brand/10 text-brand-700 font-semibold' : 'text-ink-soft'}`}>
-                      <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${o.active ? 'border-brand bg-brand' : 'border-hairline'}`}>
-                        {o.active && <span className="w-1.5 h-1.5 bg-white rounded-full" />}
-                      </span>
-                      <span className="font-medium">{o.k}.</span>&nbsp;{o.t}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Karakter hero */}
+            {/* Kanan: ilustrasi hero — hanya tampil lg ke atas */}
+            <div className="hidden lg:flex shrink-0 self-end items-end justify-center" style={{ width: 480 }}>
               <Image
                 src="/hero.png"
-                alt="Ilustrasi belajar"
-                width={340}
-                height={340}
-                className="absolute bottom-0 right-4 h-[340px] w-auto object-contain select-none pointer-events-none"
+                alt="Ilustrasi simulasi tes"
+                width={480}
+                height={400}
+                className="w-full h-auto object-contain select-none pointer-events-none"
                 priority
               />
-
-              {/* Mockup card: Hasil simulasi */}
-              <div className="absolute top-6 right-0 z-20 w-[195px] bg-white rounded-2xl border border-hairline shadow-lg p-3.5">
-                <p className="font-bold text-[10px] text-ink-muted mb-2.5">Hasil Simulasi</p>
-                <div className="flex items-end gap-1.5 mb-3">
-                  <span className="font-num font-extrabold text-2xl text-ink leading-none">78</span>
-                  <span className="text-ink-muted text-[10px] mb-0.5">/ 100</span>
-                  <span className="ml-auto text-[9px] font-bold text-green-700 bg-green-100 border border-green-200 px-2 py-0.5 rounded-full">Baik</span>
-                </div>
-                <div className="space-y-1.5">
-                  {[
-                    { label: 'Penalaran Verbal',    pct: 82 },
-                    { label: 'Penalaran Numerik',   pct: 65 },
-                    { label: 'Penalaran Logis',     pct: 88 },
-                    { label: 'Pengetahuan Umum',    pct: 76 },
-                  ].map((s) => (
-                    <div key={s.label}>
-                      <div className="flex justify-between text-[9px] mb-0.5">
-                        <span className="text-ink-soft">{s.label}</span>
-                        <span className="font-num text-ink font-semibold">{s.pct}%</span>
-                      </div>
-                      <div className="h-[4px] bg-hairline rounded-full overflow-hidden">
-                        <div className="h-full bg-brand rounded-full" style={{ width: `${s.pct}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-3 w-full text-center text-[9.5px] font-bold text-brand border border-brand/30 rounded-lg py-1.5">
-                  Lihat Detail Hasil
-                </div>
-              </div>
             </div>
           </div>
         </div>
