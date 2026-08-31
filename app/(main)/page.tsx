@@ -125,7 +125,7 @@ export default async function HomePage({
             </div>
 
             {/* Kanan: ilustrasi hero — hanya tampil lg ke atas */}
-            <div className="hidden lg:flex shrink-0 self-end items-end justify-center" style={{ width: 480 }}>
+            <div className="hidden lg:flex shrink-0 items-center justify-center" style={{ width: 480 }}>
               <Image
                 src="/hero.png"
                 alt="Ilustrasi simulasi tes"
