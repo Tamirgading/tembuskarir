@@ -83,7 +83,7 @@ export default async function HomePage({
 
         {/* ── HERO ── */}
         <div className="relative rounded-3xl overflow-hidden border border-hairline shadow-soft bg-gradient-to-br from-white via-white to-emerald-50/50 px-8 sm:px-12 pt-10">
-          <div className="flex flex-col lg:flex-row items-start gap-0">
+          <div className="flex flex-col lg:flex-row items-center gap-0">
 
             {/* Kiri: teks + CTA */}
             <div className="flex-1 pb-10 lg:pb-14 space-y-6 z-10">
