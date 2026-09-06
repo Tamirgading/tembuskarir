@@ -1,15 +1,14 @@
 import type { Metadata } from 'next'
-import { Bricolage_Grotesque, Hanken_Grotesk, Space_Grotesk } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { VisitTracker } from '@/components/ui/VisitTracker'
 import './globals.css'
 
-// Body & UI — humanis, sangat terbaca
-const hanken = Hanken_Grotesk({ subsets: ['latin'], variable: '--font-hanken', display: 'swap' })
-// Display / heading — berkarakter, editorial (anti generik)
-const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage', display: 'swap' })
-// Angka / skor / timer — tabular, presisi
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space', display: 'swap' })
+const plusJakarta = Plus_Jakarta_Sans({ 
+  subsets: ['latin'], 
+  variable: '--font-sans', 
+  display: 'swap' 
+})
 
 const APP_URL = 'https://tembuskarir.id'
 
@@ -74,8 +73,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="id" className="scroll-smooth">
-      <body className={`${hanken.variable} ${bricolage.variable} ${spaceGrotesk.variable} font-sans antialiased bg-paper text-ink-soft overflow-x-hidden selection:bg-brand/20 selection:text-brand-700`}>
+    <html lang="id" className={`scroll-smooth ${plusJakarta.variable}`}>
+      <body className="font-sans antialiased bg-paper text-ink-soft overflow-x-hidden selection:bg-brand-light/30 selection:text-brand-dark">
         {children}
         <VisitTracker />
         <Analytics />
