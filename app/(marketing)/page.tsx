@@ -1,7 +1,9 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
+import LoginModal from '@/components/ui/LoginModal'
 
 const DataStreamBackground = () => {
   const streams = Array.from({ length: 15 });
@@ -10,117 +12,127 @@ const DataStreamBackground = () => {
       {streams.map((_, i) => (
         <motion.div
           key={i}
-          className="absolute h-px bg-gradient-to-r from-transparent via-[#389add] to-transparent"
+          className="absolute h-[1px] bg-gradient-to-r from-transparent via-[#9be1fd] to-transparent"
           style={{
-            top: `${(i + 1) * 6}%`,
-            width: `${Math.random() * 30 + 10}%`,
-            opacity: Math.random() * 0.6 + 0.2,
+            top: `${Math.random() * 100}%`,
+            left: '-100%',
+            width: `${Math.random() * 100 + 50}%`,
+            opacity: Math.random() * 0.5 + 0.2
           }}
           animate={{
-            x: ['-100vw', '100vw'],
+            left: ['-100%', '200%']
           }}
           transition={{
-            duration: Math.random() * 8 + 8,
+            duration: Math.random() * 10 + 10,
             repeat: Infinity,
-            ease: 'linear',
-            delay: Math.random() * -15,
+            ease: "linear",
+            delay: Math.random() * 10
           }}
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
-const GridMotionBackground = () => {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-[0.07]">
-      <motion.div 
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'linear-gradient(#16487e 1px, transparent 1px), linear-gradient(90deg, #16487e 1px, transparent 1px)',
-          backgroundSize: '40px 40px'
-        }}
+const GridMotionBackground = () => (
+  <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+    <div 
+      className="absolute inset-0" 
+      style={{
+        backgroundImage: `
+          linear-gradient(to right, rgba(56, 154, 221, 0.1) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(56, 154, 221, 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '40px 40px',
+        transform: 'perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px)',
+        transformOrigin: 'top center'
+      }}
+    >
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-t from-[#f8fafc] via-transparent to-transparent"
         animate={{
-          y: [0, 40],
-          x: [0, 40]
+          backgroundPosition: ['0px 0px', '0px 40px']
         }}
         transition={{
-          duration: 3,
+          duration: 2,
           repeat: Infinity,
           ease: "linear"
         }}
       />
-      <div className="absolute inset-0 bg-white" style={{ maskImage: 'radial-gradient(circle at center, transparent 0%, black 80%)', WebkitMaskImage: 'radial-gradient(circle at center, transparent 0%, black 80%)' }}></div>
     </div>
-  )
-}
+  </div>
+)
 
-const BreathingGlowBackground = () => {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <motion.div
-        className="absolute top-0 left-1/4 w-[600px] h-[400px] bg-[#9be1fd]/20 rounded-full blur-3xl"
-        animate={{
-          x: [-30, 30, -30],
-          y: [-10, 20, -10],
-          opacity: [0.3, 0.6, 0.3],
-          scale: [1, 1.05, 1]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-0 right-1/4 w-[500px] h-[300px] bg-[#389add]/10 rounded-full blur-3xl"
-        animate={{
-          x: [30, -30, 30],
-          y: [10, -20, 10],
-          opacity: [0.2, 0.5, 0.2],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-      />
-    </div>
-  )
-}
+const BreathingGlowBackground = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <motion.div
+      className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#9be1fd] rounded-full mix-blend-multiply filter blur-[128px] opacity-20"
+      animate={{
+        scale: [1, 1.2, 1],
+        opacity: [0.2, 0.3, 0.2],
+      }}
+      transition={{
+        duration: 8,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    />
+    <motion.div
+      className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-[#389add] rounded-full mix-blend-multiply filter blur-[128px] opacity-20"
+      animate={{
+        scale: [1, 1.1, 1],
+        opacity: [0.2, 0.4, 0.2],
+      }}
+      transition={{
+        duration: 10,
+        repeat: Infinity,
+        ease: "easeInOut",
+        delay: 1
+      }}
+    />
+  </div>
+)
 
 export default function StitchLandingPage() {
+  const [showLoginModal, setShowLoginModal] = useState(false)
+
   // Intersection Observer for the .motion-reveal elements (from Stitch AI's vanilla JS)
   useEffect(() => {
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 0.15
+      threshold: 0.1
     }
 
-    const revealObserver = new IntersectionObserver((entries, observer) => {
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('is-revealed')
-          observer.unobserve(entry.target)
+          entry.target.classList.add('active')
         }
       })
     }, observerOptions)
 
     const elements = document.querySelectorAll('.motion-reveal')
-    elements.forEach(el => revealObserver.observe(el))
+    elements.forEach(el => observer.observe(el))
 
-    return () => {
-      elements.forEach(el => revealObserver.unobserve(el))
-    }
+    return () => observer.disconnect()
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col antialiased selection:bg-[#389add] selection:text-white bg-white font-sans text-[#1e293b]">
-      
-      {/* 
-        Menyisipkan style khusus dari Stitch AI. 
-        Kita bisa menaruhnya di sini menggunakan <style> bawaan React.
-      */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    <>
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <div className="min-h-screen flex flex-col antialiased selection:bg-[#389add] selection:text-white bg-white font-sans text-[#1e293b]">
         
-        .font-sans {
-          font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        {/* 
+          Menyisipkan style khusus dari Stitch AI. 
+          Kita bisa menaruhnya di sini menggunakan <style> bawaan React.
+        */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+          
+          .font-sans {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+          }
         
         @keyframes float-slow {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -181,15 +193,15 @@ export default function StitchLandingPage() {
 
             {/* Right: Auth Action Buttons */}
             <div className="flex items-center gap-3">
-              <a className="text-sm font-semibold text-[#16487e] hover:text-[#389add] px-4 py-2 rounded-xl transition-colors" href="/login">
+              <a className="text-sm font-semibold text-[#16487e] hover:text-[#389add] px-4 py-2 rounded-xl transition-colors" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
                 Masuk
               </a>
-              <a className="inline-flex items-center justify-center text-sm font-bold text-white bg-[#16487e] hover:bg-[#389add] px-6 py-2.5 rounded-full shadow-md shadow-[#16487e]/20 hover:shadow-lg transition-all duration-200" href="/register">
+              <Link className="inline-flex items-center justify-center text-sm font-bold text-white bg-[#16487e] hover:bg-[#389add] px-6 py-2.5 rounded-full shadow-md shadow-[#16487e]/20 hover:shadow-lg transition-all duration-200" href="/register">
                 <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                 </svg>
                 Daftar Gratis
-              </a>
+              </Link>
             </div>
 
           </div>
@@ -335,12 +347,12 @@ export default function StitchLandingPage() {
               
               {/* CTA Buttons (Centered & Modern) */}
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white bg-[#16487e] hover:bg-[#389add] rounded-full shadow-lg shadow-[#16487e]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" href="/register">
+                <Link className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white bg-[#16487e] hover:bg-[#389add] rounded-full shadow-lg shadow-[#16487e]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" href="/register">
                   <span>Mulai Tes Gratis</span>
                   <svg className="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                   </svg>
-                </a>
+                </Link>
                 <a className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold text-[#16487e] bg-white hover:bg-[#e0f2fe]/60 border-2 border-[#389add] rounded-full shadow-xs hover:border-[#16487e] transition-all duration-200" href="#pilih-tes">
                   Lihat Katalog Tes
                 </a>
@@ -395,7 +407,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" href="#mulai-astra">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
                       Lihat Simulasi →
                     </a>
                   </div>
@@ -429,7 +441,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" href="#mulai-pln">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
                       Lihat Simulasi →
                     </a>
                   </div>
@@ -463,7 +475,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" href="#mulai-antam">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
                       Lihat Simulasi →
                     </a>
                   </div>
@@ -497,7 +509,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" href="#mulai-bumn">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
                       Lihat Simulasi →
                     </a>
                   </div>
@@ -717,9 +729,9 @@ export default function StitchLandingPage() {
                   Jangan biarkan kesempatan emas terlewat hanya karena kurang terbiasa dengan model soal seleksi. Latihan sekarang juga secara gratis.
                 </p>
                 <div className="pt-4 flex flex-wrap justify-center gap-4">
-                  <a className="px-8 py-4 bg-[#389add] hover:bg-[#9be1fd] hover:text-[#16487e] text-white font-extrabold rounded-full shadow-lg shadow-[#389add]/30 hover:scale-105 transition-all text-base" href="/register">
+                  <Link className="px-8 py-4 bg-[#389add] hover:bg-[#9be1fd] hover:text-[#16487e] text-white font-extrabold rounded-full shadow-lg shadow-[#389add]/30 hover:scale-105 transition-all text-base" href="/register">
                     Daftar &amp; Simulasi Sekarang
-                  </a>
+                  </Link>
                   <a className="px-7 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full border border-white/30 transition-all text-base" href="#konsultasi">
                     Konsultasi Paket BUMN
                   </a>
