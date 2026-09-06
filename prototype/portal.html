@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TembusKarir — Prototype Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F2C44; --paper:#F7F6F2; --surface:#FFFFFF;
+    --brand:#0E9F6E; --brand-deep:#0B7D57; --brand-light:#ECFDF5;
+    --hairline:#E7E4DC; --muted:#5A6B7B; --soft:#F0EEE7;
+    --shadow:0 1px 2px rgba(15,44,68,.04),0 8px 24px -12px rgba(15,44,68,.12);
+    --portal:#FF6B2C; --portal-light:#FFF3EE; /* ASTRA default */
+  }
+  body.pln-mode{
+    --portal:#F4B400; --portal-light:#FFFBEB;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-font-smoothing:antialiased}
+  body{font-family:'Hanken Grotesk',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.5}
+  h1,h2,h3,.heading{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.01em}
+  .num{font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+
+  /* ── Toggle portal ── */
+  .toggle-bar{
+    position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;padding:11px 22px;
+    background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--hairline);
+  }
+  .toggle-bar b{font-family:'Bricolage Grotesque';font-weight:700;font-size:14px}
+  .toggle-bar span{color:var(--muted);font-size:12px}
+  .sw{display:flex;align-items:center;gap:8px;border:1px solid var(--hairline);padding:6px 14px 6px 8px;
+    border-radius:999px;cursor:pointer;font-size:12.5px;font-weight:600;background:#fff;margin-left:auto}
+  .sw.active{border-color:var(--portal);background:var(--portal-light);color:var(--portal)}
+  .dot{width:14px;height:14px;border-radius:50%;background:var(--portal)}
+
+  /* ── Portal Navbar ── */
+  .pnav{background:#fff;border-bottom:1px solid var(--hairline);padding:0 24px;height:56px;
+    display:flex;align-items:center;justify-between;gap:12px}
+  .pnav .brand{font-family:'Bricolage Grotesque';font-weight:700;font-size:16px;color:var(--ink)}
+  .pnav .sep{color:var(--hairline);margin:0 4px}
+  .pnav .ctx{font-size:13px;font-weight:600;color:var(--muted)}
+  .pnav .right{display:flex;align-items:center;gap:10px;margin-left:auto}
+  .pill{padding:5px 14px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .pill.outline{border:1px solid var(--hairline);color:var(--muted);background:#fff}
+  .pill.filled{background:var(--brand);color:#fff;border:0}
+  .pill.premium{background:var(--brand-light);color:var(--brand);border:0}
+
+  /* ── Hero ── */
+  .hero{padding:32px 28px 28px}
+  .hero-inner{
+    border-radius:24px;overflow:hidden;
+    background:linear-gradient(135deg, var(--portal), color-mix(in srgb, var(--portal) 70%, #000));
+  }
+  .hero-content{padding:28px 28px 24px;color:#fff}
+  .hero-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.09em;
+    font-weight:700;color:rgba(255,255,255,.65);margin-bottom:6px}
+  .hero-title{font-family:'Bricolage Grotesque';font-size:26px;font-weight:800;margin-bottom:4px}
+  .hero-sub{color:rgba(255,255,255,.7);font-size:13.5px;margin-bottom:20px}
+  .hero-stats{display:flex;gap:12px;flex-wrap:wrap}
+  .stat-chip{background:rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;text-align:center}
+  .stat-chip .v{font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff;line-height:1}
+  .stat-chip .l{font-size:10px;color:rgba(255,255,255,.7);margin-top:2px}
+
+  /* ── Sub-tes strip ── */
+  .subtes-strip{padding:0 28px 24px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .subtes-chip{display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:10px 14px;background:#fff;border:1.5px solid var(--hairline);border-radius:14px;
+    min-width:78px;cursor:pointer;transition:.15s;flex:none}
+  .subtes-chip:hover{border-color:var(--portal);background:var(--portal-light)}
+  .subtes-chip .code{font-size:11px;font-weight:800;color:var(--portal);
+    background:var(--portal-light);border-radius:6px;padding:2px 6px}
+  .subtes-chip .full{font-size:10px;color:var(--muted);text-align:center;line-height:1.3;max-width:68px}
+  .subtes-chip .timing{font-size:10px;color:var(--muted);font-family:'Space Grotesk';margin-top:2px}
+
+  /* ── Layout ── */
+  .layout{display:grid;grid-template-columns:1fr 280px;gap:0;padding:0 28px 40px;align-items:start}
+  .main-col{min-width:0;padding-right:24px}
+  .side-col{border-left:1px solid var(--hairline);padding-left:24px;position:sticky;top:56px}
+
+  /* ── Section titles ── */
+  .section-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.09em;
+    font-weight:700;color:var(--muted);margin-bottom:12px}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  .section-count{font-size:12px;color:var(--muted)}
+
+  /* ── Package cards ── */
+  .pkg-card{
+    background:#fff;border:1.5px solid var(--hairline);border-radius:18px;
+    padding:18px 20px;margin-bottom:10px;position:relative;overflow:hidden;
+    transition:.15s;cursor:pointer;
+  }
+  .pkg-card:hover{border-color:var(--portal);box-shadow:var(--shadow)}
+  .pkg-card .accent{
+    position:absolute;left:0;top:0;bottom:0;width:4px;
+    background:var(--portal);border-radius:18px 0 0 18px;
+  }
+  .pkg-card .accent.free{background:var(--brand)}
+  .pkg-card-inner{padding-left:12px}
+  .pkg-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .pkg-name{font-family:'Bricolage Grotesque';font-weight:700;font-size:15px;color:var(--ink)}
+  .pkg-desc{font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.5}
+  .pkg-meta{display:flex;gap:14px;font-size:12px;color:var(--muted);align-items:center}
+  .pkg-meta .icon{display:inline-flex;align-items:center;gap:4px}
+  .badge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .badge.free{background:#D1FAE5;color:#065F46}
+  .badge.premium{background:#FEF3C7;color:#92400E}
+  .badge.owned{background:var(--brand-light);color:var(--brand-deep)}
+  .pkg-btn{
+    padding:9px 18px;border-radius:11px;font-size:13px;font-weight:700;
+    background:var(--portal);color:#fff;border:0;cursor:pointer;white-space:nowrap;
+  }
+  .pkg-btn:hover{filter:brightness(.93)}
+  .pkg-btn.ghost{background:#fff;color:var(--portal);border:1.5px solid var(--portal)}
+  /* Riwayat item di kartu */
+  .history-mini{display:flex;align-items:center;gap:8px;padding:6px 0;
+    border-bottom:1px solid var(--hairline);font-size:12px}
+  .history-mini:last-child{border-bottom:0}
+  .history-mini .score{width:36px;height:36px;border-radius:9px;background:var(--portal-light);
+    display:grid;place-items:center;font-family:'Space Grotesk';font-weight:700;color:var(--portal);font-size:14px;flex:none}
+  .history-mini .info{flex:1;min-width:0}
+  .history-mini .info .t{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .history-mini .info .d{color:var(--muted)}
+
+  /* ── Sidebar sections ── */
+  .side-section{margin-bottom:22px}
+  .score-table{width:100%;border-collapse:collapse}
+  .score-table td{padding:7px 0;font-size:13px;border-bottom:1px solid var(--hairline)}
+  .score-table td:last-child{text-align:right;font-weight:700;color:var(--ink)}
+  .score-table tr:last-child td{border-bottom:0}
+  .tip-item{display:flex;gap:8px;padding:6px 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .tip-item .emoji{flex:none;font-size:15px}
+
+  /* ── Login card (for guest) ── */
+  .login-card{background:linear-gradient(135deg,var(--ink),color-mix(in srgb,var(--ink) 80%,#000));
+    border-radius:16px;padding:20px;color:#fff;margin-bottom:22px}
+  .login-card h3{font-family:'Bricolage Grotesque';font-weight:700;font-size:15px;margin-bottom:5px}
+  .login-card p{font-size:12px;color:rgba(255,255,255,.65);margin-bottom:14px;line-height:1.5}
+  .login-card .cta{background:var(--brand);color:#fff;border:0;border-radius:10px;
+    width:100%;padding:10px;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:6px}
+  .login-card .sec{background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border:0;
+    border-radius:10px;width:100%;padding:8px;font-size:12px;cursor:pointer}
+
+  /* ── Upgrade card ── */
+  .upgrade-card{background:var(--brand-light);border:1px solid color-mix(in srgb,var(--brand) 30%,transparent);
+    border-radius:16px;padding:16px}
+  .upgrade-card h3{font-family:'Bricolage Grotesque';font-weight:700;font-size:13.5px;
+    color:var(--brand-deep);margin-bottom:4px}
+  .upgrade-card p{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5}
+  .upgrade-card .cta{background:var(--brand);color:#fff;border:0;border-radius:10px;
+    width:100%;padding:9px;font-weight:700;font-size:13px;cursor:pointer}
+
+  .section-divider{height:1px;background:var(--hairline);margin:20px 0}
+
+  /* ── Responsive ── */
+  @media(max-width:768px){
+    .layout{grid-template-columns:1fr;padding:0 16px 32px}
+    .main-col{padding-right:0}
+    .side-col{border-left:0;padding-left:0;border-top:1px solid var(--hairline);padding-top:24px;margin-top:8px;position:static}
+    .hero{padding:16px 16px 16px}
+    .subtes-strip{padding:0 16px 16px}
+  }
+</style>
+</head>
+<body class="astra-mode">
+
+<!-- ── Toggle ── -->
+<div class="toggle-bar">
+  <b>Prototype Portal</b>
+  <span>Klik untuk bandingkan ASTRA vs PLN →</span>
+  <button class="sw active" data-p="astra"><span class="dot"></span> Portal ASTRA</button>
+  <button class="sw" data-p="pln"><span class="dot" style="background:#F4B400"></span> Portal PLN</button>
+</div>
+
+<!-- ── Portal Navbar ── -->
+<nav class="pnav">
+  <div style="display:flex;align-items:center;gap:6px">
+    <span class="brand">TembusKarir</span>
+    <span class="sep">/</span>
+    <span class="ctx" id="nav-ctx">Portal ASTRA</span>
+  </div>
+  <div class="right">
+    <!-- Versi logged-in: tampilkan badge premium + avatar -->
+    <span class="pill premium" id="nav-premium">✦ Premium</span>
+    <div style="width:34px;height:34px;border-radius:50%;background:var(--ink);
+      display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;cursor:pointer">P</div>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow" id="hero-eyebrow">Rekrutmen Swasta & BUMN</div>
+      <div class="hero-title heading" id="hero-title">Psikotes ASTRA</div>
+      <div class="hero-sub" id="hero-sub">Simulasi 7 sub-tes dengan format & timer persis tes aslinya</div>
+      <div class="hero-stats" id="hero-stats">
+        <div class="stat-chip"><div class="v num">80</div><div class="l">total soal</div></div>
+        <div class="stat-chip"><div class="v num">7</div><div class="l">sub-tes</div></div>
+        <div class="stat-chip"><div class="v num">41</div><div class="l">menit total</div></div>
+        <div class="stat-chip"><div class="v num">+1</div><div class="l">per benar</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Sub-tes strip ── -->
+<div class="subtes-strip" id="subtes-strip">
+  <!-- di-render via JS -->
+</div>
+
+<!-- ── Layout utama ── -->
+<div class="layout">
+
+  <!-- Main: Package cards -->
+  <div class="main-col">
+    <div class="section-head">
+      <div class="section-eyebrow">Paket Simulasi</div>
+      <span class="section-count" id="pkg-count">2 paket tersedia</span>
+    </div>
+
+    <!-- Paket 1: Gratis -->
+    <div class="pkg-card">
+      <div class="accent free"></div>
+      <div class="pkg-card-inner">
+        <div class="pkg-top">
+          <div>
+            <div class="pkg-name" id="pkg1-name">Simulasi Psikotes ASTRA #1</div>
+            <div class="pkg-desc">Paket perdana — cocok untuk kenali format semua 7 sub-tes dari QR hingga WM.</div>
+          </div>
+          <span class="badge free" id="pkg1-badge">GRATIS</span>
+        </div>
+        <div class="pkg-meta">
+          <span class="icon">📋 <span class="num">90</span> soal</span>
+          <span class="icon">⏱ <span class="num">41</span> menit</span>
+          <span class="icon">7 sub-tes</span>
+          <button class="pkg-btn" id="pkg1-btn" style="margin-left:auto">Mulai →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paket 2: Premium -->
+    <div class="pkg-card">
+      <div class="accent"></div>
+      <div class="pkg-card-inner">
+        <div class="pkg-top">
+          <div>
+            <div class="pkg-name" id="pkg2-name">Simulasi Psikotes ASTRA #2</div>
+            <div class="pkg-desc">Soal lebih bervariasi dan tingkat kesulitan lebih tinggi untuk persiapan lanjutan.</div>
+          </div>
+          <span class="badge premium">PREMIUM</span>
+        </div>
+        <div class="pkg-meta">
+          <span class="icon">📋 <span class="num">90</span> soal</span>
+          <span class="icon">⏱ <span class="num">41</span> menit</span>
+          <span class="icon">7 sub-tes</span>
+          <button class="pkg-btn ghost" style="margin-left:auto">Beli Rp 10.000</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat simulasi (untuk user login) -->
+    <div class="section-divider"></div>
+    <div class="section-eyebrow" style="margin-bottom:12px">Riwayat Simulasimu</div>
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:14px 16px">
+      <div class="history-mini">
+        <div class="score num" id="h1-score">74</div>
+        <div class="info">
+          <div class="t" id="h1-name">Simulasi Psikotes ASTRA #1</div>
+          <div class="d">Kemarin · 38 menit</div>
+        </div>
+        <span style="font-size:12px;color:var(--muted)">›</span>
+      </div>
+      <div class="history-mini">
+        <div class="score num" id="h2-score">68</div>
+        <div class="info">
+          <div class="t" id="h2-name">Simulasi Psikotes ASTRA #1</div>
+          <div class="d">3 hari lalu · 41 menit</div>
+        </div>
+        <span style="font-size:12px;color:var(--muted)">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar: Info -->
+  <aside class="side-col">
+
+    <!-- Login card (tamu — tampilkan jika tidak login) -->
+    <!-- <div class="login-card">
+      <h3>Mulai Latihan Gratis</h3>
+      <p>Daftar sekarang dan akses paket simulasi tanpa biaya.</p>
+      <button class="cta">Daftar Gratis →</button>
+      <button class="sec">Sudah punya akun? Masuk</button>
+    </div> -->
+
+    <!-- Upgrade card (free user) -->
+    <!-- <div class="upgrade-card">
+      <h3>✦ Upgrade ke Premium</h3>
+      <p>Buka semua paket simulasi + analisis kesiapan lengkap.</p>
+      <button class="cta">Mulai dari Rp 39.000 →</button>
+    </div> -->
+
+    <!-- Sistem penilaian -->
+    <div class="side-section">
+      <div class="section-eyebrow">Sistem Penilaian</div>
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:14px;padding:14px 16px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+          letter-spacing:.06em;margin-bottom:10px" id="scoring-label">Semua Sub-tes</div>
+        <table class="score-table">
+          <tr><td style="color:var(--muted)">Benar</td><td style="color:var(--brand)">+1</td></tr>
+          <tr><td style="color:var(--muted)">Salah</td><td style="color:var(--muted)">0</td></tr>
+          <tr><td style="color:var(--muted)">Kosong</td><td style="color:var(--muted)">0</td></tr>
+          <tr id="scoring-extra" style="display:none">
+            <td colspan="2" style="font-size:12px;color:var(--brand);padding-top:8px">
+              ✦ LA & AKHLAK: sistem poin per opsi (1–5)
+            </td>
+          </tr>
+        </table>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline);
+          font-size:11.5px;color:var(--brand);font-weight:600">
+          Tidak ada penalti — jawab semua soal!
+        </div>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="side-section">
+      <div class="section-eyebrow">Tips Sukses</div>
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:14px;padding:14px 16px" id="tips-container">
+        <!-- di-render via JS -->
+      </div>
+    </div>
+
+    <!-- Info tambahan -->
+    <div style="background:var(--soft);border-radius:14px;padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.6">
+      <span id="info-extra">⚡ Sub-tes dikerjakan berurutan dengan timer terpisah per sub-tes — persis format tes aslinya.</span>
+    </div>
+  </aside>
+</div>
+
+<script>
+const DATA = {
+  astra: {
+    navCtx: 'Portal ASTRA',
+    eyebrow: 'Rekrutmen Swasta & BUMN',
+    title: 'Psikotes ASTRA',
+    sub: 'Simulasi 7 sub-tes dengan format & timer persis tes aslinya',
+    stats: [{v:80,l:'total soal'},{v:7,l:'sub-tes'},{v:41,l:'menit total'},{v:'+1',l:'per benar'}],
+    pkgCount: '2 paket tersedia',
+    pkg1name: 'Simulasi Psikotes ASTRA #1',
+    pkg2name: 'Simulasi Psikotes ASTRA #2',
+    pkg1badge: 'GRATIS',
+    h1score:'74', h1name:'Simulasi Psikotes ASTRA #1',
+    h2score:'68', h2name:'Simulasi Psikotes ASTRA #1',
+    scoringLabel: 'Semua Sub-tes',
+    scoringExtra: false,
+    infoExtra: '⚡ Sub-tes dikerjakan berurutan dengan timer terpisah per sub-tes — persis format tes aslinya.',
+    subtests: [
+      {code:'QR',full:'Quantitative Reasoning',time:'11 mnt'},
+      {code:'DR',full:'Deductive Reasoning',time:'5 mnt'},
+      {code:'RC',full:'Reading Comprehension',time:'5 mnt'},
+      {code:'IR',full:'Inductive Reasoning',time:'6 mnt'},
+      {code:'VIZ',full:'Visualization',time:'5.5 mnt'},
+      {code:'PS',full:'Perceptual Speed',time:'2 mnt'},
+      {code:'WM',full:'Working Memory',time:'6 mnt'},
+    ],
+    tips:[
+      {e:'⚡',t:'Perceptual Speed: 30 soal dalam 2 menit — latih kecepatan membaca karakter'},
+      {e:'🧠',t:'Working Memory: buat asosiasi mental kata-angka saat menghafal'},
+      {e:'📐',t:'Visualization & Inductive: pelajari pola rotasi dan jaring-jaring kubus'},
+      {e:'📖',t:'Reading Comprehension: baca sekali dengan fokus, jawab tanpa kembali'},
+    ]
+  },
+  pln: {
+    navCtx: 'Portal PLN',
+    eyebrow: 'BUMN — PT PLN (Persero)',
+    title: 'General Aptitude Test PLN',
+    sub: 'Simulasi 8 sub-tes GAT dengan format rekrutmen PLN resmi',
+    stats: [{v:210,l:'total soal'},{v:8,l:'sub-tes'},{v:180,l:'menit total'},{v:'+1',l:'kognitif'}],
+    pkgCount: '1 paket tersedia',
+    pkg1name: 'GAT PLN Paket 1',
+    pkg2name: '',
+    pkg1badge: 'PREMIUM',
+    h1score:'168', h1name:'GAT PLN Paket 1',
+    h2score:'142', h2name:'GAT PLN Paket 1',
+    scoringLabel: '6 Sub-tes Kognitif',
+    scoringExtra: true,
+    infoExtra: '🌟 AKHLAK: pilih jawaban yang mencerminkan 6 core values BUMN secara natural — jangan terkesan berlebihan.',
+    subtests: [
+      {code:'NUM',full:'Numerik',time:'30 mnt'},
+      {code:'VER',full:'Verbal',time:'30 mnt'},
+      {code:'SIL',full:'Silogisme',time:'15 mnt'},
+      {code:'DER',full:'Deret Angka',time:'10 mnt'},
+      {code:'FIG',full:'Figural',time:'20 mnt'},
+      {code:'PU',full:'Pengetahuan PLN',time:'15 mnt'},
+      {code:'LA',full:'Learning Agility',time:'30 mnt'},
+      {code:'AKHLAK',full:'Core Values BUMN',time:'30 mnt'},
+    ],
+    tips:[
+      {e:'🧮',t:'Numerik & Deret: pola aritmatika dasar — jangan buang waktu di satu soal'},
+      {e:'📚',t:'Verbal: kuasai sinonim/antonim umum dan istilah ketenagalistrikan'},
+      {e:'⚡',t:'Pengetahuan PLN: pelajari sejarah, struktur, dan proyek strategis PLN'},
+      {e:'🌟',t:'AKHLAK: pilih jawaban yang mencerminkan 6 core values BUMN secara natural'},
+    ]
+  }
+}
+
+function render(portal) {
+  const d = DATA[portal]
+  document.body.className = portal === 'pln' ? 'pln-mode' : 'astra-mode'
+
+  document.getElementById('nav-ctx').textContent = d.navCtx
+  document.getElementById('hero-eyebrow').textContent = d.eyebrow
+  document.getElementById('hero-title').textContent = d.title
+  document.getElementById('hero-sub').textContent = d.sub
+  document.getElementById('pkg-count').textContent = d.pkgCount
+  document.getElementById('pkg1-name').textContent = d.pkg1name
+  document.getElementById('pkg2-name').textContent = d.pkg2name || '–'
+  document.getElementById('h1-score').textContent = d.h1score
+  document.getElementById('h1-name').textContent = d.h1name
+  document.getElementById('h2-score').textContent = d.h2score
+  document.getElementById('h2-name').textContent = d.h2name
+  document.getElementById('scoring-label').textContent = d.scoringLabel
+  document.getElementById('scoring-extra').style.display = d.scoringExtra ? '' : 'none'
+  document.getElementById('info-extra').textContent = d.infoExtra
+
+  // Stats
+  const sc = document.getElementById('hero-stats')
+  sc.innerHTML = d.stats.map(s=>`<div class="stat-chip"><div class="v num">${s.v}</div><div class="l">${s.l}</div></div>`).join('')
+
+  // Sub-tes strip
+  const ss = document.getElementById('subtes-strip')
+  ss.innerHTML = d.subtests.map(s=>`
+    <div class="subtes-chip">
+      <span class="code">${s.code}</span>
+      <span class="full">${s.full}</span>
+      <span class="timing">${s.time}</span>
+    </div>`).join('')
+
+  // Tips
+  const tp = document.getElementById('tips-container')
+  tp.innerHTML = d.tips.map(t=>`<div class="tip-item"><span class="emoji">${t.e}</span><span>${t.t}</span></div>`).join('')
+
+  // Pkg1 badge
+  const b1 = document.getElementById('pkg1-badge')
+  b1.textContent = d.pkg1badge
+  b1.className = 'badge ' + (d.pkg1badge === 'GRATIS' ? 'free' : 'premium')
+  const btn1 = document.getElementById('pkg1-btn')
+  btn1.className = 'pkg-btn' + (d.pkg1badge === 'GRATIS' ? '' : ' ghost')
+  btn1.textContent = d.pkg1badge === 'GRATIS' ? 'Mulai →' : 'Beli Rp 10.000'
+}
+
+document.querySelectorAll('.sw').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.sw').forEach(x => x.classList.remove('active'))
+    b.classList.add('active')
+    render(b.dataset.p)
+  })
+})
+
+render('astra')
+</script>
+</body>
+</html>

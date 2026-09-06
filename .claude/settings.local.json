@@ -167,7 +167,10 @@
       "Bash(grep -E \"\\\\.\\(ts|d\\\\.ts\\)$\")",
       "Bash(xargs ls *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git -C \"D:/Soal/ClaudeProject-web\" remote -v)",
+      "Read(//d/Soal/**)",
+      "Read(//d/Project/**)"
     ]
   }
 }

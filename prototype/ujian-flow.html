@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TembusKarir — Prototype Alur Ujian PLN GAT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2C44;--paper:#F7F6F2;--surface:#fff;
+  --brand:#0E9F6E;--brand-dark:#0B7D57;
+  --hairline:#E7E4DC;--muted:#5A6B7B;--soft:#F0EEE7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hanken Grotesk',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
+.num{font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+.shadow{box-shadow:0 1px 2px rgba(15,44,68,.04),0 8px 24px -12px rgba(15,44,68,.12)}
+
+/* ── Inline SVG icon helper ── */
+svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0}
+
+/* ── Prototype nav ── */
+.proto-nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:9px 16px;
+  background:rgba(15,44,68,.97);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.proto-title{color:rgba(255,255,255,.35);font-size:11px;font-weight:700;margin-right:4px}
+.step-btn{
+  padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.15);
+  background:transparent;color:rgba(255,255,255,.6);font-size:11px;font-weight:600;cursor:pointer;
+  font-family:'Hanken Grotesk',sans-serif;transition:.15s;white-space:nowrap;
+}
+.step-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.step-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}
+
+/* ── Screens ── */
+.screen{display:none;min-height:100vh;padding-top:48px}
+.screen.active{display:block}
+
+/* ══ SHARED COMPONENTS ══════════════════════════════════════════ */
+.wrap{max-width:700px;margin:0 auto;padding:28px 16px 60px}
+.wrap-sm{max-width:540px;margin:0 auto;padding:28px 16px 60px}
+.wrap-lg{max-width:800px;margin:0 auto;padding:24px 16px 60px}
+
+.card{border-radius:24px;overflow:hidden;border:1px solid var(--hairline)}
+.card-header{padding:28px;color:#fff;background:linear-gradient(135deg,#0F2C44,#0a1f30)}
+
+.sec-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+
+.btn-primary{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 28px;background:var(--brand);color:#fff;
+  border-radius:14px;border:0;font-family:'Hanken Grotesk',sans-serif;
+  font-weight:700;font-size:15px;cursor:pointer;width:100%;transition:.15s;
+}
+.btn-primary:hover{background:var(--brand-dark)}
+.btn-ghost{display:block;text-align:center;padding:10px;color:var(--muted);font-size:13px;cursor:pointer;margin-top:8px;border:0;background:none;font-family:'Hanken Grotesk',sans-serif;width:100%}
+.btn-secondary{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 20px;background:#fff;color:var(--ink);
+  border-radius:12px;border:1px solid var(--hairline);font-family:'Hanken Grotesk',sans-serif;
+  font-weight:600;font-size:13px;cursor:pointer;transition:.15s;
+}
+.btn-secondary:hover{background:var(--soft)}
+
+/* ══ SCREEN 1 — PERSIAPAN ════════════════════════════════════════ */
+.prep-eyebrow{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.prep-badges{display:flex;gap:8px;margin-bottom:10px}
+.badge{padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-pln{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.badge-prem{background:rgba(244,180,0,.2);color:#FCD34D;border:1px solid rgba(244,180,0,.3)}
+.prep-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}
+.prep-desc{font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:20px}
+.stat-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat-chip{background:rgba(255,255,255,.1);border-radius:12px;padding:9px 14px;text-align:center;min-width:70px}
+.stat-v{font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:16px}
+.stat-l{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
+
+.prep-body{background:#fff;padding:24px}
+
+.subtes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.sub-chip{background:var(--soft);border:1px solid var(--hairline);border-radius:12px;padding:10px 6px;text-align:center}
+.sub-code{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-bottom:5px}
+.sub-n{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;color:var(--ink)}
+.sub-m{font-size:9px;color:var(--muted);margin-top:1px}
+
+.purple-note{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:14px;padding:14px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
+.purple-icon{width:36px;height:36px;border-radius:10px;background:#EDE9FE;display:grid;place-items:center;flex-shrink:0}
+.purple-note-text{font-size:12px;color:#5B21B6;line-height:1.6}
+
+.rule-item{display:flex;align-items:center;gap:12px;background:var(--soft);border:1px solid var(--hairline);border-radius:14px;padding:12px 16px;font-size:13px;color:#3A4A5A;margin-bottom:8px}
+.rule-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex-shrink:0}
+
+.cta-footer{background:#fff;border-radius:24px;border:1px solid var(--hairline);padding:24px;margin-top:16px;text-align:center}
+.cta-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:16px}
+.cta-sub{font-size:12px;color:var(--muted);margin:4px 0 20px}
+
+/* ══ SCREEN 2 — PETUNJUK ════════════════════════════════════════ */
+.intro-progress{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.intro-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sub-badge-lg{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);padding:4px 14px;border-radius:999px;font-size:14px;font-weight:800;color:#fff}
+.intro-name{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;color:#fff}
+.intro-chips{display:flex;gap:10px;flex-wrap:wrap}
+.i-chip{background:rgba(255,255,255,.12);border-radius:12px;padding:8px 14px;text-align:center}
+.i-chip .v{font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:15px}
+.i-chip .l{font-size:10px;color:rgba(255,255,255,.5)}
+
+.info-block{background:var(--soft);border:1px solid var(--hairline);border-radius:16px;padding:16px;margin-bottom:12px}
+.info-block-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.info-block-text{font-size:13px;color:#3A4A5A;line-height:1.6}
+.tip-block{background:#FFFBEB;border:1px solid #FDE68A;border-radius:16px;padding:16px;margin-bottom:12px}
+.tip-block-lbl{font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.tip-block-text{font-size:13px;color:#78350F;line-height:1.6}
+.warn-row{display:flex;align-items:flex-start;gap:8px;background:var(--soft);border:1px solid var(--hairline);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--muted);margin-bottom:14px}
+
+/* ══ EXAM HEADER ════════════════════════════════════════════════ */
+.exam-header{
+  position:sticky;top:48px;z-index:40;
+  background:linear-gradient(135deg,#0F2C44,#0a1f30);
+  padding:10px 20px;display:flex;align-items:center;gap:12px;
+}
+.exam-sub-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;border:1px solid;flex-shrink:0}
+.badge-num{background:rgba(250,204,21,.12);color:#FDE68A;border-color:rgba(250,204,21,.25)}
+.badge-akhlak{background:rgba(167,139,250,.12);color:#C4B5FD;border-color:rgba(167,139,250,.25)}
+.exam-meta{flex:1;min-width:0}
+.exam-meta-sub{font-size:10px;color:rgba(255,255,255,.35);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exam-meta-soal{font-size:13px;font-weight:700;color:#fff}
+.prog-dots{display:flex;gap:3px;flex-shrink:0}
+.dot{height:5px;width:14px;border-radius:3px}
+.dot.done{background:var(--brand)}.dot.active{background:#fff}.dot.todo{background:rgba(255,255,255,.2)}
+.timer-pill{display:flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);border-radius:12px;flex-shrink:0}
+.timer-lbl{font-size:10px;color:rgba(255,255,255,.4)}
+.timer-val{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff}
+
+/* ══ EXAM BODY ═══════════════════════════════════════════════════ */
+.exam-body{max-width:700px;margin:0 auto;padding:20px 16px 80px}
+
+.q-card{background:#fff;border:1px solid var(--hairline);border-radius:20px;padding:24px;margin-bottom:14px}
+.q-num-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;margin-bottom:14px}
+.q-text{font-size:15px;color:var(--ink);line-height:1.8;margin-bottom:20px}
+.q-text strong{font-weight:700}
+
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:2px solid var(--hairline);cursor:pointer;font-size:14px;color:var(--ink);transition:.15s}
+.opt:hover{border-color:rgba(14,159,110,.4);background:rgba(14,159,110,.03)}
+.opt.sel{border-color:var(--brand);background:rgba(14,159,110,.06)}
+.opt-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--hairline);display:grid;place-items:center;font-weight:700;font-size:12px;flex-shrink:0;color:var(--muted);transition:.15s}
+.opt.sel .opt-circle{border-color:var(--brand);background:var(--brand);color:#fff}
+
+.point-options{display:flex;flex-direction:column;gap:10px}
+.point-opt{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px;border:2px solid var(--hairline);cursor:pointer;font-size:14px;color:var(--ink);transition:.15s}
+.point-opt:hover{border-color:rgba(14,159,110,.3);background:rgba(14,159,110,.02)}
+.p-left{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.p-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--hairline);display:grid;place-items:center;font-weight:700;font-size:12px;color:var(--muted);transition:.15s}
+.p-badge{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.pb5{background:#D1FAE5;color:#065F46}.pb4{background:#A7F3D0;color:#065F46}
+.pb3{background:#FEF3C7;color:#92400E}.pb2{background:#FED7AA;color:#9A3412}.pb1{background:#FEE2E2;color:#991B1B}
+.sel-5{border-color:#059669;background:#F0FDF4}
+.sel-5 .p-circle{border-color:#059669;background:#059669;color:#fff}
+.sel-4{border-color:var(--brand);background:rgba(14,159,110,.05)}
+.sel-4 .p-circle{border-color:var(--brand);background:var(--brand);color:#fff}
+.p-text{flex:1;font-size:14px;color:var(--ink);line-height:1.5;padding-top:3px}
+
+.exam-footer{background:#fff;border:1px solid var(--hairline);border-radius:20px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.btn-prev{padding:10px 18px;border:1px solid var(--hairline);border-radius:12px;background:#fff;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.ragu-btn{padding:9px 16px;border-radius:12px;border:1px solid var(--hairline);background:#fff;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit}
+.ragu-btn.on{background:#FEF3C7;border-color:#FCD34D;color:#92400E}
+.btn-next{padding:10px 22px;border-radius:12px;background:var(--brand);color:#fff;border:0;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.btn-next:hover{background:var(--brand-dark)}
+
+/* ══ HASIL ═══════════════════════════════════════════════════════ */
+.hasil-hero{border-radius:24px;overflow:hidden;margin-bottom:14px;background:linear-gradient(135deg,#0F2C44,#0a1f30)}
+.hasil-top{padding:24px;display:flex;align-items:center;gap:20px}
+.score-ring{position:relative;width:110px;height:110px;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-num{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:#fff;line-height:1}
+.score-denom{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.hasil-tag{font-size:10px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+.hasil-verdict{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;color:#fff;margin-bottom:6px}
+.hasil-note{font-size:13px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:10px}
+.hasil-durasi{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:999px;padding:4px 12px;font-size:12px;color:rgba(255,255,255,.6)}
+
+.strip{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.08)}
+.strip-item{display:flex;flex-direction:column;align-items:center;padding:14px;border-right:1px solid rgba(255,255,255,.08);gap:3px}
+.strip-item:last-child{border:0}
+.sv{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px}
+.sv.cor{color:#34D399}.sv.wrg{color:#F87171}.sv.emp{color:rgba(255,255,255,.35)}
+.sl{font-size:11px;opacity:.45}
+
+.hasil-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.hasil-block{background:#fff;border-radius:20px;border:1px solid var(--hairline);padding:16px}
+.hb-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.sub-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--hairline)}
+.sub-row:last-child{border-bottom:0}
+.sub-tag{font-size:10px;font-weight:700;width:46px;text-align:center;padding:2px 0;border-radius:6px;flex-shrink:0}
+.sub-nm{flex:1;font-size:12px;color:#3A4A5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-w{width:80px;height:5px;background:var(--hairline);border-radius:3px;overflow:hidden;flex-shrink:0}
+.bar-f{height:100%;border-radius:3px}.bfg{background:var(--brand)}.bfl{background:#F59E0B}
+.sub-pct{width:32px;text-align:right;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;flex-shrink:0}
+
+.act-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.act-btn{padding:12px;border-radius:14px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--hairline);font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px}
+.act-ico{display:flex;align-items:center;justify-content:center;width:28px;height:28px}
+.act-p{background:var(--brand);color:#fff;border-color:var(--brand)}
+.act-s{background:#fff;color:var(--ink)}
+
+/* ══ REVIEW / PEMBAHASAN ══════════════════════════════════════════ */
+.review-card{border-radius:20px;overflow:hidden;border:1px solid var(--hairline)}
+.review-head-bar{background:var(--ink);padding:16px 20px}
+.review-head-bar h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:#fff;font-size:15px}
+.review-head-bar p{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px}
+
+.review-nav-bar{background:var(--soft);padding:10px 16px;display:flex;align-items:center;gap:6px;border-left:1px solid var(--hairline);border-right:1px solid var(--hairline)}
+.ftab{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:0;font-family:inherit;background:rgba(0,0,0,.07);color:var(--muted);transition:.15s}
+.ftab:hover{background:rgba(0,0,0,.12)}
+.ftab.active{background:var(--ink);color:#fff}
+
+/* Review 2-kolom: nav sidebar kiri + soal kanan */
+.review-body{
+  background:var(--soft);padding:14px;
+  border:1px solid var(--hairline);
+  border-bottom-left-radius:20px;border-bottom-right-radius:20px;
+  display:grid;
+  grid-template-columns:170px 1fr;
+  gap:12px;
+  align-items:start;
+}
+
+/* Sidebar navigasi soal — 5 kotak per baris, scroll vertikal */
+.q-nav-sidebar{
+  background:#fff;border:1px solid var(--hairline);border-radius:16px;padding:12px;
+  position:sticky;top:64px;
+  max-height:calc(100vh - 100px);overflow-y:auto;
+}
+.q-nav-sidebar-label{
+  font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:8px;
+}
+.q-nav-dots{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
+  margin-bottom:12px;
+}
+.q-nav-dot{
+  aspect-ratio:1;border-radius:8px;display:grid;place-items:center;
+  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;
+  border:2px solid transparent;transition:.15s;min-width:0;
+}
+.q-nav-dot:hover{transform:scale(1.08)}
+.qnd-correct{background:#D1FAE5;color:#065F46;border-color:#6EE7B7}
+.qnd-wrong{background:#FEE2E2;color:#991B1B;border-color:#FCA5A5}
+.qnd-poin{background:#EDE9FE;color:#5B21B6;border-color:#C4B5FD}
+.qnd-empty{background:var(--soft);color:var(--muted);border-color:var(--hairline)}
+.qnd-active{border-color:var(--ink)!important;box-shadow:0 0 0 2px var(--ink)}
+
+/* Legenda di bawah grid navigasi */
+.q-nav-legend{display:flex;flex-direction:column;gap:5px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* Area konten soal (kanan) */
+.q-content-area{display:flex;flex-direction:column;gap:10px}
+
+/* Single question review card */
+.qr-card{background:#fff;border-radius:16px;border:2px solid var(--hairline);overflow:hidden}
+.qr-card.cor{border-color:#6EE7B7}
+.qr-card.wrg{border-color:#FCA5A5}
+.qr-card.pnt{border-color:#C4B5FD}
+.qr-card.emp{border-color:var(--hairline)}
+
+.qr-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--hairline)}
+.qr-num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;flex-shrink:0}
+.qr-num.cor{background:#6EE7B7;color:#065F46}
+.qr-num.wrg{background:#FCA5A5;color:#991B1B}
+.qr-num.pnt{background:#C4B5FD;color:#4C1D95}
+.qr-num.emp{background:var(--soft);color:var(--muted);border:1px solid var(--hairline)}
+.qr-cat{font-size:10px;background:var(--soft);border:1px solid var(--hairline);padding:2px 8px;border-radius:6px;color:var(--muted);font-weight:600}
+.qr-status{margin-left:auto;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px}
+.qrs-cor{background:#D1FAE5;color:#065F46}
+.qrs-wrg{background:#FEE2E2;color:#991B1B}
+.qrs-pnt{background:#EDE9FE;color:#5B21B6}
+.qrs-emp{background:var(--soft);color:var(--muted);border:1px solid var(--hairline)}
+
+.qr-body{padding:16px 16px 12px}
+.qr-text{font-size:14px;color:var(--ink);line-height:1.7;margin-bottom:14px}
+
+.opt-rev{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--hairline);font-size:13px;color:var(--ink);margin-bottom:6px}
+.opt-rev.o-cor{border-color:#6EE7B7;background:#F0FDF4}
+.opt-rev.o-wrg{border-color:#FCA5A5;background:#FFF1F2}
+.opt-rev.o-p5{border-color:#059669;background:#F0FDF4}
+.opt-rev.o-p3{border-color:#D97706;background:#FFFBEB}
+.opt-rev .ol{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0}
+.o-cor .ol,.o-p5 .ol{background:#059669;color:#fff}
+.o-wrg .ol{background:#DC2626;color:#fff}
+.o-p3 .ol{background:#D97706;color:#fff}
+.opt-rev.o-neu .ol{background:var(--soft);border:1px solid var(--hairline);color:var(--muted)}
+.opt-marker{margin-left:auto;font-size:11px;font-weight:600;flex-shrink:0}
+.opt-poin{margin-left:auto;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;flex-shrink:0}
+
+.pbhs-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:12px 14px;margin-top:12px}
+.pbhs-label{font-size:10px;font-weight:700;color:#1D4ED8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.pbhs-text{font-size:13px;color:#1E3A8A;line-height:1.6}
+
+.qr-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:12px 14px;background:#fff;border:1px solid var(--hairline);border-radius:14px}
+.qr-nav-info{font-size:12px;color:var(--muted);font-family:'Space Grotesk',sans-serif}
+</style>
+</head>
+<body>
+
+<!-- Prototype nav -->
+<div class="proto-nav">
+  <span class="proto-title">PLN GAT Alur Ujian →</span>
+  <button class="step-btn active" onclick="goScreen('persiapan',this)">① Persiapan</button>
+  <button class="step-btn" onclick="goScreen('petunjuk',this)">② Petunjuk Sub-tes</button>
+  <button class="step-btn" onclick="goScreen('ujian-num',this)">③ Soal Kognitif</button>
+  <button class="step-btn" onclick="goScreen('ujian-akhlak',this)">④ Soal AKHLAK</button>
+  <button class="step-btn" onclick="goScreen('hasil',this)">⑤ Hasil &amp; Pembahasan</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — PERSIAPAN
+══════════════════════════════════════ -->
+<div class="screen active" id="screen-persiapan">
+  <div class="wrap">
+    <div class="card shadow">
+      <!-- Header -->
+      <div class="card-header">
+        <div class="prep-eyebrow">PLN Rekrutmen · Tahap 1</div>
+        <div class="prep-badges">
+          <span class="badge badge-pln">GAT PLN</span>
+          <span class="badge badge-prem">✦ PREMIUM</span>
+        </div>
+        <div class="prep-title">GAT PLN Paket 1</div>
+        <div class="prep-desc">General Aptitude Test PT PLN (Persero) — 8 sub-tes berurutan dengan timer terpisah, persis seperti tes aslinya. Termasuk sub-tes kognitif dan soft-skill.</div>
+        <div class="stat-row">
+          <div class="stat-chip"><div class="stat-v num">210</div><div class="stat-l">Total Soal</div></div>
+          <div class="stat-chip"><div class="stat-v num">180</div><div class="stat-l">Menit</div></div>
+          <div class="stat-chip"><div class="stat-v">8</div><div class="stat-l">Sub-tes</div></div>
+          <div class="stat-chip"><div class="stat-v">+1</div><div class="stat-l">Per Benar</div></div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="prep-body">
+        <div class="sec-label">Pembagian Sub-tes</div>
+        <div class="subtes-grid">
+          <div class="sub-chip"><div class="sub-code" style="background:#FEF9C3;color:#854D0E">NUM</div><div class="sub-n">30</div><div class="sub-m">30 mnt</div></div>
+          <div class="sub-chip"><div class="sub-code" style="background:#FEF3C7;color:#92400E">VER</div><div class="sub-n">30</div><div class="sub-m">30 mnt</div></div>
+          <div class="sub-chip"><div class="sub-code" style="background:#FFEDD5;color:#9A3412">SIL</div><div class="sub-n">15</div><div class="sub-m">15 mnt</div></div>
+          <div class="sub-chip"><div class="sub-code" style="background:#FEE2E2;color:#991B1B">DER</div><div class="sub-n">15</div><div class="sub-m">10 mnt</div></div>
+          <div class="sub-chip"><div class="sub-code" style="background:#FFF1F2;color:#9F1239">FIG</div><div class="sub-n">20</div><div class="sub-m">20 mnt</div></div>
+          <div class="sub-chip"><div class="sub-code" style="background:#E0F2FE;color:#075985">PU</div><div class="sub-n">20</div><div class="sub-m">15 mnt</div></div>
+          <div class="sub-chip"><div class="sub-code" style="background:#EDE9FE;color:#5B21B6">LA</div><div class="sub-n">40</div><div class="sub-m">30 mnt</div></div>
+          <div class="sub-chip"><div class="sub-code" style="background:#F5F3FF;color:#6D28D9">AKHLAK</div><div class="sub-n">40</div><div class="sub-m">30 mnt</div></div>
+        </div>
+
+        <!-- Catatan AKHLAK/LA -->
+        <div class="purple-note">
+          <div class="purple-icon">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+          </div>
+          <div class="purple-note-text">
+            <strong>LA & AKHLAK menggunakan sistem poin (1–5)</strong> per opsi — tidak ada jawaban benar/salah. Setiap pilihan mencerminkan tingkat kesesuaian dengan nilai yang diuji. Jawab jujur dan natural.
+          </div>
+        </div>
+
+        <div class="sec-label">Sebelum Memulai</div>
+
+        <div class="rule-item">
+          <div class="rule-icon" style="background:#DCFCE7">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          Waktu 180 menit berjalan setelah dimulai — timer terpisah per sub-tes
+        </div>
+        <div class="rule-item">
+          <div class="rule-icon" style="background:#DBEAFE">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </div>
+          Sub-tes dikerjakan berurutan — tidak bisa kembali ke sub-tes sebelumnya
+        </div>
+        <div class="rule-item">
+          <div class="rule-icon" style="background:#FEF9C3">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#854D0E" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+          </div>
+          Pastikan koneksi internet stabil selama ujian berlangsung
+        </div>
+        <div class="rule-item">
+          <div class="rule-icon" style="background:#F5F3FF">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7 7 7 0 0 1-3.5 6.06V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.94A7 7 0 0 1 5 9a7 7 0 0 1 7-7z"/></svg>
+          </div>
+          Untuk AKHLAK & LA: jawab jujur — tidak ada jawaban yang lebih "benar" secara absolut
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-footer shadow">
+      <div class="cta-title">Siap Memulai?</div>
+      <div class="cta-sub">Timer akan berjalan begitu ujian dimulai</div>
+      <button class="btn-primary" onclick="goScreen('petunjuk',document.querySelectorAll('.step-btn')[1])">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Mulai Simulasi GAT
+      </button>
+      <button class="btn-ghost">← Kembali ke Portal PLN</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — PETUNJUK
+══════════════════════════════════════ -->
+<div class="screen" id="screen-petunjuk">
+  <div class="wrap-sm">
+    <div class="card shadow">
+      <div class="card-header">
+        <div class="intro-progress">Sub-tes 1 dari 8</div>
+        <div class="intro-row">
+          <span class="sub-badge-lg">NUM</span>
+          <span class="intro-name">Numerik</span>
+        </div>
+        <div class="intro-chips">
+          <div class="i-chip"><div class="v num">30</div><div class="l">soal</div></div>
+          <div class="i-chip"><div class="v num">30</div><div class="l">menit</div></div>
+          <div class="i-chip"><div class="v">+1</div><div class="l">per benar</div></div>
+        </div>
+      </div>
+      <div class="prep-body" style="display:flex;flex-direction:column;gap:12px">
+        <div class="info-block">
+          <div class="info-block-lbl">Deskripsi</div>
+          <div class="info-block-text">Soal hitung-hitungan — mencakup aritmatika dasar, persentase, perbandingan, deret angka, dan aljabar sederhana. Mengukur kecepatan dan ketepatan berhitung.</div>
+        </div>
+        <div class="tip-block">
+          <div class="tip-block-lbl">Tips</div>
+          <div class="tip-block-text">Skip soal yang terlalu lama — kembali di akhir jika waktu masih ada. Estimasi jawaban lebih cepat daripada menghitung eksak untuk beberapa soal tertentu.</div>
+        </div>
+        <div class="warn-row">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Timer dimulai saat kamu klik <strong>"Mulai NUM"</strong>. Waktu habis = otomatis pindah ke sub-tes berikutnya.</span>
+        </div>
+        <button class="btn-primary" onclick="goScreen('ujian-num',document.querySelectorAll('.step-btn')[2])">Mulai NUM →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 — UJIAN NUM
+══════════════════════════════════════ -->
+<div class="screen" id="screen-ujian-num" style="background:var(--paper)">
+  <div class="exam-header">
+    <span class="exam-sub-badge badge-num">NUM</span>
+    <div class="exam-meta">
+      <div class="exam-meta-sub">Numerik · Sub-tes 1 dari 8 · GAT PLN Paket 1</div>
+      <div class="exam-meta-soal">Soal <span class="num">4</span> / <span class="num">30</span></div>
+    </div>
+    <div class="prog-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+      <div class="dot active"></div><div class="dot todo"></div><div class="dot todo"></div><div class="dot todo"></div>
+    </div>
+    <div class="timer-pill">
+      <span class="timer-lbl">Waktu</span>
+      <span class="timer-val num">27:41</span>
+    </div>
+  </div>
+  <div class="exam-body">
+    <div class="q-card shadow">
+      <div class="q-num-badge">4</div>
+      <div class="q-text">
+        Sebuah proyek membutuhkan total <strong>120 jam kerja</strong>. Jika <strong>5 orang</strong> bekerja bersama masing-masing <strong>8 jam per hari</strong>, dalam berapa hari proyek tersebut selesai?
+      </div>
+      <div class="options" id="opts-num">
+        <div class="opt" onclick="selectMCQ(this,'opts-num')"><div class="opt-circle">A</div>2 hari</div>
+        <div class="opt" onclick="selectMCQ(this,'opts-num')"><div class="opt-circle">B</div>3 hari</div>
+        <div class="opt sel" onclick="selectMCQ(this,'opts-num')"><div class="opt-circle">C</div>3 hari</div>
+        <div class="opt" onclick="selectMCQ(this,'opts-num')"><div class="opt-circle">D</div>4 hari</div>
+        <div class="opt" onclick="selectMCQ(this,'opts-num')"><div class="opt-circle">E</div>5 hari</div>
+      </div>
+    </div>
+    <div class="exam-footer shadow">
+      <button class="btn-prev">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Sebelumnya
+      </button>
+      <button class="ragu-btn" id="ragu-num" onclick="toggleRagu('ragu-num')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Ragu-Ragu
+      </button>
+      <button class="btn-next" onclick="goScreen('ujian-akhlak',document.querySelectorAll('.step-btn')[3])">
+        Berikutnya
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 4 — UJIAN AKHLAK
+══════════════════════════════════════ -->
+<div class="screen" id="screen-ujian-akhlak" style="background:var(--paper)">
+  <div class="exam-header">
+    <span class="exam-sub-badge badge-akhlak">AKHLAK</span>
+    <div class="exam-meta">
+      <div class="exam-meta-sub">AKHLAK Core Values · Sub-tes 8 dari 8 · GAT PLN Paket 1</div>
+      <div class="exam-meta-soal">Soal <span class="num">3</span> / <span class="num">40</span></div>
+    </div>
+    <div class="prog-dots">
+      <div class="dot done"></div><div class="dot done"></div><div class="dot active"></div>
+      <div class="dot todo"></div><div class="dot todo"></div>
+    </div>
+    <div class="timer-pill">
+      <span class="timer-lbl">Waktu</span>
+      <span class="timer-val num">28:15</span>
+    </div>
+  </div>
+  <div class="exam-body">
+    <!-- Info sistem poin -->
+    <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:16px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+      <span style="font-size:12px;color:#5B21B6;line-height:1.5"><strong>Sistem Poin (1–5)</strong> — Tidak ada jawaban benar/salah. Pilih yang paling mencerminkan sikapmu sebagai insan PLN. Jawab jujur dan natural.</span>
+    </div>
+
+    <div class="q-card shadow">
+      <div class="q-num-badge" style="background:#6D28D9">3</div>
+      <div class="q-text">
+        Rekan kerja kamu melakukan kesalahan serius dalam laporan yang sudah dikirim ke atasan. Ia memohon agar kamu tidak melaporkannya karena khawatir dipecat. Sebagai insan PLN, sikapmu adalah…
+      </div>
+      <div class="point-options" id="opts-akhlak">
+        <div class="point-opt sel-5" onclick="selectPoin(this,'opts-akhlak',5)">
+          <div class="p-left"><div class="p-circle">A</div><div class="p-badge pb5">+5</div></div>
+          <div class="p-text">Mendorong rekan melapor sendiri kepada atasan. Jika tidak mau, saya yang melaporkan karena ini soal integritas perusahaan.</div>
+        </div>
+        <div class="point-opt" onclick="selectPoin(this,'opts-akhlak',4)">
+          <div class="p-left"><div class="p-circle">B</div><div class="p-badge pb4">+4</div></div>
+          <div class="p-text">Bersama mendekati atasan dan menjelaskan situasinya secara jujur, sambil menawarkan solusi perbaikan.</div>
+        </div>
+        <div class="point-opt" onclick="selectPoin(this,'opts-akhlak',3)">
+          <div class="p-left"><div class="p-circle">C</div><div class="p-badge pb3">+3</div></div>
+          <div class="p-text">Memberi waktu kepada rekan untuk melaporkan sendiri dalam 1–2 hari, lalu mengingatkan kembali.</div>
+        </div>
+        <div class="point-opt" onclick="selectPoin(this,'opts-akhlak',2)">
+          <div class="p-left"><div class="p-circle">D</div><div class="p-badge pb2">+2</div></div>
+          <div class="p-text">Ikut menutupi asalkan rekan berjanji tidak mengulangi. Tidak mau merusak hubungan baik.</div>
+        </div>
+        <div class="point-opt" onclick="selectPoin(this,'opts-akhlak',1)">
+          <div class="p-left"><div class="p-circle">E</div><div class="p-badge pb1">+1</div></div>
+          <div class="p-text">Tidak ikut campur karena bukan urusan saya. Setiap orang bertanggung jawab atas kesalahannya sendiri.</div>
+        </div>
+      </div>
+    </div>
+    <div class="exam-footer shadow">
+      <button class="btn-prev">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Sebelumnya
+      </button>
+      <div style="font-size:11px;color:var(--muted);text-align:center;line-height:1.4">Skor = poin<br>opsi yang dipilih</div>
+      <button class="btn-next" onclick="goScreen('hasil',document.querySelectorAll('.step-btn')[4])">
+        Berikutnya
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 5 — HASIL & PEMBAHASAN
+══════════════════════════════════════ -->
+<div class="screen" id="screen-hasil">
+  <div class="wrap-lg">
+
+    <!-- Score hero -->
+    <div class="hasil-hero shadow">
+      <div class="hasil-top">
+        <div class="score-ring">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/>
+            <circle cx="55" cy="55" r="46" fill="none" stroke="#34D399" stroke-width="9" stroke-linecap="round"
+              stroke-dasharray="289" stroke-dashoffset="90"/>
+          </svg>
+          <div class="score-text">
+            <div class="score-num num">148</div>
+            <div class="score-denom">/ 210</div>
+          </div>
+        </div>
+        <div>
+          <div class="hasil-tag">GAT PLN Paket 1 · 8 Sub-tes</div>
+          <div class="hasil-verdict">Hasil yang bagus!</div>
+          <div class="hasil-note">Kamu sudah melewati sebagian besar sub-tes dengan baik. Perhatikan DER dan FIG yang masih perlu ditingkatkan.</div>
+          <div class="hasil-durasi">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            2 jam 47 menit
+          </div>
+        </div>
+      </div>
+      <div class="strip">
+        <div class="strip-item"><div class="sv cor num">148</div><div class="sl">Skor Total</div></div>
+        <div class="strip-item"><div class="sv wrg num">28</div><div class="sl">Salah</div></div>
+        <div class="strip-item"><div class="sv emp num">34</div><div class="sl">Kosong</div></div>
+      </div>
+    </div>
+
+    <!-- 2 kolom breakdown -->
+    <div class="hasil-2col">
+      <div class="hasil-block shadow">
+        <div class="hb-label">6 Sub-tes Kognitif</div>
+        <div class="sub-row"><div class="sub-tag" style="background:#FEF9C3;color:#854D0E">NUM</div><div class="sub-nm">Numerik</div><div class="bar-w"><div class="bar-f bfg" style="width:77%"></div></div><div class="sub-pct">23/30</div></div>
+        <div class="sub-row"><div class="sub-tag" style="background:#FEF3C7;color:#92400E">VER</div><div class="sub-nm">Verbal</div><div class="bar-w"><div class="bar-f bfg" style="width:80%"></div></div><div class="sub-pct">24/30</div></div>
+        <div class="sub-row"><div class="sub-tag" style="background:#FFEDD5;color:#9A3412">SIL</div><div class="sub-nm">Silogisme</div><div class="bar-w"><div class="bar-f bfg" style="width:87%"></div></div><div class="sub-pct">13/15</div></div>
+        <div class="sub-row"><div class="sub-tag" style="background:#FEE2E2;color:#991B1B">DER</div><div class="sub-nm">Deret Angka</div><div class="bar-w"><div class="bar-f bfl" style="width:60%"></div></div><div class="sub-pct" style="color:#F59E0B">9/15</div></div>
+        <div class="sub-row"><div class="sub-tag" style="background:#FFF1F2;color:#9F1239">FIG</div><div class="sub-nm">Figural</div><div class="bar-w"><div class="bar-f bfl" style="width:55%"></div></div><div class="sub-pct" style="color:#F59E0B">11/20</div></div>
+        <div class="sub-row"><div class="sub-tag" style="background:#E0F2FE;color:#075985">PU</div><div class="sub-nm">Pengetahuan PLN</div><div class="bar-w"><div class="bar-f bfg" style="width:75%"></div></div><div class="sub-pct">15/20</div></div>
+      </div>
+      <div class="hasil-block shadow">
+        <div class="hb-label">2 Sub-tes Soft-skill (Poin 1–5)</div>
+        <div class="sub-row"><div class="sub-tag" style="background:#EDE9FE;color:#5B21B6">LA</div><div class="sub-nm">Learning Agility</div><div class="bar-w"><div class="bar-f bfg" style="width:78%"></div></div><div class="sub-pct">156/200</div></div>
+        <div class="sub-row"><div class="sub-tag" style="background:#F5F3FF;color:#6D28D9">AKHLAK</div><div class="sub-nm">AKHLAK Values</div><div class="bar-w"><div class="bar-f bfg" style="width:84%"></div></div><div class="sub-pct">168/200</div></div>
+        <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:12px;padding:12px;margin-top:12px">
+          <div style="font-size:10px;font-weight:700;color:#6D28D9;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Catatan</div>
+          <div style="font-size:12px;color:#5B21B6;line-height:1.5">LA & AKHLAK menggunakan sistem poin. Skor = total poin dari semua jawaban. Tidak ada jawaban "salah".</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aksi -->
+    <div class="act-row">
+      <button class="act-btn act-p">
+        <div class="act-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></div>
+        Coba Lagi
+      </button>
+      <button class="act-btn act-s">
+        <div class="act-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg></div>
+        Paket Lain
+      </button>
+      <button class="act-btn act-s">
+        <div class="act-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        Dashboard
+      </button>
+    </div>
+
+    <!-- Review Pembahasan — satu soal per satu -->
+    <div class="review-card shadow">
+      <div class="review-head-bar">
+        <h2>Review Pembahasan</h2>
+        <p>Tinjau setiap soal — gunakan navigasi untuk berpindah antar soal</p>
+      </div>
+
+      <div class="review-nav-bar">
+        <span style="font-size:11px;color:var(--muted);font-weight:500;margin-right:2px">Filter:</span>
+        <button class="ftab active" onclick="filterReview('all',this)">Semua (5)</button>
+        <button class="ftab" onclick="filterReview('salah',this)">Salah (1)</button>
+        <button class="ftab" onclick="filterReview('kosong',this)">Kosong (1)</button>
+        <button class="ftab" onclick="filterReview('akhlak',this)">AKHLAK/LA</button>
+      </div>
+
+      <div class="review-body">
+
+        <!-- Sidebar kiri: navigasi soal — 5 per baris, scroll vertikal -->
+        <div class="q-nav-sidebar">
+          <div class="q-nav-sidebar-label">Soal</div>
+          <div class="q-nav-dots" id="q-nav-dots">
+            <button class="q-nav-dot qnd-correct qnd-active" onclick="goQ(0)">1</button>
+            <button class="q-nav-dot qnd-wrong"   onclick="goQ(1)">2</button>
+            <button class="q-nav-dot qnd-correct" onclick="goQ(2)">3</button>
+            <button class="q-nav-dot qnd-poin"    onclick="goQ(3)">4</button>
+            <button class="q-nav-dot qnd-empty"   onclick="goQ(4)">5</button>
+            <!-- Demo soal tambahan agar terlihat grid 5×baris -->
+            <button class="q-nav-dot qnd-correct" onclick="goQ(0)">6</button>
+            <button class="q-nav-dot qnd-correct" onclick="goQ(0)">7</button>
+            <button class="q-nav-dot qnd-wrong"   onclick="goQ(1)">8</button>
+            <button class="q-nav-dot qnd-correct" onclick="goQ(2)">9</button>
+            <button class="q-nav-dot qnd-empty"   onclick="goQ(4)">10</button>
+            <button class="q-nav-dot qnd-poin"    onclick="goQ(3)">11</button>
+            <button class="q-nav-dot qnd-correct" onclick="goQ(0)">12</button>
+          </div>
+
+          <!-- Legenda -->
+          <div class="q-nav-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#D1FAE5;border:1px solid #6EE7B7"></div>Benar</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#FEE2E2;border:1px solid #FCA5A5"></div>Salah</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#EDE9FE;border:1px solid #C4B5FD"></div>Poin</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--soft);border:1px solid var(--hairline)"></div>Kosong</div>
+          </div>
+        </div>
+
+        <!-- Kanan: soal aktif + navigasi prev/next -->
+        <div class="q-content-area">
+          <div id="q-display"></div>
+
+          <div class="qr-nav">
+            <button class="btn-secondary" onclick="prevQ()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+              Sebelumnya
+            </button>
+            <div class="qr-nav-info">Soal <span id="q-cur">1</span> dari <span id="q-tot">5</span></div>
+            <button class="btn-secondary" onclick="nextQ()">
+              Berikutnya
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Screen navigation ── */
+function goScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById('screen-' + id).classList.add('active')
+  document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'))
+  if (btn) btn.classList.add('active')
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+/* ── MCQ selection ── */
+function selectMCQ(el, groupId) {
+  document.querySelectorAll('#' + groupId + ' .opt').forEach(o => o.classList.remove('sel'))
+  el.classList.add('sel')
+}
+
+/* ── AKHLAK point selection ── */
+const pMap = {1:'sel-1',2:'sel-2',3:'sel-3',4:'sel-4',5:'sel-5'}
+function selectPoin(el, groupId, point) {
+  document.querySelectorAll('#' + groupId + ' .point-opt').forEach(o => {
+    o.classList.remove('sel-1','sel-2','sel-3','sel-4','sel-5')
+  })
+  el.classList.add(pMap[point])
+}
+
+/* ── Ragu toggle ── */
+function toggleRagu(id) { document.getElementById(id).classList.toggle('on') }
+
+/* ── Review questions data ── */
+const questions = [
+  {
+    num: 1, cat: 'NUM', type: 'correct',
+    text: 'Jika 3x + 7 = 22, maka nilai 2x – 3 adalah…',
+    opts: [
+      { k:'A', text:'5', cls:'o-neu' },
+      { k:'B', text:'7', cls:'o-cor', marker:'✓ Benar · Pilihanmu' },
+      { k:'C', text:'8', cls:'o-neu' },
+      { k:'D', text:'10', cls:'o-neu' },
+      { k:'E', text:'12', cls:'o-neu' },
+    ],
+    pbhs: '3x + 7 = 22 → 3x = 15 → x = 5. Maka 2x – 3 = 2(5) – 3 = 10 – 3 = <strong>7</strong>.'
+  },
+  {
+    num: 2, cat: 'DER', type: 'wrong',
+    text: 'Deret Fibonacci: 2, 3, 5, 8, 13, 21, … Angka berikutnya adalah…',
+    opts: [
+      { k:'A', text:'34', cls:'o-cor', marker:'✓ Jawaban benar' },
+      { k:'B', text:'32', cls:'o-neu' },
+      { k:'C', text:'33', cls:'o-wrg', marker:'✗ Pilihanmu' },
+      { k:'D', text:'35', cls:'o-neu' },
+      { k:'E', text:'36', cls:'o-neu' },
+    ],
+    pbhs: 'Ini deret Fibonacci — setiap suku = jumlah dua suku sebelumnya. 13 + 21 = <strong>34</strong>. Kamu memilih 33 yang tidak mengikuti pola.'
+  },
+  {
+    num: 3, cat: 'NUM', type: 'correct',
+    text: 'Sebuah mobil menempuh 120 km dalam 2 jam. Berapa kecepatan rata-ratanya dalam km/jam?',
+    opts: [
+      { k:'A', text:'40 km/jam', cls:'o-neu' },
+      { k:'B', text:'50 km/jam', cls:'o-neu' },
+      { k:'C', text:'60 km/jam', cls:'o-cor', marker:'✓ Benar · Pilihanmu' },
+      { k:'D', text:'70 km/jam', cls:'o-neu' },
+      { k:'E', text:'80 km/jam', cls:'o-neu' },
+    ],
+    pbhs: 'Kecepatan = Jarak ÷ Waktu = 120 km ÷ 2 jam = <strong>60 km/jam</strong>.'
+  },
+  {
+    num: 4, cat: 'AKHLAK', type: 'poin',
+    text: 'Rekan kerja meminta kamu menutupi kesalahannya. Sebagai insan PLN, sikapmu adalah…',
+    popts: [
+      { k:'A', text:'Mendorong rekan melapor sendiri kepada atasan dan menawarkan dukungan. Jika tidak mau, saya yang melaporkan karena ini soal integritas perusahaan.', poin:5, cls:'o-p5', user:true },
+      { k:'B', text:'Bersama mendekati atasan dan menjelaskan situasinya secara jujur, sambil menawarkan solusi perbaikan.', poin:4, cls:'' },
+      { k:'C', text:'Memberi waktu kepada rekan untuk melaporkan sendiri dalam 1–2 hari, lalu mengingatkan kembali.', poin:3, cls:'o-p3' },
+      { k:'D', text:'Ikut menutupi asalkan rekan berjanji tidak mengulangi.', poin:2, cls:'' },
+      { k:'E', text:'Tidak ikut campur karena bukan urusan saya.', poin:1, cls:'' },
+    ],
+    pbhs: '<strong>A (+5)</strong> mencerminkan nilai <em>Amanah</em> paling tinggi — menjaga integritas perusahaan di atas kepentingan personal. <strong>E (+1)</strong> adalah sikap paling pasif dan tidak harmonis.'
+  },
+  {
+    num: 5, cat: 'SIL', type: 'empty',
+    text: 'Premis 1: Semua pegawai PLN adalah pekerja profesional.\nPremis 2: Andi adalah pegawai PLN.\nKesimpulan yang BENAR adalah…',
+    opts: [
+      { k:'A', text:'Andi bukan pekerja profesional', cls:'o-neu' },
+      { k:'B', text:'Andi adalah pekerja profesional', cls:'o-cor', marker:'✓ Jawaban benar' },
+      { k:'C', text:'Semua pekerja profesional adalah pegawai PLN', cls:'o-neu' },
+      { k:'D', text:'Andi tidak bekerja di PLN', cls:'o-neu' },
+      { k:'E', text:'Tidak ada kesimpulan valid', cls:'o-neu' },
+    ],
+    pbhs: 'Modus ponens: Semua A adalah B. Andi adalah A. Maka Andi adalah B (pekerja profesional). Soal ini tidak dijawab — pastikan tidak melewatkan soal silogisme di soal berikutnya.'
+  }
+]
+
+let currentQ = 0
+let filteredQs = questions.map((_,i)=>i)
+
+function buildOptHtml(opt, isCur) {
+  if (!opt) return ''
+  const marker = opt.marker ? `<span class="opt-marker">${opt.marker}</span>` : ''
+  return `<div class="opt-rev ${opt.cls}">
+    <div class="ol">${opt.k}</div>
+    ${opt.text}
+    ${marker}
+  </div>`
+}
+
+function buildPoinOptHtml(opt) {
+  const pClsMap = {5:'pb5',4:'pb4',3:'pb3',2:'pb2',1:'pb1'}
+  const userTag = opt.user ? '<span class="opt-marker" style="color:#065F46">← Pilihanmu</span>' : ''
+  const poinBadge = `<span class="opt-poin" style="background:${opt.poin>=4?'#D1FAE5':opt.poin==3?'#FEF3C7':opt.poin==2?'#FED7AA':'#FEE2E2'};color:${opt.poin>=4?'#065F46':opt.poin==3?'#92400E':opt.poin==2?'#9A3412':'#991B1B'}">+${opt.poin}</span>`
+  return `<div class="opt-rev ${opt.cls}" style="${opt.user?'border-color:#059669;background:#F0FDF4':''}">
+    <div class="ol" style="${opt.user?'background:#059669;color:#fff':''}">${opt.k}</div>
+    ${opt.text} ${userTag} ${poinBadge}
+  </div>`
+}
+
+function renderQ(idx) {
+  const q = questions[idx]
+  if (!q) return
+  currentQ = idx
+
+  const typeMap = { correct:'cor', wrong:'wrg', poin:'pnt', empty:'emp' }
+  const statusMap = {
+    correct: '<span class="qr-status qrs-cor">✓ Benar · +1</span>',
+    wrong:   '<span class="qr-status qrs-wrg">✗ Salah · 0</span>',
+    poin:    '<span class="qr-status qrs-pnt">Poin: A (+5) · Nilai max</span>',
+    empty:   '<span class="qr-status qrs-emp">— Tidak dijawab</span>',
+  }
+
+  const textHtml = q.text.replace(/\n/g,'<br>')
+  const optsHtml = q.type === 'poin'
+    ? (q.popts||[]).map(o => buildPoinOptHtml(o)).join('')
+    : (q.opts||[]).map(o => buildOptHtml(o)).join('')
+
+  const extra = q.type === 'poin'
+    ? `<div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#5B21B6">
+        <strong>Sistem Poin AKHLAK</strong> — Setiap opsi memiliki nilai 1–5 yang mencerminkan keselarasan dengan core values PLN.
+      </div>` : ''
+
+  document.getElementById('q-display').innerHTML = `
+    <div class="qr-card ${typeMap[q.type]}">
+      <div class="qr-head">
+        <div class="qr-num ${typeMap[q.type]}">${q.num}</div>
+        <span class="qr-cat">${q.cat}</span>
+        ${statusMap[q.type]}
+      </div>
+      <div class="qr-body">
+        <div class="qr-text">${textHtml}</div>
+        ${extra}
+        ${optsHtml}
+        <div class="pbhs-box">
+          <div class="pbhs-label">${q.type==='poin'?'Penjelasan Nilai':'Pembahasan'}</div>
+          <div class="pbhs-text">${q.pbhs}</div>
+        </div>
+      </div>
+    </div>`
+
+  // Update nav dots
+  document.querySelectorAll('.q-nav-dot').forEach((d,i)=>{
+    d.classList.toggle('qnd-active', i===idx)
+  })
+
+  // Update counter
+  const pos = filteredQs.indexOf(idx)
+  document.getElementById('q-cur').textContent = pos+1
+  document.getElementById('q-tot').textContent = filteredQs.length
+}
+
+function goQ(idx) { renderQ(idx) }
+
+function prevQ() {
+  const pos = filteredQs.indexOf(currentQ)
+  if (pos > 0) renderQ(filteredQs[pos-1])
+}
+
+function nextQ() {
+  const pos = filteredQs.indexOf(currentQ)
+  if (pos < filteredQs.length-1) renderQ(filteredQs[pos+1])
+}
+
+function filterReview(type, btn) {
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+
+  if (type==='all') filteredQs = questions.map((_,i)=>i)
+  else if (type==='salah') filteredQs = questions.map((q,i)=>q.type==='wrong'?i:-1).filter(i=>i>=0)
+  else if (type==='kosong') filteredQs = questions.map((q,i)=>q.type==='empty'?i:-1).filter(i=>i>=0)
+  else if (type==='akhlak') filteredQs = questions.map((q,i)=>q.type==='poin'?i:-1).filter(i=>i>=0)
+
+  // Update dot visibility
+  document.querySelectorAll('.q-nav-dot').forEach((d,i)=>{
+    d.style.opacity = filteredQs.includes(i)?'1':'0.3'
+  })
+
+  if (filteredQs.length>0) renderQ(filteredQs[0])
+  document.getElementById('q-tot').textContent = filteredQs.length
+}
+
+// Init
+renderQ(0)
+</script>
+</body>
+</html>
