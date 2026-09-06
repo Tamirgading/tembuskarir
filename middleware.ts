@@ -37,14 +37,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Sudah login tapi akses halaman auth — redirect ke beranda
+  // Sudah login tapi akses halaman auth — redirect ke portal
   const isAuthRoute =
     pathname === '/register' ||
+    pathname === '/login' ||
     pathname === '/lupa-password'
 
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = '/portal/astra'
     return NextResponse.redirect(url)
   }
 

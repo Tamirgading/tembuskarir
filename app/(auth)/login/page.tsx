@@ -1,9 +1,61 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { AlertCircle, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email || !password) return
+
+    setError('')
+    setLoading(true)
+
+    const supabase = createClient()
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (authError) {
+      setError(authError.message === 'Invalid login credentials'
+        ? 'Email atau password salah'
+        : 'Terjadi kesalahan. Silakan coba lagi.')
+      setLoading(false)
+      return
+    }
+
+    router.push('/portal/astra')
+    router.refresh()
+  }
+
+  const handleGoogleLogin = async () => {
+    setError('')
+    setLoading(true)
+
+    const supabase = createClient()
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+
+    if (oauthError) {
+      setError('Gagal menghubungkan ke Google. Coba lagi beberapa saat.')
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen text-slate-800 antialiased relative overflow-x-hidden flex items-center justify-center p-4 sm:p-6"
@@ -66,28 +118,59 @@ export default function LoginPage() {
               <p className="text-xs sm:text-sm text-slate-500 font-medium">ke akun TembusKarir kamu</p>
             </div>
           </div>
-          <a href="/" aria-label="Tutup jendela masuk" className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150">
+          <Link href="/" aria-label="Tutup jendela masuk" className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24">
               <line x1="18" x2="6" y1="6" y2="18"></line>
               <line x1="6" x2="18" y1="6" y2="18"></line>
             </svg>
-          </a>
+          </Link>
         </div>
 
+        {error && (
+          <div className="mb-4 flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm rounded-xl px-4 py-3 animate-shake">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Login Form */}
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5" htmlFor="loginEmail">Email</label>
-            <input className="w-full px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/15 transition duration-150" id="loginEmail" name="email" placeholder="nama@email.com" required type="email"/>
+            <input
+              id="loginEmail"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); if (error) setError(''); }}
+              disabled={loading}
+              placeholder="nama@email.com"
+              className="w-full px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/15 transition duration-150 disabled:opacity-60"
+            />
           </div>
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs sm:text-sm font-semibold text-slate-700" htmlFor="loginPassword">Password</label>
-              <a className="text-xs font-semibold text-brand-accent hover:text-brand hover:underline transition-colors" href="/lupa-password">Lupa password?</a>
+              <Link className="text-xs font-semibold text-brand-accent hover:text-brand hover:underline transition-colors" href="/lupa-password">Lupa password?</Link>
             </div>
             <div className="relative">
-              <input className="w-full pl-4 pr-11 py-3 text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/15 transition duration-150" id="loginPassword" name="password" placeholder="••••••••" required type={showPassword ? "text" : "password"}/>
-              <button onClick={() => setShowPassword(!showPassword)} aria-label="Tampilkan atau sembunyikan password" className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors" type="button">
+              <input
+                id="loginPassword"
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); if (error) setError(''); }}
+                disabled={loading}
+                placeholder="••••••••"
+                className="w-full pl-4 pr-11 py-3 text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50/50 hover:bg-white focus:bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/15 transition duration-150 disabled:opacity-60"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
+                aria-label="Tampilkan atau sembunyikan password"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+              >
                 {!showPassword ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
@@ -105,19 +188,36 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="pt-2">
-            <button className="w-full py-3.5 px-6 rounded-xl bg-brand hover:bg-brand-hover active:scale-[0.99] text-white font-semibold text-sm sm:text-base shadow-brand-glow transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer" type="submit">
-              <span>Masuk</span>
-              <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path>
-              </svg>
+            <button
+              type="submit"
+              disabled={loading || !email || !password}
+              className="w-full py-3.5 px-6 rounded-xl bg-brand hover:bg-brand-hover active:scale-[0.99] text-white font-semibold text-sm sm:text-base shadow-brand-glow transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Memproses...</span>
+                </>
+              ) : (
+                <>
+                  <span>Masuk</span>
+                  <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
+                </>
+              )}
             </button>
           </div>
         </form>
 
         <div className="mt-5 text-center">
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            Belum punya akun? <a className="text-brand font-bold hover:text-brand-accent hover:underline inline-flex items-center gap-1 transition-colors" href="/register"><span>Daftar gratis</span><span aria-hidden="true">→</span></a>
+            Belum punya akun?{' '}
+            <Link href="/register" className="text-brand font-bold hover:text-brand-accent hover:underline inline-flex items-center gap-1 transition-colors">
+              <span>Daftar gratis</span>
+              <span aria-hidden="true">→</span>
+            </Link>
           </p>
         </div>
 
@@ -126,19 +226,24 @@ export default function LoginPage() {
           <span className="bg-white px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider">atau lanjutkan dengan</span>
         </div>
 
-        <button className="w-full py-3 px-4 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-medium text-sm transition-all duration-150 flex items-center justify-center gap-3 shadow-sm cursor-pointer" type="button">
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full py-3 px-4 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-medium text-sm transition-all duration-150 flex items-center justify-center gap-3 shadow-sm cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+        >
           <svg className="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path>
           </svg>
-          <span>Masuk dengan Google</span>
+          <span>{loading ? 'Menghubungkan...' : 'Masuk dengan Google'}</span>
         </button>
 
         <div className="mt-5 text-center">
           <p className="text-[11px] text-slate-400 leading-relaxed">
-            Dengan masuk, kamu menyetujui <a className="underline hover:text-slate-600" href="/syarat">Ketentuan Layanan</a> dan <a className="underline hover:text-slate-600" href="/privasi">Kebijakan Privasi</a> TembusKarir.
+            Dengan masuk, kamu menyetujui <Link className="underline hover:text-slate-600" href="/syarat-ketentuan">Ketentuan Layanan</Link> dan <Link className="underline hover:text-slate-600" href="/kebijakan-privasi">Kebijakan Privasi</Link> TembusKarir.
           </p>
         </div>
       </div>

@@ -2,7 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { createClient } from '@/lib/supabase/client'
 import LoginModal from '@/components/ui/LoginModal'
 
 const DataStreamBackground = () => {
@@ -94,7 +96,35 @@ const BreathingGlowBackground = () => (
 )
 
 export default function StitchLandingPage() {
+  const router = useRouter()
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        setUser(data.user)
+      }
+    })
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      authListener.subscription.unsubscribe()
+    }
+  }, [])
+
+  const handlePortalClick = (e: React.MouseEvent, path: string) => {
+    e.preventDefault()
+    if (user) {
+      router.push(path)
+    } else {
+      setShowLoginModal(true)
+    }
+  }
 
   // Intersection Observer for the .motion-reveal elements (from Stitch AI's vanilla JS)
   useEffect(() => {
@@ -192,17 +222,35 @@ export default function StitchLandingPage() {
             </div>
 
             {/* Right: Auth Action Buttons */}
-            <div className="flex items-center gap-3">
-              <a className="text-sm font-semibold text-[#16487e] hover:text-[#389add] px-4 py-2 rounded-xl transition-colors" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
-                Masuk
-              </a>
-              <Link className="inline-flex items-center justify-center text-sm font-bold text-white bg-[#16487e] hover:bg-[#389add] px-6 py-2.5 rounded-full shadow-md shadow-[#16487e]/20 hover:shadow-lg transition-all duration-200" href="/register">
-                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-                </svg>
-                Daftar Gratis
-              </Link>
-            </div>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/portal/astra"
+                  className="inline-flex items-center justify-center text-xs sm:text-sm font-bold text-white bg-[#16487e] hover:bg-[#389add] px-5 py-2.5 rounded-full shadow-md shadow-[#16487e]/20 hover:shadow-lg transition-all duration-200"
+                >
+                  Ke Portal Ujian →
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  className="text-sm font-semibold text-[#16487e] hover:text-[#389add] px-4 py-2 rounded-xl transition-colors cursor-pointer"
+                  onClick={() => setShowLoginModal(true)}
+                >
+                  Masuk
+                </button>
+                <Link
+                  className="inline-flex items-center justify-center text-sm font-bold text-white bg-[#16487e] hover:bg-[#389add] px-6 py-2.5 rounded-full shadow-md shadow-[#16487e]/20 hover:shadow-lg transition-all duration-200"
+                  href="/register"
+                >
+                  <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                  </svg>
+                  Daftar Gratis
+                </Link>
+              </div>
+            )}
 
           </div>
         </div>
@@ -347,12 +395,21 @@ export default function StitchLandingPage() {
               
               {/* CTA Buttons (Centered & Modern) */}
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white bg-[#16487e] hover:bg-[#389add] rounded-full shadow-lg shadow-[#16487e]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" href="/register">
-                  <span>Mulai Tes Gratis</span>
-                  <svg className="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-                  </svg>
-                </Link>
+                {user ? (
+                  <Link className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white bg-[#16487e] hover:bg-[#389add] rounded-full shadow-lg shadow-[#16487e]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" href="/portal/astra">
+                    <span>Lanjut ke Portal Ujian</span>
+                    <svg className="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                    </svg>
+                  </Link>
+                ) : (
+                  <Link className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white bg-[#16487e] hover:bg-[#389add] rounded-full shadow-lg shadow-[#16487e]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" href="/register">
+                    <span>Mulai Tes Gratis</span>
+                    <svg className="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                    </svg>
+                  </Link>
+                )}
                 <a className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold text-[#16487e] bg-white hover:bg-[#e0f2fe]/60 border-2 border-[#389add] rounded-full shadow-xs hover:border-[#16487e] transition-all duration-200" href="#pilih-tes">
                   Lihat Katalog Tes
                 </a>
@@ -407,7 +464,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/astra')} href="/portal/astra">
                       Lihat Simulasi →
                     </a>
                   </div>
@@ -441,7 +498,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/pln')} href="/portal/pln">
                       Lihat Simulasi →
                     </a>
                   </div>
@@ -475,7 +532,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/antam')} href="/portal/antam">
                       Lihat Simulasi →
                     </a>
                   </div>
@@ -509,7 +566,7 @@ export default function StitchLandingPage() {
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => { e.preventDefault(); setShowLoginModal(true); }} href="#">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/astra')} href="/portal/astra">
                       Lihat Simulasi →
                     </a>
                   </div>
