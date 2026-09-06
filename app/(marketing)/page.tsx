@@ -800,5 +800,6 @@ export default function StitchLandingPage() {
         </div>
       </footer>
     </div>
+    </>
   )
 }
