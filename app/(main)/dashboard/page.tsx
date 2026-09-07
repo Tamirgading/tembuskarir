@@ -4,7 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   CheckCircle2, Lock, ArrowRight, RefreshCw, ClipboardCheck, Trophy,
-  ChevronRight,
 } from 'lucide-react'
 
 export default async function DashboardPage() {
@@ -13,6 +12,7 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/')
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: profile } = await (supabase as any)
     .from('users')
     .select('full_name, plan')
@@ -22,6 +22,7 @@ export default async function DashboardPage() {
   const fullName: string = profile?.full_name ?? user.email?.split('@')[0] ?? 'Pengguna'
   const firstName = fullName.split(' ')[0]
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { count: attemptCount } = await (supabase as any)
     .from('attempts')
     .select('id', { count: 'exact', head: true })
