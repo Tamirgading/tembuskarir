@@ -98,6 +98,7 @@ const BreathingGlowBackground = () => (
 export default function StitchLandingPage() {
   const router = useRouter()
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [loginRedirectPath, setLoginRedirectPath] = useState<string | undefined>(undefined)
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
 
   useEffect(() => {
@@ -122,8 +123,19 @@ export default function StitchLandingPage() {
     if (user) {
       router.push(path)
     } else {
+      setLoginRedirectPath(path)
       setShowLoginModal(true)
     }
+  }
+
+  const handleNavbarLogin = () => {
+    setLoginRedirectPath(undefined)
+    setShowLoginModal(true)
+  }
+
+  const handleModalClose = () => {
+    setShowLoginModal(false)
+    setLoginRedirectPath(undefined)
   }
 
   // Intersection Observer for the .motion-reveal elements (from Stitch AI's vanilla JS)
@@ -150,7 +162,7 @@ export default function StitchLandingPage() {
 
   return (
     <>
-      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <LoginModal isOpen={showLoginModal} onClose={handleModalClose} redirectTo={loginRedirectPath} />
       <div className="min-h-screen flex flex-col antialiased selection:bg-[#389add] selection:text-white bg-white font-sans text-[#1e293b]">
         
         {/* 
@@ -192,7 +204,7 @@ export default function StitchLandingPage() {
           will-change: opacity, transform;
         }
 
-        .motion-reveal.is-revealed {
+        .motion-reveal.active {
           opacity: 1;
           transform: translateY(0);
         }
@@ -206,10 +218,10 @@ export default function StitchLandingPage() {
             {/* Left: Official Brand Logo & Navigation Links */}
             <div className="flex items-center gap-8">
               <a className="flex items-center group" data-purpose="brand-logo" href="#">
-                <img 
-                  alt="TembusKarir Logo" 
-                  className="h-8 md:h-9 w-auto object-contain transition-transform group-hover:scale-105" 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlity4EwdDcUP9hKJfxU5KMul5B-q8KiVAYZN5_zWKLokxkjvxa6bpCReQoWmm2EyFsSdVWCwsXcoFYHL5UM7zGYMa0A9Dq7fQaNOKCl09Aoih9OIn9WTI5nkFvWATR5-HpLqM_AMugBBHG5nrwaRVqpI0RmqfoR7g-baGlL_FXARE12F74MR54Srt4CqkKtmIFFvs2t1l1h5EQTSEHcgd9URrs95hMO2MSjsVVuigIMsaPXDI2BmSEHxHHdWEBn7f_g"
+                <img
+                  alt="TembusKarir Logo"
+                  className="h-8 md:h-9 w-auto object-contain transition-transform group-hover:scale-105"
+                  src="/logotk.png"
                 />
               </a>
               {/* Desktop Navigation Menu */}
@@ -225,10 +237,10 @@ export default function StitchLandingPage() {
             {user ? (
               <div className="flex items-center gap-3">
                 <Link
-                  href="/portal/astra"
+                  href="/dashboard"
                   className="inline-flex items-center justify-center text-xs sm:text-sm font-bold text-white bg-[#16487e] hover:bg-[#389add] px-5 py-2.5 rounded-full shadow-md shadow-[#16487e]/20 hover:shadow-lg transition-all duration-200"
                 >
-                  Ke Portal Ujian →
+                  Ke Dashboard →
                 </Link>
               </div>
             ) : (
@@ -236,7 +248,7 @@ export default function StitchLandingPage() {
                 <button
                   type="button"
                   className="text-sm font-semibold text-[#16487e] hover:text-[#389add] px-4 py-2 rounded-xl transition-colors cursor-pointer"
-                  onClick={() => setShowLoginModal(true)}
+                  onClick={handleNavbarLogin}
                 >
                   Masuk
                 </button>
@@ -396,8 +408,8 @@ export default function StitchLandingPage() {
               {/* CTA Buttons (Centered & Modern) */}
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 {user ? (
-                  <Link className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white bg-[#16487e] hover:bg-[#389add] rounded-full shadow-lg shadow-[#16487e]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" href="/portal/astra">
-                    <span>Lanjut ke Portal Ujian</span>
+                  <Link className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white bg-[#16487e] hover:bg-[#389add] rounded-full shadow-lg shadow-[#16487e]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" href="/dashboard">
+                    <span>Ke Dashboard</span>
                     <svg className="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                     </svg>
@@ -471,36 +483,36 @@ export default function StitchLandingPage() {
                 </div>
               </div>
 
-              {/* Card 2: Rekrutmen PLN */}
-              <div className="relative bg-white rounded-2xl border border-[#9be1fd]/50 shadow-sm hover:shadow-xl hover:border-[#389add] hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+              {/* Card 2: Rekrutmen PLN — Coming Soon */}
+              <div className="relative bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between overflow-hidden opacity-80">
                 <div>
                   <div className="relative h-48 md:h-52 w-full overflow-hidden bg-slate-100">
-                    <img alt="PLN" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" src="/card-pln.jpg"/>
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60"></div>
+                    <img alt="PLN" className="w-full h-full object-cover grayscale" src="/card-pln.jpg"/>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-slate-900/20 to-transparent"></div>
                     <div className="absolute top-3 right-3">
-                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#16487e] text-white shadow-xs backdrop-blur-xs">
-                        Favorit BUMN
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-600 text-white shadow-xs">
+                        Segera Hadir
                       </span>
                     </div>
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#e0f2fe] text-[#16487e] flex items-center justify-center font-bold shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center font-bold shrink-0">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                       </div>
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#389add] transition-colors">Rekrutmen PLN</h3>
+                      <h3 className="text-lg font-bold text-slate-500">Rekrutmen PLN</h3>
                     </div>
-                    <p className="text-xs font-semibold text-[#16487e] mt-1">GAT • Tahap 2 Akademik • ±60 Menit</p>
-                    <p className="text-xs text-slate-600 mt-2.5 line-clamp-3 leading-relaxed">
+                    <p className="text-xs font-semibold text-slate-400 mt-1">GAT • Tahap 2 Akademik • ±60 Menit</p>
+                    <p className="text-xs text-slate-400 mt-2.5 line-clamp-3 leading-relaxed">
                       Simulasi General Aptitude Test (GAT) dan Uji Kemampuan Akademik teknis sesuai standar rekrutmen PT PLN (Persero).
                     </p>
                   </div>
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/pln')} href="/portal/pln">
-                      Lihat Simulasi →
-                    </a>
+                    <span className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-slate-400 bg-slate-100 rounded-xl cursor-not-allowed">
+                      🔒 Segera Hadir
+                    </span>
                   </div>
                 </div>
               </div>
@@ -539,36 +551,36 @@ export default function StitchLandingPage() {
                 </div>
               </div>
 
-              {/* Card 4: BUMN */}
-              <div className="relative bg-white rounded-2xl border border-[#9be1fd]/50 shadow-sm hover:shadow-xl hover:border-[#389add] hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+              {/* Card 4: BUMN — Coming Soon */}
+              <div className="relative bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between overflow-hidden opacity-80">
                 <div>
                   <div className="relative h-48 md:h-52 w-full overflow-hidden bg-slate-100">
-                    <img alt="BUMN" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" src="/card-bumn.jpeg"/>
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60"></div>
+                    <img alt="BUMN" className="w-full h-full object-cover grayscale" src="/card-bumn.jpeg"/>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-slate-900/20 to-transparent"></div>
                     <div className="absolute top-3 right-3">
-                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#16487e] text-white shadow-xs backdrop-blur-xs">
-                        Tes Bersama
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-600 text-white shadow-xs">
+                        Segera Hadir
                       </span>
                     </div>
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#e0f2fe] text-[#16487e] flex items-center justify-center font-bold shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center font-bold shrink-0">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                       </div>
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#389add] transition-colors">Rekrutmen Bersama BUMN</h3>
+                      <h3 className="text-lg font-bold text-slate-500">Rekrutmen Bersama BUMN</h3>
                     </div>
-                    <p className="text-xs font-semibold text-[#16487e] mt-1">TKD • Core Values AKHLAK • WBI</p>
-                    <p className="text-xs text-slate-600 mt-2.5 line-clamp-3 leading-relaxed">
+                    <p className="text-xs font-semibold text-slate-400 mt-1">TKD • Core Values AKHLAK • WBI</p>
+                    <p className="text-xs text-slate-400 mt-2.5 line-clamp-3 leading-relaxed">
                       Kombinasi Tes Kemampuan Dasar (TKD), Tes Core Values AKHLAK, dan Wawasan Kebangsaan untuk seluruh entitas BUMN.
                     </p>
                   </div>
                 </div>
                 <div className="px-5 pb-5 pt-0">
                   <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/astra')} href="/portal/astra">
-                      Lihat Simulasi →
-                    </a>
+                    <span className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-slate-400 bg-slate-100 rounded-xl cursor-not-allowed">
+                      🔒 Segera Hadir
+                    </span>
                   </div>
                 </div>
               </div>
@@ -807,7 +819,7 @@ export default function StitchLandingPage() {
             
             <div className="md:col-span-2 space-y-4">
               <a className="inline-block p-1.5 bg-white rounded-xl" href="#">
-                <img alt="TembusKarir Logo" className="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVfvFccj0ls3XZSeP2rVHeGvD20behMlru3Wc5iZo5s-ahETznu0B3JQw7O_KXXoaCXMpBOsU-hHzqDQhsRBF-z25QyOdh9VysLL5kmxUmGyX2VchjfWOQMYZ1hmuc-h_4T7Ir9H7Wr2JUFHpmjBs1ugWniq1Ehv_bebsXFwIUGtH4IMomLaWXZu1FIFT4Z1oD2Bw_0BvIJcRg-cYuq9FqOINi6hZEnBogNmXT9CEJHcSNb2U26ghpFvLsTtkqlrtAIA"/>
+                <img alt="TembusKarir Logo" className="h-7 w-auto object-contain" src="/logotk.png"/>
               </a>
               <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-sm">
                 Platform persiapan dan simulasi psikotes terpercaya untuk seleksi rekrutmen BUMN, ASTRA, dan korporasi terkemuka di Indonesia.

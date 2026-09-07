@@ -27,7 +27,7 @@ type Item = { href: string; label: string; icon: React.ComponentType<{ className
 type Group = { section: string | null; items: Item[] }
 
 const NAV: Group[] = [
-  { section: null, items: [{ href: '/', label: 'Beranda', icon: Home }] },
+  { section: null, items: [{ href: '/dashboard', label: 'Beranda', icon: Home }] },
   {
     section: 'Latihan',
     items: [
@@ -54,7 +54,7 @@ const NAV: Group[] = [
 ]
 
 const ALL_TABS: Item[] = [
-  { href: '/', label: 'Beranda', icon: Home },
+  { href: '/dashboard', label: 'Beranda', icon: Home },
   { href: '/paket', label: 'Latihan', icon: Package, featureKey: 'feature_semua_paket' },
   { href: '/info-seleksi', label: 'Info', icon: Newspaper, featureKey: 'feature_info_seleksi' },
   { href: '/harga', label: 'Langganan', icon: CreditCard },
@@ -68,20 +68,20 @@ type PageMeta = { pattern: string | RegExp; label: string; Icon: IconType; back?
 
 const PAGE_META: PageMeta[] = [
   { pattern: '/',                      label: 'Ringkasan belajarmu hari ini', Icon: Home                                                                     },
-  { pattern: /^\/portal\/astra/,       label: 'Psikotes ASTRA',              Icon: Briefcase, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/portal\/astra/,       label: 'Psikotes ASTRA',              Icon: Briefcase, back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
   { pattern: /^\/portal\/pln\/gat/,    label: 'PLN: GAT',                    Icon: Zap,       back: { label: 'Rekrutmen PLN', href: '/portal/pln', Icon: Zap       } },
   { pattern: /^\/portal\/pln\/tahap2/, label: 'PLN: Tahap 2',                Icon: BookOpen,  back: { label: 'Rekrutmen PLN', href: '/portal/pln', Icon: Zap       } },
-  { pattern: /^\/portal\/pln/,         label: 'Rekrutmen PLN',               Icon: Zap,       back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/portal\/bumn/,        label: 'Rekrutmen BUMN',              Icon: Building2, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/portal\/antam/,       label: 'ANTAM IMPACT',                Icon: Mountain,  back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/paket/,               label: 'Semua Paket',                 Icon: Package,   back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/rapor/,               label: 'Rapor Belajar',               Icon: BarChart3, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/riwayat/,             label: 'Riwayat Tes',                 Icon: History,   back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/soal-tersimpan/,      label: 'Soal Tersimpan',              Icon: Bookmark,  back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/harga/,               label: 'Langganan & Harga',           Icon: CreditCard,back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/info-seleksi/,        label: 'Info Seleksi',                Icon: Newspaper, back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/profil/,              label: 'Profil Saya',                 Icon: User,      back: { label: 'Beranda',      href: '/',           Icon: Home      } },
-  { pattern: /^\/pengaturan/,          label: 'Pengaturan',                  Icon: Settings,  back: { label: 'Beranda',      href: '/',           Icon: Home      } },
+  { pattern: /^\/portal\/pln/,         label: 'Rekrutmen PLN',               Icon: Zap,       back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/portal\/bumn/,        label: 'Rekrutmen BUMN',              Icon: Building2, back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/portal\/antam/,       label: 'ANTAM IMPACT',                Icon: Mountain,  back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/paket/,               label: 'Semua Paket',                 Icon: Package,   back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/rapor/,               label: 'Rapor Belajar',               Icon: BarChart3, back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/riwayat/,             label: 'Riwayat Tes',                 Icon: History,   back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/soal-tersimpan/,      label: 'Soal Tersimpan',              Icon: Bookmark,  back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/harga/,               label: 'Langganan & Harga',           Icon: CreditCard,back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/info-seleksi/,        label: 'Info Seleksi',                Icon: Newspaper, back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/profil/,              label: 'Profil Saya',                 Icon: User,      back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
+  { pattern: /^\/pengaturan/,          label: 'Pengaturan',                  Icon: Settings,  back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
   { pattern: /^\/persiapan/,           label: 'Persiapan Ujian',             Icon: Package,   back: { label: 'Kembali'                                            } },
   { pattern: /^\/hasil/,               label: 'Hasil Ujian',                 Icon: BarChart3, back: { label: 'Riwayat',     href: '/riwayat',    Icon: History   } },
 ]
@@ -167,7 +167,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
         {/* Expanded: logo + name + PanelLeft toggle */}
         {(!collapsed || isMobile) && (
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2.5 flex-1 min-w-0" onClick={() => isMobile && setDrawer(false)}>
+            <Link href="/dashboard" className="flex items-center gap-2.5 flex-1 min-w-0" onClick={() => isMobile && setDrawer(false)}>
               <span className="w-8 h-8 rounded-[9px] bg-white grid place-items-center shrink-0 shadow-soft">
                 <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
               </span>
@@ -185,7 +185,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
         {/* Collapsed: logo → hover reveals PanelLeft */}
         {collapsed && !isMobile && (
           <div className="relative w-8 h-8 mx-auto group/logo">
-            <Link href="/"
+            <Link href="/dashboard"
               className="absolute inset-0 grid place-items-center bg-white rounded-[9px] shadow-soft group-hover/logo:opacity-0 group-hover/logo:pointer-events-none transition-opacity duration-150">
               <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
             </Link>

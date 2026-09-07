@@ -9,9 +9,10 @@ import { AlertCircle, Loader2 } from 'lucide-react'
 interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
+  redirectTo?: string
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, redirectTo }: LoginModalProps) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -34,15 +35,19 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     })
 
     if (authError) {
-      setError(authError.message === 'Invalid login credentials' 
-        ? 'Email atau password salah' 
+      setError(authError.message === 'Invalid login credentials'
+        ? 'Email atau password salah'
         : 'Terjadi kesalahan. Silakan coba lagi.')
       setLoading(false)
       return
     }
 
     onClose()
-    router.refresh()
+    if (redirectTo) {
+      router.push(redirectTo)
+    } else {
+      router.refresh()
+    }
   }
 
   const handleGoogleLogin = async () => {
@@ -50,10 +55,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setLoading(true)
 
     const supabase = createClient()
+    const next = redirectTo ? encodeURIComponent(redirectTo) : encodeURIComponent('/')
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${next}`,
       },
     })
 
@@ -89,7 +95,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <div className="flex items-start justify-between mb-6 pt-1">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-brand-tint border border-blue-100 flex items-center justify-center p-2.5 shadow-sm">
-              <img alt="Logo TembusKarir" className="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVfvFccj0ls3XZSeP2rVHeGvD20behMlru3Wc5iZo5s-ahETznu0B3JQw7O_KXXoaCXMpBOsU-hHzqDQhsRBF-z25QyOdh9VysLL5kmxUmGyX2VchjfWOQMYZ1hmuc-h_4T7Ir9H7Wr2JUFHpmjBs1ugWniq1Ehv_bebsXFwIUGtH4IMomLaWXZu1FIFT4Z1oD2Bw_0BvIJcRg-cYuq9FqOINi6hZEnBogNmXT9CEJHcSNb2U26ghpFvLsTtkqlrtAIA"/>
+              <img alt="Logo TembusKarir" className="w-full h-full object-contain" src="/logotk.png"/>
             </div>
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-slate-900 leading-tight" id="modal-title">Masuk</h2>

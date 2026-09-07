@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  redirects: async () => [
-    // Landing page dihapus — dashboard sekarang di root /
-    { source: '/dashboard', destination: '/', permanent: false },
-  ],
+  redirects: async () => [],
   headers: async () => [
     {
       source: '/(.*)',
