@@ -23,32 +23,32 @@ interface AppShellProps {
 }
 
 type FeatureKey = keyof import('@/lib/site-settings').FeatureFlags
-type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string; sub?: boolean; featureKey?: FeatureKey }
+type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string; tagColor?: string; sub?: boolean; featureKey?: FeatureKey; iconBg?: string; iconColor?: string }
 type Group = { section: string | null; items: Item[] }
 
 const NAV: Group[] = [
-  { section: null, items: [{ href: '/dashboard', label: 'Beranda', icon: Home }] },
+  { section: null, items: [{ href: '/dashboard', label: 'Beranda', icon: Home, iconBg: 'bg-[#d4e3ff]', iconColor: 'text-[#00315f]' }] },
   {
-    section: 'Latihan',
+    section: 'Simulasi Populer',
     items: [
-      { href: '/portal/astra', label: 'Psikotes ASTRA', icon: Briefcase, tag: 'Populer' },
-      { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap, featureKey: 'feature_portal_pln' },
+      { href: '/portal/astra', label: 'Psikotes ASTRA', icon: Briefcase, tag: 'Populer', tagColor: 'bg-[#cce5ff] text-[#004b73]', iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
+      { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap, featureKey: 'feature_portal_pln', iconBg: 'bg-sky-100', iconColor: 'text-sky-600' },
       { href: '/portal/pln/gat', label: 'Tahap 1: GAT', icon: Zap, sub: true, featureKey: 'feature_portal_pln' },
       { href: '/portal/pln/tahap2', label: 'Tahap 2: Akademik', icon: BookOpen, sub: true, featureKey: 'feature_portal_pln' },
-      { href: '/portal/bumn', label: 'Rekrutmen BUMN', icon: Building2, featureKey: 'feature_portal_bumn' },
-      { href: '/portal/antam', label: 'ANTAM IMPACT', icon: Mountain, featureKey: 'feature_portal_antam' },
-      { href: '/paket', label: 'Semua Paket', icon: Package, featureKey: 'feature_semua_paket' },
+      { href: '/portal/bumn', label: 'Rekrutmen BUMN', icon: Building2, featureKey: 'feature_portal_bumn', iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+      { href: '/portal/antam', label: 'ANTAM IMPACT', icon: Mountain, featureKey: 'feature_portal_antam', tag: 'Baru', tagColor: 'bg-[#b9eaff] text-[#001f29]', iconBg: 'bg-teal-100', iconColor: 'text-teal-700' },
+      { href: '/paket', label: 'Semua Paket', icon: Package, featureKey: 'feature_semua_paket', iconBg: 'bg-violet-100', iconColor: 'text-violet-600' },
     ],
   },
   {
-    section: 'Akun',
+    section: 'Akun & Analisis',
     items: [
-      { href: '/rapor', label: 'Rapor Belajar', icon: BarChart3 },
-      { href: '/riwayat', label: 'Riwayat Tes', icon: History },
-      { href: '/soal-tersimpan', label: 'Soal Tersimpan', icon: Bookmark },
-      { href: '/?tab=pembelian', label: 'Pembelian', icon: ReceiptText },
-      { href: '/info-seleksi', label: 'Info Seleksi', icon: Newspaper, featureKey: 'feature_info_seleksi' },
-      { href: '/harga', label: 'Langganan', icon: CreditCard },
+      { href: '/rapor', label: 'Rapor Belajar', icon: BarChart3, iconBg: 'bg-indigo-100', iconColor: 'text-indigo-600' },
+      { href: '/riwayat', label: 'Riwayat Tes', icon: History, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-700' },
+      { href: '/soal-tersimpan', label: 'Soal Tersimpan', icon: Bookmark, iconBg: 'bg-purple-100', iconColor: 'text-purple-600' },
+      { href: '/?tab=pembelian', label: 'Pembelian', icon: ReceiptText, iconBg: 'bg-orange-100', iconColor: 'text-orange-600' },
+      { href: '/info-seleksi', label: 'Info Seleksi', icon: Newspaper, featureKey: 'feature_info_seleksi', iconBg: 'bg-cyan-100', iconColor: 'text-cyan-600' },
+      { href: '/harga', label: 'Langganan & Paket', icon: CreditCard, iconBg: 'bg-rose-100', iconColor: 'text-rose-600' },
     ],
   },
 ]
@@ -165,34 +165,31 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
   const SidebarBody = (isMobile = false) => (
     <>
       {/* Brand */}
-      <div className={`pb-5 ${collapsed && !isMobile ? 'px-0' : 'px-2'}`}>
-        {/* Expanded: logo + name + PanelLeft toggle */}
+      <div className={`pb-4 ${collapsed && !isMobile ? 'px-0' : 'px-1'}`}>
         {(!collapsed || isMobile) && (
           <div className="flex items-center gap-2">
             <Link href="/dashboard" className="flex items-center gap-2.5 flex-1 min-w-0" onClick={() => isMobile && setDrawer(false)}>
-              <span className="w-8 h-8 rounded-[9px] bg-white grid place-items-center shrink-0 shadow-soft">
-                <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
+              <span className="w-7 h-7 rounded-lg bg-[#00315f] grid place-items-center shrink-0 shadow-sm">
+                <Image src="/iconlogo.png" alt="TembusKarir" width={18} height={18} className="w-[18px] h-[18px]" priority />
               </span>
-              <span className="font-heading font-bold text-[17px] text-white whitespace-nowrap truncate">TembusKarir</span>
+              <span className="font-heading font-bold text-[17px] text-[#00315f] whitespace-nowrap truncate">TembusKarir</span>
             </Link>
             {!isMobile && (
               <button onClick={toggleSidebar} title="Sembunyikan sidebar"
-                className="p-1.5 rounded-lg text-white/35 hover:text-white hover:bg-white/10 transition-colors shrink-0">
+                className="p-1.5 rounded-lg text-[#00315f]/40 hover:text-[#00315f] hover:bg-[#e2e7ff] transition-colors shrink-0">
                 <PanelLeft className="w-[18px] h-[18px]" />
               </button>
             )}
           </div>
         )}
-
-        {/* Collapsed: logo → hover reveals PanelLeft */}
         {collapsed && !isMobile && (
           <div className="relative w-8 h-8 mx-auto group/logo">
             <Link href="/dashboard"
-              className="absolute inset-0 grid place-items-center bg-white rounded-[9px] shadow-soft group-hover/logo:opacity-0 group-hover/logo:pointer-events-none transition-opacity duration-150">
-              <Image src="/iconlogo.png" alt="TembusKarir" width={22} height={22} className="w-[22px] h-[22px]" priority />
+              className="absolute inset-0 grid place-items-center bg-[#00315f] rounded-[9px] shadow-sm group-hover/logo:opacity-0 group-hover/logo:pointer-events-none transition-opacity duration-150">
+              <Image src="/iconlogo.png" alt="TembusKarir" width={18} height={18} className="w-[18px] h-[18px]" priority />
             </Link>
             <button onClick={toggleSidebar} title="Tampilkan sidebar"
-              className="absolute inset-0 grid place-items-center bg-white/15 rounded-[9px] text-white opacity-0 group-hover/logo:opacity-100 transition-opacity duration-150">
+              className="absolute inset-0 grid place-items-center bg-[#d4e3ff] rounded-[9px] text-[#00315f] opacity-0 group-hover/logo:opacity-100 transition-opacity duration-150">
               <PanelLeft className="w-[18px] h-[18px]" />
             </button>
           </div>
@@ -200,14 +197,14 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden -mx-1 px-1 space-y-0.5 nice-scroll">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden space-y-0.5 nice-scroll">
         {NAV.map((group, gi) => {
           const visibleItems = group.items.filter(it => isFeatureEnabled(it.featureKey))
           if (visibleItems.length === 0) return null
           return (
           <div key={gi}>
             {group.section && (!collapsed || isMobile) && (
-              <p className="text-[11px] uppercase tracking-wider text-white/40 px-3 pt-4 pb-1.5 font-semibold">{group.section}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#00315f] opacity-70 px-2 pt-4 pb-1">{group.section}</p>
             )}
             {group.section && collapsed && !isMobile && <div className="pt-3" />}
             {visibleItems.map((it) => {
@@ -219,11 +216,10 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
               if (it.sub) {
                 return (
                   <Link key={it.href} href={it.href} onClick={() => isMobile && setDrawer(false)}
-                    className={`relative flex items-center gap-2 pl-9 pr-3 py-2 rounded-[10px] text-xs transition-colors ${
-                      active ? 'bg-white/10 text-white font-semibold' : 'text-white/55 hover:bg-white/[0.07] hover:text-white'
+                    className={`relative flex items-center gap-2 pl-9 pr-3 py-1.5 rounded-xl text-xs transition-colors ${
+                      active ? 'bg-gradient-to-r from-[#00315f] to-[#16487e] text-white font-semibold' : 'text-[#42474f] hover:bg-[#e2e7ff]'
                     }`}>
-                    {active && <span className="absolute left-0 w-[3px] h-4 rounded-r bg-brand" />}
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0 opacity-40" />
                     <span className="flex-1 truncate">{it.label}</span>
                   </Link>
                 )
@@ -232,20 +228,28 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
               return (
                 <Link key={it.href} href={it.href} onClick={() => isMobile && setDrawer(false)}
                   title={collapsed && !isMobile ? it.label : undefined}
-                  className={`relative flex items-center rounded-[10px] text-sm transition-colors ${
-                    collapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5'
-                  } ${active ? 'bg-white/10 text-white font-semibold' : 'text-white/70 hover:bg-white/[0.07] hover:text-white'}`}>
-                  {active && <span className="absolute left-0 w-[3px] h-5 rounded-r bg-brand" />}
-                  <Icon className="w-[18px] h-[18px] shrink-0 opacity-90" />
+                  className={`relative flex items-center rounded-xl text-sm transition-all ${
+                    collapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'justify-between px-3 py-2'
+                  } ${active
+                    ? 'bg-gradient-to-r from-[#00315f] to-[#16487e] text-white font-semibold shadow-[0_4px_16px_rgba(22,72,126,0.22)] border-l-4 border-[#61bbff]'
+                    : 'text-[#131b2e] hover:bg-[#e2e7ff]'
+                  }`}>
+                  <div className={`flex items-center ${collapsed && !isMobile ? '' : 'gap-3'}`}>
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-sm transition-transform duration-200 group-hover:scale-105 ${
+                      active ? 'bg-white/15 text-white' : `${it.iconBg ?? 'bg-[#d4e3ff]'} ${it.iconColor ?? 'text-[#00315f]'}`
+                    }`}>
+                      <Icon className="w-[16px] h-[16px]" />
+                    </div>
+                    {(!collapsed || isMobile) && (
+                      <span className="flex-1 truncate text-[13px] font-semibold tracking-tight">{it.label}</span>
+                    )}
+                  </div>
                   {(!collapsed || isMobile) && (
-                    <>
-                      <span className="flex-1 truncate">{it.label}</span>
-                      {it.tag && (
-                        <span className="text-[10px] font-bold text-white bg-[#FF6B2C] px-2 py-0.5 rounded-full shrink-0">
-                          {it.tag}
-                        </span>
-                      )}
-                    </>
+                    active
+                      ? <span className="w-1.5 h-1.5 rounded-full bg-[#61bbff] shadow-[0_0_8px_rgba(97,187,255,0.8)] shrink-0" />
+                      : it.tag
+                        ? <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${it.tagColor ?? 'bg-[#cce5ff] text-[#004b73]'}`}>{it.tag}</span>
+                        : <ChevronRight className="w-3.5 h-3.5 text-[#42474f]/30 shrink-0" />
                   )}
                 </Link>
               )
@@ -258,43 +262,51 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
       {/* Upgrade banner (free, expanded) */}
       {userPlan === 'free' && isLoggedIn && (!collapsed || isMobile) && (
         <Link href="/harga" onClick={() => isMobile && setDrawer(false)}
-          className="mt-3 flex items-center gap-3 rounded-2xl bg-white/[0.07] border border-white/10 p-3.5 hover:bg-white/10 transition-colors">
-          <div className="w-8 h-8 rounded-xl bg-amber-400/20 grid place-items-center shrink-0">
-            <Crown className="w-4 h-4 text-amber-300" />
+          className="mt-3 rounded-2xl p-4 bg-gradient-to-br from-[#00315f] via-[#16487e] to-[#1d5999] border border-white/15 hover:brightness-110 transition-all shadow-[0_8px_24px_rgba(22,72,126,0.28)] relative overflow-hidden">
+          <div className="absolute -right-4 -top-4 w-20 h-20 bg-[#61bbff]/20 rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center gap-2 mb-2 relative z-10">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-400 to-amber-200 text-[#00315f] grid place-items-center shadow-md">
+              <Crown className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-white font-bold text-sm leading-tight">Naik ke Premium</p>
+              <p className="text-[10px] text-[#cce5ff] font-semibold">Akses Tanpa Batas</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-semibold text-sm leading-none mb-0.5">Naik ke Premium</p>
-            <p className="text-white/45 text-[11px] leading-snug">Buka semua paket & analisis kesiapan.</p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-white/30 shrink-0" />
+          <p className="text-[12px] text-[#dae2fd]/90 leading-relaxed mb-3 relative z-10">
+            Akses seluruh simulasi BUMN & Swasta serta pembahasan lengkap.
+          </p>
+          <span className="relative z-10 flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl bg-gradient-to-r from-[#61bbff] to-[#006397] text-white font-bold text-[13px] shadow-sm">
+            <Crown className="w-3.5 h-3.5" /> Upgrade Sekarang
+          </span>
         </Link>
       )}
 
       {/* Upgrade icon-only (free, collapsed) */}
       {userPlan === 'free' && isLoggedIn && collapsed && !isMobile && (
         <Link href="/harga" title="Naik ke Premium"
-          className="mt-3 w-9 h-9 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 grid place-items-center mx-auto transition-colors">
-          <Crown className="w-4 h-4 text-amber-300" />
+          className="mt-3 w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-200 hover:brightness-110 grid place-items-center mx-auto transition-all shadow-sm">
+          <Crown className="w-4 h-4 text-[#00315f]" />
         </Link>
       )}
 
       {/* Guest: CTA masuk/daftar */}
       {!isLoggedIn && (
-        <div className="mt-3 pt-3 border-t border-white/10 space-y-1.5">
+        <div className="mt-3 pt-3 border-t border-[#e2e7ff] space-y-1.5">
           {(!collapsed || isMobile) ? (
             <>
               <Link href="/register" onClick={() => isMobile && setDrawer(false)}
-                className="flex items-center justify-center gap-2 text-sm font-bold text-white bg-brand hover:bg-brand-700 rounded-xl py-2.5 transition-colors">
+                className="flex items-center justify-center gap-2 text-sm font-bold text-white bg-[#16487e] hover:bg-[#00315f] rounded-xl py-2.5 transition-colors">
                 <UserPlus className="w-4 h-4" /> Daftar Gratis
               </Link>
               <button onClick={() => { setShowLogin(true); if (isMobile) setDrawer(false) }}
-                className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-white/80 hover:text-white hover:bg-white/[0.07] rounded-xl py-2.5 transition-colors">
+                className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-[#16487e] hover:bg-[#e2e7ff] rounded-xl py-2.5 transition-colors">
                 <LogIn className="w-4 h-4" /> Masuk
               </button>
             </>
           ) : (
             <button onClick={() => setShowLogin(true)} title="Masuk"
-              className="w-9 h-9 rounded-xl bg-brand hover:bg-brand-700 grid place-items-center mx-auto text-white transition-colors">
+              className="w-9 h-9 rounded-xl bg-[#16487e] hover:bg-[#00315f] grid place-items-center mx-auto text-white transition-colors">
               <LogIn className="w-4 h-4" />
             </button>
           )}
@@ -306,7 +318,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
   return (
     <div className="min-h-screen bg-paper flex">
       {/* ===== Desktop sidebar ===== */}
-      <aside className={`hidden lg:flex flex-col bg-sidebar text-white sticky top-0 h-screen shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out ${
+      <aside className={`hidden lg:flex flex-col bg-gradient-to-b from-[#f4f7fc] to-[#ebf1f9] border-r border-[#e2e7ff] sticky top-0 h-screen shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out ${
         collapsed ? 'w-[68px] px-3 py-4' : 'w-[256px] p-4'
       }`}>
         {SidebarBody(false)}
@@ -316,8 +328,8 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
       {drawer && (
         <>
           <div className="lg:hidden fixed inset-0 z-40 bg-ink/50 backdrop-blur-sm" onClick={() => setDrawer(false)} />
-          <aside className="lg:hidden fixed inset-y-0 left-0 z-50 w-[270px] bg-sidebar text-white p-4 flex flex-col shadow-2xl">
-            <button onClick={() => setDrawer(false)} className="absolute top-4 right-4 text-white/60 hover:text-white">
+          <aside className="lg:hidden fixed inset-y-0 left-0 z-50 w-[270px] bg-gradient-to-b from-[#f4f7fc] to-[#ebf1f9] border-r border-[#e2e7ff] p-4 flex flex-col shadow-2xl overflow-y-auto">
+            <button onClick={() => setDrawer(false)} className="absolute top-4 right-4 text-[#42474f]/60 hover:text-[#00315f]">
               <X className="w-5 h-5" />
             </button>
             {SidebarBody(true)}
