@@ -101,7 +101,8 @@ export function PersiapanActions({
         {/* CTA: Lanjutkan */}
         <button
           onClick={() => router.push(ujianHref)}
-          className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white font-bold text-base rounded-2xl hover:bg-brand-700 transition-all shadow-soft active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 py-4 text-white font-bold text-base rounded-2xl transition-all active:scale-[0.98]"
+          style={{ background: 'linear-gradient(to right,#00315f,#16487e)' }}
         >
           <Play className="w-4 h-4" /> Lanjutkan Ujian
         </button>
@@ -110,7 +111,7 @@ export function PersiapanActions({
         <button
           onClick={handleAbandonAndStart}
           disabled={isAbandonLoading}
-          className="w-full flex items-center justify-center gap-2 py-3 border border-hairline text-ink-soft font-semibold text-sm rounded-2xl hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 py-3 border border-slate-200/90 text-slate-600 font-semibold text-sm rounded-2xl hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isAbandonLoading ? (
             <span className="flex items-center justify-center gap-2">
@@ -122,7 +123,7 @@ export function PersiapanActions({
           )}
         </button>
 
-        <p className="text-xs text-center text-ink-muted">
+        <p className="text-xs text-center text-slate-500">
           Memulai ujian baru akan menutup sesi sebelumnya secara permanen
         </p>
       </div>
@@ -133,7 +134,8 @@ export function PersiapanActions({
   return (
     <button
       onClick={() => router.push(ujianHref)}
-      className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white font-bold text-base rounded-2xl hover:bg-brand-700 transition-all shadow-soft active:scale-[0.98]"
+      className="w-full flex items-center justify-center gap-2 py-4 text-white font-bold text-base rounded-2xl transition-all active:scale-[0.98]"
+      style={{ background: 'linear-gradient(to right,#00315f,#16487e)' }}
     >
       <Play className="w-4 h-4" /> Mulai Simulasi
     </button>

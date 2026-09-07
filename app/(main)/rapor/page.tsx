@@ -72,23 +72,23 @@ export default async function RaporPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 fade-up">
       <div>
-        <h1 className="font-heading font-extrabold text-2xl text-ink">Rapor Belajar</h1>
-        <p className="text-[13px] text-ink-muted mt-1">
+        <h1 className="font-extrabold text-2xl text-slate-900">Rapor Belajar</h1>
+        <p className="text-[13px] text-slate-500 mt-1">
           Tren skor dan penguasaan per sub-tes dari seluruh simulasimu, per jalur seleksi.
         </p>
       </div>
 
       {attempts.length === 0 ? (
-        <div className="bg-white border border-hairline rounded-2xl p-10 text-center shadow-soft">
-          <div className="grid place-items-center mx-auto mb-3 bg-brand/10 rounded-2xl w-14 h-14">
-            <BarChart3 className="w-[26px] h-[26px] text-brand" />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-10 text-center shadow-sm">
+          <div className="grid place-items-center mx-auto mb-3 bg-[#00315f]/10 rounded-2xl w-14 h-14">
+            <BarChart3 className="w-[26px] h-[26px] text-[#00315f]" />
           </div>
-          <p className="font-heading font-bold text-[15px] text-ink">Rapormu masih kosong</p>
-          <p className="text-[12.5px] leading-relaxed text-ink-muted mt-1 max-w-sm mx-auto">
+          <p className="font-bold text-[15px] text-slate-900">Rapormu masih kosong</p>
+          <p className="text-[12.5px] leading-relaxed text-slate-500 mt-1 max-w-sm mx-auto">
             Selesaikan minimal satu simulasi. Rapor akan menampilkan tren skor dan rincian kekuatanmu per sub-tes.
           </p>
           <Link href="/paket"
-            className="inline-block mt-4 bg-brand text-white text-[13px] font-bold rounded-xl px-4 py-2 hover:bg-brand-700 transition-colors">
+            className="inline-block mt-4 text-white text-[13px] font-bold rounded-xl px-4 py-2 transition-colors" style={{ background: '#00315f' }}>
             Lihat Semua Paket
           </Link>
         </div>
@@ -149,29 +149,29 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-2.5">
-        <span className="grid place-items-center w-9 h-9 rounded-xl bg-brand/10">
-          <Icon className="w-[18px] h-[18px] text-brand" />
+        <span className="grid place-items-center w-9 h-9 rounded-xl bg-[#00315f]/10">
+          <Icon className="w-[18px] h-[18px] text-[#00315f]" />
         </span>
-        <h2 className="font-heading font-bold text-lg text-ink">{category}</h2>
-        <span className="ml-auto text-[11.5px] font-semibold text-ink-muted bg-paper-soft border border-hairline rounded-full px-2.5 py-0.5">
+        <h2 className="font-bold text-lg text-slate-900">{category}</h2>
+        <span className="ml-auto text-[11.5px] font-semibold text-slate-500 bg-slate-50 border border-slate-200/90 rounded-full px-2.5 py-0.5">
           {attempts.length} simulasi
         </span>
       </div>
 
       <div className="grid lg:grid-cols-[1fr_1.2fr] gap-4 items-stretch">
         {/* Skor terakhir + tren */}
-        <div className="bg-white border border-hairline rounded-2xl p-5 shadow-soft">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm">
           <SectionLabel className="mb-3">Skor terakhir</SectionLabel>
           <div className="flex items-end gap-2">
-            <span className="font-num font-bold text-[36px] leading-none text-ink">{lastScore}</span>
+            <span className="font-bold text-[36px] leading-none text-slate-900 tabular-nums">{lastScore}</span>
             {delta !== null && (
-              <span className={`flex items-center gap-0.5 font-num text-[13px] font-bold mb-1 ${delta >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+              <span className={`flex items-center gap-0.5 text-[13px] font-bold mb-1 tabular-nums ${delta >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                 {delta >= 0 ? <TrendingUp className="w-[13px] h-[13px]" /> : <TrendingDown className="w-[13px] h-[13px]" />}
                 {delta >= 0 ? '+' : ''}{delta}
               </span>
             )}
           </div>
-          <p className="text-[11.5px] text-ink-muted mt-1">Simulasi {fmtDate(last.started_at)}</p>
+          <p className="text-[11.5px] text-slate-500 mt-1">Simulasi {fmtDate(last.started_at)}</p>
 
           {/* SVG line chart tren */}
           <div className="mt-4">
@@ -200,30 +200,30 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
             </svg>
             <div className="flex mt-1">
               {trend.map((t, i) => (
-                <div key={i} className="flex-1 text-center text-[9px] text-ink-muted truncate px-0.5">{t.d}</div>
+                <div key={i} className="flex-1 text-center text-[9px] text-slate-500 truncate px-0.5">{t.d}</div>
               ))}
             </div>
           </div>
         </div>
 
         {/* Penguasaan sub-tes */}
-        <div className="bg-white border border-hairline rounded-2xl p-5 shadow-soft">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <SectionLabel>Penguasaan sub-tes</SectionLabel>
-            <span className="text-[10.5px] text-ink-muted">agregat semua simulasi</span>
+            <span className="text-[10.5px] text-slate-500">agregat semua simulasi</span>
           </div>
           {mastery.length === 0 ? (
-            <p className="text-[12.5px] text-ink-muted py-4">Belum ada rincian per sub-tes.</p>
+            <p className="text-[12.5px] text-slate-500 py-4">Belum ada rincian per sub-tes.</p>
           ) : (
             <div className="space-y-0.5">
               {mastery.map((m) => (
-                <div key={m.code} className="flex items-center gap-3 py-2 border-b border-hairline last:border-0">
-                  <span className="w-11 text-[11px] font-bold text-center text-ink bg-paper-soft rounded-md py-1 shrink-0">{m.code}</span>
-                  <span className="flex-1 text-[13px] text-ink-soft truncate">{SUBTEST_FULL[m.code] ?? m.code}</span>
-                  <span className="w-24 sm:w-32 h-[7px] bg-hairline rounded-full overflow-hidden shrink-0">
+                <div key={m.code} className="flex items-center gap-3 py-2 border-b border-slate-200 last:border-0">
+                  <span className="w-11 text-[11px] font-bold text-center text-slate-900 bg-slate-50 rounded-md py-1 shrink-0">{m.code}</span>
+                  <span className="flex-1 text-[13px] text-slate-600 truncate">{SUBTEST_FULL[m.code] ?? m.code}</span>
+                  <span className="w-24 sm:w-32 h-[7px] bg-slate-200 rounded-full overflow-hidden shrink-0">
                     <span className="block h-full rounded-full" style={{ width: `${m.pct}%`, background: m.pct < 60 ? '#F4B400' : '#0E9F6E' }} />
                   </span>
-                  <span className="w-9 text-right font-num font-semibold text-[12.5px] text-ink shrink-0">{m.pct}%</span>
+                  <span className="w-9 text-right font-semibold text-[12.5px] text-slate-900 shrink-0 tabular-nums">{m.pct}%</span>
                 </div>
               ))}
             </div>

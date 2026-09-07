@@ -28,7 +28,7 @@ export function SectionLabel({
   trailing,
 }: SectionLabelProps) {
   const base = `font-bold uppercase ${
-    onDark ? 'text-white/55' : 'text-ink-muted'
+    onDark ? 'text-white/55' : 'text-slate-500'
   } ${small ? 'text-[10px]' : 'text-[11px]'} ${wide ? 'tracking-widest' : 'tracking-wider'}`
 
   if (!trailing) {
@@ -38,8 +38,8 @@ export function SectionLabel({
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <p className={`${base} shrink-0`}>{children}</p>
-      <div className="flex-1 h-px bg-hairline" />
-      <p className="text-[11px] text-ink-muted shrink-0">{trailing}</p>
+      <div className="flex-1 h-px bg-slate-200" />
+      <p className="text-[11px] text-slate-500 shrink-0">{trailing}</p>
     </div>
   )
 }

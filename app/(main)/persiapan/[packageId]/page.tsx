@@ -17,7 +17,7 @@ interface OngoingInfo {
 }
 
 // ── Konstanta sub-tes badge warna (untuk kartu sub-tes) ──────────────────────
-const SUBTEST_TINT = 'bg-brand/10 text-brand-700 border-brand/20'
+const SUBTEST_TINT = 'bg-blue-50 text-blue-700 border-blue-200'
 const SUBTEST_COLORS: Record<string, string> = {
   QR:  SUBTEST_TINT,
   DR:  SUBTEST_TINT,
@@ -142,7 +142,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
     <div className="max-w-3xl mx-auto space-y-5">
 
       {/* ── Hero card ── */}
-      <div className="bg-white rounded-3xl border border-hairline overflow-hidden shadow-soft">
+      <div className="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-sm">
         {/* Header */}
         <div className="px-7 py-8 text-white" style={{ background: isAntam ? 'linear-gradient(135deg,#1a472a,#0d2818)' : 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <div className="flex items-start justify-between gap-4">
@@ -155,12 +155,12 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                   <span className="px-2.5 py-0.5 bg-white/15 text-white text-xs font-bold rounded-full border border-white/20">ANTAM IMPACT</span>
                 )}
                 <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${
-                  pkg.is_free ? 'bg-brand text-white' : 'bg-amber-400 text-ink'
+                  pkg.is_free ? 'bg-[#00315f] text-white' : 'bg-amber-400 text-slate-900'
                 }`}>
                   {pkg.is_free ? 'GRATIS' : '✦ PREMIUM'}
                 </span>
               </div>
-              <h1 className="text-2xl font-heading font-extrabold leading-snug">{pkg.name}</h1>
+              <h1 className="text-2xl font-extrabold leading-snug">{pkg.name}</h1>
               {antamStream && (
                 <p className="text-white/50 text-xs font-semibold mt-1">Jurusan: {antamStream.jurusan}</p>
               )}
@@ -176,14 +176,14 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
           {/* Stats row — durasi pakai total aktual sub-tes */}
           <div className="flex gap-4 mt-6 flex-wrap">
             {([
-              { icon: <Clipboard className="w-5 h-5 text-brand-300" />, label: 'Soal', value: `${pkg.total_questions}` },
-              { icon: <Clock className="w-5 h-5 text-brand-300" />, label: 'Durasi', value: `${displayDuration} mnt` },
-              { icon: <Trophy className="w-5 h-5 text-brand-300" />, label: 'Skor Max', value: isStage ? 'PG' : `${pkg.total_questions}` },
-              { icon: <BarChart2 className="w-5 h-5 text-brand-300" />, label: isAntam ? 'Topik' : 'Sub-tes', value: isStage ? `${sectionCount ?? 0}` : isAstra ? '7' : isAntam && antamStream ? `${antamStream.topics.length}` : '-' },
+              { icon: <Clipboard className="w-5 h-5 text-sky-300" />, label: 'Soal', value: `${pkg.total_questions}` },
+              { icon: <Clock className="w-5 h-5 text-sky-300" />, label: 'Durasi', value: `${displayDuration} mnt` },
+              { icon: <Trophy className="w-5 h-5 text-sky-300" />, label: 'Skor Max', value: isStage ? 'PG' : `${pkg.total_questions}` },
+              { icon: <BarChart2 className="w-5 h-5 text-sky-300" />, label: isAntam ? 'Topik' : 'Sub-tes', value: isStage ? `${sectionCount ?? 0}` : isAstra ? '7' : isAntam && antamStream ? `${antamStream.topics.length}` : '-' },
             ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
                 <div className="flex justify-center mb-0.5">{s.icon}</div>
-                <p className="text-white font-num font-bold text-sm leading-none mt-0.5">{s.value}</p>
+                <p className="text-white font-bold text-sm leading-none mt-0.5 tabular-nums">{s.value}</p>
                 <p className="text-white/55 text-xs mt-0.5">{s.label}</p>
               </div>
             ))}
@@ -199,12 +199,12 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
               <SectionLabel className="mb-3">Pembagian Sub-tes</SectionLabel>
               <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
                 {Object.entries(ASTRA_SUBTESTS).map(([key, sub]) => (
-                  <div key={key} className="rounded-xl border border-hairline bg-paper-soft p-2 text-center">
-                    <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md border mb-1 ${SUBTEST_COLORS[key] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                  <div key={key} className="rounded-xl border border-slate-200/90 bg-slate-50 p-2 text-center">
+                    <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md border mb-1 ${SUBTEST_COLORS[key] ?? 'bg-slate-100 text-slate-600 border-slate-200'}`}>
                       {key}
                     </span>
-                    <p className="text-base font-num font-extrabold text-ink leading-none">{sub.soal}</p>
-                    <p className="text-[9px] text-ink-muted mt-0.5 font-num">{sub.minutes} mnt</p>
+                    <p className="text-base font-extrabold text-slate-900 leading-none tabular-nums">{sub.soal}</p>
+                    <p className="text-[9px] text-slate-500 mt-0.5 tabular-nums">{sub.minutes} mnt</p>
                   </div>
                 ))}
               </div>
@@ -217,9 +217,9 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
               <SectionLabel className="mb-3">Kisi-kisi Materi ({antamStream.topics.length} Topik)</SectionLabel>
               <div className="space-y-2">
                 {antamStream.topics.map((topic, i) => (
-                  <div key={i} className="rounded-xl border border-hairline bg-paper-soft px-4 py-3">
-                    <p className="text-sm font-semibold text-ink">{topic.name}</p>
-                    <p className="text-xs text-ink-muted mt-1 leading-relaxed">{topic.subtopics.join(' · ')}</p>
+                  <div key={i} className="rounded-xl border border-slate-200/90 bg-slate-50 px-4 py-3">
+                    <p className="text-sm font-semibold text-slate-900">{topic.name}</p>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{topic.subtopics.join(' · ')}</p>
                   </div>
                 ))}
               </div>
@@ -231,16 +231,16 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             <SectionLabel className="mb-3">Sebelum Memulai</SectionLabel>
             <div className="space-y-2">
               {([
-                { icon: <Clock className="w-4 h-4 text-brand" />, text: `Waktu ujian ${displayDuration} menit dan terus berjalan setelah dimulai`, show: true },
-                { icon: <Lock className="w-4 h-4 text-ink-muted" />, text: 'Jawaban tidak bisa diubah dan tidak bisa kembali ke soal sebelumnya', show: true },
-                { icon: <Wifi className="w-4 h-4 text-brand" />, text: 'Pastikan koneksi internet stabil selama ujian', show: true },
+                { icon: <Clock className="w-4 h-4 text-[#00315f]" />, text: `Waktu ujian ${displayDuration} menit dan terus berjalan setelah dimulai`, show: true },
+                { icon: <Lock className="w-4 h-4 text-slate-500" />, text: 'Jawaban tidak bisa diubah dan tidak bisa kembali ke soal sebelumnya', show: true },
+                { icon: <Wifi className="w-4 h-4 text-[#00315f]" />, text: 'Pastikan koneksi internet stabil selama ujian', show: true },
                 { icon: <Lightbulb className="w-4 h-4 text-amber-500" />, text: 'Baca soal dengan teliti sebelum menjawab', show: true },
               ] as { icon: React.ReactNode; text: string; show: boolean }[])
                 .filter((item) => item.show)
                 .map((item) => (
-                  <div key={item.text} className="flex items-start gap-3 bg-paper rounded-xl px-4 py-3 text-sm border border-hairline">
+                  <div key={item.text} className="flex items-start gap-3 bg-slate-50 rounded-xl px-4 py-3 text-sm border border-slate-200/90">
                     <span className="shrink-0 mt-0.5">{item.icon}</span>
-                    <p className="text-ink-soft leading-relaxed">{item.text}</p>
+                    <p className="text-slate-600 leading-relaxed">{item.text}</p>
                   </div>
                 ))}
             </div>
@@ -250,10 +250,10 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
       </div>
 
       {/* ── CTA section ── */}
-      <div className="bg-white rounded-3xl border border-hairline p-6 shadow-soft space-y-4">
+      <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
         <div className="text-center">
-          <h3 className="font-heading font-bold text-ink">Siap Memulai?</h3>
-          <p className="text-sm text-ink-muted mt-0.5">Timer akan berjalan begitu ujian dimulai</p>
+          <h3 className="font-bold text-slate-900">Siap Memulai?</h3>
+          <p className="text-sm text-slate-500 mt-0.5">Timer akan berjalan begitu ujian dimulai</p>
         </div>
 
         <PersiapanActions
@@ -268,7 +268,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
 
         <Link
           href={backHref}
-          className="block w-full text-center py-2.5 text-ink-muted text-sm hover:text-ink transition-colors"
+          className="block w-full text-center py-2.5 text-slate-500 text-sm hover:text-slate-900 transition-colors"
         >
           ← Kembali ke {backLabel}
         </Link>

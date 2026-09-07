@@ -188,8 +188,8 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
             }}
             className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
               filter === f.key
-                ? 'bg-brand text-white'
-                : 'bg-paper-soft text-ink-muted hover:bg-hairline'
+                ? 'bg-[#00315f] text-white'
+                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
             }`}
           >
             {f.label}
@@ -199,8 +199,8 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-[188px_1fr] gap-4 items-start">
         {/* ── Panel Navigasi Soal (kiri, 5 kotak per baris) ── */}
-        <div className="bg-white rounded-xl border border-hairline shadow-soft p-3.5 lg:sticky lg:top-20 space-y-3">
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-wider">Soal</p>
+        <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm p-3.5 lg:sticky lg:top-20 space-y-3">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Soal</p>
 
           <div className="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 lg:grid lg:grid-cols-5 lg:overflow-x-visible lg:overflow-y-auto lg:max-h-[420px]">
             {questions.map((q, idx) => {
@@ -209,11 +209,11 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
               const inFilter = filteredIndices.includes(idx)
               const isPointQ = isPointQuestion(q)
 
-              let cls = 'bg-paper-soft text-ink-muted border border-hairline'
+              let cls = 'bg-slate-100 text-slate-500 border border-slate-200'
               if (s === 'correct')  cls = 'bg-green-100 text-green-700 border border-green-200'
               if (s === 'wrong')    cls = 'bg-red-100 text-red-700 border border-red-200'
               if (s === 'answered') cls = 'bg-violet-100 text-violet-700 border border-violet-200'
-              if (isCurrent)        cls = 'bg-ink text-white border-ink shadow-soft'
+              if (isCurrent)        cls = 'bg-slate-900 text-white border-slate-900 shadow-sm'
               if (!inFilter && !isCurrent) cls += ' opacity-25'
 
               return (
@@ -225,7 +225,7 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
                     s === 'wrong' ? 'Salah' :
                     s === 'answered' ? 'Dijawab' : 'Kosong'
                   }`}
-                  className={`w-8 h-8 flex-none lg:w-full lg:h-auto lg:aspect-square rounded-lg text-xs font-num font-bold transition-all hover:scale-105 ${cls}`}
+                  className={`w-8 h-8 flex-none lg:w-full lg:h-auto lg:aspect-square rounded-lg text-xs font-bold transition-all hover:scale-105 tabular-nums ${cls}`}
                 >
                   {idx + 1}
                 </button>
@@ -234,15 +234,15 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
           </div>
 
           {/* Legenda */}
-          <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 pt-2.5 border-t border-hairline">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 pt-2.5 border-t border-slate-200">
             {[
               { color: 'bg-green-100 border-green-200', label: `Benar (${correctCount})` },
               { color: 'bg-red-100 border-red-200',     label: `Salah (${wrongCount})` },
               ...(pointAnsweredCount > 0 ? [{ color: 'bg-violet-100 border-violet-200', label: `Poin (${pointAnsweredCount})` }] : []),
-              { color: 'bg-paper-soft border-hairline', label: `Kosong (${emptyCount})` },
-              { color: 'bg-ink',                        label: 'Soal aktif' },
+              { color: 'bg-slate-100 border-slate-200', label: `Kosong (${emptyCount})` },
+              { color: 'bg-slate-900',                  label: 'Soal aktif' },
             ].map((item) => (
-              <div key={item.label} className="flex items-center gap-1.5 text-[10px] text-ink-muted">
+              <div key={item.label} className="flex items-center gap-1.5 text-[10px] text-slate-500">
                 <span className={`w-3 h-3 rounded-[4px] shrink-0 border ${item.color}`} />
                 <span className="truncate">{item.label}</span>
               </div>
@@ -389,17 +389,17 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
             <button
               onClick={goPrev}
               disabled={posInFiltered <= 0}
-              className="flex items-center gap-1.5 px-4 py-2 border border-hairline text-ink-soft rounded-lg text-sm hover:bg-paper-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 border border-slate-200/90 text-slate-600 rounded-lg text-sm hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               ← Sebelumnya
             </button>
-            <span className="font-num text-xs text-ink-muted self-center">
+            <span className="text-xs text-slate-500 self-center tabular-nums">
               {posInFiltered + 1} / {filteredIndices.length}
             </span>
             <button
               onClick={goNext}
               disabled={posInFiltered >= filteredIndices.length - 1}
-              className="flex items-center gap-1.5 px-4 py-2 border border-hairline text-ink-soft rounded-lg text-sm hover:bg-paper-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 border border-slate-200/90 text-slate-600 rounded-lg text-sm hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Berikutnya →
             </button>

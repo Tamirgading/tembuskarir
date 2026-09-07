@@ -59,8 +59,8 @@ export default async function RiwayatPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 fade-up">
       <div>
-        <h1 className="font-heading font-extrabold text-2xl text-ink">Riwayat Tes</h1>
-        <p className="text-[13px] text-ink-muted mt-1">
+        <h1 className="font-extrabold text-2xl text-slate-900">Riwayat Tes</h1>
+        <p className="text-[13px] text-slate-500 mt-1">
           Semua simulasi yang sudah kamu selesaikan, beserta skor dan detailnya.
         </p>
       </div>

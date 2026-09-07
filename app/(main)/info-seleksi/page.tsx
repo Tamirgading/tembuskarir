@@ -16,18 +16,18 @@ type InfoSeleksi = {
 }
 
 const INSTITUSI_CONFIG: Record<string, { label: string; pill: string; dot: string }> = {
-  OJK:  { label: 'OJK',          pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
-  PLN:  { label: 'PLN',           pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
-  RBB:  { label: 'RBB / BUMN',   pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
-  ASTRA:{ label: 'Astra',         pill: 'bg-brand/10 text-brand-700 border-brand/20',  dot: 'bg-brand' },
+  OJK:  { label: 'OJK',          pill: 'bg-blue-50 text-blue-700 border-blue-200',  dot: 'bg-[#00315f]' },
+  PLN:  { label: 'PLN',           pill: 'bg-blue-50 text-blue-700 border-blue-200',  dot: 'bg-[#00315f]' },
+  RBB:  { label: 'RBB / BUMN',   pill: 'bg-blue-50 text-blue-700 border-blue-200',  dot: 'bg-[#00315f]' },
+  ASTRA:{ label: 'Astra',         pill: 'bg-blue-50 text-blue-700 border-blue-200',  dot: 'bg-[#00315f]' },
 }
 
 const KATEGORI_CONFIG: Record<string, { label: string; pill: string }> = {
-  pengumuman:  { label: 'Pengumuman',  pill: 'bg-brand/10 text-brand-700 border-brand/20' },
-  jadwal:      { label: 'Jadwal',      pill: 'bg-brand/10 text-brand-700 border-brand/20' },
-  soal:        { label: 'Contoh Soal', pill: 'bg-brand/10 text-brand-700 border-brand/20' },
-  tips:        { label: 'Tips',        pill: 'bg-brand/10 text-brand-700 border-brand/20' },
-  'kisi-kisi': { label: 'Kisi-Kisi',  pill: 'bg-brand/10 text-brand-700 border-brand/20' },
+  pengumuman:  { label: 'Pengumuman',  pill: 'bg-blue-50 text-blue-700 border-blue-200' },
+  jadwal:      { label: 'Jadwal',      pill: 'bg-blue-50 text-blue-700 border-blue-200' },
+  soal:        { label: 'Contoh Soal', pill: 'bg-blue-50 text-blue-700 border-blue-200' },
+  tips:        { label: 'Tips',        pill: 'bg-blue-50 text-blue-700 border-blue-200' },
+  'kisi-kisi': { label: 'Kisi-Kisi',  pill: 'bg-blue-50 text-blue-700 border-blue-200' },
 }
 
 export const revalidate = 3600
@@ -77,27 +77,27 @@ export default async function InfoSeleksiPage({
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-heading font-bold text-ink">Info Seleksi</h1>
-          <p className="text-sm text-ink-muted mt-0.5">
+          <h1 className="text-xl font-bold text-slate-900">Info Seleksi</h1>
+          <p className="text-sm text-slate-500 mt-0.5">
             Pengumuman, jadwal, dan tips rekrutmen dari sumber resmi. Diperbarui harian.
           </p>
         </div>
-        <Rss className="w-5 h-5 text-brand mt-1 shrink-0" />
+        <Rss className="w-5 h-5 text-[#00315f] mt-1 shrink-0" />
       </div>
 
       {/* ── Filter ────────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl border border-hairline shadow-soft px-5 py-4 space-y-3">
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm px-5 py-4 space-y-3">
 
         {/* Filter institusi */}
         <div>
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-2">Institusi</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Institusi</p>
           <div className="flex flex-wrap gap-1.5">
             <Link
               href="/info-seleksi"
               className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
                 !institusiFilter
-                  ? 'bg-ink text-white border-ink'
-                  : 'bg-paper text-ink-muted border-hairline hover:bg-paper-soft hover:text-ink'
+                  ? 'bg-slate-900 text-white border-slate-900'
+                  : 'bg-slate-50 text-slate-500 border-slate-200/90 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               Semua
@@ -108,7 +108,7 @@ export default async function InfoSeleksiPage({
                 href={buildUrl({ institusi: key, kategori: kategoriFilter })}
                 className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
                   institusiFilter === key
-                    ? 'bg-ink text-white border-ink'
+                    ? 'bg-slate-900 text-white border-slate-900'
                     : `${cfg.pill} hover:opacity-80`
                 }`}
               >
@@ -120,18 +120,18 @@ export default async function InfoSeleksiPage({
         </div>
 
         {/* Divider */}
-        <div className="border-t border-hairline" />
+        <div className="border-t border-slate-200" />
 
         {/* Filter kategori */}
         <div>
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-2">Kategori</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Kategori</p>
           <div className="flex flex-wrap gap-1.5">
             <Link
               href={buildUrl({ institusi: institusiFilter })}
               className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
                 !kategoriFilter
-                  ? 'bg-ink text-white border-ink'
-                  : 'bg-paper text-ink-muted border-hairline hover:bg-paper-soft hover:text-ink'
+                  ? 'bg-slate-900 text-white border-slate-900'
+                  : 'bg-slate-50 text-slate-500 border-slate-200/90 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               Semua
@@ -142,7 +142,7 @@ export default async function InfoSeleksiPage({
                 href={buildUrl({ institusi: institusiFilter, kategori: key })}
                 className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
                   kategoriFilter === key
-                    ? 'bg-ink text-white border-ink'
+                    ? 'bg-slate-900 text-white border-slate-900'
                     : `${cfg.pill} hover:opacity-80`
                 }`}
               >
@@ -162,10 +162,10 @@ export default async function InfoSeleksiPage({
 
       {/* ── Empty ─────────────────────────────────────────────────────────── */}
       {!error && items?.length === 0 && (
-        <div className="text-center py-16 text-ink-muted bg-white rounded-3xl border border-hairline">
-          <Inbox className="w-10 h-10 text-hairline mx-auto mb-3" />
+        <div className="text-center py-16 text-slate-500 bg-white rounded-3xl border border-slate-200/90">
+          <Inbox className="w-10 h-10 text-slate-300 mx-auto mb-3" />
           <p className="font-semibold text-sm">Belum ada data untuk filter ini.</p>
-          <p className="text-xs mt-1 text-ink-muted">Data muncul setelah cron job berjalan.</p>
+          <p className="text-xs mt-1 text-slate-500">Data muncul setelah cron job berjalan.</p>
         </div>
       )}
 
@@ -178,7 +178,7 @@ export default async function InfoSeleksiPage({
           return (
             <div
               key={item.id}
-              className="bg-white rounded-2xl border border-hairline px-5 py-4 hover:shadow-soft hover:border-brand/20 transition-all"
+              className="bg-white rounded-2xl border border-slate-200/90 px-5 py-4 hover:shadow-sm hover:border-blue-200 transition-all"
             >
               {/* Badges */}
               <div className="flex flex-wrap gap-1.5 mb-2">
@@ -193,19 +193,19 @@ export default async function InfoSeleksiPage({
                     {katCfg.label}
                   </span>
                 )}
-                <span className="text-[10px] text-ink-muted ml-auto shrink-0 self-center">
+                <span className="text-[10px] text-slate-500 ml-auto shrink-0 self-center">
                   {fmtDate(item.tanggal_publikasi)}
                 </span>
               </div>
 
               {/* Judul */}
-              <h2 className="font-semibold text-ink text-sm leading-snug">
+              <h2 className="font-semibold text-slate-900 text-sm leading-snug">
                 {item.url_sumber ? (
                   <a
                     href={item.url_sumber}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-brand transition-colors"
+                    className="hover:text-[#00315f] transition-colors"
                   >
                     {item.judul}
                   </a>
@@ -214,7 +214,7 @@ export default async function InfoSeleksiPage({
 
               {/* Ringkasan */}
               {item.ringkasan && (
-                <p className="text-xs text-ink-muted leading-relaxed mt-1 line-clamp-2">{item.ringkasan}</p>
+                <p className="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">{item.ringkasan}</p>
               )}
 
               {/* Link */}
@@ -223,7 +223,7 @@ export default async function InfoSeleksiPage({
                   href={item.url_sumber}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-brand hover:text-brand-700 mt-2 font-medium transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-[#00315f] hover:text-[#16487e] mt-2 font-medium transition-colors"
                 >
                   Baca selengkapnya <ExternalLink className="w-3 h-3" />
                 </a>

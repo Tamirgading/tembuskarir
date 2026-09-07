@@ -40,20 +40,20 @@ export default async function SoalTersimpanPage() {
           <Bookmark className="w-5 h-5" strokeWidth={2} />
         </div>
         <div>
-          <h1 className="font-heading font-extrabold text-2xl text-ink">Soal Tersimpan</h1>
-          <p className="text-[13px] text-ink-muted">
+          <h1 className="font-extrabold text-2xl text-slate-900">Soal Tersimpan</h1>
+          <p className="text-[13px] text-slate-500">
             {savedRows.length > 0 ? `${savedRows.length} soal tersimpan` : 'Belum ada soal tersimpan'}
           </p>
         </div>
       </div>
 
       {savedRows.length === 0 ? (
-        <div className="bg-white border border-hairline rounded-2xl p-10 text-center space-y-3 shadow-soft">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-10 text-center space-y-3 shadow-sm">
           <div className="grid place-items-center mx-auto rounded-full bg-amber-50 w-16 h-16">
             <Bookmark className="w-7 h-7 text-amber-500" strokeWidth={1.5} />
           </div>
-          <p className="font-semibold text-[15px] text-ink">Belum ada soal tersimpan</p>
-          <p className="text-[13px] text-ink-muted max-w-sm mx-auto">
+          <p className="font-semibold text-[15px] text-slate-900">Belum ada soal tersimpan</p>
+          <p className="text-[13px] text-slate-500 max-w-sm mx-auto">
             Saat meninjau hasil ujian, klik tombol <strong>Simpan</strong> pada soal yang ingin kamu pelajari kembali.
           </p>
         </div>

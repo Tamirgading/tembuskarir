@@ -237,7 +237,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     <div className="max-w-5xl mx-auto space-y-5">
 
       {/* ══ HERO ══ */}
-      <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
+      <div className="rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm">
         <div className="px-6 sm:px-8 py-7 text-white" style={{ background: pkg?.category === 'ANTAM' ? 'linear-gradient(135deg,#1a472a,#0d2818)' : 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
           <div className="flex flex-row items-start gap-3 sm:gap-6">
             {/* Ring skor */}
@@ -247,14 +247,14 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                 <circle cx="64" cy="64" r={R} fill="none" stroke="#34D399" strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={offset} />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-num font-bold text-[22px] sm:text-[34px] leading-none">{score}</span>
+                <span className="font-bold text-[22px] sm:text-[34px] leading-none tabular-nums">{score}</span>
                 <span className="text-[9px] sm:text-[11px] text-white/60 mt-0.5">{denom}</span>
               </div>
             </div>
             {/* Teks */}
             <div className="text-left flex-1 min-w-0">
               <p className="text-white/55 text-xs uppercase tracking-wider font-semibold mb-1">{pkg?.name ?? 'Hasil Simulasi'}</p>
-              <h1 className="text-xl sm:text-2xl font-heading font-extrabold mb-1.5">{t.title}</h1>
+              <h1 className="text-xl sm:text-2xl font-extrabold mb-1.5">{t.title}</h1>
               <p className="text-white/70 text-sm max-w-md">{t.note}</p>
               <div className="inline-flex items-center gap-1.5 mt-3 bg-white/10 rounded-full px-3 py-1 text-xs">
                 <Clock className="w-3.5 h-3.5 text-white/70" />
@@ -265,16 +265,16 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
 
         {/* Strip benar/salah/kosong */}
-        <div className="grid grid-cols-3 divide-x divide-hairline bg-white">
+        <div className="grid grid-cols-3 divide-x divide-slate-200 bg-white">
           {[
-            { icon: <CheckCircle2 className="w-4 h-4 text-brand" />, k: correct, l: 'Benar' },
+            { icon: <CheckCircle2 className="w-4 h-4 text-[#00315f]" />, k: correct, l: 'Benar' },
             { icon: <XCircle className="w-4 h-4 text-red-500" />, k: wrong, l: 'Salah' },
-            { icon: <MinusCircle className="w-4 h-4 text-ink-muted" />, k: empty, l: 'Kosong' },
+            { icon: <MinusCircle className="w-4 h-4 text-slate-500" />, k: empty, l: 'Kosong' },
           ].map((s) => (
             <div key={s.l} className="flex items-center justify-center gap-2.5 py-3.5">
               {s.icon}
-              <span className="font-num font-bold text-lg text-ink">{s.k}</span>
-              <span className="text-ink-muted text-sm">{s.l}</span>
+              <span className="font-bold text-lg text-slate-900 tabular-nums">{s.k}</span>
+              <span className="text-slate-500 text-sm">{s.l}</span>
             </div>
           ))}
         </div>
@@ -282,9 +282,9 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
       {/* ══ Passing grade per seksi (paket tahap) — premium only ══ */}
       {!showBlur && stageSections.length > 0 && stageGroups.length > 0 && (
-        <div className="bg-white rounded-2xl border border-hairline shadow-soft overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-hairline">
-            <h2 className="font-heading font-bold text-ink">Passing Grade per Seksi</h2>
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+            <h2 className="font-bold text-slate-900">Passing Grade per Seksi</h2>
             {stageOverall !== 'none' && (
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
                 stageOverall === 'lolos' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
@@ -293,18 +293,18 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               </span>
             )}
           </div>
-          <div className="divide-y divide-hairline">
+          <div className="divide-y divide-slate-200">
             {stageGroups.map((g) => (
               <div key={g.kode} className="flex items-center gap-3 px-5 py-3.5">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-ink truncate">{g.nama}</p>
-                  <p className="text-xs text-ink-muted font-num">{g.correct}/{g.total} benar</p>
+                  <p className="text-sm font-semibold text-slate-900 truncate">{g.nama}</p>
+                  <p className="text-xs text-slate-500 tabular-nums">{g.correct}/{g.total} benar</p>
                 </div>
-                <span className="text-xs font-semibold text-ink-muted shrink-0">
-                  PG: <span className="font-num">{g.passingGrade ?? '—'}</span>
+                <span className="text-xs font-semibold text-slate-500 shrink-0">
+                  PG: <span className="tabular-nums">{g.passingGrade ?? '—'}</span>
                 </span>
                 {g.passed === null ? (
-                  <span className="text-[10px] font-medium text-ink-muted bg-paper-soft border border-hairline px-2.5 py-1 rounded-full shrink-0">Tanpa PG</span>
+                  <span className="text-[10px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full shrink-0">Tanpa PG</span>
                 ) : g.passed ? (
                   <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2.5 py-1 rounded-full shrink-0">LOLOS</span>
                 ) : (
@@ -321,17 +321,17 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
       {/* ══ Leaderboard ANTAM ══ */}
       {pkg?.category === 'ANTAM' && (
-        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-4 sm:p-5 flex flex-col">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col">
           <div className="flex items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-paper-soft border border-hairline flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
                 <LeaderboardIllustration className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[13px] font-bold text-ink leading-tight">Leaderboard</p>
-                <p className="text-[11px] text-ink-muted">
+                <p className="text-[13px] font-bold text-slate-900 leading-tight">Leaderboard</p>
+                <p className="text-[11px] text-slate-500">
                   {antamRank > 0
-                    ? <>Rank <b className="text-ink">#{antamRank}</b> / <b className="text-ink">{antamTotal}</b></>
+                    ? <>Rank <b className="text-slate-900">#{antamRank}</b> / <b className="text-slate-900">{antamTotal}</b></>
                     : <>Belum ada peserta</>}
                 </p>
               </div>
@@ -353,38 +353,38 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                 rank === 1 ? 'bg-amber-100 text-amber-700'
                 : rank === 2 ? 'bg-slate-100 text-slate-600'
                 : rank === 3 ? 'bg-orange-100 text-orange-700'
-                : 'bg-paper-soft text-ink-muted'
+                : 'bg-slate-50 text-slate-500'
               return (
                 <div
                   key={entry.key}
-                  className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border ${isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-paper-soft'}`}
+                  className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border ${isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-slate-50'}`}
                 >
                   <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${medalCls}`}>
                     {rank}
                   </span>
-                  <span className="flex-1 min-w-0 truncate text-xs font-medium text-ink">
+                  <span className="flex-1 min-w-0 truncate text-xs font-medium text-slate-900">
                     {entry.display_name || 'Anonim'}
                     {isMe && <span className="ml-1 text-[10px] text-green-600 font-semibold">(kamu)</span>}
                   </span>
                   {entry.duration_seconds != null && (
-                    <span className="text-[10px] text-ink-muted font-num shrink-0 hidden sm:block">
+                    <span className="text-[10px] text-slate-500 tabular-nums shrink-0 hidden sm:block">
                       {formatDuration(entry.duration_seconds)}
                     </span>
                   )}
-                  <span className={`font-num font-bold text-[13px] shrink-0 ${entry.score >= 75 ? 'text-green-600' : 'text-ink'}`}>
+                  <span className={`font-bold text-[13px] shrink-0 tabular-nums ${entry.score >= 75 ? 'text-green-600' : 'text-slate-900'}`}>
                     {entry.score}
                   </span>
                 </div>
               )
             })}
             {leaderboardRows.length === 0 && (
-              <p className="text-center text-[11px] text-ink-muted py-4">Belum ada peserta. Jadilah yang pertama!</p>
+              <p className="text-center text-[11px] text-slate-500 py-4">Belum ada peserta. Jadilah yang pertama!</p>
             )}
           </div>
 
           {/* Rank kamu — paling bawah */}
           {myRow && antamRank > 5 && (
-            <div className="mt-2 pt-2 border-t border-hairline">
+            <div className="mt-2 pt-2 border-t border-slate-200">
               <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-green-50 border border-green-200">
                 <span className="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
                   {antamRank}
@@ -393,18 +393,18 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                   {myRow.display_name || 'Anonim'} <span className="text-[10px] text-green-600 font-semibold">(kamu)</span>
                 </span>
                 {myRow.duration_seconds != null && (
-                  <span className="text-[10px] text-green-600 font-num shrink-0 hidden sm:block">
+                  <span className="text-[10px] text-green-600 tabular-nums shrink-0 hidden sm:block">
                     {formatDuration(myRow.duration_seconds)}
                   </span>
                 )}
-                <span className={`font-num font-bold text-[13px] shrink-0 ${myRow.score >= 75 ? 'text-green-600' : 'text-green-700'}`}>
+                <span className={`font-bold text-[13px] shrink-0 tabular-nums ${myRow.score >= 75 ? 'text-green-600' : 'text-green-700'}`}>
                   {myRow.score}
                 </span>
               </div>
             </div>
           )}
 
-          <p className="text-[10px] text-ink-muted mt-2 border-t border-hairline pt-2">
+          <p className="text-[10px] text-slate-500 mt-2 border-t border-slate-200 pt-2">
             Skor percobaan pertama yang dihitung.
           </p>
         </div>
@@ -412,21 +412,21 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
       {/* ══ Rincian per sub-tes (premium only) ══ */}
       {!showBlur && subtests.length > 0 && (
-        <div className="bg-white rounded-2xl border border-hairline shadow-soft p-4 sm:p-5 flex flex-col">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <SectionLabel>Rincian per sub-tes</SectionLabel>
-            {weakest && <span className="text-[11px] text-ink-muted">Terlemah: <b className="text-ink">{weakest.code}</b></span>}
+            {weakest && <span className="text-[11px] text-slate-500">Terlemah: <b className="text-slate-900">{weakest.code}</b></span>}
           </div>
           <div className="flex-1 space-y-1.5">
             {subtests.map((s) => (
               <div key={s.code} className="flex items-center gap-2">
-                <span className="w-10 text-[10px] font-bold text-center text-ink bg-paper-soft rounded-md py-1 shrink-0">{s.code}</span>
-                <span className="flex-1 text-xs text-ink-soft truncate min-w-0">{SUBTEST_FULL[s.code] ?? s.code}</span>
-                <span className="flex-1 max-w-[160px] h-1.5 bg-hairline rounded-full overflow-hidden shrink-0">
+                <span className="w-10 text-[10px] font-bold text-center text-slate-900 bg-slate-50 rounded-md py-1 shrink-0">{s.code}</span>
+                <span className="flex-1 text-xs text-slate-600 truncate min-w-0">{SUBTEST_FULL[s.code] ?? s.code}</span>
+                <span className="flex-1 max-w-[160px] h-1.5 bg-slate-200 rounded-full overflow-hidden shrink-0">
                   <span className="block h-full rounded-full" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F4B400' : '#0E9F6E' }} />
                 </span>
-                <span className="w-12 text-right font-num text-xs text-ink shrink-0">{s.correct}/{s.total}</span>
-                <span className="w-9 text-right font-num font-semibold text-xs text-ink shrink-0">{s.pct}%</span>
+                <span className="w-12 text-right text-xs text-slate-900 shrink-0 tabular-nums">{s.correct}/{s.total}</span>
+                <span className="w-9 text-right font-semibold text-xs text-slate-900 shrink-0 tabular-nums">{s.pct}%</span>
               </div>
             ))}
           </div>
@@ -437,29 +437,29 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
       {/* ══ Aksi ══ */}
       <div className="grid grid-cols-3 gap-3">
-        <Link href={`/persiapan/${attempt.package_id}`} className="flex items-center justify-center gap-2 py-3 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition-colors">
+        <Link href={`/persiapan/${attempt.package_id}`} className="flex items-center justify-center gap-2 py-3 text-white text-sm font-bold rounded-xl transition-colors" style={{ background: 'linear-gradient(to right,#00315f,#16487e)' }}>
           <RotateCcw className="w-4 h-4" /> Coba Lagi
         </Link>
-        <Link href={pkg?.category === 'ANTAM' ? '/portal/antam' : pkg?.category === 'ASTRA' ? '/portal/astra' : '/paket'} className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">
+        <Link href={pkg?.category === 'ANTAM' ? '/portal/antam' : pkg?.category === 'ASTRA' ? '/portal/astra' : '/paket'} className="flex items-center justify-center gap-2 py-3 bg-white border border-slate-200/90 text-slate-900 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors">
           <Grid2x2 className="w-4 h-4" /> Paket Lain
         </Link>
-        <Link href="/" className="flex items-center justify-center gap-2 py-3 bg-white border border-hairline text-ink text-sm font-semibold rounded-xl hover:bg-paper-soft transition-colors">
+        <Link href="/" className="flex items-center justify-center gap-2 py-3 bg-white border border-slate-200/90 text-slate-900 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors">
           <LayoutDashboard className="w-4 h-4" /> Beranda
         </Link>
       </div>
 
       {/* ══ Upsell premium (paket gratis, non-premium) ══ */}
       {showBlur && (
-        <div className="relative rounded-2xl overflow-hidden border border-hairline shadow-soft">
+        <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm">
           <div className="px-6 py-8 text-white text-center" style={{ background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' }}>
             <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
               <Lock className="w-6 h-6 text-white/80" />
             </div>
-            <h2 className="font-heading font-extrabold text-lg">Buka Analisis &amp; Pembahasan Lengkap</h2>
+            <h2 className="font-extrabold text-lg">Buka Analisis &amp; Pembahasan Lengkap</h2>
             <p className="text-white/65 text-sm mt-1.5 max-w-sm mx-auto">
               Rincian per sub-tes, passing grade, dan pembahasan semua soal tersedia untuk member Premium.
             </p>
-            <Link href="/harga" className="inline-flex items-center gap-2 mt-5 px-6 py-3 bg-white text-brand text-sm font-bold rounded-xl hover:bg-brand/10 transition-colors">
+            <Link href="/harga" className="inline-flex items-center gap-2 mt-5 px-6 py-3 bg-white text-[#00315f] text-sm font-bold rounded-xl hover:bg-blue-50 transition-colors">
               <Sparkles className="w-4 h-4" /> Upgrade ke Premium
             </Link>
           </div>
@@ -468,12 +468,12 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
       {/* ══ Review pembahasan (premium only) ══ */}
       {!showBlur && (
-        <div className="rounded-2xl overflow-hidden border border-hairline shadow-soft">
-          <div className="bg-ink px-5 py-3.5">
-            <h2 className="font-heading font-bold text-white text-sm">Review Pembahasan</h2>
+        <div className="rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm">
+          <div className="bg-slate-900 px-5 py-3.5">
+            <h2 className="font-bold text-white text-sm">Review Pembahasan</h2>
             <p className="text-white/55 text-xs mt-0.5">Pelajari tiap soal untuk menutup kelemahanmu.</p>
           </div>
-          <div className="bg-paper p-3 sm:p-4">
+          <div className="bg-slate-50 p-3 sm:p-4">
             <HasilReview questions={questions} userAnswers={userAnswers} />
           </div>
         </div>
