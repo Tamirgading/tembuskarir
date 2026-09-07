@@ -168,11 +168,10 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
       <div className={`pb-4 ${collapsed && !isMobile ? 'px-0' : 'px-1'}`}>
         {(!collapsed || isMobile) && (
           <div className="flex items-center gap-2">
-            <Link href="/dashboard" className="flex items-center gap-2.5 flex-1 min-w-0" onClick={() => isMobile && setDrawer(false)}>
-              <span className="w-7 h-7 rounded-lg bg-[#00315f] grid place-items-center shrink-0 shadow-sm">
-                <Image src="/iconlogo.png" alt="TembusKarir" width={18} height={18} className="w-[18px] h-[18px]" priority />
+            <Link href="/dashboard" className="flex items-center flex-1 min-w-0" onClick={() => isMobile && setDrawer(false)}>
+              <span className="bg-white rounded-xl px-3 py-1.5 shadow-sm border border-[#e2e7ff] flex items-center">
+                <Image src="/logotk.png" alt="TembusKarir" width={120} height={32} className="h-7 w-auto object-contain" priority />
               </span>
-              <span className="font-heading font-bold text-[17px] text-[#00315f] whitespace-nowrap truncate">TembusKarir</span>
             </Link>
             {!isMobile && (
               <button onClick={toggleSidebar} title="Sembunyikan sidebar"
