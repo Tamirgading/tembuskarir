@@ -67,7 +67,8 @@ type BackInfo = { label: string; href?: string; Icon?: IconType }
 type PageMeta = { pattern: string | RegExp; label: string; Icon: IconType; back?: BackInfo }
 
 const PAGE_META: PageMeta[] = [
-  { pattern: '/',                      label: 'Ringkasan belajarmu hari ini', Icon: Home                                                                     },
+  { pattern: '/dashboard',             label: 'Beranda',                     Icon: Home                                                                     },
+  { pattern: '/',                      label: 'Beranda',                     Icon: Home                                                                     },
   { pattern: /^\/portal\/astra/,       label: 'Psikotes ASTRA',              Icon: Briefcase, back: { label: 'Beranda',      href: '/dashboard',  Icon: Home      } },
   { pattern: /^\/portal\/pln\/gat/,    label: 'PLN: GAT',                    Icon: Zap,       back: { label: 'Rekrutmen PLN', href: '/portal/pln', Icon: Zap       } },
   { pattern: /^\/portal\/pln\/tahap2/, label: 'PLN: Tahap 2',                Icon: BookOpen,  back: { label: 'Rekrutmen PLN', href: '/portal/pln', Icon: Zap       } },
@@ -147,6 +148,7 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
   const isActive = (href: string) => {
     const base = href.split('?')[0]
     if (base === '/') return pathname === '/'
+    if (base === '/dashboard') return pathname === '/dashboard'
     if (base === '/portal/pln') return pathname === '/portal/pln'
     return pathname === base || pathname.startsWith(base + '/')
   }
