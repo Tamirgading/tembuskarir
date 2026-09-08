@@ -95,7 +95,7 @@ export default function LoginModal({ isOpen, onClose, redirectTo }: LoginModalPr
         <div className="flex items-start justify-between mb-6 pt-1">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-brand-tint border border-blue-100 flex items-center justify-center p-2.5 shadow-sm">
-              <img alt="Logo TembusKarir" className="w-full h-full object-contain" src="/logotk.png"/>
+              <img alt="Logo TembusKarir" className="w-full h-full object-contain" src="/iconlogo.png"/>
             </div>
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-slate-900 leading-tight" id="modal-title">Masuk</h2>
