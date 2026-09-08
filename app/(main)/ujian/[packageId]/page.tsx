@@ -29,7 +29,6 @@ type RaguRaguSet = Set<string>
 // ─── Theme per kategori ────────────────────────────────────────────────────
 type ThemeConfig = { headerGradient: string; accentBg: string; accentHover: string; progressBar: string; numBadge: string; sidebarHeader: string }
 const THEME_DEFAULT: ThemeConfig = { headerGradient: 'from-blue-700 via-blue-500 to-indigo-600', accentBg: 'bg-blue-700', accentHover: 'hover:bg-blue-800', progressBar: 'bg-blue-500', numBadge: 'bg-blue-600', sidebarHeader: 'bg-blue-700' }
-const THEME_ANTAM: ThemeConfig  = { headerGradient: 'from-green-800 via-green-600 to-emerald-700', accentBg: 'bg-green-700', accentHover: 'hover:bg-green-800', progressBar: 'bg-green-500', numBadge: 'bg-green-700', sidebarHeader: 'bg-green-700' }
 
 
 // ─── Timer ──────────────────────────────────────────────────────────────────
@@ -121,8 +120,7 @@ export default function UjianPage() {
 
         if (pkgTyped.category === 'ASTRA') { router.replace(`/ujian/astra/${packageId}`); return }
         if (pkgTyped.category === 'PLN')   { router.replace(`/ujian/pln/${packageId}`);   return }
-
-        if (pkgTyped.category === 'ANTAM') setTheme(THEME_ANTAM)
+        if (pkgTyped.category === 'ANTAM') { router.replace(`/ujian/antam/${packageId}`); return }
 
         if (!pkgTyped.is_free) {
           try {
@@ -180,13 +178,9 @@ export default function UjianPage() {
           }
           setTimeLeft(remaining)
         } else {
-          const insertPayload: Record<string, unknown> = { user_id: user.id, package_id: packageId }
-          if (pkgTyped.category === 'ANTAM' && pkgTyped.slug) {
-            insertPayload.selected_stream = pkgTyped.slug.replace(/^antam-/, '').toUpperCase()
-          }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const { data: newAttempt, error: attemptErr } = await (supabase.from('attempts') as any)
-            .insert(insertPayload)
+            .insert({ user_id: user.id, package_id: packageId })
             .select('id')
             .single()
 

@@ -18,7 +18,7 @@ interface PersiapanActionsProps {
 function getUjianHref(packageId: string, pkgCategory: string, pkgSlug: string, isStage: boolean): string {
   if (isStage) return `/ujian/stage/${packageId}`
   if (pkgCategory === 'ASTRA') return `/ujian/astra/${packageId}`
-  if (pkgCategory === 'ANTAM') return `/ujian/${packageId}`
+  if (pkgCategory === 'ANTAM') return `/ujian/antam/${packageId}`
   if (pkgCategory === 'PLN') {
     if (pkgSlug.startsWith('akding-') || pkgSlug.startsWith('bi-pln-')) {
       return `/ujian/${packageId}`
