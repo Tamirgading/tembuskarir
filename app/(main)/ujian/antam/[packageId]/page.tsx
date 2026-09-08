@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Flag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { getAntamTopicLabelMap, getStreamBySlug } from '@/lib/antam-config'
+import { getStreamBySlug } from '@/lib/antam-config'
 import { LatexContent } from '@/components/ui/LatexContent'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -113,7 +113,6 @@ export default function AntamUjianPage() {
 
   const [pkg, setPkg]             = useState<{ name: string; slug: string; duration_minutes: number; total_questions: number } | null>(null)
   const [streamName, setStreamName] = useState('')
-  const [topicMap, setTopicMap]   = useState<Record<string, string>>({})
   const [questions, setQuestions] = useState<Question[]>([])
   const [answers, setAnswers]     = useState<Answers>({})
   const [raguRagu, setRaguRagu]   = useState<Set<string>>(new Set())
@@ -185,7 +184,6 @@ export default function AntamUjianPage() {
         const stream = getStreamBySlug(pkgTyped.slug)
         if (stream) {
           setStreamName(stream.name)
-          setTopicMap(getAntamTopicLabelMap(pkgTyped.slug))
         }
 
         // Cek akses
@@ -317,9 +315,7 @@ export default function AntamUjianPage() {
   const isUrgent        = timeLeft > 0 && timeLeft <= 300
   const progressPct     = questions.length > 0 ? (answeredCount / questions.length) * 100 : 0
 
-  const currentTopicLabel = currentQuestion?.category
-    ? (topicMap[currentQuestion.category] ?? currentQuestion.category)
-    : null
+  const currentTopicLabel = currentQuestion?.category ?? null
 
   // ─── Nav grid button class ───────────────────────────────────────────────────
   function getNavCls(q: Question, idx: number): string {
