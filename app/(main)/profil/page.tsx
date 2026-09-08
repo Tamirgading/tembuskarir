@@ -6,7 +6,7 @@ import type { UserRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
-import { EditNamaForm, UploadAvatarForm, GantiPasswordForm } from '@/components/ui/ProfilForm'
+import { EditNamaForm, GantiPasswordForm } from '@/components/ui/ProfilForm'
 
 export default async function ProfilPage() {
   const supabase = await createClient()
@@ -16,7 +16,7 @@ export default async function ProfilPage() {
   const [profileRes, premiumStatus, plnStatus] = await Promise.all([
     supabase
       .from('users')
-      .select('full_name, email, plan, plan_expires_at, avatar_url')
+      .select('full_name, email, plan, plan_expires_at')
       .eq('id', user.id)
       .single(),
     getPremiumSubscriptionStatus(user.id),
@@ -24,11 +24,10 @@ export default async function ProfilPage() {
   ])
 
   const profile = profileRes.data as Pick<
-    UserRow, 'full_name' | 'email' | 'plan' | 'plan_expires_at' | 'avatar_url'
+    UserRow, 'full_name' | 'email' | 'plan' | 'plan_expires_at'
   > | null
 
-  const name   = profile?.full_name ?? null
-  const avatar = profile?.avatar_url ?? null
+  const name = profile?.full_name ?? null
 
   const bidangInfo = plnStatus.bidang ? BIDANG_BY_SLUG[plnStatus.bidang] : null
 
@@ -125,11 +124,6 @@ export default async function ProfilPage() {
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Informasi Akun</h2>
         </div>
         <div className="px-6 py-5 space-y-5">
-
-          {/* Avatar */}
-          <UploadAvatarForm userId={user.id} initialAvatar={avatar} />
-
-          <div className="border-t border-slate-200" />
 
           {/* Edit nama */}
           <EditNamaForm userId={user.id} initialName={name} />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 interface ProfilFormProps {
@@ -60,96 +60,6 @@ export function EditNamaForm({ userId, initialName }: Pick<ProfilFormProps, 'use
         {loading ? 'Menyimpan...' : 'Simpan Nama'}
       </button>
     </form>
-  )
-}
-
-export function UploadAvatarForm({ userId, initialAvatar }: Pick<ProfilFormProps, 'userId' | 'initialAvatar'>) {
-  const router = useRouter()
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [preview, setPreview] = useState<string | null>(initialAvatar)
-  const [loading, setLoading] = useState(false)
-  const [msg, setMsg] = useState('')
-
-  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Preview lokal
-    const objectUrl = URL.createObjectURL(file)
-    setPreview(objectUrl)
-
-    setLoading(true)
-    setMsg('')
-
-    const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const filePath = `${userId}/avatar.${ext}`
-
-    // Upload ke Supabase Storage bucket 'avatars'
-    const { error: uploadErr } = await supabase.storage
-      .from('avatars')
-      .upload(filePath, file, { upsert: true })
-
-    if (uploadErr) {
-      setMsg('Gagal upload foto. Pastikan bucket "avatars" sudah dibuat di Supabase Storage.')
-      setLoading(false)
-      return
-    }
-
-    // Ambil public URL
-    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath)
-    const publicUrl = urlData.publicUrl
-
-    // Update tabel users
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateErr } = await (supabase.from('users') as any)
-      .update({ avatar_url: publicUrl })
-      .eq('id', userId)
-
-    if (updateErr) {
-      setMsg('Foto terupload tapi gagal disimpan ke profil.')
-    } else {
-      setMsg('Foto profil berhasil diperbarui!')
-      router.refresh()
-    }
-    setLoading(false)
-  }
-
-  return (
-    <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-700">Foto Profil</label>
-      <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center shrink-0">
-          {preview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="Avatar" className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-blue-600 text-2xl font-bold">?</span>
-          )}
-        </div>
-        <div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            className="hidden"
-            onChange={handleChange}
-          />
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            disabled={loading}
-            className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Mengupload...' : 'Ganti Foto'}
-          </button>
-          <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP. Maks 2MB.</p>
-        </div>
-      </div>
-      {msg && (
-        <p className={`text-sm ${msg.startsWith('Gagal') || msg.includes('gagal') ? 'text-red-600' : 'text-green-600'}`}>{msg}</p>
-      )}
-    </div>
   )
 }
 
