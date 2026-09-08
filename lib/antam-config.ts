@@ -214,3 +214,18 @@ export function getStreamBySlug(slug: string): AntamStream | undefined {
 export function getStreamByCode(code: string): AntamStream | undefined {
   return ANTAM_STREAMS[code]
 }
+
+/**
+ * Map kode kategori soal (T1..Tn) → nama topik per stream.
+ * Urutan topik soal dibuat berindeks dari stream.topics, jadi T{n} ↔ topics[n-1].
+ */
+export function getAntamTopicLabelMap(slug: string): Record<string, string> {
+  const stream = getStreamBySlug(slug)
+  const map: Record<string, string> = {}
+  if (stream) {
+    stream.topics.forEach((t, i) => {
+      map[`T${i + 1}`] = t.name
+    })
+  }
+  return map
+}

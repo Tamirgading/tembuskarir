@@ -25,6 +25,8 @@ interface ReviewQuestion {
 interface HasilReviewProps {
   questions: ReviewQuestion[]
   userAnswers: Record<string, string>
+  /** Peta label kategori (mis. T1 → nama topik) untuk paket yang memakainya */
+  categoryLabels?: Record<string, string>
 }
 
 type FilterMode = 'semua' | 'salah' | 'kosong'
@@ -46,7 +48,7 @@ const POINT_LABEL: Record<number, string> = {
   1: 'Tidak Tepat',
 }
 
-export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
+export function HasilReview({ questions, userAnswers, categoryLabels }: HasilReviewProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [filter, setFilter] = useState<FilterMode>('semua')
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
@@ -264,7 +266,9 @@ export function HasilReview({ questions, userAnswers }: HasilReviewProps) {
             </span>
             {currentQuestion.category && (
               <span className="text-xs px-2 py-0.5 bg-white border border-gray-200 text-gray-600 rounded font-medium">
-                {currentQuestion.category}
+                {categoryLabels?.[currentQuestion.category]
+                  ? `${currentQuestion.category} · ${categoryLabels[currentQuestion.category]}`
+                  : currentQuestion.category}
               </span>
             )}
             {isPoint && (

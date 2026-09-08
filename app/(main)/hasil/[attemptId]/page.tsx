@@ -12,6 +12,7 @@ import { HasilReview } from '@/components/hasil/HasilReview'
 import { LeaderboardIllustration } from '@/components/ui/LeaderboardIllustration'
 import { fetchStageSections, evaluateStagePassing } from '@/lib/stage-config'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
+import { getAntamTopicLabelMap } from '@/lib/antam-config'
 import { Lock, Sparkles } from 'lucide-react'
 
 interface QuestionWithAnswer {
@@ -60,8 +61,13 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   if (attempt.status === 'ongoing') redirect(`/ujian/${attempt.package_id}`)
 
   const { data: pkgData } = await supabase
-    .from('packages').select('name, total_questions, category, is_free').eq('id', attempt.package_id).single()
-  const pkg = pkgData as { name: string; total_questions: number; category: string; is_free: boolean } | null
+    .from('packages').select('name, total_questions, category, is_free, slug').eq('id', attempt.package_id).single()
+  const pkg = pkgData as { name: string; total_questions: number; category: string; is_free: boolean; slug: string } | null
+
+  // Label sub-materi untuk paket ANTAM (ganti kode T1..Tn jadi nama topik)
+  const antamLabels = pkg?.category === 'ANTAM'
+    ? getAntamTopicLabelMap(pkg?.slug ?? '')
+    : undefined
 
   // Blur hasil untuk non-premium yang mengerjakan paket GRATIS (demo)
   const premiumStatus = await getPremiumSubscriptionStatus(user.id)
@@ -421,7 +427,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             {subtests.map((s) => (
               <div key={s.code} className="flex items-center gap-2">
                 <span className="w-10 text-[10px] font-bold text-center text-slate-900 bg-slate-50 rounded-md py-1 shrink-0">{s.code}</span>
-                <span className="flex-1 text-xs text-slate-600 truncate min-w-0">{SUBTEST_FULL[s.code] ?? s.code}</span>
+                <span className="flex-1 text-xs text-slate-600 truncate min-w-0">{antamLabels?.[s.code] ?? SUBTEST_FULL[s.code] ?? s.code}</span>
                 <span className="flex-1 max-w-[160px] h-1.5 bg-slate-200 rounded-full overflow-hidden shrink-0">
                   <span className="block h-full rounded-full" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F4B400' : '#0E9F6E' }} />
                 </span>
@@ -474,7 +480,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             <p className="text-white/55 text-xs mt-0.5">Pelajari tiap soal untuk menutup kelemahanmu.</p>
           </div>
           <div className="bg-slate-50 p-3 sm:p-4">
-            <HasilReview questions={questions} userAnswers={userAnswers} />
+            <HasilReview questions={questions} userAnswers={userAnswers} categoryLabels={antamLabels} />
           </div>
         </div>
       )}
