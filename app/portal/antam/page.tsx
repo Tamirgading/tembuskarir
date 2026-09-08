@@ -1,41 +1,135 @@
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
   ChevronRight, Clock, FileText, Mountain,
-  Pickaxe, FlaskConical, Cog, ShieldCheck, Search,
-  BarChart3, TrendingUp, Truck, Users, Scale,
-  DollarSign, Megaphone, Monitor, ArrowRight,
-  Building2, TrendingDown,
+  BarChart3, ArrowRight, Building2, TrendingDown,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
-import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 import { ANTAM_STREAM_LIST } from '@/lib/antam-config'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
-import type { LucideIcon } from 'lucide-react'
 
 interface StreamVisual {
   gradient: string
-  icon: LucideIcon
   sub: string
+  svg: React.ReactNode
 }
 
+const StreamSvgEXP = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.3)" strokeDasharray="4 4" strokeWidth="2"/>
+    <path d="M50 12 L58 42 L88 50 L58 58 L50 88 L42 58 L12 50 L42 42 Z" fill="#fde047" opacity="0.9"/>
+    <path d="M50 25 L55 45 L75 50 L55 55 L50 75 L45 55 L25 50 L45 45 Z" fill="#ffffff"/>
+    <circle cx="50" cy="50" fill="#042f2e" r="5"/>
+  </svg>
+)
+const StreamSvgMIN = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect fill="#ffffff" height="25" rx="3" width="40" x="20" y="45"/>
+    <path d="M48 32 L68 32 L78 50 L48 50 Z" fill="#fde047"/>
+    <circle cx="32" cy="72" fill="#1e293b" r="10"/>
+    <circle cx="68" cy="72" fill="#1e293b" r="10"/>
+  </svg>
+)
+const StreamSvgPRC = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M28 35 L72 35 L64 78 L36 78 Z" fill="#ffffff" opacity="0.9"/>
+    <ellipse cx="50" cy="35" fill="#818cf8" rx="22" ry="7"/>
+    <circle cx="50" cy="58" fill="#fbbf24" r="4"/>
+  </svg>
+)
+const StreamSvgENG = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="45" cy="45" r="20" stroke="#38bdf8" strokeWidth="4"/>
+    <circle cx="45" cy="45" fill="#38bdf8" r="7"/>
+    <circle cx="68" cy="68" r="12" stroke="#ffffff" strokeWidth="3"/>
+  </svg>
+)
+const StreamSvgHSE = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 18 L76 28 C76 56 50 78 50 78 C50 78 24 56 24 28 Z" fill="#ffffff" opacity="0.95"/>
+    <path d="M44 42 H56 M50 36 V48" stroke="#166534" strokeLinecap="round" strokeWidth="4"/>
+  </svg>
+)
+const StreamSvgQC = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M35 78 H65 M50 78 V60" stroke="#ffffff" strokeLinecap="round" strokeWidth="4"/>
+    <rect fill="#fde047" height="18" transform="rotate(45 52 32)" width="10" x="52" y="32"/>
+  </svg>
+)
+const StreamSvgBDV = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 75 L42 55 L58 65 L78 30" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4"/>
+    <circle cx="78" cy="30" fill="#fde047" r="4"/>
+  </svg>
+)
+const StreamSvgSCM = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 58 L32 75 H68 L80 58 Z" fill="#ffffff"/>
+    <rect fill="#fde047" height="14" width="14" x="35" y="42"/>
+  </svg>
+)
+const StreamSvgHCM = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="36" fill="#ffffff" r="10"/>
+    <path d="M34 68 C34 52 42 48 50 48 C58 48 66 52 66 68 Z" fill="#ffffff"/>
+    <circle cx="28" cy="42" fill="#fde047" r="7"/>
+  </svg>
+)
+const StreamSvgFIN = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 65 L36 48 H64 L50 65 Z" fill="#ffffff"/>
+    <path d="M50 65 L64 48 H78 L64 65 Z" fill="#fde047"/>
+    <circle cx="68" cy="28" fill="#ffffff" r="8"/>
+  </svg>
+)
+const StreamSvgLGL = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 20 V75 M38 75 H62" stroke="#ffffff" strokeLinecap="round" strokeWidth="4"/>
+    <circle cx="50" cy="20" fill="#fde047" r="4"/>
+  </svg>
+)
+const StreamSvgIT = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect fill="#ffffff" height="15" rx="3" width="50" x="25" y="25"/>
+    <rect fill="#ffffff" height="15" rx="3" width="50" x="25" y="45"/>
+    <circle cx="35" cy="32.5" fill="#14b8a6" r="2.5"/>
+  </svg>
+)
+const StreamSvgMKT = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 45 L55 28 L55 72 L25 55 Z" fill="#ffffff" opacity="0.9"/>
+    <rect fill="#fde047" height="22" rx="2" width="8" x="55" y="40"/>
+    <ellipse cx="68" cy="62" fill="none" rx="8" ry="12" stroke="#ffffff" strokeWidth="3"/>
+  </svg>
+)
+const StreamSvgCRL = () => (
+  <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" fill="none" r="20" stroke="#ffffff" strokeWidth="3"/>
+    <circle cx="22" cy="50" fill="#fde047" r="6"/>
+    <circle cx="78" cy="50" fill="#fde047" r="6"/>
+    <circle cx="50" cy="22" fill="#fde047" r="6"/>
+    <line stroke="#ffffff" strokeWidth="2" x1="28" x2="42" y1="50" y2="50"/>
+    <line stroke="#ffffff" strokeWidth="2" x1="58" x2="72" y1="50" y2="50"/>
+    <line stroke="#ffffff" strokeWidth="2" x1="50" x2="50" y1="28" y2="42"/>
+  </svg>
+)
+
 const STREAM_VISUALS: Record<string, StreamVisual> = {
-  EXP: { gradient: 'from-[#064e3b] via-[#047857] to-[#10b981]', icon: Search,      sub: 'Eksplorasi Geologi & Tambang' },
-  MIN: { gradient: 'from-[#78350f] via-[#b45309] to-[#f59e0b]', icon: Pickaxe,     sub: 'Operasi Tambang Terbuka & Dalam' },
-  PRC: { gradient: 'from-[#1e1b4b] via-[#312e81] to-[#4338ca]', icon: FlaskConical, sub: 'Peleburan FeNi & Pemurnian Emas' },
-  ENG: { gradient: 'from-[#0f172a] via-[#1e293b] to-[#334155]', icon: Cog,         sub: 'Konstruksi & Maintenance' },
-  HSE: { gradient: 'from-[#14532d] via-[#166534] to-[#22c55e]', icon: ShieldCheck,  sub: 'K3 & Reklamasi Tambang' },
-  QC:  { gradient: 'from-[#0c4a6e] via-[#0284c7] to-[#38bdf8]', icon: BarChart3,   sub: 'Lab Analisis Kadar Bijih Logam' },
-  BDV: { gradient: 'from-[#701a75] via-[#a21caf] to-[#e879f9]', icon: TrendingUp,  sub: 'Ekspansi & Hilirisasi Tambang' },
-  SCM: { gradient: 'from-[#134e4a] via-[#0f766e] to-[#2dd4bf]', icon: Truck,       sub: 'Barge Transport & Pengadaan' },
-  HCM: { gradient: 'from-[#831843] via-[#be185d] to-[#f472b6]', icon: Users,       sub: 'Talent Dev. & Budaya AKHLAK' },
-  FIN: { gradient: 'from-[#3f2c00] via-[#854d0e] to-[#eab308]', icon: DollarSign,  sub: 'LM Audit & Perpajakan Tambang' },
-  LGL: { gradient: 'from-[#1e1b4b] via-[#3730a3] to-[#6366f1]', icon: Scale,       sub: 'Regulasi IUP & Hukum Kontrak' },
-  IT:  { gradient: 'from-[#042f2e] via-[#0f766e] to-[#14b8a6]', icon: Monitor,     sub: 'Smart Mining 4.0 & ERP Solutions' },
-  MKT: { gradient: 'from-[#7c2d12] via-[#c2410c] to-[#fb923c]', icon: Megaphone,   sub: 'Komunikasi & Strategi Merek' },
-  CRL: { gradient: 'from-[#3b0764] via-[#6d28d9] to-[#a78bfa]', icon: Building2,   sub: 'Hubungan Perusahaan & CSR' },
+  EXP: { gradient: 'from-[#064e3b] via-[#047857] to-[#10b981]', sub: 'Eksplorasi Geologi & Tambang',       svg: <StreamSvgEXP /> },
+  MIN: { gradient: 'from-[#78350f] via-[#b45309] to-[#f59e0b]', sub: 'Operasi Tambang Terbuka & Dalam',    svg: <StreamSvgMIN /> },
+  PRC: { gradient: 'from-[#1e1b4b] via-[#312e81] to-[#4338ca]', sub: 'Peleburan FeNi & Pemurnian Emas',   svg: <StreamSvgPRC /> },
+  ENG: { gradient: 'from-[#0f172a] via-[#1e293b] to-[#334155]', sub: 'Konstruksi & Maintenance',           svg: <StreamSvgENG /> },
+  HSE: { gradient: 'from-[#14532d] via-[#166534] to-[#22c55e]', sub: 'K3 & Reklamasi Tambang',             svg: <StreamSvgHSE /> },
+  QC:  { gradient: 'from-[#0c4a6e] via-[#0284c7] to-[#38bdf8]', sub: 'Lab Analisis Kadar Bijih Logam',    svg: <StreamSvgQC /> },
+  BDV: { gradient: 'from-[#701a75] via-[#a21caf] to-[#e879f9]', sub: 'Ekspansi & Hilirisasi Tambang',     svg: <StreamSvgBDV /> },
+  SCM: { gradient: 'from-[#134e4a] via-[#0f766e] to-[#2dd4bf]', sub: 'Barge Transport & Pengadaan',        svg: <StreamSvgSCM /> },
+  HCM: { gradient: 'from-[#831843] via-[#be185d] to-[#f472b6]', sub: 'Talent Dev. & Budaya AKHLAK',        svg: <StreamSvgHCM /> },
+  FIN: { gradient: 'from-[#3f2c00] via-[#854d0e] to-[#eab308]', sub: 'LM Audit & Perpajakan Tambang',     svg: <StreamSvgFIN /> },
+  LGL: { gradient: 'from-[#1e1b4b] via-[#3730a3] to-[#6366f1]', sub: 'Regulasi IUP & Hukum Kontrak',      svg: <StreamSvgLGL /> },
+  IT:  { gradient: 'from-[#042f2e] via-[#0f766e] to-[#14b8a6]', sub: 'Smart Mining 4.0 & ERP Solutions',  svg: <StreamSvgIT /> },
+  MKT: { gradient: 'from-[#7c2d12] via-[#c2410c] to-[#fb923c]', sub: 'Komunikasi & Strategi Merek',        svg: <StreamSvgMKT /> },
+  CRL: { gradient: 'from-[#3b0764] via-[#6d28d9] to-[#a78bfa]', sub: 'Hubungan Perusahaan & CSR',          svg: <StreamSvgCRL /> },
 }
 
 const SCORE_COLORS = [
@@ -48,14 +142,12 @@ export default async function AntamPortalPage() {
   let packages: PackageRow[] = []
   let isLoggedIn = false
   let hasPremium = false
-  let userEmail: string | null = null
   let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
 
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     isLoggedIn = !!user
-    userEmail = user?.email ?? null
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pkgData } = await (supabase.from('packages') as any)
@@ -84,9 +176,6 @@ export default async function AntamPortalPage() {
     }
   } catch { /* Supabase not configured */ }
 
-  const flags = await getEffectiveFeatureFlags(userEmail)
-  if (!flags.feature_portal_antam) redirect('/')
-
   const packageNameMap = Object.fromEntries(packages.map((p) => [p.id, p.name]))
 
   const streamPackages = (streamSlug: string) =>
@@ -96,6 +185,21 @@ export default async function AntamPortalPage() {
 
   return (
     <div className="space-y-7">
+
+      {/* ── Breadcrumb ── */}
+      <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-medium -mb-2">
+        <Link href="/" className="hover:text-[#00315f] transition-colors flex items-center gap-1">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9.75L12 3l9 6.75V21H15v-6H9v6H3V9.75z"/></svg>
+          Beranda
+        </Link>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        <span>Simulasi BUMN</span>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        <span className="text-[#00315f] font-bold flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-500 inline-block" />
+          ANTAM IMPACT 2026
+        </span>
+      </nav>
 
       {/* ── Hero Banner ── */}
       <section className="relative overflow-hidden rounded-3xl shadow-xl text-white"
@@ -233,7 +337,6 @@ export default async function AntamPortalPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {ANTAM_STREAM_LIST.map((stream) => {
             const visual = STREAM_VISUALS[stream.code] ?? STREAM_VISUALS['EXP']
-            const Icon = visual.icon
             const streamPkgs = streamPackages(stream.slug)
             const hasPackage = streamPkgs.length > 0
 
@@ -251,9 +354,8 @@ export default async function AntamPortalPage() {
                       <h3 className="text-sm font-bold mt-1 text-white leading-tight">{stream.name}</h3>
                       <p className="text-[10px] leading-tight mt-0.5 opacity-80">{visual.sub}</p>
                     </div>
-                    <div className="relative z-10 w-11 h-11 shrink-0 flex items-center justify-center rounded-lg group-hover:scale-105 transition-transform duration-300"
-                      style={{ background: 'rgba(255,255,255,0.15)' }}>
-                      <Icon className="w-5 h-5 text-white" />
+                    <div className="relative z-10 w-12 h-12 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      {visual.svg}
                     </div>
                     <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full blur-xl"
                       style={{ background: 'rgba(255,255,255,0.10)' }} />
