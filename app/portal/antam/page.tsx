@@ -140,14 +140,12 @@ const SCORE_COLORS = [
 
 export default async function AntamPortalPage() {
   let packages: PackageRow[] = []
-  let isLoggedIn = false
   let hasPremium = false
   let recentAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
 
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    isLoggedIn = !!user
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pkgData } = await (supabase.from('packages') as any)
