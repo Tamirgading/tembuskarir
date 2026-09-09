@@ -216,24 +216,24 @@ export function getStreamByCode(code: string): AntamStream | undefined {
 }
 
 export const ANTAM_STREAM_IMAGES: Record<string, string> = {
-  EXP: '/antam/exp.jfif',
-  MIN: '/antam/min.jfif',
-  PRC: '/antam/prc.jfif',
-  ENG: '/antam/eng.jfif',
-  HSE: '/antam/hse.jfif',
-  QC:  '/antam/qc.jfif',
-  MKT: '/antam/mkt.jfif',
-  BDV: '/antam/bdv.jfif',
-  SCM: '/antam/scm.jfif',
-  HCM: '/antam/hcm.jfif',
-  LGL: '/antam/lgl.jfif',
-  FIN: '/antam/fin.jfif',
-  CRL: '/antam/crl.jfif',
-  IT:  '/antam/IT.jfif',
+  EXP: '/antam/exp.jpg',
+  MIN: '/antam/min.jpg',
+  PRC: '/antam/prc.jpg',
+  ENG: '/antam/eng.jpg',
+  HSE: '/antam/hse.jpg',
+  QC:  '/antam/qc.jpg',
+  MKT: '/antam/mkt.jpg',
+  BDV: '/antam/bdv.jpg',
+  SCM: '/antam/scm.jpg',
+  HCM: '/antam/hcm.jpg',
+  LGL: '/antam/lgl.jpg',
+  FIN: '/antam/fin.jpg',
+  CRL: '/antam/crl.jpg',
+  IT:  '/antam/it.jpg',
 }
 
 export function getStreamImage(code: string): string {
-  return ANTAM_STREAM_IMAGES[code.toUpperCase()] ?? '/antam/exp.jfif'
+  return ANTAM_STREAM_IMAGES[code.toUpperCase()] ?? '/antam/exp.jpg'
 }
 
 /**
