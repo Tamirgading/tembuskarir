@@ -313,7 +313,6 @@ export default function AntamUjianPage() {
   const answeredCount   = Object.keys(answers).length
   const raguCount       = raguRagu.size
   const isUrgent        = timeLeft > 0 && timeLeft <= 300
-  const progressPct     = questions.length > 0 ? (answeredCount / questions.length) * 100 : 0
 
   const currentTopicLabel = currentQuestion?.category ?? null
 
@@ -368,30 +367,33 @@ export default function AntamUjianPage() {
         <div className="w-full max-w-[1780px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
           {/* Logo + Judul */}
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="bg-white rounded-lg px-2.5 py-1 flex items-center justify-center shadow-sm h-9 w-9">
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            <div className="bg-white rounded-xl px-3 py-1.5 flex items-center justify-center shadow-sm h-10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/iconlogo.png" alt="TembusKarir" className="h-6 w-auto object-contain" />
+              <img src="/logotk.png" alt="TembusKarir" className="h-6 sm:h-7 w-auto object-contain" />
             </div>
             <div className="flex flex-col">
-              <div className="text-white font-bold text-sm sm:text-[15px] tracking-wide whitespace-nowrap">
-                ANTAM IMPACT 2026{streamName ? ` — ${streamName}` : ''}
+              <div className="text-white font-bold text-sm sm:text-[15px] tracking-wide whitespace-nowrap flex items-center gap-2">
+                <span>ANTAM IMPACT 2026</span>
+                {streamName && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-white/15 text-blue-100">
+                    {streamName}
+                  </span>
+                )}
               </div>
               <div className="text-[11px] text-blue-200/80 font-medium">Simulasi CBT Tes Kompetensi Bidang</div>
             </div>
           </div>
 
-          {/* Progress bar — hanya desktop */}
-          <div className="hidden md:flex flex-1 items-center max-w-2xl mx-6 gap-3">
-            <span className="text-xs text-blue-200/90 font-medium whitespace-nowrap">Progres</span>
-            <div className="flex-1 bg-white/20 h-2 rounded-full overflow-hidden">
-              <div
-                className="bg-[#389ADD] h-full rounded-full transition-all duration-300"
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
-            <span className="text-xs text-white font-mono tracking-wider font-semibold whitespace-nowrap">
-              {answeredCount} / {questions.length}
+          {/* Status soal */}
+          <div className="hidden md:flex items-center gap-2.5 bg-white/10 border border-white/15 rounded-xl px-3.5 py-1.5 backdrop-blur-sm">
+            <span className="text-xs text-blue-200 font-medium">Soal</span>
+            <span className="text-xs text-white font-bold font-mono">
+              {currentIndex + 1} / {questions.length}
+            </span>
+            <span className="text-white/30">•</span>
+            <span className="text-xs text-emerald-300 font-medium">
+              {answeredCount} Terjawab
             </span>
           </div>
 
@@ -439,15 +441,15 @@ export default function AntamUjianPage() {
               </div>
             </div>
 
-            {/* Grid nomor soal */}
+            {/* Grid nomor soal — persegi */}
             <div className="max-h-[400px] overflow-y-auto pr-1 custom-scroll">
-              <div className="grid grid-cols-5 gap-2 text-center text-xs font-semibold">
+              <div className="grid grid-cols-5 gap-2 text-center text-xs font-bold">
                 {questions.map((q, idx) => (
                   <button
                     key={q.id}
                     onClick={() => goTo(idx)}
                     type="button"
-                    className={`h-9 rounded-lg flex items-center justify-center transition ${getNavCls(q, idx)}`}
+                    className={`aspect-square w-full rounded-xl flex items-center justify-center transition ${getNavCls(q, idx)}`}
                   >
                     {idx + 1}
                   </button>
