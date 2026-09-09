@@ -25,7 +25,7 @@ const PREMIUM_PLANS = [
     period: '/ bulan',
     highlight: true,
     badge: 'Populer',
-    description: 'Akses SEMUA paket — ASTRA, BUMN (Tahap 1 & 2), PLN (GAT + Akademik semua bidang), OJK, dan ANTAM',
+    description: 'Akses SEMUA paket: ASTRA, BUMN (Tahap 1 & 2), PLN (GAT + Akademik semua bidang), OJK, dan ANTAM',
     features: ['Psikotes ASTRA (semua paket)', 'RBB BUMN Tahap 1 & 2', 'PLN GAT + Akademik semua bidang', 'ANTAM semua stream', 'Pembahasan lengkap & analisis skor'],
     icon: Zap,
   },

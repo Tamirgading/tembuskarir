@@ -307,7 +307,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                   <p className="text-xs text-slate-500 tabular-nums">{g.correct}/{g.total} benar</p>
                 </div>
                 <span className="text-xs font-semibold text-slate-500 shrink-0">
-                  PG: <span className="tabular-nums">{g.passingGrade ?? '—'}</span>
+                  PG: <span className="tabular-nums">{g.passingGrade ?? '-'}</span>
                 </span>
                 {g.passed === null ? (
                   <span className="text-[10px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full shrink-0">Tanpa PG</span>
@@ -338,7 +338,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               </div>
               <div className="flex-1 space-y-2">
                 {subtests.map((s) => {
-                  const label = antamLabels?.[s.code] ?? (SUBTEST_FULL[s.code] && SUBTEST_FULL[s.code] !== s.code ? `${s.code} — ${SUBTEST_FULL[s.code]}` : s.code)
+                  const label = antamLabels?.[s.code] ?? (SUBTEST_FULL[s.code] && SUBTEST_FULL[s.code] !== s.code ? `${s.code} - ${SUBTEST_FULL[s.code]}` : s.code)
                   return (
                     <div key={s.code} className="flex items-center gap-2 sm:gap-3 py-0.5">
                       <span className="flex-1 text-xs sm:text-[13px] text-slate-800 font-semibold truncate min-w-0" title={label}>

@@ -176,10 +176,10 @@ export default async function DashboardPage() {
               </div>
               <div className="min-w-0">
                 <p className="text-2xl font-extrabold text-slate-900 tabular-nums">
-                  {latestAttempt?.score ?? '—'}
+                  {latestAttempt?.score ?? '-'}
                 </p>
                 <p className="text-xs text-slate-500 leading-snug truncate">
-                  {latestAttempt?.packages?.name ?? 'Skor Terakhir'}
+                  {latestAttempt?.packages?.name?.replace(/\s*[—–]\s*/g, ' - ') ?? 'Skor Terakhir'}
                 </p>
               </div>
             </div>
@@ -191,7 +191,7 @@ export default async function DashboardPage() {
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-bold text-slate-900 leading-snug">
-                  {latestAttempt?.finished_at ? formatDate(latestAttempt.finished_at) : '—'}
+                  {latestAttempt?.finished_at ? formatDate(latestAttempt.finished_at) : '-'}
                 </p>
                 <p className="text-xs text-slate-500 leading-snug">Tes Terakhir</p>
               </div>

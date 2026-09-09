@@ -12,8 +12,8 @@ import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 // Struktur asli GAT PLN (Tahap 1)
 const GAT_PART_TINT = 'bg-brand/10 text-brand-700 border-brand/20'
 const GAT_PARTS = [
-  { kode: 'TKD1', full: 'TKD 1 — Deret Bilangan', topik: 'Pola bilangan, deret angka', soal: 26, waktu: '30 dtk/soal', cls: GAT_PART_TINT },
-  { kode: 'TKD2', full: 'TKD 2 — Silogisme & Sinonim', topik: 'Silogisme (B/S/TDS), sinonim, antonim', soal: 36, waktu: '30 dtk/soal', cls: GAT_PART_TINT },
+  { kode: 'TKD1', full: 'TKD 1 - Deret Bilangan', topik: 'Pola bilangan, deret angka', soal: 26, waktu: '30 dtk/soal', cls: GAT_PART_TINT },
+  { kode: 'TKD2', full: 'TKD 2 - Silogisme & Sinonim', topik: 'Silogisme (B/S/TDS), sinonim, antonim', soal: 36, waktu: '30 dtk/soal', cls: GAT_PART_TINT },
   { kode: 'PU', full: 'Tes Pengetahuan PLN', topik: 'Sejarah, profil, proses bisnis PLN', soal: 15, waktu: '12 mnt', cls: GAT_PART_TINT },
 ]
 
@@ -180,7 +180,7 @@ export default async function PlnGatPage() {
             <SectionLabel className="mb-3">Sistem Penilaian</SectionLabel>
             <div className="bg-paper-soft rounded-xl p-3 space-y-2 border border-hairline mb-3">
               <p className="text-[11px] font-bold text-ink uppercase tracking-wide">TKD 1 &amp; TKD 2</p>
-              <p className="text-[10px] text-ink-muted">Deret + Silogisme/Sinonim — timer 30 dtk/soal</p>
+              <p className="text-[10px] text-ink-muted">Deret + Silogisme/Sinonim · timer 30 dtk/soal</p>
               {[{ l: 'Benar', v: '+1', c: 'text-brand font-bold' }, { l: 'Salah / Kosong', v: '0', c: 'text-ink-muted' }].map((r) => (
                 <div key={r.l} className="flex justify-between items-center text-xs">
                   <span className="text-ink-soft">{r.l}</span>
@@ -204,7 +204,7 @@ export default async function PlnGatPage() {
             <SectionLabel className="mb-3">Tips Sukses</SectionLabel>
             <div className="space-y-3">
               {[
-                { Icon: Hash,       text: 'Deret: cek selisih/pola antar angka — ada satu angka yang salah' },
+                { Icon: Hash,       text: 'Deret: cek selisih/pola antar angka (ada satu angka yang salah)' },
                 { Icon: BookMarked, text: 'Silogisme: hanya simpulkan dari premis, jangan berasumsi' },
                 { Icon: Zap,        text: 'Sinonim: kuasai kosakata umum & istilah ketenagalistrikan' },
                 { Icon: Heart,      text: 'Pengetahuan PLN: sejarah, struktur, proyek strategis' },

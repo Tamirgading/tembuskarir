@@ -101,11 +101,11 @@ export default async function BumnTahap2Page() {
               <Link key={att.id} href={`/hasil/${att.id}`}
                 className={`flex items-center justify-between px-5 py-3.5 hover:bg-paper-soft transition-colors ${i < recentAttempts.length - 1 ? 'border-b border-hairline' : ''}`}>
                 <div>
-                  <p className="text-sm font-semibold text-ink">{packageNameMap[att.package_id] ?? 'Paket'}</p>
+                  <p className="text-sm font-semibold text-ink">{(packageNameMap[att.package_id] ?? 'Paket').replace(/\s*[—–]\s*/g, ' - ')}</p>
                   <p className="text-xs text-ink-muted">{formatDate(att.started_at)}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-num font-bold text-brand text-base">{att.score ?? '—'}</span>
+                  <span className="font-num font-bold text-brand text-base">{att.score ?? '-'}</span>
                   <ChevronRight className="w-4 h-4 text-ink-muted" />
                 </div>
               </Link>

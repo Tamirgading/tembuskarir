@@ -136,7 +136,7 @@ export default function PlnPackageCard({
                 <p className="text-xs text-ink-muted mb-3">Akses permanen untuk paket ini saja</p>
                 <BuyButton
                   planType="package"
-                  planLabel={`Beli Paket — ${getSatuanPrice(pkg.slug).toLocaleString('id-ID')}`}
+                  planLabel={`Beli Paket - Rp ${getSatuanPrice(pkg.slug).toLocaleString('id-ID')}`}
                   amount={getSatuanPrice(pkg.slug)}
                   packageId={pkg.id}
                   onSuccess={() => { setShowBuyModal(false); router.refresh() }}

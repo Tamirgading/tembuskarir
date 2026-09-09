@@ -47,7 +47,7 @@ export default async function RiwayatPage() {
 
   const rows: RiwayatAttempt[] = attempts.map((a) => ({
     id: a.id,
-    name: pkgMap[a.package_id]?.name ?? 'Paket Soal',
+    name: (pkgMap[a.package_id]?.name ?? 'Paket Soal').replace(/\s*[—–]\s*/g, ' - '),
     category: pkgMap[a.package_id]?.category ?? 'LAINNYA',
     score: a.score ?? 0,
     correctCount: a.correct_count,

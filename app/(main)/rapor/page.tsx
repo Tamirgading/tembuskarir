@@ -217,7 +217,7 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
           ) : (
             <div className="space-y-0.5">
               {mastery.map((m) => {
-                const label = SUBTEST_FULL[m.code] && SUBTEST_FULL[m.code] !== m.code ? `${m.code} — ${SUBTEST_FULL[m.code]}` : m.code
+                const label = SUBTEST_FULL[m.code] && SUBTEST_FULL[m.code] !== m.code ? `${m.code} - ${SUBTEST_FULL[m.code]}` : m.code
                 return (
                   <div key={m.code} className="flex items-center gap-3 py-2 border-b border-slate-200 last:border-0">
                     <span className="flex-1 text-[13px] text-slate-700 font-medium truncate min-w-0" title={label}>
@@ -236,7 +236,7 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
             <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mt-3">
               <Target className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <p className="text-[12px] text-amber-800">
-                Fokus latihan: <strong>{SUBTEST_FULL[weakest.code] ?? weakest.code}</strong> — baru {weakest.pct}% benar.
+                Fokus latihan: <strong>{SUBTEST_FULL[weakest.code] ?? weakest.code}</strong> (baru {weakest.pct}% benar).
               </p>
             </div>
           )}

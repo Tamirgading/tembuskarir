@@ -316,11 +316,11 @@ export default async function AntamPortalPage() {
                   className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 rounded-2xl p-4 hover:bg-slate-100 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className={`w-12 h-12 rounded-2xl border font-black text-sm flex items-center justify-center shrink-0 ${scoreColor}`}>
-                      {att.score ?? '–'}
+                      {att.score ?? '-'}
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                        <span className="text-sm font-bold text-slate-900">{packageNameMap[att.package_id] ?? 'Paket'}</span>
+                        <span className="text-sm font-bold text-slate-900">{(packageNameMap[att.package_id] ?? 'Paket').replace(/\s*[—–]\s*/g, ' - ')}</span>
                       </div>
                       <div className="text-xs text-slate-500">{formatDate(att.started_at)}</div>
                     </div>

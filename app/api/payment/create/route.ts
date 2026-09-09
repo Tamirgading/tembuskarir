@@ -123,14 +123,14 @@ export async function POST(req: NextRequest) {
     console.log('[Payment Create] Subscription created:', subData?.id)
 
     const planLabels: Record<string, string> = {
-      premium_monthly:      'Premium All Access — 1 Bulan',
-      premium_quarterly:    'Premium All Access — 3 Bulan',
+      premium_monthly:      'Premium All Access - 1 Bulan',
+      premium_quarterly:    'Premium All Access - 3 Bulan',
       astra_monthly:        'ASTRA Bulanan',
       bumn_t1_monthly:      'BUMN Tahap 1 Bulanan',
       bumn_t2_monthly:      'BUMN Tahap 2 Bulanan',
-      pln_gat_monthly:      'PLN Tahap 1 GAT — 1 Bulan',
-      pln_tahap2_monthly:   `PLN Tahap 2 (${bidang ?? ''}) — 1 Bulan`,
-      pln_complete_monthly: `PLN Complete (${bidang ?? ''}) — 1 Bulan`,
+      pln_gat_monthly:      'PLN Tahap 1 GAT - 1 Bulan',
+      pln_tahap2_monthly:   `PLN Tahap 2 (${bidang ?? ''}) - 1 Bulan`,
+      pln_complete_monthly: `PLN Complete (${bidang ?? ''}) - 1 Bulan`,
       antam_monthly:        'ANTAM Bulanan',
     }
 

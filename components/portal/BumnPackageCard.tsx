@@ -158,7 +158,7 @@ export default function BumnPackageCard({ pkg, isLoggedIn, hasPremium, index }: 
 
               <BuyButton
                 planType="package"
-                planLabel={`Beli Paket — ${getSatuanPrice(pkg.slug).toLocaleString('id-ID')}`}
+                planLabel={`Beli Paket - Rp ${getSatuanPrice(pkg.slug).toLocaleString('id-ID')}`}
                 amount={getSatuanPrice(pkg.slug)}
                 packageId={pkg.id}
                 onSuccess={() => { setShowBuyModal(false); router.refresh() }}

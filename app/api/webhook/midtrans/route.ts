@@ -207,15 +207,15 @@ export async function POST(req: NextRequest) {
         const planLabelMap: Record<string, string> = {
           monthly:              'Premium Bulanan',
           yearly:               'Premium Tahunan',
-          premium_monthly:      'Premium All Access — Bulanan',
-          premium_quarterly:    'Premium All Access — 3 Bulan',
+          premium_monthly:      'Premium All Access - Bulanan',
+          premium_quarterly:    'Premium All Access - 3 Bulan',
           astra_monthly:        'ASTRA Bulanan',
           bumn_t1_monthly:      'BUMN Tahap 1 Bulanan',
           bumn_t2_monthly:      'BUMN Tahap 2 Bulanan',
           antam_monthly:        'ANTAM Bulanan',
-          pln_gat_monthly:      'PLN Tahap 1 — GAT',
-          pln_tahap2_monthly:   'PLN Tahap 2' + (bidangName ? ` — ${bidangName}` : ''),
-          pln_complete_monthly: 'PLN Complete' + (bidangName ? ` — ${bidangName}` : ''),
+          pln_gat_monthly:      'PLN Tahap 1 - GAT',
+          pln_tahap2_monthly:   'PLN Tahap 2' + (bidangName ? ` - ${bidangName}` : ''),
+          pln_complete_monthly: 'PLN Complete' + (bidangName ? ` - ${bidangName}` : ''),
         }
         const planLabel = planLabelMap[planType] ?? planType
 

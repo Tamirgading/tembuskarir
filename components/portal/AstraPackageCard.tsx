@@ -134,7 +134,7 @@ export default function AstraPackageCard({
                 <p className="text-xs text-slate-500 mb-3">Akses permanen untuk paket ini saja</p>
                 <BuyButton
                   planType="package"
-                  planLabel={`Beli Paket — ${getSatuanPrice(pkg.slug).toLocaleString('id-ID')}`}
+                  planLabel={`Beli Paket - Rp ${getSatuanPrice(pkg.slug).toLocaleString('id-ID')}`}
                   amount={getSatuanPrice(pkg.slug)}
                   packageId={pkg.id}
                   onSuccess={() => { setShowBuyModal(false); router.refresh() }}
