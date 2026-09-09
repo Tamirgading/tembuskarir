@@ -449,7 +449,41 @@ export default function StitchLandingPage() {
             {/* Cards Grid: 4 Columns with Blue Theme */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
-              {/* Card 1: Psikotes ASTRA */}
+              {/* Card 1: ANTAM IMPACT */}
+              <div className="relative bg-white rounded-2xl border border-[#9be1fd]/50 shadow-sm hover:shadow-xl hover:border-[#389add] hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+                <div>
+                  <div className="relative h-48 md:h-52 w-full overflow-hidden bg-slate-100">
+                    <img alt="Antam" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" src="/card-antam.png"/>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute top-3 right-3">
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#16487e] text-white shadow-xs backdrop-blur-xs">
+                        Update Terbaru
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-[#e0f2fe] text-[#16487e] flex items-center justify-center font-bold shrink-0">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#389add] transition-colors">ANTAM IMPACT 2026</h3>
+                    </div>
+                    <p className="text-xs font-semibold text-[#16487e] mt-1">14 Job Stream • 40 Soal • ±50 Menit</p>
+                    <p className="text-xs text-slate-600 mt-2.5 line-clamp-3 leading-relaxed">
+                      Persiapan seleksi program Management Trainee ANTAM IMPACT komprehensif: Situational Judgement &amp; Analytical Reasoning.
+                    </p>
+                  </div>
+                </div>
+                <div className="px-5 pb-5 pt-0">
+                  <div className="pt-3 border-t border-slate-100">
+                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/antam')} href="/portal/antam">
+                      Lihat Simulasi →
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: Psikotes ASTRA */}
               <div className="relative bg-white rounded-2xl border border-[#9be1fd]/50 shadow-sm hover:shadow-xl hover:border-[#389add] hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
                 <div>
                   <div className="relative h-48 md:h-52 w-full overflow-hidden bg-slate-100">
@@ -483,7 +517,7 @@ export default function StitchLandingPage() {
                 </div>
               </div>
 
-              {/* Card 2: Rekrutmen PLN — Coming Soon */}
+              {/* Card 3: Rekrutmen PLN — Coming Soon */}
               <div className="relative bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between overflow-hidden opacity-80">
                 <div>
                   <div className="relative h-48 md:h-52 w-full overflow-hidden bg-slate-100">
@@ -513,40 +547,6 @@ export default function StitchLandingPage() {
                     <span className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-slate-400 bg-slate-100 rounded-xl cursor-not-allowed">
                       🔒 Segera Hadir
                     </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3: ANTAM IMPACT */}
-              <div className="relative bg-white rounded-2xl border border-[#9be1fd]/50 shadow-sm hover:shadow-xl hover:border-[#389add] hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
-                <div>
-                  <div className="relative h-48 md:h-52 w-full overflow-hidden bg-slate-100">
-                    <img alt="Antam" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" src="/card-antam.png"/>
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60"></div>
-                    <div className="absolute top-3 right-3">
-                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#16487e] text-white shadow-xs backdrop-blur-xs">
-                        Update Terbaru
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#e0f2fe] text-[#16487e] flex items-center justify-center font-bold shrink-0">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#389add] transition-colors">ANTAM IMPACT 2026</h3>
-                    </div>
-                    <p className="text-xs font-semibold text-[#16487e] mt-1">14 Job Stream • 40 Soal • ±50 Menit</p>
-                    <p className="text-xs text-slate-600 mt-2.5 line-clamp-3 leading-relaxed">
-                      Persiapan seleksi program Management Trainee ANTAM IMPACT komprehensif: Situational Judgement &amp; Analytical Reasoning.
-                    </p>
-                  </div>
-                </div>
-                <div className="px-5 pb-5 pt-0">
-                  <div className="pt-3 border-t border-slate-100">
-                    <a className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold text-white bg-[#16487e] hover:bg-[#389add] rounded-xl transition-all shadow-sm group-hover:shadow-md" onClick={(e) => handlePortalClick(e, '/portal/antam')} href="/portal/antam">
-                      Lihat Simulasi →
-                    </a>
                   </div>
                 </div>
               </div>
