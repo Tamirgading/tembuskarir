@@ -59,7 +59,7 @@ export default function UjianPage() {
   const [showConfirm, setShowConfirm]   = useState(false)
   const [loadError, setLoadError]       = useState('')
   const [isLoading, setIsLoading]       = useState(true)
-  const [theme, setTheme]               = useState<ThemeConfig>(THEME_DEFAULT)
+  const theme = THEME_DEFAULT
 
   const timerRef        = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoSubmitRef   = useRef(false)
