@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ArrowLeft, ArrowRight, Clock, FileText, CheckCircle2, Sparkles, BookOpen,
+  ArrowLeft, ArrowRight, Clock, FileText, Sparkles, BookOpen, Lock,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getStreamBySlug } from '@/lib/antam-config'
@@ -56,19 +56,37 @@ export default async function AntamStreamPage({
     return `Paket ${suffix}`
   }
 
-  // Akses per paket (butuh login)
+  // Akses & skor per paket (butuh login)
   const accessMap: Record<string, string> = {}
+  const bestScores: Record<string, number> = {}
   if (user) {
     await Promise.all(streamPkgs.map(async (p) => {
       const status = await checkPackageAccess(user.id, p.id, p.is_free, p.slug)
       accessMap[p.id] = status
     }))
+
+    if (streamPkgs.length > 0) {
+      const pkgIds = streamPkgs.map((p) => p.id)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: attemptsData } = await (supabase.from('attempts') as any)
+        .select('package_id, score')
+        .eq('user_id', user.id)
+        .eq('status', 'finished')
+        .in('package_id', pkgIds)
+      if (attemptsData) {
+        for (const att of attemptsData as { package_id: string; score: number | null }[]) {
+          if (att.score !== null && att.score !== undefined) {
+            bestScores[att.package_id] = Math.max(bestScores[att.package_id] ?? 0, att.score)
+          }
+        }
+      }
+    }
   }
 
   const accent = STREAM_ACCENTS[stream.code] ?? '#15803d'
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* ── Back + Header ── */}
       <div>
         <Link href="/portal/antam" className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-muted hover:text-ink transition-colors">
@@ -146,51 +164,104 @@ export default async function AntamStreamPage({
         </div>
       )}
 
-      {/* ── Daftar Paket ── */}
+      {/* ── Daftar Paket (Card Grid) ── */}
       <div>
-        <h2 className="text-sm font-bold text-ink-muted uppercase tracking-widest mb-3">Pilih Paket</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-sm font-bold text-ink-muted uppercase tracking-widest">Pilih Paket Ujian</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Tersedia {streamPkgs.length} paket simulasi CAT teknis berbobot 40 butir soal</p>
+          </div>
+        </div>
+
         {streamPkgs.length === 0 ? (
           <div className="bg-white rounded-2xl border border-hairline shadow-soft p-10 text-center">
             <p className="font-semibold text-ink">Belum ada paket tersedia</p>
             <p className="text-xs text-ink-muted mt-1">Paket untuk stream ini akan segera hadir.</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {streamPkgs.map((p) => {
-              const label = packageLabel(p.slug) ?? 'Paket 1'
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {streamPkgs.map((p, idx) => {
+              const label = packageLabel(p.slug) ?? `Paket ${idx + 1}`
               const access = accessMap[p.id]
               const isLocked = !!user && access === 'locked'
+              const bestScore = bestScores[p.id]
 
               return (
-                <div key={p.id} className="bg-white rounded-2xl border border-hairline shadow-soft px-5 py-4 flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5 text-brand" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-heading font-bold text-ink">{label}</p>
-                      {p.is_free && (
-                        <span className="text-[9px] font-bold text-white bg-brand px-2 py-0.5 rounded-full">GRATIS</span>
+                <div
+                  key={p.id}
+                  className="group bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-5 flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Top: Icon & Badge */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-[#00315f]/10 text-[#00315f] flex items-center justify-center transition-colors">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      {p.is_free ? (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                          GRATIS
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                          PREMIUM
+                        </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-[11px] text-ink-muted mt-1">
-                      <span className="flex items-center gap-1"><FileText className="w-3 h-3" /><span className="font-num">{p.total_questions}</span> soal</span>
-                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /><span className="font-num">{p.duration_minutes}</span> menit</span>
+
+                    {/* Title */}
+                    <h3 className="font-heading font-bold text-slate-900 text-base group-hover:text-[#00315f] transition-colors">
+                      {label}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                      Simulasi CAT Teknis {stream.name} (40 Soal Pilihan Ganda)
+                    </p>
+
+                    {/* Stats pills */}
+                    <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-slate-100 text-xs">
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <FileText className="w-3.5 h-3.5 text-slate-400" />
+                        <span><strong className="font-semibold text-slate-800">{p.total_questions}</strong> Soal</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <span><strong className="font-semibold text-slate-800">{p.duration_minutes}</strong> Menit</span>
+                      </div>
                     </div>
+
+                    {/* Score badge if finished */}
+                    {bestScore !== undefined && (
+                      <div className="mt-3 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between text-xs text-emerald-800">
+                        <span className="font-medium">Skor Terbaik:</span>
+                        <span className="font-bold font-num">{bestScore} / {p.total_questions}</span>
+                      </div>
+                    )}
                   </div>
-                  {!user ? (
-                    <Link href={`/persiapan/${p.id}`} className="shrink-0 inline-flex items-center gap-1 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition-colors">
-                      Mulai <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  ) : isLocked ? (
-                    <Link href="/harga" className="shrink-0 inline-flex items-center gap-1 px-3.5 py-2 bg-white border border-hairline text-ink text-xs font-bold rounded-xl hover:bg-paper-soft transition-colors">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-ink-muted" /> Upgrade
-                    </Link>
-                  ) : (
-                    <Link href={`/persiapan/${p.id}`} className="shrink-0 inline-flex items-center gap-1 px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition-colors">
-                      Mulai <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  )}
+
+                  {/* Action Button */}
+                  <div className="mt-5 pt-3 border-t border-slate-100">
+                    {!user ? (
+                      <Link
+                        href={`/persiapan/${p.id}`}
+                        className="w-full py-2.5 bg-gradient-to-r from-[#00315f] to-[#16487e] hover:brightness-110 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                      >
+                        Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    ) : isLocked ? (
+                      <Link
+                        href="/harga"
+                        className="w-full py-2.5 bg-slate-50 hover:bg-amber-50 text-slate-700 hover:text-amber-800 border border-slate-200 hover:border-amber-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                      >
+                        <Lock className="w-3.5 h-3.5 text-amber-600" /> Buka Akses Premium
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/persiapan/${p.id}`}
+                        className="w-full py-2.5 bg-gradient-to-r from-[#00315f] to-[#16487e] hover:brightness-110 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                      >
+                        Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    )}
+                  </div>
                 </div>
               )
             })}
