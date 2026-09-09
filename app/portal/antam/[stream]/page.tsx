@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ArrowLeft, ArrowRight, Clock, FileText, Sparkles, BookOpen, Lock,
+  ArrowLeft, ArrowRight, Clock, FileText, Sparkles, Lock,
 } from 'lucide-react'
+import { AntamKisiKisiModal } from '@/components/antam/AntamKisiKisiModal'
 import { createClient } from '@/lib/supabase/server'
 import { getStreamBySlug } from '@/lib/antam-config'
 import { checkPackageAccess } from '@/lib/access'
@@ -104,50 +105,29 @@ export default async function AntamStreamPage({
             </div>
           </div>
 
-          <div className="flex gap-4 mt-5 flex-wrap">
-            {[
-              { label: 'Paket Tersedia', value: String(streamPkgs.length) },
-              { label: 'Soal/Paket', value: streamPkgs[0] ? String(streamPkgs[0].total_questions) : '40' },
-              { label: 'Waktu', value: streamPkgs[0] ? `${streamPkgs[0].duration_minutes} mnt` : '50 mnt' },
-            ].map((s) => (
-              <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[86px]">
-                <p className="text-white font-num font-bold text-sm">{s.value}</p>
-                <p className="text-white/55 text-xs mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* ── Kisi-kisi & Materi yang Diujikan ── */}
-          {stream.topics && stream.topics.length > 0 && (
-            <div className="mt-6 pt-5 border-t border-white/15">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-amber-300" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white/90">
-                    Kisi-Kisi &amp; Topik yang Diujikan ({stream.topics.length} Topik)
-                  </h3>
+          <div className="flex gap-4 mt-6 flex-wrap items-center justify-between">
+            <div className="flex gap-3 sm:gap-4 flex-wrap">
+              {[
+                { label: 'Paket Tersedia', value: String(streamPkgs.length) },
+                { label: 'Soal/Paket', value: streamPkgs[0] ? String(streamPkgs[0].total_questions) : '40' },
+                { label: 'Waktu', value: streamPkgs[0] ? `${streamPkgs[0].duration_minutes} mnt` : '50 mnt' },
+              ].map((s) => (
+                <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[86px]">
+                  <p className="text-white font-num font-bold text-sm">{s.value}</p>
+                  <p className="text-white/55 text-xs mt-0.5">{s.label}</p>
                 </div>
-                <span className="text-[11px] text-white/60">40 Soal Pilihan Ganda</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {stream.topics.map((topic, i) => (
-                  <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 hover:bg-white/15 transition-colors">
-                    <div className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-white/20 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                        {i + 1}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-bold text-white leading-snug">{topic.name}</p>
-                        <p className="text-[11px] text-white/70 mt-1 leading-relaxed">
-                          {topic.subtopics.join(' · ')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
-          )}
+
+            {stream.topics && stream.topics.length > 0 && (
+              <AntamKisiKisiModal
+                streamName={stream.name}
+                streamCode={stream.code}
+                jurusan={stream.jurusan}
+                topics={stream.topics}
+              />
+            )}
+          </div>
         </div>
       </div>
 
