@@ -141,8 +141,8 @@ export function AntamKisiKisiModal({
 
             {/* Footer with Paraphrased Note */}
             <div className="p-5 border-t border-slate-100 bg-slate-50/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <p className="text-[11.5px] text-slate-500 italic leading-relaxed flex-1">
-                *Rangkuman kisi-kisi dan materi teknis ini dirumuskan secara komprehensif berdasarkan silabus standar kompetensi industri pertambangan serta dihimpun dari pengalaman dan evaluasi langsung para peserta seleksi ujian teknis (CAT) periode sebelumnya.
+              <p className="text-xs text-slate-500 italic leading-relaxed flex-1">
+                *Kisi-kisi disusun berdasarkan silabus kompetensi dan pengalaman peserta ujian teknis periode sebelumnya.
               </p>
               <button
                 onClick={() => setIsOpen(false)}
