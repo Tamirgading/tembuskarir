@@ -3,9 +3,10 @@ import Link from 'next/link'
 import {
   ArrowLeft, ArrowRight, Clock, FileText, Sparkles, Lock,
 } from 'lucide-react'
+import Image from 'next/image'
 import { AntamKisiKisiModal } from '@/components/antam/AntamKisiKisiModal'
 import { createClient } from '@/lib/supabase/server'
-import { getStreamBySlug } from '@/lib/antam-config'
+import { getStreamBySlug, getStreamImage } from '@/lib/antam-config'
 import { checkPackageAccess } from '@/lib/access'
 import type { PackageRow } from '@/lib/utils'
 
@@ -96,37 +97,51 @@ export default async function AntamStreamPage({
       </div>
 
       <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
-        <div className="px-6 py-7 text-white" style={{ background: `linear-gradient(135deg, ${accent}, #0d2818)` }}>
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <p className="text-white/55 text-xs font-bold uppercase tracking-widest mb-1">ANTAM IMPACT 2026</p>
-              <h1 className="text-2xl font-heading font-extrabold leading-tight">{stream.name}</h1>
-              <p className="text-white/65 text-sm mt-2 leading-relaxed">{stream.jurusan}</p>
-            </div>
-          </div>
+        <div className="px-6 sm:px-8 py-7 text-white relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${accent}, #0d2818)` }}>
+          <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-xs font-bold mb-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                ANTAM IMPACT 2026 • STREAM {stream.code}
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-heading font-extrabold leading-tight">{stream.name}</h1>
+              <p className="text-white/70 text-sm mt-2 leading-relaxed max-w-xl">{stream.jurusan}</p>
 
-          <div className="flex gap-4 mt-6 flex-wrap items-center justify-between">
-            <div className="flex gap-3 sm:gap-4 flex-wrap">
-              {[
-                { label: 'Paket Tersedia', value: String(streamPkgs.length) },
-                { label: 'Soal/Paket', value: streamPkgs[0] ? String(streamPkgs[0].total_questions) : '40' },
-                { label: 'Waktu', value: streamPkgs[0] ? `${streamPkgs[0].duration_minutes} mnt` : '50 mnt' },
-              ].map((s) => (
-                <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[86px]">
-                  <p className="text-white font-num font-bold text-sm">{s.value}</p>
-                  <p className="text-white/55 text-xs mt-0.5">{s.label}</p>
+              <div className="flex gap-3 sm:gap-4 mt-6 flex-wrap items-center">
+                <div className="flex gap-2 sm:gap-3 flex-wrap">
+                  {[
+                    { label: 'Paket Tersedia', value: String(streamPkgs.length) },
+                    { label: 'Soal/Paket', value: streamPkgs[0] ? String(streamPkgs[0].total_questions) : '40' },
+                    { label: 'Waktu', value: streamPkgs[0] ? `${streamPkgs[0].duration_minutes} mnt` : '50 mnt' },
+                  ].map((s) => (
+                    <div key={s.label} className="bg-white/10 rounded-xl px-3.5 py-2 text-center min-w-[76px] backdrop-blur-sm">
+                      <p className="text-white font-num font-bold text-sm">{s.value}</p>
+                      <p className="text-white/55 text-[10px] mt-0.5">{s.label}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+
+                {stream.topics && stream.topics.length > 0 && (
+                  <AntamKisiKisiModal
+                    streamName={stream.name}
+                    streamCode={stream.code}
+                    jurusan={stream.jurusan}
+                    topics={stream.topics}
+                  />
+                )}
+              </div>
             </div>
 
-            {stream.topics && stream.topics.length > 0 && (
-              <AntamKisiKisiModal
-                streamName={stream.name}
-                streamCode={stream.code}
-                jurusan={stream.jurusan}
-                topics={stream.topics}
+            {/* Ilustrasi Resmi Stream */}
+            <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 shrink-0 self-center md:self-auto rounded-2xl overflow-hidden shadow-xl border-2 border-white/20 bg-white/10 backdrop-blur-sm">
+              <Image
+                src={getStreamImage(stream.code)}
+                alt={`Ilustrasi ${stream.name}`}
+                fill
+                className="object-cover"
+                priority
               />
-            )}
+            </div>
           </div>
         </div>
       </div>

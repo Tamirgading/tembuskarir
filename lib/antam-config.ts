@@ -215,6 +215,27 @@ export function getStreamByCode(code: string): AntamStream | undefined {
   return ANTAM_STREAMS[code]
 }
 
+export const ANTAM_STREAM_IMAGES: Record<string, string> = {
+  EXP: '/antam/exp.jfif',
+  MIN: '/antam/min.jfif',
+  PRC: '/antam/prc.jfif',
+  ENG: '/antam/eng.jfif',
+  HSE: '/antam/hse.jfif',
+  QC:  '/antam/qc.jfif',
+  MKT: '/antam/mkt.jfif',
+  BDV: '/antam/bdv.jfif',
+  SCM: '/antam/scm.jfif',
+  HCM: '/antam/hcm.jfif',
+  LGL: '/antam/lgl.jfif',
+  FIN: '/antam/fin.jfif',
+  CRL: '/antam/crl.jfif',
+  IT:  '/antam/IT.jfif',
+}
+
+export function getStreamImage(code: string): string {
+  return ANTAM_STREAM_IMAGES[code.toUpperCase()] ?? '/antam/exp.jfif'
+}
+
 /**
  * Map kode kategori soal (T1..Tn) → nama topik per stream.
  * Urutan topik soal dibuat berindeks dari stream.topics, jadi T{n} ↔ topics[n-1].
