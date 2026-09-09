@@ -213,7 +213,7 @@ export default async function AntamStreamPage({
                       {label}
                     </h3>
                     <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                      Simulasi CAT Teknis {stream.name} (40 Soal Pilihan Ganda)
+                      Simulasi CAT Teknis {stream.name}
                     </p>
 
                     {/* Stats pills */}
