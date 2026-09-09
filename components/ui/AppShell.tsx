@@ -184,11 +184,11 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
         {collapsed && !isMobile && (
           <div className="relative w-8 h-8 mx-auto group/logo">
             <Link href="/dashboard"
-              className="absolute inset-0 grid place-items-center bg-[#00315f] rounded-[9px] shadow-sm group-hover/logo:opacity-0 group-hover/logo:pointer-events-none transition-opacity duration-150">
-              <Image src="/iconlogo.png" alt="TembusKarir" width={18} height={18} className="w-[18px] h-[18px]" priority />
+              className="absolute inset-0 grid place-items-center bg-white border border-slate-200 rounded-xl shadow-xs group-hover/logo:opacity-0 group-hover/logo:pointer-events-none transition-opacity duration-150">
+              <Image src="/iconlogo.png" alt="TembusKarir" width={20} height={20} className="w-5 h-5 object-contain rounded-md" priority />
             </Link>
             <button onClick={toggleSidebar} title="Tampilkan sidebar"
-              className="absolute inset-0 grid place-items-center bg-[#d4e3ff] rounded-[9px] text-[#00315f] opacity-0 group-hover/logo:opacity-100 transition-opacity duration-150">
+              className="absolute inset-0 grid place-items-center bg-white hover:bg-[#e2e7ff] border border-slate-200 rounded-xl text-[#00315f] opacity-0 group-hover/logo:opacity-100 transition-opacity duration-150 shadow-xs">
               <PanelLeft className="w-[18px] h-[18px]" />
             </button>
           </div>
