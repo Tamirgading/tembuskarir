@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock, ArrowRight } from 'lucide-react'
+import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
@@ -129,8 +129,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     const idx = allRows.findIndex((r) => r.user_id === user.id)
     if (idx >= 0) antamRank = idx + 1
 
-    // Top 5 + nama peserta (real user)
-    const topRows = allRows.slice(0, 5)
+    // Top 10 + nama peserta (real user)
+    const topRows = allRows.slice(0, 10)
     const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
     const myRaw = allRows.find((r) => r.user_id === user.id) ?? null
     const myIds = Array.from(new Set([...realTopIds, ...(myRaw?.user_id ? [myRaw.user_id] : [])]))
@@ -322,122 +322,108 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
       )}
 
-      {/* ══ Leaderboard + Rincian per sub-tes (bersebelahan) ══ */}
+      {/* ══ Rincian per sub-tes & Leaderboard ANTAM ══ */}
       {(pkg?.category === 'ANTAM' || subtests.length > 0) && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-      {/* ══ Leaderboard ANTAM ══ */}
-      {pkg?.category === 'ANTAM' && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col">
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
-                <LeaderboardIllustration className="w-5 h-5" />
+        <div className={`grid grid-cols-1 ${pkg?.category === 'ANTAM' && subtests.length > 0 && !showBlur ? 'lg:grid-cols-4' : 'lg:grid-cols-1'} gap-5 items-stretch`}>
+          {/* ══ Rincian per sub-tes (premium only) — Kolom 1-3 ══ */}
+          {!showBlur && subtests.length > 0 && (
+            <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${pkg?.category === 'ANTAM' ? 'lg:col-span-3' : 'w-full'}`}>
+              <div className="flex items-center justify-between mb-3">
+                <SectionLabel>Rincian per sub-tes</SectionLabel>
+                {weakest && <span className="text-[11px] text-slate-500">Terlemah: <b className="text-slate-900">{weakest.code}</b></span>}
               </div>
-              <div>
-                <p className="text-[13px] font-bold text-slate-900 leading-tight">Leaderboard</p>
-                <p className="text-[11px] text-slate-500">
-                  {antamRank > 0
-                    ? <>Rank <b className="text-slate-900">#{antamRank}</b> / <b className="text-slate-900">{antamTotal}</b></>
-                    : <>Belum ada peserta</>}
-                </p>
-              </div>
-            </div>
-            <Link
-              href={`/paket/${attempt.package_id}/leaderboard`}
-              className="shrink-0 flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white text-[11px] font-bold rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Lihat Semua <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-
-          {/* Daftar peringkat (top 5) — padat */}
-          <div className="flex-1 space-y-1">
-            {leaderboardRows.map((entry, i) => {
-              const rank = i + 1
-              const isMe = entry.user_id === user.id
-              const medalCls =
-                rank === 1 ? 'bg-amber-100 text-amber-700'
-                : rank === 2 ? 'bg-slate-100 text-slate-600'
-                : rank === 3 ? 'bg-orange-100 text-orange-700'
-                : 'bg-slate-50 text-slate-500'
-              return (
-                <div
-                  key={entry.key}
-                  className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border ${isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-slate-50'}`}
-                >
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${medalCls}`}>
-                    {rank}
-                  </span>
-                  <span className="flex-1 min-w-0 truncate text-xs font-medium text-slate-900">
-                    {entry.display_name || 'Anonim'}
-                    {isMe && <span className="ml-1 text-[10px] text-green-600 font-semibold">(kamu)</span>}
-                  </span>
-                  {entry.duration_seconds != null && (
-                    <span className="text-[10px] text-slate-500 tabular-nums shrink-0 hidden sm:block">
-                      {formatDuration(entry.duration_seconds)}
+              <div className="flex-1 space-y-2">
+                {subtests.map((s) => (
+                  <div key={s.code} className="flex items-center gap-2 sm:gap-3">
+                    <span className="w-10 text-[10px] font-bold text-center text-slate-900 bg-slate-50 border border-slate-200/80 rounded-md py-1 shrink-0">{s.code}</span>
+                    <span className="flex-1 text-xs text-slate-700 font-medium truncate min-w-0">{antamLabels?.[s.code] ?? SUBTEST_FULL[s.code] ?? s.code}</span>
+                    <span className="w-24 sm:w-44 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0 border border-slate-200/60">
+                      <span className="block h-full rounded-full transition-all" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F59E0B' : '#10B981' }} />
                     </span>
-                  )}
-                  <span className={`font-bold text-[13px] shrink-0 tabular-nums ${entry.score >= 75 ? 'text-green-600' : 'text-slate-900'}`}>
-                    {entry.score}
-                  </span>
-                </div>
-              )
-            })}
-            {leaderboardRows.length === 0 && (
-              <p className="text-center text-[11px] text-slate-500 py-4">Belum ada peserta. Jadilah yang pertama!</p>
-            )}
-          </div>
-
-          {/* Rank kamu — paling bawah */}
-          {myRow && antamRank > 5 && (
-            <div className="mt-2 pt-2 border-t border-slate-200">
-              <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-green-50 border border-green-200">
-                <span className="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-                  {antamRank}
-                </span>
-                <span className="flex-1 min-w-0 truncate text-xs font-medium text-green-800">
-                  {myRow.display_name || 'Anonim'} <span className="text-[10px] text-green-600 font-semibold">(kamu)</span>
-                </span>
-                {myRow.duration_seconds != null && (
-                  <span className="text-[10px] text-green-600 tabular-nums shrink-0 hidden sm:block">
-                    {formatDuration(myRow.duration_seconds)}
-                  </span>
-                )}
-                <span className={`font-bold text-[13px] shrink-0 tabular-nums ${myRow.score >= 75 ? 'text-green-600' : 'text-green-700'}`}>
-                  {myRow.score}
-                </span>
+                    <span className="w-14 text-right text-xs text-slate-500 shrink-0 tabular-nums">{s.correct}/{s.total}</span>
+                    <span className="w-10 text-right font-bold text-xs text-slate-900 shrink-0 tabular-nums">{s.pct}%</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
-          <p className="text-[10px] text-slate-500 mt-2 border-t border-slate-200 pt-2">
-            Skor percobaan pertama yang dihitung.
-          </p>
-        </div>
-      )}
-
-      {/* ══ Rincian per sub-tes (premium only) ══ */}
-      {!showBlur && subtests.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col">
-          <div className="flex items-center justify-between mb-3">
-            <SectionLabel>Rincian per sub-tes</SectionLabel>
-            {weakest && <span className="text-[11px] text-slate-500">Terlemah: <b className="text-slate-900">{weakest.code}</b></span>}
-          </div>
-          <div className="flex-1 space-y-1.5">
-            {subtests.map((s) => (
-              <div key={s.code} className="flex items-center gap-2">
-                <span className="w-10 text-[10px] font-bold text-center text-slate-900 bg-slate-50 rounded-md py-1 shrink-0">{s.code}</span>
-                <span className="flex-1 text-xs text-slate-600 truncate min-w-0">{antamLabels?.[s.code] ?? SUBTEST_FULL[s.code] ?? s.code}</span>
-                <span className="flex-1 max-w-[160px] h-1.5 bg-slate-200 rounded-full overflow-hidden shrink-0">
-                  <span className="block h-full rounded-full" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F4B400' : '#0E9F6E' }} />
-                </span>
-                <span className="w-12 text-right text-xs text-slate-900 shrink-0 tabular-nums">{s.correct}/{s.total}</span>
-                <span className="w-9 text-right font-semibold text-xs text-slate-900 shrink-0 tabular-nums">{s.pct}%</span>
+          {/* ══ Leaderboard ANTAM — Kolom 4 (1 kolom paling kanan) ══ */}
+          {pkg?.category === 'ANTAM' && (
+            <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${subtests.length > 0 && !showBlur ? 'lg:col-span-1' : 'w-full'}`}>
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-green-50 border border-green-200 flex items-center justify-center shrink-0">
+                  <LeaderboardIllustration className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-bold text-slate-900 leading-tight">Leaderboard</p>
+                  <p className="text-[11px] text-slate-500 truncate">
+                    {antamRank > 0 ? (
+                      <>Rank <b className="text-green-700 font-bold">#{antamRank}</b> <span className="text-slate-400">/ {antamTotal}</span></>
+                    ) : (
+                      <>Belum ada peserta</>
+                    )}
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+
+              {/* Daftar peringkat — scrollable di dalam card tanpa pindah halaman */}
+              <div className="flex-1 space-y-1 max-h-[230px] overflow-y-auto pr-1">
+                {leaderboardRows.map((entry, i) => {
+                  const rank = i + 1
+                  const isMe = entry.user_id === user.id
+                  const medalCls =
+                    rank === 1 ? 'bg-amber-100 text-amber-700'
+                    : rank === 2 ? 'bg-slate-200 text-slate-700'
+                    : rank === 3 ? 'bg-orange-100 text-orange-700'
+                    : 'bg-slate-50 text-slate-500'
+                  return (
+                    <div
+                      key={entry.key}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs ${
+                        isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${medalCls}`}>
+                        {rank}
+                      </span>
+                      <span className="flex-1 min-w-0 truncate font-medium text-slate-900">
+                        {entry.display_name || 'Anonim'}
+                        {isMe && <span className="ml-1 text-[10px] text-green-600 font-semibold">(kamu)</span>}
+                      </span>
+                      <span className={`font-bold text-xs shrink-0 tabular-nums ${entry.score >= 75 ? 'text-green-600' : 'text-slate-900'}`}>
+                        {entry.score}
+                      </span>
+                    </div>
+                  )
+                })}
+                {leaderboardRows.length === 0 && (
+                  <p className="text-center text-[11px] text-slate-500 py-4">Belum ada peserta.</p>
+                )}
+              </div>
+
+              {/* Rank kamu jika berada di luar daftar atas */}
+              {myRow && antamRank > leaderboardRows.length && (
+                <div className="mt-2 pt-2 border-t border-slate-200">
+                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-green-50 border border-green-200 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                      {antamRank}
+                    </span>
+                    <span className="flex-1 min-w-0 truncate font-medium text-green-800">
+                      {myRow.display_name || 'Anonim'} <span className="text-[10px] text-green-600 font-semibold">(kamu)</span>
+                    </span>
+                    <span className={`font-bold text-xs shrink-0 tabular-nums ${myRow.score >= 75 ? 'text-green-600' : 'text-green-700'}`}>
+                      {myRow.score}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <p className="text-[10px] text-slate-400 mt-2 border-t border-slate-100 pt-1.5 text-center">
+                Skor percobaan pertama
+              </p>
+            </div>
+          )}
         </div>
       )}
 
