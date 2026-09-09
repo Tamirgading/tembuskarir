@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ArrowLeft, ArrowRight, Clock, FileText, CheckCircle2, Sparkles,
+  ArrowLeft, ArrowRight, Clock, FileText, CheckCircle2, Sparkles, BookOpen,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getStreamBySlug } from '@/lib/antam-config'
@@ -79,9 +79,6 @@ export default async function AntamStreamPage({
       <div className="rounded-3xl overflow-hidden border border-hairline shadow-soft">
         <div className="px-6 py-7 text-white" style={{ background: `linear-gradient(135deg, ${accent}, #0d2818)` }}>
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
-              <span className="font-num font-bold text-lg">{stream.code}</span>
-            </div>
             <div className="flex-1">
               <p className="text-white/55 text-xs font-bold uppercase tracking-widest mb-1">ANTAM IMPACT 2026</p>
               <h1 className="text-2xl font-heading font-extrabold leading-tight">{stream.name}</h1>
@@ -101,6 +98,38 @@ export default async function AntamStreamPage({
               </div>
             ))}
           </div>
+
+          {/* ── Kisi-kisi & Materi yang Diujikan ── */}
+          {stream.topics && stream.topics.length > 0 && (
+            <div className="mt-6 pt-5 border-t border-white/15">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-amber-300" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-white/90">
+                    Kisi-Kisi &amp; Topik yang Diujikan ({stream.topics.length} Topik)
+                  </h3>
+                </div>
+                <span className="text-[11px] text-white/60">40 Soal Pilihan Ganda</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {stream.topics.map((topic, i) => (
+                  <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 hover:bg-white/15 transition-colors">
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-md bg-white/20 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        {i + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-white leading-snug">{topic.name}</p>
+                        <p className="text-[11px] text-white/70 mt-1 leading-relaxed">
+                          {topic.subtopics.join(' · ')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

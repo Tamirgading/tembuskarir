@@ -1,7 +1,7 @@
 import type React from 'react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Lightbulb, Mountain } from 'lucide-react'
+import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Lightbulb, Mountain, CheckCircle2, ArrowLeftRight, ShieldCheck } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { computeScore, isAttemptExpired, ASTRA_SUBTESTS } from '@/lib/exam-scoring'
@@ -179,7 +179,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
               { icon: <Clipboard className="w-5 h-5 text-sky-300" />, label: 'Soal', value: `${pkg.total_questions}` },
               { icon: <Clock className="w-5 h-5 text-sky-300" />, label: 'Durasi', value: `${displayDuration} mnt` },
               { icon: <Trophy className="w-5 h-5 text-sky-300" />, label: 'Skor Max', value: isStage ? 'PG' : `${pkg.total_questions}` },
-              { icon: <BarChart2 className="w-5 h-5 text-sky-300" />, label: isAntam ? 'Topik' : 'Sub-tes', value: isStage ? `${sectionCount ?? 0}` : isAstra ? '7' : isAntam && antamStream ? `${antamStream.topics.length}` : '-' },
+              { icon: <BarChart2 className="w-5 h-5 text-sky-300" />, label: isAntam ? 'Tipe Tes' : 'Sub-tes', value: isStage ? `${sectionCount ?? 0}` : isAstra ? '7' : isAntam ? 'CAT' : '-' },
             ] as { icon: React.ReactNode; label: string; value: string }[]).map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-2.5 text-center min-w-[80px]">
                 <div className="flex justify-center mb-0.5">{s.icon}</div>
@@ -211,38 +211,35 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             </div>
           )}
 
-          {/* Topik kisi-kisi (ANTAM) */}
-          {isAntam && antamStream && (
-            <div>
-              <SectionLabel className="mb-3">Kisi-kisi Materi ({antamStream.topics.length} Topik)</SectionLabel>
-              <div className="space-y-2">
-                {antamStream.topics.map((topic, i) => (
-                  <div key={i} className="rounded-xl border border-slate-200/90 bg-slate-50 px-4 py-3">
-                    <p className="text-sm font-semibold text-slate-900">{topic.name}</p>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{topic.subtopics.join(' · ')}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Tata tertib */}
           <div>
             <SectionLabel className="mb-3">Sebelum Memulai</SectionLabel>
             <div className="space-y-2">
-              {([
-                { icon: <Clock className="w-4 h-4 text-[#00315f]" />, text: `Waktu ujian ${displayDuration} menit dan terus berjalan setelah dimulai`, show: true },
-                { icon: <Lock className="w-4 h-4 text-slate-500" />, text: 'Jawaban tidak bisa diubah dan tidak bisa kembali ke soal sebelumnya', show: true },
-                { icon: <Wifi className="w-4 h-4 text-[#00315f]" />, text: 'Pastikan koneksi internet stabil selama ujian', show: true },
-                { icon: <Lightbulb className="w-4 h-4 text-amber-500" />, text: 'Baca soal dengan teliti sebelum menjawab', show: true },
-              ] as { icon: React.ReactNode; text: string; show: boolean }[])
-                .filter((item) => item.show)
-                .map((item) => (
-                  <div key={item.text} className="flex items-start gap-3 bg-slate-50 rounded-xl px-4 py-3 text-sm border border-slate-200/90">
-                    <span className="shrink-0 mt-0.5">{item.icon}</span>
-                    <p className="text-slate-600 leading-relaxed">{item.text}</p>
-                  </div>
-                ))}
+              {(isAntam ? [
+                { icon: <Clock className="w-4 h-4 text-[#00315f]" />, text: `Waktu ujian ${displayDuration} menit dan timer otomatis berjalan setelah dimulai` },
+                { icon: <ArrowLeftRight className="w-4 h-4 text-emerald-600" />, text: 'Anda dapat bebas berpindah antar nomor soal dan meninjau kembali jawaban sebelum waktu habis' },
+                { icon: <CheckCircle2 className="w-4 h-4 text-sky-600" />, text: 'Jawaban tersimpan secara otomatis di sistem setiap kali Anda memilih opsi' },
+                { icon: <Clock className="w-4 h-4 text-amber-600" />, text: 'Sistem akan otomatis mengumpulkan ujian ketika batas waktu pengerjaan berakhir' },
+                { icon: <Wifi className="w-4 h-4 text-[#00315f]" />, text: 'Pastikan koneksi internet stabil dan gunakan browser versi terbaru selama ujian' },
+                { icon: <ShieldCheck className="w-4 h-4 text-purple-600" />, text: 'Kerjakan secara mandiri dan teliti untuk mengukur penguasaan kompetensi sesungguhnya' },
+              ] : [
+                { icon: <Clock className="w-4 h-4 text-[#00315f]" />, text: `Waktu ujian ${displayDuration} menit dan terus berjalan setelah dimulai` },
+                ...(isAstra ? [
+                  { icon: <Clock className="w-4 h-4 text-amber-600" />, text: 'Waktu berjalan per sub-tes dan akan berpindah otomatis ke sub-tes berikutnya' },
+                ] : pkg.slug?.startsWith('gat-') ? [
+                  { icon: <Lock className="w-4 h-4 text-slate-500" />, text: 'Sistem ujian bertahap: perhatikan alokasi waktu pada setiap sesi soal' },
+                ] : [
+                  { icon: <ArrowLeftRight className="w-4 h-4 text-emerald-600" />, text: 'Anda dapat berpindah antar soal dan meninjau kembali jawaban sebelum waktu habis' },
+                ]),
+                { icon: <CheckCircle2 className="w-4 h-4 text-sky-600" />, text: 'Jawaban tersimpan secara otomatis setiap kali Anda memilih opsi' },
+                { icon: <Wifi className="w-4 h-4 text-[#00315f]" />, text: 'Pastikan koneksi internet stabil selama ujian' },
+                { icon: <Lightbulb className="w-4 h-4 text-amber-500" />, text: 'Baca soal dengan teliti dan kerjakan secara mandiri' },
+              ]).map((item, idx) => (
+                <div key={idx} className="flex items-start gap-3 bg-slate-50 rounded-xl px-4 py-3 text-sm border border-slate-200/90">
+                  <span className="shrink-0 mt-0.5">{item.icon}</span>
+                  <p className="text-slate-600 leading-relaxed">{item.text}</p>
+                </div>
+              ))}
             </div>
           </div>
 
