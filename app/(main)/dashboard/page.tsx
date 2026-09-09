@@ -1,12 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   CheckCircle2, Lock, ArrowRight, RefreshCw, ClipboardCheck, Trophy,
   BarChart2, BookOpen, Clock,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import SimulationCatalogSlider from '@/components/dashboard/SimulationCatalogSlider'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -222,133 +222,8 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Rekomendasi Simulasi */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 className="text-xl font-bold text-[#16487e] tracking-tight">Rekomendasi Simulasi untuk Target Kariermu</h2>
-            <p className="text-sm text-slate-500">Sesuai kisi-kisi tes resmi dan batch rekrutmen aktif saat ini.</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Card ASTRA */}
-          <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-[0_2px_12px_rgba(22,72,126,0.04)] hover:shadow-[0_8px_24px_rgba(22,72,126,0.12)] transition-all flex flex-col group">
-            <div className="relative h-44 overflow-hidden">
-              <Image
-                src="/card-astra.jpg"
-                alt="Psikotes ASTRA"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#cce5ff] text-[#004b73] text-[11px] font-bold shadow-sm">
-                Paling Populer
-              </span>
-              <span className="absolute bottom-3 left-3 text-white text-sm font-bold flex items-center gap-1">
-                Astra International
-              </span>
-            </div>
-            <div className="p-4 flex-1 flex flex-col justify-between gap-3">
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-800 text-base leading-snug">Psikotes Astra International</h3>
-                <p className="text-xs text-slate-500">Tes penalaran analitis, logika deret, ketelitian spasial, dan verbal khas Astra Group.</p>
-              </div>
-              <div className="space-y-2 pt-1 border-t border-slate-100">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>80 Soal • 7 Subtes</span>
-                  <span>±41 Menit</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">Tersedia Gratis</span>
-                  <Link
-                    href="/portal/astra"
-                    className="inline-flex items-center gap-1 py-1.5 px-3 rounded-xl bg-[#16487e] text-white text-xs font-semibold hover:bg-[#389add] transition-colors shadow-sm"
-                  >
-                    Mulai Tes <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Card PLN */}
-          <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-[0_2px_12px_rgba(22,72,126,0.04)] hover:shadow-[0_8px_24px_rgba(22,72,126,0.12)] transition-all flex flex-col group">
-            <div className="relative h-44 overflow-hidden">
-              <Image
-                src="/card-pln.jpg"
-                alt="Rekrutmen PLN"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#d4e3ff] text-[#001c3a] text-[11px] font-bold shadow-sm">
-                Rekomendasi BUMN
-              </span>
-              <span className="absolute bottom-3 left-3 text-white text-sm font-bold">PLN Group 2025</span>
-            </div>
-            <div className="p-4 flex-1 flex flex-col justify-between gap-3">
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-800 text-base leading-snug">Rekrutmen PLN Group 2025</h3>
-                <p className="text-xs text-slate-500">General Aptitude Test (GAT) dan Uji Akademik teknis terstandar Rekrutmen Bersama.</p>
-              </div>
-              <div className="space-y-2 pt-1 border-t border-slate-100">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>GAT &amp; Akademik (Tahap 1–2)</span>
-                  <span>±60 Menit</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">Tersedia Gratis</span>
-                  <Link
-                    href="/portal/pln"
-                    className="inline-flex items-center gap-1 py-1.5 px-3 rounded-xl bg-slate-100 text-[#16487e] text-xs font-semibold hover:bg-[#16487e] hover:text-white transition-colors"
-                  >
-                    Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Card ANTAM */}
-          <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-[0_2px_12px_rgba(22,72,126,0.04)] hover:shadow-[0_8px_24px_rgba(22,72,126,0.12)] transition-all flex flex-col group">
-            <div className="relative h-44 overflow-hidden">
-              <Image
-                src="/card-antam.png"
-                alt="ANTAM IMPACT 2026"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#b9eaff] text-[#001f29] text-[11px] font-bold shadow-sm">
-                Program Baru
-              </span>
-              <span className="absolute bottom-3 left-3 text-white text-sm font-bold">PT Aneka Tambang</span>
-            </div>
-            <div className="p-4 flex-1 flex flex-col justify-between gap-3">
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-800 text-base leading-snug">ANTAM IMPACT 2026</h3>
-                <p className="text-xs text-slate-500">Uji kompetensi Integrated Miners Program, reasoning logic, dan work culture fit.</p>
-              </div>
-              <div className="space-y-2 pt-1 border-t border-slate-100">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>14 Job Stream • 40 Soal</span>
-                  <span>±50 Menit</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">Tersedia Gratis</span>
-                  <Link
-                    href="/portal/antam"
-                    className="inline-flex items-center gap-1 py-1.5 px-3 rounded-xl bg-slate-100 text-[#16487e] text-xs font-semibold hover:bg-[#16487e] hover:text-white transition-colors"
-                  >
-                    Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Rekomendasi Simulasi (Horizontal Slider) */}
+      <SimulationCatalogSlider />
 
       {/* Feature highlights */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-2">

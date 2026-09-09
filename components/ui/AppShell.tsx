@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
-  User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, Menu, X, Crown,
+  User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, X, Crown,
   ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3, PanelLeft, Mountain,
 } from 'lucide-react'
 import LoginModal from '@/components/ui/LoginModal'
@@ -317,7 +317,9 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
   return (
     <div className="min-h-screen bg-paper flex">
       {/* ===== Desktop sidebar ===== */}
-      <aside className={`hidden lg:flex flex-col bg-gradient-to-b from-[#f4f7fc] to-[#ebf1f9] border-r border-[#e2e7ff] sticky top-0 h-screen shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out ${
+      <aside className={`hidden lg:flex flex-col ${
+        collapsed ? 'bg-white' : 'bg-gradient-to-b from-[#f4f7fc] to-[#ebf1f9]'
+      } border-r border-[#e2e7ff] sticky top-0 h-screen shrink-0 overflow-hidden transition-all duration-200 ease-in-out ${
         collapsed ? 'w-[68px] px-3 py-4' : 'w-[256px] p-4'
       }`}>
         {SidebarBody(false)}
@@ -343,10 +345,13 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
         <header className="sticky top-3 z-30 mx-3 lg:mx-4 rounded-2xl bg-white/95 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-hairline">
           <div className="flex items-center gap-2 h-12 px-3 sm:px-4">
 
-            {/* Mobile hamburger */}
-            <button onClick={() => setDrawer(true)}
-              className="lg:hidden -ml-1 p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-black/5 transition-colors">
-              <Menu className="w-5 h-5" />
+            {/* Mobile menu trigger: iconlogo.png with white background */}
+            <button
+              onClick={() => setDrawer(true)}
+              title="Buka Menu"
+              className="lg:hidden -ml-1 w-8 h-8 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-[#389add] hover:shadow-sm transition-all flex items-center justify-center shrink-0 cursor-pointer"
+            >
+              <Image src="/iconlogo.png" alt="TembusKarir" width={18} height={18} className="w-[18px] h-[18px] object-contain" priority />
             </button>
 
             {/* Breadcrumb trail */}
