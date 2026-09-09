@@ -330,20 +330,28 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${pkg?.category === 'ANTAM' ? 'lg:col-span-3' : 'w-full'}`}>
               <div className="flex items-center justify-between mb-3">
                 <SectionLabel>Rincian per sub-tes</SectionLabel>
-                {weakest && <span className="text-[11px] text-slate-500">Terlemah: <b className="text-slate-900">{weakest.code}</b></span>}
+                {weakest && (
+                  <span className="text-[11px] text-slate-500">
+                    Terlemah: <b className="text-slate-900">{antamLabels?.[weakest.code] ?? SUBTEST_FULL[weakest.code] ?? weakest.code}</b>
+                  </span>
+                )}
               </div>
               <div className="flex-1 space-y-2">
-                {subtests.map((s) => (
-                  <div key={s.code} className="flex items-center gap-2 sm:gap-3">
-                    <span className="w-10 text-[10px] font-bold text-center text-slate-900 bg-slate-50 border border-slate-200/80 rounded-md py-1 shrink-0">{s.code}</span>
-                    <span className="flex-1 text-xs text-slate-700 font-medium truncate min-w-0">{antamLabels?.[s.code] ?? SUBTEST_FULL[s.code] ?? s.code}</span>
-                    <span className="w-24 sm:w-44 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0 border border-slate-200/60">
-                      <span className="block h-full rounded-full transition-all" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F59E0B' : '#10B981' }} />
-                    </span>
-                    <span className="w-14 text-right text-xs text-slate-500 shrink-0 tabular-nums">{s.correct}/{s.total}</span>
-                    <span className="w-10 text-right font-bold text-xs text-slate-900 shrink-0 tabular-nums">{s.pct}%</span>
-                  </div>
-                ))}
+                {subtests.map((s) => {
+                  const label = antamLabels?.[s.code] ?? (SUBTEST_FULL[s.code] && SUBTEST_FULL[s.code] !== s.code ? `${s.code} — ${SUBTEST_FULL[s.code]}` : s.code)
+                  return (
+                    <div key={s.code} className="flex items-center gap-2 sm:gap-3 py-0.5">
+                      <span className="flex-1 text-xs sm:text-[13px] text-slate-800 font-semibold truncate min-w-0" title={label}>
+                        {label}
+                      </span>
+                      <span className="w-24 sm:w-44 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0 border border-slate-200/60">
+                        <span className="block h-full rounded-full transition-all" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F59E0B' : '#10B981' }} />
+                      </span>
+                      <span className="w-14 text-right text-xs text-slate-500 shrink-0 tabular-nums">{s.correct}/{s.total}</span>
+                      <span className="w-10 text-right font-bold text-xs text-slate-900 shrink-0 tabular-nums">{s.pct}%</span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}

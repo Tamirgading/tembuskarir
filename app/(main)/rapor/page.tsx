@@ -216,16 +216,20 @@ function CategorySection({ category, attempts }: { category: string; attempts: A
             <p className="text-[12.5px] text-slate-500 py-4">Belum ada rincian per sub-tes.</p>
           ) : (
             <div className="space-y-0.5">
-              {mastery.map((m) => (
-                <div key={m.code} className="flex items-center gap-3 py-2 border-b border-slate-200 last:border-0">
-                  <span className="w-11 text-[11px] font-bold text-center text-slate-900 bg-slate-50 rounded-md py-1 shrink-0">{m.code}</span>
-                  <span className="flex-1 text-[13px] text-slate-600 truncate">{SUBTEST_FULL[m.code] ?? m.code}</span>
-                  <span className="w-24 sm:w-32 h-[7px] bg-slate-200 rounded-full overflow-hidden shrink-0">
-                    <span className="block h-full rounded-full" style={{ width: `${m.pct}%`, background: m.pct < 60 ? '#F4B400' : '#0E9F6E' }} />
-                  </span>
-                  <span className="w-9 text-right font-semibold text-[12.5px] text-slate-900 shrink-0 tabular-nums">{m.pct}%</span>
-                </div>
-              ))}
+              {mastery.map((m) => {
+                const label = SUBTEST_FULL[m.code] && SUBTEST_FULL[m.code] !== m.code ? `${m.code} — ${SUBTEST_FULL[m.code]}` : m.code
+                return (
+                  <div key={m.code} className="flex items-center gap-3 py-2 border-b border-slate-200 last:border-0">
+                    <span className="flex-1 text-[13px] text-slate-700 font-medium truncate min-w-0" title={label}>
+                      {label}
+                    </span>
+                    <span className="w-24 sm:w-32 h-[7px] bg-slate-200 rounded-full overflow-hidden shrink-0">
+                      <span className="block h-full rounded-full" style={{ width: `${m.pct}%`, background: m.pct < 60 ? '#F4B400' : '#0E9F6E' }} />
+                    </span>
+                    <span className="w-9 text-right font-semibold text-[12.5px] text-slate-900 shrink-0 tabular-nums">{m.pct}%</span>
+                  </div>
+                )
+              })}
             </div>
           )}
           {weakest && (
