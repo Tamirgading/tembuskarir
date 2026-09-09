@@ -184,20 +184,6 @@ export default async function AntamPortalPage() {
   return (
     <div className="space-y-7">
 
-      {/* ── Breadcrumb ── */}
-      <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-medium -mb-2">
-        <Link href="/" className="hover:text-[#00315f] transition-colors flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9.75L12 3l9 6.75V21H15v-6H9v6H3V9.75z"/></svg>
-          Beranda
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span>Simulasi BUMN</span>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-[#00315f] font-bold flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-500 inline-block" />
-          ANTAM IMPACT 2026
-        </span>
-      </nav>
 
       {/* ── Hero Banner ── */}
       <section className="relative overflow-hidden rounded-3xl shadow-xl text-white"
