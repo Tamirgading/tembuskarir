@@ -221,6 +221,12 @@ export default async function AntamStreamPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {streamPkgs.map((p, idx) => {
               const label = packageLabel(p.slug) ?? `Paket ${idx + 1}`
+              const packageNumber = (() => {
+                if (p.slug === stream.slug) return 1
+                const suffix = p.slug.slice(`${stream.slug}-paket-`.length)
+                const num = parseInt(suffix, 10)
+                return isNaN(num) ? idx + 1 : num
+              })()
               const access = accessMap[p.id]
               const isLocked = !!user && access === 'locked'
               const bestScore = bestScores[p.id]
@@ -232,16 +238,19 @@ export default async function AntamStreamPage({
                 >
                   <div>
                     {/* Card Image Banner */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-900">
                       <Image
                         src={getStreamImage(stream.code)}
                         alt={`${stream.name} - ${label}`}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover scale-105 filter blur-[2px] group-hover:scale-110 group-hover:blur-[1px] transition-all duration-500 opacity-90"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
+                      {/* Dark blurred layer for contrast */}
+                      <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px]" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/40" />
 
+                      {/* Top Badges */}
                       <div className="absolute top-2.5 left-2.5 z-10">
                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-slate-950/75 text-white backdrop-blur-sm border border-white/20 shadow-xs">
                           {stream.code}
@@ -260,16 +269,18 @@ export default async function AntamStreamPage({
                         )}
                       </div>
 
-                      <div className="absolute bottom-2.5 left-3 right-3 z-10 flex items-end justify-between">
-                        <div>
-                          <span className="text-[10px] font-bold text-sky-300 uppercase tracking-wider block">
-                            Simulasi CAT
-                          </span>
-                          <span className="text-sm font-extrabold text-white leading-tight drop-shadow-sm block">
-                            {label}
+                      {/* Center Text: Paket #1 */}
+                      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                        <div className="px-4 py-2 rounded-2xl bg-black/45 backdrop-blur-md border border-white/25 shadow-xl group-hover:scale-105 group-hover:bg-black/55 transition-all duration-300 text-center">
+                          <span className="text-xl sm:text-2xl font-black text-white tracking-wide drop-shadow-md font-heading block">
+                            Paket #{packageNumber}
                           </span>
                         </div>
-                        <span className="text-[10px] font-medium text-slate-200/90 bg-white/15 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/20">
+                      </div>
+
+                      {/* Bottom info pill */}
+                      <div className="absolute bottom-2.5 right-2.5 z-10">
+                        <span className="text-[10px] font-semibold text-slate-200 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/15 shadow-xs">
                           {p.total_questions} Soal
                         </span>
                       </div>
