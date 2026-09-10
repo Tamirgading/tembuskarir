@@ -48,18 +48,18 @@ export default async function AntamPortalPage() {
     const { data: { user } } = await supabase.auth.getUser()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: pkgData } = await (supabase.from('packages') as any)
+    const { data: allPkgData } = await (supabase.from('packages') as any)
       .select('*')
       .eq('category', 'ANTAM')
-      .eq('is_published', true)
       .order('created_at', { ascending: true })
-    packages = (pkgData ?? []) as PackageRow[]
+    const allAntamPackages = (allPkgData ?? []) as PackageRow[]
+    packages = allAntamPackages.filter((p) => p.is_published)
 
     if (user) {
       const premiumStatus = await getPremiumSubscriptionStatus(user.id)
       hasPremium = premiumStatus.active
 
-      const ids = packages.map((p) => p.id)
+      const ids = allAntamPackages.map((p) => p.id)
       if (ids.length > 0) {
         const { data: attData } = await supabase
           .from('attempts')
@@ -68,7 +68,7 @@ export default async function AntamPortalPage() {
           .eq('status', 'finished')
           .in('package_id', ids)
           .order('started_at', { ascending: false })
-          .limit(5)
+          .limit(6)
         recentAttempts = (attData ?? []) as Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[]
       }
     }
@@ -298,8 +298,8 @@ export default async function AntamPortalPage() {
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Riwayat Simulasi Terakhir</h3>
-                <p className="text-xs text-slate-500">Pantau grafik perkembangan nilai tes kejuruanmu</p>
+                <h3 className="text-sm font-bold text-slate-900">Riwayat Simulasi Terakhir (Semua Stream)</h3>
+                <p className="text-xs text-slate-500">Pantau perkembangan nilai tes kejuruanmu dari seluruh stream ANTAM IMPACT</p>
               </div>
             </div>
             <Link href="/riwayat"

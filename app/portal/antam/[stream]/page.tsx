@@ -2,13 +2,21 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
   ArrowLeft, ArrowRight, Clock, FileText, Sparkles, Lock,
+  TrendingUp,
 } from 'lucide-react'
 import Image from 'next/image'
 import { AntamKisiKisiModal } from '@/components/antam/AntamKisiKisiModal'
 import { createClient } from '@/lib/supabase/server'
 import { getStreamBySlug, getStreamImage } from '@/lib/antam-config'
 import { checkPackageAccess } from '@/lib/access'
-import type { PackageRow } from '@/lib/utils'
+import type { PackageRow, AttemptRow } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
+
+const SCORE_COLORS = [
+  'bg-sky-50 border-sky-100 text-sky-700',
+  'bg-emerald-50 border-emerald-100 text-emerald-700',
+  'bg-amber-50 border-amber-100 text-amber-700',
+]
 
 export default async function AntamStreamPage({
   params,
@@ -41,9 +49,11 @@ export default async function AntamStreamPage({
     return `Paket ${suffix}`
   }
 
-  // Akses & skor per paket (butuh login)
+  // Akses, skor per paket, dan riwayat attempt untuk stream ini (butuh login)
   const accessMap: Record<string, string> = {}
   const bestScores: Record<string, number> = {}
+  let streamAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
+
   if (user) {
     await Promise.all(streamPkgs.map(async (p) => {
       const status = await checkPackageAccess(user.id, p.id, p.is_free, p.slug)
@@ -54,11 +64,14 @@ export default async function AntamStreamPage({
       const pkgIds = streamPkgs.map((p) => p.id)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: attemptsData } = await (supabase.from('attempts') as any)
-        .select('package_id, score')
+        .select('id, package_id, score, started_at')
         .eq('user_id', user.id)
         .eq('status', 'finished')
         .in('package_id', pkgIds)
+        .order('started_at', { ascending: false })
+
       if (attemptsData) {
+        streamAttempts = attemptsData.slice(0, 10) as Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[]
         for (const att of attemptsData as { package_id: string; score: number | null }[]) {
           if (att.score !== null && att.score !== undefined) {
             bestScores[att.package_id] = Math.max(bestScores[att.package_id] ?? 0, att.score)
@@ -67,6 +80,43 @@ export default async function AntamStreamPage({
       }
     }
   }
+
+  // Trend data untuk line chart (kronologis dari terlama ke terbaru)
+  const trendAttempts = [...streamAttempts].reverse()
+  const trend = trendAttempts.map((a, i) => {
+    const pkg = streamPkgs.find((p) => p.id === a.package_id)
+    const pLabel = pkg ? (packageLabel(pkg.slug) ?? 'Paket 1') : 'Paket'
+    return {
+      d: formatDate(a.started_at),
+      v: a.score ?? 0,
+      label: `${pLabel} (#${i + 1})`,
+    }
+  })
+
+  // Perhitungan koordinat SVG line chart
+  const CW = 380, CH = 130, pL = 16, pR = 24, pT = 20, pB = 24
+  const n = trend.length
+  const scores = trend.map((t) => t.v)
+  const lastScore = streamAttempts[0]?.score ?? 0
+  const prevScore = streamAttempts[1]?.score ?? null
+  const delta = prevScore !== null ? lastScore - prevScore : null
+  const highestScore = scores.length > 0 ? Math.max(...scores) : 0
+  const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0
+
+  const maxVal = Math.max(...scores, 40)
+  const minVal = 0
+  const rangeVal = Math.max(maxVal - minVal, 1)
+
+  const xOf = (i: number) => pL + (n > 1 ? (i / (n - 1)) * (CW - pL - pR) : (CW - pL - pR) / 2)
+  const yOf = (v: number) => pT + (1 - (v - minVal) / rangeVal) * (CH - pT - pB)
+
+  const chartPts = trend.map((t, i) => ({ x: xOf(i), y: yOf(t.v), d: t.d, v: t.v, l: t.label }))
+  const chartLine = chartPts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const chartArea = chartPts.length > 0
+    ? `M ${chartPts[0].x.toFixed(1)},${CH - pB} ` +
+      chartPts.map((p) => `L ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ') +
+      ` L ${chartPts[n - 1].x.toFixed(1)},${CH - pB} Z`
+    : ''
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -151,6 +201,175 @@ export default async function AntamStreamPage({
             Lihat Harga
           </Link>
         </div>
+      )}
+
+      {/* ── Riwayat & Tren Nilai Khusus Stream Ini ── */}
+      {user && streamAttempts.length > 0 && (
+        <section className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/90 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#00315f] flex items-center justify-center shrink-0 border border-blue-100">
+                <TrendingUp className="w-5 h-5 text-[#00315f]" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Riwayat Simulasi Terakhir ({stream.name})</h3>
+                <p className="text-xs text-slate-500">Perkembangan nilai khusus stream {stream.code} (setiap paket dapat diulang tanpa batas)</p>
+              </div>
+            </div>
+            <span className="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-700 rounded-full shrink-0 self-start sm:self-auto">
+              {streamAttempts.length} Percobaan Selesai
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Kolom Kiri: Line Chart Perkembangan Nilai */}
+            <div className="lg:col-span-6 bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-200/70 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Grafik Perkembangan Nilai</span>
+                  {delta !== null && (
+                    <span className={`text-xs font-bold flex items-center gap-0.5 px-2 py-0.5 rounded-md ${delta >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                      {delta >= 0 ? '+' : ''}{delta} vs sebelumnya
+                    </span>
+                  )}
+                </div>
+
+                {/* Stat mini badges */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="bg-white rounded-xl p-2.5 border border-slate-200/60 text-center">
+                    <p className="text-[10px] text-slate-500 font-medium">Terakhir</p>
+                    <p className="text-base font-extrabold text-slate-900 tabular-nums">{lastScore}</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-2.5 border border-slate-200/60 text-center">
+                    <p className="text-[10px] text-slate-500 font-medium">Tertinggi</p>
+                    <p className="text-base font-extrabold text-emerald-600 tabular-nums">{highestScore}</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-2.5 border border-slate-200/60 text-center">
+                    <p className="text-[10px] text-slate-500 font-medium">Rata-rata</p>
+                    <p className="text-base font-extrabold text-[#00315f] tabular-nums">{avgScore}</p>
+                  </div>
+                </div>
+
+                {/* SVG Line Chart */}
+                <div className="relative w-full pt-1">
+                  <svg viewBox={`0 0 ${CW} ${CH}`} width="100%" height={CH} className="overflow-visible">
+                    <defs>
+                      <linearGradient id={`stream-grad-${stream.code}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#0284c7" stopOpacity="0.28" />
+                        <stop offset="100%" stopColor="#00315f" stopOpacity="0.02" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Dotted target guide line at 40 (max) and 20 */}
+                    <line x1={pL} y1={yOf(40)} x2={CW - pR} y2={yOf(40)} stroke="#cbd5e1" strokeDasharray="3 3" strokeWidth="1" />
+                    <text x={CW - pR + 4} y={yOf(40) + 3} fill="#94a3b8" fontSize="9" fontWeight="600">40</text>
+
+                    <line x1={pL} y1={yOf(20)} x2={CW - pR} y2={yOf(20)} stroke="#e2e8f0" strokeDasharray="3 3" strokeWidth="1" />
+                    <text x={CW - pR + 4} y={yOf(20) + 3} fill="#94a3b8" fontSize="9" fontWeight="600">20</text>
+
+                    {/* Area fill */}
+                    {chartArea && <path d={chartArea} fill={`url(#stream-grad-${stream.code})`} />}
+
+                    {/* Line path */}
+                    {n > 1 && (
+                      <polyline
+                        points={chartLine}
+                        fill="none"
+                        stroke="#00315f"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    )}
+
+                    {/* Points & Labels */}
+                    {chartPts.map((p, i) => (
+                      <g key={i}>
+                        <circle
+                          cx={p.x}
+                          cy={p.y}
+                          r={i === n - 1 ? 4.5 : 3.5}
+                          fill={i === n - 1 ? '#0284c7' : '#ffffff'}
+                          stroke="#00315f"
+                          strokeWidth="2"
+                        />
+                        <text
+                          x={p.x}
+                          y={p.y - 7}
+                          fill="#0f172a"
+                          fontSize="10"
+                          fontWeight="700"
+                          textAnchor="middle"
+                        >
+                          {p.v}
+                        </text>
+                        <text
+                          x={p.x}
+                          y={CH - 4}
+                          fill="#94a3b8"
+                          fontSize="8.5"
+                          textAnchor="middle"
+                        >
+                          {p.d}
+                        </text>
+                      </g>
+                    ))}
+                  </svg>
+                </div>
+              </div>
+
+              <p className="text-[10px] text-slate-400 mt-4 text-center">
+                Skala skor 0 - 40 poin · Titik menampilkan skor setiap kali paket dikerjakan
+              </p>
+            </div>
+
+            {/* Kolom Kanan: Daftar Percobaan Terakhir */}
+            <div className="lg:col-span-6 flex flex-col justify-between">
+              <div className="space-y-2.5 max-h-[310px] overflow-y-auto pr-1">
+                {streamAttempts.map((att, idx) => {
+                  const pkg = streamPkgs.find(p => p.id === att.package_id)
+                  const pLabel = pkg ? (packageLabel(pkg.slug) ?? 'Paket 1') : `Paket ${idx + 1}`
+                  const pName = `ANTAM IMPACT - ${stream.name} - ${pLabel}`
+                  const scoreColor = SCORE_COLORS[idx % SCORE_COLORS.length]
+
+                  return (
+                    <Link
+                      key={att.id}
+                      href={`/hasil/${att.id}`}
+                      className="flex items-center justify-between gap-3 p-3 bg-slate-50 hover:bg-slate-100/90 rounded-xl border border-slate-200/70 transition-all group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-10 h-10 rounded-xl border font-black text-xs flex items-center justify-center shrink-0 ${scoreColor}`}>
+                          {att.score ?? '-'}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-900 truncate group-hover:text-[#00315f] transition-colors">
+                            {pName}
+                          </p>
+                          <p className="text-[11px] text-slate-500 mt-0.5">
+                            {formatDate(att.started_at)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="shrink-0 flex items-center gap-1 text-[11px] font-semibold text-[#00315f] bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs group-hover:bg-[#00315f] group-hover:text-white transition-all">
+                        <span>Bahas</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+
+              <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Klik untuk melihat ulasan &amp; pembahasan soal</span>
+                <Link href="/riwayat" className="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                  Semua Riwayat <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
       )}
 
       {/* ── Daftar Paket (Card Grid) ── */}
