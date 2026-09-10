@@ -203,6 +203,141 @@ export default async function AntamStreamPage({
         </div>
       )}
 
+      {/* ── Daftar Paket (Card Grid) ── */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-sm font-bold text-ink-muted uppercase tracking-widest">Pilih Paket Ujian</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Tersedia {streamPkgs.length} paket simulasi CAT teknis berbobot 40 butir soal</p>
+          </div>
+        </div>
+
+        {streamPkgs.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-10 text-center">
+            <p className="font-semibold text-ink">Belum ada paket tersedia</p>
+            <p className="text-xs text-ink-muted mt-1">Paket untuk stream ini akan segera hadir.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {streamPkgs.map((p, idx) => {
+              const label = packageLabel(p.slug) ?? `Paket ${idx + 1}`
+              const access = accessMap[p.id]
+              const isLocked = !!user && access === 'locked'
+              const bestScore = bestScores[p.id]
+
+              return (
+                <div
+                  key={p.id}
+                  className="group bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Card Image Banner */}
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                      <Image
+                        src={getStreamImage(stream.code)}
+                        alt={`${stream.name} - ${label}`}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
+
+                      <div className="absolute top-2.5 left-2.5 z-10">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-slate-950/75 text-white backdrop-blur-sm border border-white/20 shadow-xs">
+                          {stream.code}
+                        </span>
+                      </div>
+
+                      <div className="absolute top-2.5 right-2.5 z-10">
+                        {p.is_free ? (
+                          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 backdrop-blur-sm border border-emerald-300 px-2.5 py-0.5 rounded-full shadow-xs">
+                            GRATIS
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-amber-800 bg-amber-100/90 backdrop-blur-sm border border-amber-300 px-2.5 py-0.5 rounded-full shadow-xs">
+                            PREMIUM
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="absolute bottom-2.5 left-3 right-3 z-10 flex items-end justify-between">
+                        <div>
+                          <span className="text-[10px] font-bold text-sky-300 uppercase tracking-wider block">
+                            Simulasi CAT
+                          </span>
+                          <span className="text-sm font-extrabold text-white leading-tight drop-shadow-sm block">
+                            {label}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-medium text-slate-200/90 bg-white/15 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/20">
+                          {p.total_questions} Soal
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="p-4 sm:p-5">
+                      <h3 className="font-heading font-bold text-slate-900 text-base group-hover:text-[#00315f] transition-colors">
+                        {label}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                        Simulasi CAT Teknis {stream.name} berbobot kisi-kisi resmi PT ANTAM Tbk.
+                      </p>
+
+                      {/* Stats pills */}
+                      <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-100 text-xs">
+                        <div className="flex items-center gap-1.5 text-slate-600">
+                          <FileText className="w-3.5 h-3.5 text-slate-400" />
+                          <span><strong className="font-semibold text-slate-800">{p.total_questions}</strong> Soal</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-600">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          <span><strong className="font-semibold text-slate-800">{p.duration_minutes}</strong> Menit</span>
+                        </div>
+                      </div>
+
+                      {/* Score badge if finished */}
+                      {bestScore !== undefined && (
+                        <div className="mt-3 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between text-xs text-emerald-800">
+                          <span className="font-medium">Skor Terbaik:</span>
+                          <span className="font-bold font-num">{bestScore} / {p.total_questions}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="p-4 pt-0 sm:p-5 sm:pt-0">
+                    {!user ? (
+                      <Link
+                        href={`/persiapan/${p.id}`}
+                        className="w-full py-2.5 bg-gradient-to-r from-[#00315f] to-[#16487e] hover:brightness-110 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                      >
+                        Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    ) : isLocked ? (
+                      <Link
+                        href="/harga"
+                        className="w-full py-2.5 bg-slate-50 hover:bg-amber-50 text-slate-700 hover:text-amber-800 border border-slate-200 hover:border-amber-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                      >
+                        <Lock className="w-3.5 h-3.5 text-amber-600" /> Buka Akses Premium
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/persiapan/${p.id}`}
+                        className="w-full py-2.5 bg-gradient-to-r from-[#00315f] to-[#16487e] hover:brightness-110 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                      >
+                        Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
       {/* ── Riwayat & Tren Nilai Khusus Stream Ini ── */}
       {user && streamAttempts.length > 0 && (
         <section className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/90 space-y-5">
@@ -371,111 +506,6 @@ export default async function AntamStreamPage({
           </div>
         </section>
       )}
-
-      {/* ── Daftar Paket (Card Grid) ── */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-sm font-bold text-ink-muted uppercase tracking-widest">Pilih Paket Ujian</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Tersedia {streamPkgs.length} paket simulasi CAT teknis berbobot 40 butir soal</p>
-          </div>
-        </div>
-
-        {streamPkgs.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-10 text-center">
-            <p className="font-semibold text-ink">Belum ada paket tersedia</p>
-            <p className="text-xs text-ink-muted mt-1">Paket untuk stream ini akan segera hadir.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {streamPkgs.map((p, idx) => {
-              const label = packageLabel(p.slug) ?? `Paket ${idx + 1}`
-              const access = accessMap[p.id]
-              const isLocked = !!user && access === 'locked'
-              const bestScore = bestScores[p.id]
-
-              return (
-                <div
-                  key={p.id}
-                  className="group bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-5 flex flex-col justify-between"
-                >
-                  <div>
-                    {/* Top: Icon & Badge */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-[#00315f]/10 text-[#00315f] flex items-center justify-center transition-colors">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      {p.is_free ? (
-                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                          GRATIS
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
-                          PREMIUM
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="font-heading font-bold text-slate-900 text-base group-hover:text-[#00315f] transition-colors">
-                      {label}
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                      Simulasi CAT Teknis {stream.name}
-                    </p>
-
-                    {/* Stats pills */}
-                    <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-slate-100 text-xs">
-                      <div className="flex items-center gap-1.5 text-slate-600">
-                        <FileText className="w-3.5 h-3.5 text-slate-400" />
-                        <span><strong className="font-semibold text-slate-800">{p.total_questions}</strong> Soal</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-slate-600">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        <span><strong className="font-semibold text-slate-800">{p.duration_minutes}</strong> Menit</span>
-                      </div>
-                    </div>
-
-                    {/* Score badge if finished */}
-                    {bestScore !== undefined && (
-                      <div className="mt-3 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between text-xs text-emerald-800">
-                        <span className="font-medium">Skor Terbaik:</span>
-                        <span className="font-bold font-num">{bestScore} / {p.total_questions}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Action Button */}
-                  <div className="mt-5 pt-3 border-t border-slate-100">
-                    {!user ? (
-                      <Link
-                        href={`/persiapan/${p.id}`}
-                        className="w-full py-2.5 bg-gradient-to-r from-[#00315f] to-[#16487e] hover:brightness-110 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                      >
-                        Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    ) : isLocked ? (
-                      <Link
-                        href="/harga"
-                        className="w-full py-2.5 bg-slate-50 hover:bg-amber-50 text-slate-700 hover:text-amber-800 border border-slate-200 hover:border-amber-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                      >
-                        <Lock className="w-3.5 h-3.5 text-amber-600" /> Buka Akses Premium
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/persiapan/${p.id}`}
-                        className="w-full py-2.5 bg-gradient-to-r from-[#00315f] to-[#16487e] hover:brightness-110 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                      >
-                        Mulai Simulasi <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
     </div>
   )
 }
