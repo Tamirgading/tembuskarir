@@ -5,7 +5,8 @@ import { rateLimit, getClientIp } from '@/lib/rateLimit'
 import type { UserRow } from '@/lib/utils'
 
 import { VALID_BIDANG_SLUGS } from '@/lib/bidang-config'
-import { getPlanPrice, VALID_PLAN_TYPES, getSatuanPrice } from '@/lib/plans'
+import { getDynamicPlan } from '@/lib/plans-server'
+import { VALID_PLAN_TYPES, getSatuanPrice } from '@/lib/plans'
 
 export async function POST(req: NextRequest) {
   try {
@@ -84,10 +85,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const expectedAmount = getPlanPrice(planType)
-    if (expectedAmount === undefined) {
-      return NextResponse.json({ error: 'Plan tidak valid.' }, { status: 400 })
+    const planConfig = await getDynamicPlan(planType)
+    if (!planConfig || !planConfig.isActive) {
+      return NextResponse.json({ error: 'Plan ini sedang tidak aktif atau tidak tersedia.' }, { status: 400 })
     }
+
+    const expectedAmount = planConfig.price
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: profileData } = await (service.from('users') as any)

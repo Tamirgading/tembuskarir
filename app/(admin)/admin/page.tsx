@@ -1,6 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Package, Users, Ticket, BarChart3 } from 'lucide-react'
+import { Package, Users, Ticket, BarChart3, Tag } from 'lucide-react'
 import type { SubscriptionRow, UserRow } from '@/lib/utils'
 import { getFeatureFlags } from '@/lib/site-settings'
 import FeatureToggles from '@/components/admin/FeatureToggles'
@@ -75,34 +75,41 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link href="/admin/packages" className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors group">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <Link href="/admin/packages" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 transition-colors group">
           <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-blue-100 transition-colors">
             <Package className="w-5 h-5 text-blue-600" />
           </div>
-          <h2 className="font-semibold text-gray-900 group-hover:text-blue-600">Kelola Paket Soal</h2>
-          <p className="text-sm text-gray-500 mt-1">Tambah, edit, publish/unpublish paket</p>
+          <h2 className="font-semibold text-gray-900 group-hover:text-blue-600 text-sm">Kelola Paket Soal</h2>
+          <p className="text-xs text-gray-500 mt-1">Tambah, edit, publish/unpublish paket</p>
         </Link>
-        <Link href="/admin/users" className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors group">
+        <Link href="/admin/pricing" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 transition-colors group">
+          <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-amber-100 transition-colors">
+            <Tag className="w-5 h-5 text-amber-600" />
+          </div>
+          <h2 className="font-semibold text-gray-900 group-hover:text-blue-600 text-sm">Paket &amp; Harga</h2>
+          <p className="text-xs text-gray-500 mt-1">Atur harga jual, promo, &amp; visibilitas</p>
+        </Link>
+        <Link href="/admin/vouchers" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 transition-colors group">
+          <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-emerald-100 transition-colors">
+            <Ticket className="w-5 h-5 text-emerald-600" />
+          </div>
+          <h2 className="font-semibold text-gray-900 group-hover:text-blue-600 text-sm">Kelola Voucher</h2>
+          <p className="text-xs text-gray-500 mt-1">Buat dan pantau kode voucher</p>
+        </Link>
+        <Link href="/admin/users" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 transition-colors group">
           <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-purple-100 transition-colors">
             <Users className="w-5 h-5 text-purple-600" />
           </div>
-          <h2 className="font-semibold text-gray-900 group-hover:text-purple-600">Users</h2>
-          <p className="text-sm text-gray-500 mt-1">Daftar user, filter, dan detail tiap user</p>
+          <h2 className="font-semibold text-gray-900 group-hover:text-purple-600 text-sm">Users</h2>
+          <p className="text-xs text-gray-500 mt-1">Daftar user, filter, &amp; detail</p>
         </Link>
-        <Link href="/admin/revenue" className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors group">
+        <Link href="/admin/revenue" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 transition-colors group">
           <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-green-100 transition-colors">
             <BarChart3 className="w-5 h-5 text-green-600" />
           </div>
-          <h2 className="font-semibold text-gray-900 group-hover:text-green-600">Revenue & Analytics</h2>
-          <p className="text-sm text-gray-500 mt-1">Grafik, top pembayar, dan riwayat transaksi</p>
-        </Link>
-        <Link href="/admin/vouchers" className="bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-colors group">
-          <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-green-100 transition-colors">
-            <Ticket className="w-5 h-5 text-green-600" />
-          </div>
-          <h2 className="font-semibold text-gray-900 group-hover:text-blue-600">Kelola Voucher</h2>
-          <p className="text-sm text-gray-500 mt-1">Buat dan pantau penggunaan kode voucher</p>
+          <h2 className="font-semibold text-gray-900 group-hover:text-green-600 text-sm">Revenue &amp; Analytics</h2>
+          <p className="text-xs text-gray-500 mt-1">Grafik &amp; riwayat transaksi</p>
         </Link>
       </div>
 
@@ -122,7 +129,7 @@ export default async function AdminDashboardPage() {
             recentUsers.map((u) => (
               <div key={u.id} className="px-6 py-3 flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-gray-900 text-sm">{u.full_name ?? '—'}</p>
+                  <p className="font-medium text-gray-900 text-sm">{u.full_name ?? '-'}</p>
                   <p className="text-xs text-gray-400">{u.email}</p>
                 </div>
                 <div className="flex items-center gap-3 text-xs">

@@ -1,8 +1,9 @@
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
-  CheckCircle2, Clock, Zap, Star, Infinity as InfinityIcon, Check, Sparkles, ArrowRight,
-  BookOpen, Target,
+  CheckCircle2, Clock, Zap, Star, Check, Sparkles,
+  BookOpen, Target, Building2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { BuyButton } from '@/components/ui/BuyButton'
@@ -11,114 +12,29 @@ import { CareerIllustration } from '@/components/illustrations/CareerIllustratio
 import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getPremiumSubscriptionStatus, getPlnSubscriptionStatus } from '@/lib/access'
 import { BIDANG_BY_SLUG } from '@/lib/bidang-config'
+import { getPlansConfig } from '@/lib/plans-server'
 
 export const metadata: Metadata = {
   title: 'Langganan & Harga · TembusKarir',
-  description: 'Akses semua paket simulasi seleksi kerja. Beli per-paket atau berlangganan mulai Rp 30.000/bulan.',
+  description: 'Akses semua paket simulasi seleksi kerja. Pilihan paket berlangganan fleksibel.',
 }
 
-const PREMIUM_PLANS = [
-  {
-    id: 'premium_monthly' as const,
-    price: 49000,
-    priceLabel: 'Rp 49.000',
-    period: '/ bulan',
-    highlight: true,
-    badge: 'Populer',
-    description: 'Akses SEMUA paket: ASTRA, BUMN (Tahap 1 & 2), PLN (GAT + Akademik semua bidang), OJK, dan ANTAM',
-    features: ['Psikotes ASTRA (semua paket)', 'RBB BUMN Tahap 1 & 2', 'PLN GAT + Akademik semua bidang', 'ANTAM semua stream', 'Pembahasan lengkap & analisis skor'],
-    icon: Zap,
-  },
-  {
-    id: 'premium_quarterly' as const,
-    price: 129000,
-    priceLabel: 'Rp 129.000',
-    period: '/ 3 bulan',
-    highlight: false,
-    badge: 'Hemat 12%',
-    description: 'Semua akses Premium selama 90 hari',
-    features: ['Semua fitur Bulanan', 'Hemat vs beli 3× bulanan', 'Akses fitur baru selama periode'],
-    icon: Star,
-  },
-]
+export const dynamic = 'force-dynamic'
 
-const COMPANY_PLANS = [
-  {
-    id: 'astra_monthly' as const,
-    price: 30000,
-    priceLabel: 'Rp 30.000',
-    period: '/ bulan',
-    title: 'ASTRA Bulanan',
-    description: 'Akses semua paket Psikotes ASTRA selama 30 hari.',
-    icon: Zap,
-  },
-  {
-    id: 'bumn_t1_monthly' as const,
-    price: 35000,
-    priceLabel: 'Rp 35.000',
-    period: '/ bulan',
-    title: 'BUMN Tahap 1 Bulanan',
-    description: 'Akses paket RBB BUMN Tahap 1 (TKD · AKHLAK · TWK) selama 30 hari.',
-    icon: Star,
-  },
-  {
-    id: 'bumn_t2_monthly' as const,
-    price: 35000,
-    priceLabel: 'Rp 35.000',
-    period: '/ bulan',
-    title: 'BUMN Tahap 2 Bulanan',
-    description: 'Akses paket RBB BUMN Tahap 2 (Bahasa Inggris · LA) selama 30 hari.',
-    icon: BookOpen,
-  },
-  {
-    id: 'antam_monthly' as const,
-    price: 25000,
-    priceLabel: 'Rp 25.000',
-    period: '/ bulan',
-    title: 'ANTAM Bulanan',
-    description: 'Akses semua paket ANTAM IMPACT (semua stream) selama 30 hari.',
-    icon: Target,
-  },
-]
+function formatRupiah(amount: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(amount)
+}
 
-const PLN_PLANS = [
-  {
-    id: 'pln_gat_monthly' as const,
-    price: 30000,
-    priceLabel: 'Rp 30.000',
-    period: '/ bulan',
-    badge: null,
-    title: 'Tahap 1: GAT',
-    description: 'Akses semua paket GAT PLN selama 30 hari. TKD 1 (Deret), TKD 2 (Silogisme & Sinonim), Pengetahuan PLN.',
-    features: ['Semua paket GAT PLN', 'Timer 30 dtk per soal', 'Tes Pengetahuan PLN', 'Riwayat & analisis skor'],
-    requiresBidang: false,
-    icon: Zap,
-  },
-  {
-    id: 'pln_tahap2_monthly' as const,
-    price: 30000,
-    priceLabel: 'Rp 30.000',
-    period: '/ bulan',
-    badge: null,
-    title: 'Tahap 2: Akademik',
-    description: 'BI + AKDING 1 bidang pilihanmu selama 30 hari. Pilih bidang sebelum bayar.',
-    features: ['Bahasa Inggris PLN (full)', 'AKDING 1 bidang (full)', 'Pilih bidang saat checkout', '1 bidang per subscription'],
-    requiresBidang: true,
-    icon: BookOpen,
-  },
-  {
-    id: 'pln_complete_monthly' as const,
-    price: 44000,
-    priceLabel: 'Rp 44.000',
-    period: '/ bulan',
-    badge: 'Best Value',
-    title: 'PLN Complete',
-    description: 'GAT + BI + AKDING 1 bidang. Persiapan PLN paling lengkap dalam 1 plan.',
-    features: ['Semua paket GAT PLN', 'Bahasa Inggris PLN (full)', 'AKDING 1 bidang (full)', 'Hemat vs beli terpisah'],
-    requiresBidang: true,
-    icon: Target,
-  },
-]
+const COMPANY_ICONS: Record<string, typeof Zap> = {
+  astra_monthly: Zap,
+  bumn_t1_monthly: Star,
+  bumn_t2_monthly: BookOpen,
+  antam_monthly: Target,
+}
 
 export default async function HargaPage({
   searchParams,
@@ -128,6 +44,8 @@ export default async function HargaPage({
   const { payment, plnBidang } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const plans = await getPlansConfig()
 
   let premiumSub = { active: false, expiresAt: null as string | null, planType: null as string | null }
   let plnSub = { active: false, planType: null as string | null, bidang: null as string | null, expiresAt: null as string | null }
@@ -147,10 +65,27 @@ export default async function HargaPage({
   // Bidang dari URL (ketika link dari halaman per-bidang)
   const urlBidang = plnBidang && BIDANG_BY_SLUG[plnBidang] ? plnBidang : undefined
 
+  // Filter company plans: hanya tampil jika isActive === true (saat ini disembunyikan sesuai permintaan)
+  const companyPlans = ['astra_monthly', 'bumn_t1_monthly', 'bumn_t2_monthly', 'antam_monthly']
+    .map((id) => plans[id])
+    .filter((p) => p && p.isActive)
+
+  // Premium plans list
+  const premiumPlans = ['premium_monthly', 'premium_quarterly']
+    .map((id) => plans[id])
+    .filter((p) => p && p.isActive)
+
+  // PLN plans list
+  const plnPlans = ['pln_gat_monthly', 'pln_tahap2_monthly', 'pln_complete_monthly']
+    .map((id) => plans[id])
+    .filter((p) => p && p.isActive)
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      <div className="relative rounded-3xl overflow-hidden text-white p-8 text-center"
-        style={{ background: 'linear-gradient(135deg,#0F2C44 0%,#0a1f30 60%,#0B3D30 100%)' }}>
+      <div
+        className="relative rounded-3xl overflow-hidden text-white p-8 text-center"
+        style={{ background: 'linear-gradient(135deg,#0F2C44 0%,#0a1f30 60%,#0B3D30 100%)' }}
+      >
         <CareerIllustration className="absolute right-6 bottom-0 w-40 sm:w-52 opacity-90 pointer-events-none select-none hidden sm:block" />
         <span className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-4">
           <Sparkles className="w-3.5 h-3.5 text-brand-300" />
@@ -164,13 +99,19 @@ export default async function HargaPage({
       {payment === 'success' && (
         <div className="bg-green-50 border border-green-200 rounded-2xl px-5 py-4 flex items-center gap-3">
           <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-          <div><p className="font-semibold text-green-800 text-sm">Pembayaran berhasil!</p><p className="text-xs text-green-600 mt-0.5">Akses kamu sudah aktif. Selamat berlatih!</p></div>
+          <div>
+            <p className="font-semibold text-green-800 text-sm">Pembayaran berhasil!</p>
+            <p className="text-xs text-green-600 mt-0.5">Akses kamu sudah aktif. Selamat berlatih!</p>
+          </div>
         </div>
       )}
       {payment === 'pending' && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-2xl px-5 py-4 flex items-center gap-3">
           <Clock className="w-5 h-5 text-yellow-600 shrink-0" />
-          <div><p className="font-semibold text-yellow-800 text-sm">Pembayaran sedang diproses</p><p className="text-xs text-yellow-600 mt-0.5">Akses aktif otomatis setelah dikonfirmasi.</p></div>
+          <div>
+            <p className="font-semibold text-yellow-800 text-sm">Pembayaran sedang diproses</p>
+            <p className="text-xs text-yellow-600 mt-0.5">Akses aktif otomatis setelah dikonfirmasi.</p>
+          </div>
         </div>
       )}
 
@@ -205,160 +146,199 @@ export default async function HargaPage({
       {urlBidang && (
         <div className="bg-paper-soft border border-hairline rounded-xl px-4 py-3 flex items-center gap-3 text-sm">
           <BookOpen className="w-4 h-4 text-brand shrink-0" />
-          <span className="text-ink-soft">Bidang dipilih: <strong className="text-ink">{BIDANG_BY_SLUG[urlBidang].name}</strong>; akan otomatis terisi saat checkout Tahap 2 / Complete.</span>
+          <span className="text-ink-soft">
+            Bidang dipilih: <strong className="text-ink">{BIDANG_BY_SLUG[urlBidang].name}</strong>; akan otomatis terisi saat checkout Tahap 2 / Complete.
+          </span>
         </div>
       )}
 
-      {/* ── SECTION: PREMIUM (non-PLN) ── */}
-      <div>
-        <SectionLabel className="mb-4" trailing="ASTRA · BUMN · PLN · OJK · ANTAM">Langganan Premium</SectionLabel>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {PREMIUM_PLANS.map((plan) => {
-            const Icon = plan.icon
-            const hl = plan.highlight
-            return (
-              <div key={plan.id}
-                className={`relative rounded-2xl border p-6 space-y-4 ${hl ? 'border-transparent shadow-soft' : 'bg-white border-hairline'}`}
-                style={hl ? { background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' } : undefined}>
-                {plan.badge && (
-                  <span className={`absolute -top-3 right-4 text-[11px] font-bold px-3 py-1 rounded-full ${hl ? 'bg-brand text-white' : 'bg-brand/10 text-brand-700'}`}>{plan.badge}</span>
-                )}
-                <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${hl ? 'bg-white/10' : 'bg-brand/10'}`}>
-                    <Icon className={`w-5 h-5 ${hl ? 'text-brand-300' : 'text-brand'}`} />
+      {/* ── SECTION: PREMIUM (ALL ACCESS) ── */}
+      {premiumPlans.length > 0 && (
+        <div>
+          <SectionLabel className="mb-4" trailing="ASTRA · BUMN · PLN · OJK · ANTAM">
+            Langganan Premium
+          </SectionLabel>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {premiumPlans.map((plan) => {
+              const Icon = plan.id === 'premium_monthly' ? Zap : Star
+              const hl = !!plan.highlight
+              return (
+                <div
+                  key={plan.id}
+                  className={`relative rounded-2xl border p-6 space-y-4 ${hl ? 'border-transparent shadow-soft' : 'bg-white border-hairline'}`}
+                  style={hl ? { background: 'linear-gradient(135deg,#0F2C44,#0a1f30)' } : undefined}
+                >
+                  {plan.badge && (
+                    <span className={`absolute -top-3 right-4 text-[11px] font-bold px-3 py-1 rounded-full ${hl ? 'bg-brand text-white' : 'bg-brand/10 text-brand-700'}`}>
+                      {plan.badge}
+                    </span>
+                  )}
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${hl ? 'bg-white/10' : 'bg-brand/10'}`}>
+                      <Icon className={`w-5 h-5 ${hl ? 'text-brand-300' : 'text-brand'}`} />
+                    </div>
+                    <div>
+                      <p className={`font-num text-2xl font-extrabold leading-none ${hl ? 'text-white' : 'text-ink'}`}>
+                        {formatRupiah(plan.price)}
+                      </p>
+                      <p className={`text-xs mt-1 ${hl ? 'text-white/55' : 'text-ink-muted'}`}>{plan.period}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className={`font-num text-2xl font-extrabold leading-none ${hl ? 'text-white' : 'text-ink'}`}>{plan.priceLabel}</p>
-                    <p className={`text-xs mt-1 ${hl ? 'text-white/55' : 'text-ink-muted'}`}>{plan.period}</p>
-                  </div>
+                  <p className={`text-sm leading-relaxed ${hl ? 'text-white/70' : 'text-ink-muted'}`}>
+                    {plan.description}
+                  </p>
+                  {plan.features && plan.features.length > 0 && (
+                    <ul className="space-y-2">
+                      {plan.features.map((f) => (
+                        <li key={f} className={`flex items-start gap-2.5 text-sm ${hl ? 'text-white/85' : 'text-ink-soft'}`}>
+                          <Check className={`w-4 h-4 shrink-0 mt-0.5 ${hl ? 'text-brand-300' : 'text-brand'}`} />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {user ? (
+                    <BuyButton
+                      planType={plan.id}
+                      planLabel={plan.id === 'premium_monthly' ? 'Mulai 1 Bulan' : 'Mulai 3 Bulan'}
+                      amount={plan.price}
+                      highlight={hl}
+                    />
+                  ) : (
+                    <Link
+                      href="/register"
+                      className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors"
+                    >
+                      Daftar &amp; Mulai
+                    </Link>
+                  )}
                 </div>
-                <p className={`text-sm leading-relaxed ${hl ? 'text-white/70' : 'text-ink-muted'}`}>{plan.description}</p>
-                <ul className="space-y-2">
-                  {plan.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-2.5 text-sm ${hl ? 'text-white/85' : 'text-ink-soft'}`}>
-                      <Check className={`w-4 h-4 shrink-0 mt-0.5 ${hl ? 'text-brand-300' : 'text-brand'}`} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                {user
-                  ? <BuyButton planType={plan.id} planLabel={plan.id === 'premium_monthly' ? 'Mulai 1 Bulan' : 'Mulai 3 Bulan'} amount={plan.price} highlight={hl} />
-                  : <Link href="/register" className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors">Daftar &amp; Mulai</Link>
-                }
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* ── SECTION: PLAN PER PERUSAHAAN ── */}
-      <div>
-        <SectionLabel className="mb-4" trailing="Cocok jika target satu seleksi">Plan Per Tahap / Perusahaan</SectionLabel>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {COMPANY_PLANS.map((plan) => {
-            const Icon = plan.icon
-            return (
-              <div key={plan.id} className="relative bg-white rounded-2xl border border-hairline p-5 space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
-                    <Icon className="w-4.5 h-4.5 text-brand" />
-                  </div>
-                  <div>
-                    <p className="font-num text-xl font-extrabold text-ink leading-none">{plan.priceLabel}</p>
-                    <p className="text-[11px] text-ink-muted mt-0.5">{plan.period}</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-heading font-bold text-ink text-sm mb-1">{plan.title}</p>
-                  <p className="text-xs text-ink-muted leading-relaxed">{plan.description}</p>
-                </div>
-                {user ? (
-                  <BuyButton planType={plan.id} planLabel="Berlangganan" amount={plan.price} />
-                ) : (
-                  <Link href="/register" className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors">
-                    Daftar &amp; Mulai
-                  </Link>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* ── SECTION: PLN ── */}
-      <div>
-        <SectionLabel className="mb-4" trailing="PT PLN (Persero) · GAT + Akademik">Khusus PLN</SectionLabel>
-
-        {/* Info anti-sharing */}
-        <div className="bg-paper-soft border border-hairline rounded-xl px-4 py-3 mb-4 flex items-start gap-2.5 text-xs text-ink-muted">
-          <Zap className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
-          <span>Plan PLN Tahap 2 & Complete terikat 1 bidang akademik per subscription, sesuai format ujian asli (1 orang = 1 bidang).</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {PLN_PLANS.map((plan) => {
-            const Icon = plan.icon
-            const isComplete = plan.id === 'pln_complete_monthly'
-            return (
-              <div key={plan.id} className={`relative bg-white rounded-2xl border p-5 space-y-4 ${isComplete ? 'border-brand/30 shadow-soft ring-1 ring-brand/20' : 'border-hairline'}`}>
-                {plan.badge && (
-                  <span className="absolute -top-3 right-4 text-[11px] font-bold px-3 py-1 rounded-full bg-brand text-white">{plan.badge}</span>
-                )}
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
-                    <Icon className="w-4.5 h-4.5 text-brand" />
-                  </div>
-                  <div>
-                    <p className="font-num text-xl font-extrabold text-ink leading-none">{plan.priceLabel}</p>
-                    <p className="text-[11px] text-ink-muted mt-0.5">{plan.period}</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-heading font-bold text-ink text-sm mb-1">{plan.title}</p>
-                  <p className="text-xs text-ink-muted leading-relaxed">{plan.description}</p>
-                </div>
-                <ul className="space-y-1.5">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-xs text-ink-soft">
-                      <Check className="w-3.5 h-3.5 shrink-0 mt-0.5 text-brand" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                {user ? (
-                  <PlnBuyButton
-                    planType={plan.id}
-                    planLabel={plan.requiresBidang ? 'Pilih Bidang & Berlangganan' : 'Berlangganan'}
-                    highlight={isComplete}
-                    preselectedBidang={plan.requiresBidang ? urlBidang : undefined}
-                  />
-                ) : (
-                  <Link href="/register" className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors">
-                    Daftar &amp; Mulai
-                  </Link>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Per-paket */}
-      <div className="bg-white rounded-2xl border border-hairline p-5 flex items-start gap-4">
-        <div className="w-10 h-10 bg-paper-soft rounded-xl flex items-center justify-center shrink-0">
-          <InfinityIcon className="w-5 h-5 text-ink-soft" />
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            <h3 className="font-bold text-ink text-sm">Beli Per Paket</h3>
-            <span className="text-[11px] px-2 py-0.5 bg-paper-soft text-ink-muted rounded-full font-medium">Rp 10.000 - Rp 15.000 · Akses Selamanya</span>
+              )
+            })}
           </div>
-          <p className="text-xs text-ink-muted mb-3 leading-relaxed">Beli akses ke satu paket soal tanpa masa kedaluwarsa. Rp 10.000 untuk ASTRA &amp; PLN GAT; Rp 15.000 untuk paket lainnya.</p>
-          <Link href="/paket" className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand-700 transition-colors">
-            Lihat semua paket <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
-      </div>
+      )}
+
+      {/* ── SECTION: PLAN PER PERUSAHAAN (HANYA TAMPIL JIKA DIAKTIFKAN DI ADMIN) ── */}
+      {companyPlans.length > 0 && (
+        <div>
+          <SectionLabel className="mb-4" trailing="Cocok jika target satu seleksi">
+            Plan Per Tahap / Perusahaan
+          </SectionLabel>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {companyPlans.map((plan) => {
+              const Icon = COMPANY_ICONS[plan.id] ?? Building2
+              return (
+                <div key={plan.id} className="relative bg-white rounded-2xl border border-hairline p-5 space-y-4">
+                  {plan.badge && (
+                    <span className="absolute -top-3 right-4 text-[11px] font-bold px-3 py-1 rounded-full bg-brand/10 text-brand-700">
+                      {plan.badge}
+                    </span>
+                  )}
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
+                      <Icon className="w-4.5 h-4.5 text-brand" />
+                    </div>
+                    <div>
+                      <p className="font-num text-xl font-extrabold text-ink leading-none">
+                        {formatRupiah(plan.price)}
+                      </p>
+                      <p className="text-[11px] text-ink-muted mt-0.5">{plan.period}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-heading font-bold text-ink text-sm mb-1">{plan.label}</p>
+                    <p className="text-xs text-ink-muted leading-relaxed">{plan.description}</p>
+                  </div>
+                  {user ? (
+                    <BuyButton planType={plan.id} planLabel="Berlangganan" amount={plan.price} />
+                  ) : (
+                    <Link
+                      href="/register"
+                      className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors"
+                    >
+                      Daftar &amp; Mulai
+                    </Link>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── SECTION: KHUSUS PLN ── */}
+      {plnPlans.length > 0 && (
+        <div>
+          <SectionLabel className="mb-4" trailing="PT PLN (Persero) · GAT + Akademik">
+            Khusus PLN
+          </SectionLabel>
+
+          <div className="bg-paper-soft border border-hairline rounded-xl px-4 py-3 mb-4 flex items-start gap-2.5 text-xs text-ink-muted">
+            <Zap className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
+            <span>Plan PLN Tahap 2 &amp; Complete terikat 1 bidang akademik per subscription, sesuai format ujian asli (1 orang = 1 bidang).</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {plnPlans.map((plan) => {
+              const Icon = plan.id === 'pln_gat_monthly' ? Zap : plan.id === 'pln_tahap2_monthly' ? BookOpen : Target
+              const isComplete = plan.id === 'pln_complete_monthly'
+              return (
+                <div
+                  key={plan.id}
+                  className={`relative bg-white rounded-2xl border p-5 space-y-4 ${isComplete ? 'border-brand/30 shadow-soft ring-1 ring-brand/20' : 'border-hairline'}`}
+                >
+                  {plan.badge && (
+                    <span className="absolute -top-3 right-4 text-[11px] font-bold px-3 py-1 rounded-full bg-brand text-white">
+                      {plan.badge}
+                    </span>
+                  )}
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
+                      <Icon className="w-4.5 h-4.5 text-brand" />
+                    </div>
+                    <div>
+                      <p className="font-num text-xl font-extrabold text-ink leading-none">
+                        {formatRupiah(plan.price)}
+                      </p>
+                      <p className="text-[11px] text-ink-muted mt-0.5">{plan.period}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-heading font-bold text-ink text-sm mb-1">{plan.label}</p>
+                    <p className="text-xs text-ink-muted leading-relaxed">{plan.description}</p>
+                  </div>
+                  {plan.features && plan.features.length > 0 && (
+                    <ul className="space-y-1.5">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-xs text-ink-soft">
+                          <Check className="w-3.5 h-3.5 shrink-0 mt-0.5 text-brand" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {user ? (
+                    <PlnBuyButton
+                      planType={plan.id as 'pln_gat_monthly' | 'pln_tahap2_monthly' | 'pln_complete_monthly'}
+                      planLabel={plan.requiresBidang ? 'Pilih Bidang & Berlangganan' : 'Berlangganan'}
+                      highlight={isComplete}
+                      preselectedBidang={plan.requiresBidang ? urlBidang : undefined}
+                    />
+                  ) : (
+                    <Link
+                      href="/register"
+                      className="block w-full text-center py-2.5 text-sm font-bold rounded-xl bg-brand text-white hover:bg-brand-700 transition-colors"
+                    >
+                      Daftar &amp; Mulai
+                    </Link>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* FAQ */}
       <div className="bg-paper-soft rounded-2xl p-5 space-y-3 border border-hairline">
@@ -370,10 +350,14 @@ export default async function HargaPage({
             { q: 'Kapan akses aktif?', a: 'Otomatis dalam hitungan detik setelah pembayaran dikonfirmasi.' },
             { q: 'Cara perpanjang?', a: 'Beli ulang plan yang sama. Durasi otomatis ditambahkan.' },
           ].map((item) => (
-            <div key={item.q}><p className="font-semibold text-ink-soft mb-0.5">{item.q}</p><p>{item.a}</p></div>
+            <div key={item.q}>
+              <p className="font-semibold text-ink-soft mb-0.5">{item.q}</p>
+              <p>{item.a}</p>
+            </div>
           ))}
         </div>
       </div>
     </div>
   )
 }
+
