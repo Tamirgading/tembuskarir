@@ -351,7 +351,7 @@ export default async function HargaPage({
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <h3 className="font-bold text-ink text-sm">Beli Per Paket</h3>
-            <span className="text-[11px] px-2 py-0.5 bg-paper-soft text-ink-muted rounded-full font-medium">Rp 10.000 – 15.000 · Akses Selamanya</span>
+            <span className="text-[11px] px-2 py-0.5 bg-paper-soft text-ink-muted rounded-full font-medium">Rp 10.000 - Rp 15.000 · Akses Selamanya</span>
           </div>
           <p className="text-xs text-ink-muted mb-3 leading-relaxed">Beli akses ke satu paket soal tanpa masa kedaluwarsa. Rp 10.000 untuk ASTRA &amp; PLN GAT; Rp 15.000 untuk paket lainnya.</p>
           <Link href="/paket" className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand-700 transition-colors">
