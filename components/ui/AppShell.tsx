@@ -9,6 +9,7 @@ import {
   Home, Briefcase, Zap, Package, ReceiptText, Newspaper, CreditCard,
   User, Settings, Ticket, LogOut, LogIn, UserPlus, ChevronDown, X, Crown,
   ChevronLeft, ChevronRight, BookOpen, Building2, History, Bookmark, BarChart3, PanelLeft, Mountain,
+  Landmark,
 } from 'lucide-react'
 import LoginModal from '@/components/ui/LoginModal'
 import { NotificationBell } from '@/components/ui/NotificationBell'
@@ -23,7 +24,7 @@ interface AppShellProps {
 }
 
 type FeatureKey = keyof import('@/lib/site-settings').FeatureFlags
-type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string; tagColor?: string; sub?: boolean; featureKey?: FeatureKey; iconBg?: string; iconColor?: string }
+type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string; tagColor?: string; sub?: boolean; featureKey?: FeatureKey; iconBg?: string; iconColor?: string; disabled?: boolean }
 type Group = { section: string | null; items: Item[] }
 
 const NAV: Group[] = [
@@ -31,12 +32,11 @@ const NAV: Group[] = [
   {
     section: 'Simulasi Populer',
     items: [
-      { href: '/portal/astra', label: 'Psikotes ASTRA', icon: Briefcase, tag: 'Populer', tagColor: 'bg-[#cce5ff] text-[#004b73]', iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
-      { href: '/portal/pln', label: 'Rekrutmen PLN', icon: Zap, featureKey: 'feature_portal_pln', iconBg: 'bg-sky-100', iconColor: 'text-sky-600' },
-      { href: '/portal/pln/gat', label: 'Tahap 1: GAT', icon: Zap, sub: true, featureKey: 'feature_portal_pln' },
-      { href: '/portal/pln/tahap2', label: 'Tahap 2: Akademik', icon: BookOpen, sub: true, featureKey: 'feature_portal_pln' },
-      { href: '/portal/bumn', label: 'Rekrutmen BUMN', icon: Building2, featureKey: 'feature_portal_bumn', iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
-      { href: '/portal/antam', label: 'ANTAM IMPACT', icon: Mountain, featureKey: 'feature_portal_antam', tag: 'Baru', tagColor: 'bg-[#b9eaff] text-[#001f29]', iconBg: 'bg-teal-100', iconColor: 'text-teal-700' },
+      { href: '/portal/astra', label: 'Psikotes ASTRA', icon: Briefcase, iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
+      { href: '/portal/antam', label: 'ANTAM IMPACT', icon: Mountain, featureKey: 'feature_portal_antam', iconBg: 'bg-teal-100', iconColor: 'text-teal-700' },
+      { href: '#', label: 'RBB BUMN', icon: Building2, tag: 'Coming Soon', disabled: true, tagColor: 'bg-slate-100 text-slate-500 border border-slate-200', iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+      { href: '#', label: 'Rekrutmen PLN', icon: Zap, tag: 'Coming Soon', disabled: true, tagColor: 'bg-slate-100 text-slate-500 border border-slate-200', iconBg: 'bg-sky-100', iconColor: 'text-sky-600' },
+      { href: '#', label: 'PCAM OJK', icon: Landmark, tag: 'Coming Soon', disabled: true, tagColor: 'bg-slate-100 text-slate-500 border border-slate-200', iconBg: 'bg-rose-100', iconColor: 'text-rose-600' },
       { href: '/paket', label: 'Semua Paket', icon: Package, featureKey: 'feature_semua_paket', iconBg: 'bg-violet-100', iconColor: 'text-violet-600' },
     ],
   },
@@ -222,6 +222,38 @@ export function AppShell({ isLoggedIn, userName, userPlan, children, featureFlag
                     <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0 opacity-40" />
                     <span className="flex-1 truncate">{it.label}</span>
                   </Link>
+                )
+              }
+
+              if (it.disabled) {
+                return (
+                  <div
+                    key={it.label}
+                    title={collapsed && !isMobile ? `${it.label} (Coming Soon)` : undefined}
+                    className={`relative flex items-center rounded-xl text-sm select-none opacity-60 cursor-not-allowed ${
+                      collapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'justify-between px-3 py-2'
+                    } text-[#42474f]`}
+                  >
+                    <div className={`flex items-center ${collapsed && !isMobile ? '' : 'gap-3'}`}>
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-xs grayscale ${
+                        it.iconBg ?? 'bg-slate-100'
+                      } ${it.iconColor ?? 'text-slate-500'}`}>
+                        <Icon className="w-[16px] h-[16px]" />
+                      </div>
+                      {(!collapsed || isMobile) && (
+                        <span className="flex-1 truncate text-[13px] font-semibold tracking-tight text-slate-500">
+                          {it.label}
+                        </span>
+                      )}
+                    </div>
+                    {(!collapsed || isMobile) && (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                        it.tagColor ?? 'bg-slate-100 text-slate-500 border border-slate-200'
+                      }`}>
+                        {it.tag ?? 'Coming Soon'}
+                      </span>
+                    )}
+                  </div>
                 )
               }
 
