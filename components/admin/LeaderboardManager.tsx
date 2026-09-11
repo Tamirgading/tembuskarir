@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, X, Check, Loader2, Trophy, ExternalLink, UserChec
 
 interface LeaderboardEntry {
   id: string
+  user_id?: string | null
   display_name: string
   user_email?: string | null
   score: number
@@ -147,21 +148,31 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
     }
   }
 
-  async function handleDelete(id: string) {
-    if (!window.confirm('Hapus entri dummy ini dari leaderboard?')) return
+  async function handleDelete(entry: LeaderboardEntry) {
+    const isReal = !entry.is_dummy
+    const promptMsg = isReal
+      ? `Hapus data ujian peserta asli "${entry.display_name}" dari leaderboard paket ini? Tindakan ini akan menghapus riwayat pengerjaan paket ini untuk peserta tersebut.`
+      : 'Hapus entri dummy ini dari leaderboard?'
+
+    if (!window.confirm(promptMsg)) return
     setError('')
     try {
       const res = await fetch('/api/admin/leaderboard/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({
+          id: entry.id,
+          isDummy: entry.is_dummy,
+          packageId,
+          userId: entry.user_id,
+        }),
       })
       const data = await res.json()
       if (!res.ok || data.error) {
         setError(data.error ?? 'Gagal menghapus entri.')
         return
       }
-      if (editingId === id) setEditingId(null)
+      if (editingId === entry.id) setEditingId(null)
       await load()
     } catch {
       setError('Gagal menghapus entri.')
@@ -366,20 +377,27 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
                                 <button
                                   onClick={() => startEdit(entry)}
                                   className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                                  title="Edit"
+                                  title="Edit Peserta Dummy"
                                 >
                                   <Pencil className="w-4 h-4" />
                                 </button>
                                 <button
-                                  onClick={() => handleDelete(entry.id)}
+                                  onClick={() => handleDelete(entry)}
                                   className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-                                  title="Hapus"
+                                  title="Hapus Peserta Dummy"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </>
                             ) : (
-                              <span className="text-[11px] text-gray-400 italic">Otomatis</span>
+                              <button
+                                onClick={() => handleDelete(entry)}
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+                                title="Hapus riwayat ujian peserta ini dari leaderboard paket ini"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Hapus</span>
+                              </button>
                             )}
                           </div>
                         </td>
