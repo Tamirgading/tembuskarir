@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -8,7 +10,7 @@ import Image from 'next/image'
 import { AntamKisiKisiModal } from '@/components/antam/AntamKisiKisiModal'
 import { createClient } from '@/lib/supabase/server'
 import { getStreamBySlug, getStreamImage } from '@/lib/antam-config'
-import { checkPackageAccess } from '@/lib/access'
+import { checkPackageAccess, getPremiumSubscriptionStatus } from '@/lib/access'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
@@ -53,8 +55,12 @@ export default async function AntamStreamPage({
   const accessMap: Record<string, string> = {}
   const bestScores: Record<string, number> = {}
   let streamAttempts: Pick<AttemptRow, 'id' | 'score' | 'started_at' | 'package_id'>[] = []
+  let hasPremium = false
 
   if (user) {
+    const premiumStatus = await getPremiumSubscriptionStatus(user.id)
+    hasPremium = premiumStatus.active
+
     await Promise.all(streamPkgs.map(async (p) => {
       const status = await checkPackageAccess(user.id, p.id, p.is_free, p.slug)
       accessMap[p.id] = status
@@ -190,16 +196,27 @@ export default async function AntamStreamPage({
         </div>
       </div>
 
-      {/* ── Upgrade banner ── */}
-      {user && (
-        <div className="flex items-center justify-between gap-4 bg-brand/5 border border-brand/20 rounded-2xl px-5 py-3.5">
-          <p className="text-sm text-brand-800 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-brand" />
-            <span className="font-bold">Premium:</span> akses semua paket ANTAM sekaligus.
+      {/* Status / Upgrade banner */}
+      {user && !hasPremium && (
+        <div className="flex items-center justify-between gap-4 bg-amber-50/80 border border-amber-200/80 rounded-2xl px-5 py-3.5">
+          <p className="text-sm text-amber-900 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-600" />
+            <span className="font-bold">Akses Premium:</span> Dapatkan akses ke seluruh simulasi ANTAM dan materi lengkap.
           </p>
-          <Link href="/harga" className="shrink-0 text-xs font-bold text-white bg-brand hover:bg-brand-700 px-4 py-2 rounded-xl transition-colors">
+          <Link href="/harga" className="shrink-0 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-xl transition-colors shadow-xs">
             Lihat Harga
           </Link>
+        </div>
+      )}
+      {user && hasPremium && (
+        <div className="flex items-center justify-between gap-4 bg-emerald-50/90 border border-emerald-200 rounded-2xl px-5 py-3.5">
+          <p className="text-sm text-emerald-900 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-600" />
+            <span className="font-bold">Akses Premium Aktif:</span> Anda memiliki akses penuh ke seluruh paket simulasi dalam stream ini.
+          </p>
+          <span className="shrink-0 text-xs font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-3 py-1.5 rounded-xl">
+            Akses Terbuka
+          </span>
         </div>
       )}
 

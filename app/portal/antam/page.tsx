@@ -1,8 +1,10 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import {
   ChevronRight, Clock, FileText, Mountain,
-  BarChart3, ArrowRight, Building2, TrendingDown,
+  BarChart3, ArrowRight, Building2, TrendingDown, Sparkles,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
@@ -194,6 +196,19 @@ export default async function AntamPortalPage() {
         </div>
       </section>
 
+      {/* Active Premium Banner */}
+      {hasPremium && (
+        <div className="flex items-center justify-between gap-4 bg-emerald-50/90 border border-emerald-200 rounded-2xl px-5 py-3.5 shadow-xs">
+          <p className="text-sm text-emerald-900 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span><strong className="font-bold">Akses Premium Aktif:</strong> Kamu dapat mengakses semua modul dan paket simulasi pada seluruh 14 Job Stream ANTAM.</span>
+          </p>
+          <span className="shrink-0 text-xs font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-3 py-1.5 rounded-xl">
+            14 Stream Terbuka
+          </span>
+        </div>
+      )}
+
       {/* ── Job Stream Header + Grid ── */}
       <div>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
@@ -320,7 +335,7 @@ export default async function AntamPortalPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                        <span className="text-sm font-bold text-slate-900">{(packageNameMap[att.package_id] ?? 'Paket').replace(/\s*[—–]\s*/g, ' - ')}</span>
+                        <span className="text-sm font-bold text-slate-900">{(packageNameMap[att.package_id] ?? 'Paket').replace(/\s*[\u2014\u2013]\s*/g, ' - ')}</span>
                       </div>
                       <div className="text-xs text-slate-500">{formatDate(att.started_at)}</div>
                     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Ticket, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 
 function formatDateID(iso: string) {
@@ -41,6 +42,7 @@ export default function RedeemPage() {
       if (res.ok) {
         setResult({ success: true, message: data.message, expires_at: data.expires_at, duration_days: data.duration_days })
         setCode('')
+        router.refresh()
       } else {
         setResult({ success: false, message: data.error ?? 'Gagal memproses voucher.' })
       }
@@ -126,12 +128,22 @@ export default function RedeemPage() {
         )}
 
         {result?.success && (
-          <button
-            onClick={() => router.push('/')}
-            className="mt-4 w-full text-center text-sm text-blue-600 hover:underline font-medium"
-          >
-            Kembali ke Beranda →
-          </button>
+          <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col sm:flex-row gap-2.5">
+            <Link
+              href="/portal/antam"
+              onClick={() => router.refresh()}
+              className="flex-1 text-center py-2.5 px-4 bg-[#00315f] hover:bg-[#16487e] text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5"
+            >
+              Buka Simulasi ANTAM →
+            </Link>
+            <Link
+              href="/"
+              onClick={() => router.refresh()}
+              className="flex-1 text-center py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
+            >
+              Kembali ke Beranda
+            </Link>
+          </div>
         )}
       </div>
 

@@ -88,9 +88,21 @@ export async function checkPackageAccess(
 
   const activeSubs = (subs ?? []) as SubRow[]
 
-  // 1. Premium All Access → SEMUA paket
+  // 1. Premium All Access -> SEMUA paket
   const hasPremium = activeSubs.some((s) => ALL_ACCESS_PLANS.includes(s.plan_type))
   if (hasPremium) return 'subscribed'
+
+  // Fallback: Cek tabel users jika akun berstatus premium dan belum kedaluwarsa
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: userProfile } = await (supabase.from('users') as any)
+    .select('plan, plan_expires_at')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (userProfile?.plan === 'premium') {
+    const isNotExpired = !userProfile.plan_expires_at || new Date(userProfile.plan_expires_at) > new Date(now)
+    if (isNotExpired) return 'subscribed'
+  }
 
   // 2. Plan per-tahap/perusahaan (perlu cek slug paket)
   if (packageSlug) {
@@ -124,6 +136,7 @@ export async function getPremiumSubscriptionStatus(userId: string): Promise<{
   const supabase = createServiceClient()
   const now = new Date().toISOString()
 
+  // 1. Cek dari tabel subscriptions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase.from('subscriptions') as any)
     .select('plan_type, expires_at')
@@ -135,8 +148,25 @@ export async function getPremiumSubscriptionStatus(userId: string): Promise<{
     .limit(1)
     .maybeSingle()
 
-  if (!data) return { active: false, expiresAt: null, planType: null }
-  return { active: true, expiresAt: data.expires_at, planType: data.plan_type }
+  if (data) {
+    return { active: true, expiresAt: data.expires_at, planType: data.plan_type }
+  }
+
+  // 2. Fallback: Cek tabel users
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: userProfile } = await (supabase.from('users') as any)
+    .select('plan, plan_expires_at')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (userProfile?.plan === 'premium') {
+    const isNotExpired = !userProfile.plan_expires_at || new Date(userProfile.plan_expires_at) > new Date(now)
+    if (isNotExpired) {
+      return { active: true, expiresAt: userProfile.plan_expires_at, planType: 'premium_monthly' }
+    }
+  }
+
+  return { active: false, expiresAt: null, planType: null }
 }
 
 /**

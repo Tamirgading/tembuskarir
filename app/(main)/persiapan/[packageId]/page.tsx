@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type React from 'react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -173,7 +175,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
             </div>
           </div>
 
-          {/* Stats row — durasi pakai total aktual sub-tes */}
+          {/* Stats row - durasi pakai total aktual sub-tes */}
           <div className="flex gap-4 mt-6 flex-wrap">
             {([
               { icon: <Clipboard className="w-5 h-5 text-sky-300" />, label: 'Soal', value: `${pkg.total_questions}` },
@@ -193,7 +195,7 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
         {/* Body */}
         <div className="px-7 py-6 space-y-6">
 
-          {/* Sub-tes breakdown (ASTRA) — compact, 4 kolom */}
+          {/* Sub-tes breakdown (ASTRA) - compact, 4 kolom */}
           {isAstra && (
             <div>
               <SectionLabel className="mb-3">Pembagian Sub-tes</SectionLabel>

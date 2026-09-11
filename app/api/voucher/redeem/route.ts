@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 
 interface VoucherRow {
@@ -84,16 +85,16 @@ export async function POST(req: NextRequest) {
     let baseDate: Date
 
     if (userPlan === 'premium' && currentExpiry && new Date(currentExpiry) > now) {
-      // Sudah premium — extend dari tanggal expire saat ini
+      // Sudah premium - extend dari tanggal expire saat ini
       baseDate = new Date(currentExpiry)
     } else {
-      // Free / expired — mulai dari sekarang
+      // Free / expired - mulai dari sekarang
       baseDate = now
     }
 
     const newExpiry = new Date(baseDate.getTime() + voucher.duration_days * 24 * 60 * 60 * 1000)
 
-    // 7. Jalankan dalam "transaksi" (sequential updates — Supabase tidak punya multi-row transaction di client)
+    // 7. Jalankan dalam "transaksi" (sequential updates - Supabase tidak punya multi-row transaction di client)
     // Update user plan
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateUserErr } = await (service.from('users') as any)
@@ -141,6 +142,12 @@ export async function POST(req: NextRequest) {
       .eq('id', voucher.id)
 
     console.log('[Voucher] ✅ Redeemed:', normalizedCode, 'by user:', user.id, 'until:', newExpiry.toISOString())
+
+    try {
+      revalidatePath('/', 'layout')
+    } catch (e) {
+      console.warn('[Voucher] Failed to revalidate paths:', e)
+    }
 
     return NextResponse.json({
       message: 'Voucher berhasil digunakan!',
