@@ -144,7 +144,7 @@ export default async function HargaPage({
       {/* ── SECTION: PREMIUM (ALL ACCESS) ── */}
       {premiumPlans.length > 0 && (
         <div>
-          <SectionLabel className="mb-4" trailing="ASTRA · BUMN · PLN · OJK · ANTAM">
+          <SectionLabel className="mb-4" trailing="ASTRA · BUMN · PLN · ANTAM">
             Langganan Premium
           </SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

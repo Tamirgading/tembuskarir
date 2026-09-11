@@ -1,13 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, X, Check, Loader2, Trophy, ExternalLink } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check, Loader2, Trophy, ExternalLink, UserCheck, Bot } from 'lucide-react'
 
 interface LeaderboardEntry {
   id: string
   display_name: string
+  user_email?: string | null
   score: number
   duration_seconds: number
+  attempt_count?: number
+  is_dummy: boolean
+  created_at?: string
 }
 
 interface LeaderboardManagerProps {
@@ -32,7 +36,7 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
   const [score, setScore] = useState('')
   const [minutes, setMinutes] = useState('')
 
-  // Edit
+  // Edit (hanya untuk dummy)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
   const [editScore, setEditScore] = useState('')
@@ -75,7 +79,7 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
     const sc = Number(score)
     const min = Number(minutes)
     if (!name.trim()) return setError('Nama peserta wajib diisi.')
-    if (!Number.isFinite(sc) || sc < 0 || sc > 100) return setError('Nilai harus antara 0–100.')
+    if (!Number.isFinite(sc) || sc < 0 || sc > 100) return setError('Nilai harus antara 0-100.')
     if (!Number.isFinite(min) || min < 0) return setError('Waktu (menit) tidak valid.')
 
     setSaving(true)
@@ -116,7 +120,7 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
     const sc = Number(editScore)
     const min = Number(editMinutes)
     if (!editName.trim()) return setError('Nama peserta wajib diisi.')
-    if (!Number.isFinite(sc) || sc < 0 || sc > 100) return setError('Nilai harus antara 0–100.')
+    if (!Number.isFinite(sc) || sc < 0 || sc > 100) return setError('Nilai harus antara 0-100.')
     if (!Number.isFinite(min) || min < 0) return setError('Waktu (menit) tidak valid.')
 
     setEditLoading(true)
@@ -144,7 +148,7 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm('Hapus entri ini dari leaderboard?')) return
+    if (!window.confirm('Hapus entri dummy ini dari leaderboard?')) return
     setError('')
     try {
       const res = await fetch('/api/admin/leaderboard/delete', {
@@ -167,14 +171,15 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
   const inputCls =
     'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
 
+  const realCount = entries.filter((e) => !e.is_dummy).length
+  const dummyCount = entries.filter((e) => e.is_dummy).length
+
   return (
     <div className="space-y-5">
       {/* Info singkat */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <p className="text-xs text-gray-500 max-w-xl leading-relaxed">
-          Entri di bawah ini ditampilkan sebagai peserta di halaman leaderboard paket{' '}
-          <strong className="text-gray-700">{packageName}</strong>. Entri ini digabung otomatis dengan
-          nilai user asli yang benar-benar mengerjakan, lalu diurutkan dari skor tertinggi.
+          Tabel di bawah ini menggabungkan hasil pengerjaan <strong className="text-gray-700">Peserta Asli</strong> (otomatis masuk saat user menyelesaikan ujian) dan <strong className="text-gray-700">Peserta Dummy</strong> (dibuat manual oleh admin) untuk paket <strong className="text-gray-700">{packageName}</strong>.
         </p>
         <a
           href={`/paket/${packageId}/leaderboard`}
@@ -186,13 +191,26 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
         </a>
       </div>
 
+      {/* Ringkasan Jumlah Peserta */}
+      <div className="flex items-center gap-3 text-xs">
+        <span className="px-3 py-1 rounded-lg bg-gray-100 text-gray-700 font-medium">
+          Total: <strong className="text-gray-900">{entries.length}</strong> peserta
+        </span>
+        <span className="px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 font-medium inline-flex items-center gap-1.5">
+          <UserCheck className="w-3.5 h-3.5" /> <strong className="text-emerald-800">{realCount}</strong> Peserta Asli
+        </span>
+        <span className="px-3 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-700 font-medium inline-flex items-center gap-1.5">
+          <Bot className="w-3.5 h-3.5" /> <strong className="text-purple-800">{dummyCount}</strong> Dummy Admin
+        </span>
+      </div>
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
 
-      {/* Form tambah */}
+      {/* Form tambah Peserta Dummy */}
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
         <p className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
           <Plus className="w-4 h-4 text-blue-600" /> Tambah Peserta Dummy
@@ -210,7 +228,7 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
             type="number"
             value={score}
             onChange={(e) => setScore(e.target.value)}
-            placeholder="Nilai"
+            placeholder="Nilai (0-100)"
             min={0}
             max={100}
             className={inputCls}
@@ -219,7 +237,7 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
             type="number"
             value={minutes}
             onChange={(e) => setMinutes(e.target.value)}
-            placeholder="Waktu (mnt)"
+            placeholder="Waktu (menit)"
             min={0}
             className={inputCls}
           />
@@ -229,28 +247,29 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
             className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            Tambah
+            Tambah Dummy
           </button>
         </div>
       </div>
 
-      {/* Daftar entri */}
+      {/* Daftar entri gabungan */}
       <div className="border border-gray-200 rounded-xl overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-10 text-gray-400 text-sm">
-            <Loader2 className="w-4 h-4 animate-spin" /> Memuat…
+            <Loader2 className="w-4 h-4 animate-spin" /> Memuat data...
           </div>
         ) : entries.length === 0 ? (
           <div className="text-center py-10 text-gray-400 text-sm">
             <div className="flex justify-center mb-2"><Trophy className="w-8 h-8 text-gray-300" /></div>
-            <p>Belum ada entri dummy. Tambahkan peserta di form di atas agar leaderboard tampak ramai.</p>
+            <p>Belum ada peserta (baik asli maupun dummy) untuk paket ini.</p>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-gray-500 border-b border-gray-100 bg-gray-50">
-                <th className="px-4 py-2.5 font-medium w-10">#</th>
-                <th className="px-4 py-2.5 font-medium">Nama</th>
+                <th className="px-4 py-2.5 font-medium w-12 text-center">Rank</th>
+                <th className="px-4 py-2.5 font-medium">Nama Peserta</th>
+                <th className="px-4 py-2.5 font-medium text-center w-32">Tipe Peserta</th>
                 <th className="px-4 py-2.5 font-medium text-center w-20">Nilai</th>
                 <th className="px-4 py-2.5 font-medium text-center w-24">Waktu</th>
                 <th className="px-4 py-2.5 font-medium text-right w-28">Aksi</th>
@@ -261,10 +280,10 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
                 const isEditing = editingId === entry.id
                 return (
                   <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-2.5 text-gray-400 font-num">{idx + 1}</td>
+                    <td className="px-4 py-2.5 text-center text-gray-400 font-num">{idx + 1}</td>
                     {isEditing ? (
                       <>
-                        <td className="px-4 py-2.5">
+                        <td className="px-4 py-2.5" colSpan={2}>
                           <input
                             type="text"
                             value={editName}
@@ -314,25 +333,54 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
                       </>
                     ) : (
                       <>
-                        <td className="px-4 py-2.5 font-medium text-gray-800">{entry.display_name}</td>
-                        <td className="px-4 py-2.5 text-center font-num font-semibold text-gray-800">{entry.score}</td>
+                        <td className="px-4 py-2.5">
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-gray-800">{entry.display_name}</span>
+                            {entry.user_email && (
+                              <span className="text-xs text-gray-400 font-normal">{entry.user_email}</span>
+                            )}
+                            {!entry.is_dummy && entry.attempt_count && entry.attempt_count > 1 && (
+                              <span className="text-[10px] text-blue-600 mt-0.5">
+                                Percobaan ke-{entry.attempt_count}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2.5 text-center">
+                          {entry.is_dummy ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                              <Bot className="w-3 h-3 text-purple-500" /> Dummy Admin
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <UserCheck className="w-3 h-3 text-emerald-600" /> Peserta Asli
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2.5 text-center font-num font-bold text-gray-800">{entry.score}</td>
                         <td className="px-4 py-2.5 text-center font-num text-gray-500">{formatDur(entry.duration_seconds)}</td>
                         <td className="px-4 py-2.5">
                           <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              onClick={() => startEdit(entry)}
-                              className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                              title="Edit"
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(entry.id)}
-                              className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-                              title="Hapus"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            {entry.is_dummy ? (
+                              <>
+                                <button
+                                  onClick={() => startEdit(entry)}
+                                  className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                                  title="Edit"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(entry.id)}
+                                  className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                                  title="Hapus"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            ) : (
+                              <span className="text-[11px] text-gray-400 italic">Otomatis</span>
+                            )}
                           </div>
                         </td>
                       </>
@@ -346,8 +394,7 @@ export function LeaderboardManager({ packageId, packageName }: LeaderboardManage
       </div>
 
       <p className="text-[11px] text-gray-400">
-        Catatan: kolom waktu ditulis dalam menit dan otomatis dikonversi ke format mm:ss di leaderboard.
-        Perubahan langsung terlihat di leaderboard publik.
+        Catatan: Kolom &quot;Tipe Peserta&quot; membedakan antara pengerjaan asli user dari website dengan data dummy yang ditambahkan manual oleh admin.
       </p>
     </div>
   )

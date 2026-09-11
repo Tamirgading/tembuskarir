@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
 import { SectionLabel } from '@/components/ui/SectionLabel'
@@ -95,7 +95,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   let leaderboardRows: LeaderboardRow[] = []
   let myRow: LeaderboardRow | null = null
   if (pkg?.category === 'ANTAM') {
-    const { data: antamAttempts } = await supabase
+    const service = createServiceClient()
+    const { data: antamAttempts } = await service
       .from('attempts')
       .select('user_id, score, started_at, duration_seconds')
       .eq('package_id', attempt.package_id)
@@ -106,7 +107,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     let antamDummies: LeaderboardDummy[] = []
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: dummyData } = await (supabase.from('leaderboard_entries') as any)
+      const { data: dummyData } = await (service.from('leaderboard_entries') as any)
         .select('id, display_name, score, duration_seconds')
         .eq('package_id', attempt.package_id)
         .eq('is_active', true)
@@ -136,7 +137,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     const myIds = Array.from(new Set([...realTopIds, ...(myRaw?.user_id ? [myRaw.user_id] : [])]))
     leaderboardRows = topRows
     if (myIds.length > 0) {
-      const { data: usersData } = await supabase
+      const { data: usersData } = await service
         .from('users')
         .select('id, full_name, avatar_url')
         .in('id', myIds)
@@ -164,7 +165,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     }
   }
 
-  // Soal + pembahasan (tidak dikirim ke non-premium pada paket gratis — anti inspect)
+  // Soal + pembahasan (tidak dikirim ke non-premium pada paket gratis - anti inspect)
   let questionsData: QuestionWithAnswer[] | null = null
   if (!showBlur) {
     const { data: qData, error: qErr } = await supabase
@@ -286,7 +287,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         </div>
       </div>
 
-      {/* ══ Passing grade per seksi (paket tahap) — premium only ══ */}
+      {/* ══ Passing grade per seksi (paket tahap) - premium only ══ */}
       {!showBlur && stageSections.length > 0 && stageGroups.length > 0 && (
         <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
@@ -325,7 +326,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
       {/* ══ Rincian per sub-tes & Leaderboard ANTAM ══ */}
       {(pkg?.category === 'ANTAM' || subtests.length > 0) && (
         <div className={`grid grid-cols-1 ${pkg?.category === 'ANTAM' && subtests.length > 0 && !showBlur ? 'lg:grid-cols-4' : 'lg:grid-cols-1'} gap-5 items-stretch`}>
-          {/* ══ Rincian per sub-tes (premium only) — Kolom 1-3 ══ */}
+          {/* ══ Rincian per sub-tes (premium only) - Kolom 1-3 ══ */}
           {!showBlur && subtests.length > 0 && (
             <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${pkg?.category === 'ANTAM' ? 'lg:col-span-3' : 'w-full'}`}>
               <div className="flex items-center justify-between mb-3">
@@ -356,7 +357,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             </div>
           )}
 
-          {/* ══ Leaderboard ANTAM — Kolom 4 (1 kolom paling kanan) ══ */}
+          {/* ══ Leaderboard ANTAM - Kolom 4 (1 kolom paling kanan) ══ */}
           {pkg?.category === 'ANTAM' && (
             <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${subtests.length > 0 && !showBlur ? 'lg:col-span-1' : 'w-full'}`}>
               <div className="flex items-center gap-2.5 mb-3">
@@ -375,7 +376,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                 </div>
               </div>
 
-              {/* Daftar peringkat — scrollable di dalam card tanpa pindah halaman */}
+              {/* Daftar peringkat - scrollable di dalam card tanpa pindah halaman */}
               <div className="flex-1 space-y-1 max-h-[230px] overflow-y-auto pr-1">
                 {leaderboardRows.map((entry, i) => {
                   const rank = i + 1

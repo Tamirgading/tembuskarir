@@ -12,9 +12,27 @@ interface MiniLineChartProps {
   data: ChartPoint[]
   height?: number
   color?: string
-  formatValue?: (v: number) => string
-  formatTooltipValue?: (v: number) => string
+  chartType?: 'revenue' | 'ujian' | 'pengunjung' | 'user' | string
   unit?: string
+}
+
+function formatYAxis(v: number, type?: string): string {
+  if (type === 'revenue') return `${Math.round(v / 1000)}rb`
+  return String(Math.round(v))
+}
+
+function formatTooltip(v: number, type?: string, unit?: string): string {
+  if (type === 'revenue') {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(v)
+  }
+  if (type === 'ujian') return `${v} ujian selesai`
+  if (type === 'pengunjung') return `${v} kunjungan`
+  if (type === 'user') return `${v} user baru`
+  return `${v} ${unit ?? ''}`.trim()
 }
 
 /**
@@ -25,8 +43,7 @@ export function MiniLineChart({
   data,
   height = 190,
   color = '#2563eb',
-  formatValue,
-  formatTooltipValue,
+  chartType,
   unit,
 }: MiniLineChartProps) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
@@ -75,11 +92,7 @@ export function MiniLineChart({
             <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: color }} />
             <span className="text-gray-300">{hoveredPoint.date ?? hoveredPoint.label}:</span>
             <span className="text-white">
-              {formatTooltipValue
-                ? formatTooltipValue(hoveredPoint.value)
-                : formatValue
-                ? formatValue(hoveredPoint.value)
-                : `${hoveredPoint.value} ${unit ?? ''}`}
+              {formatTooltip(hoveredPoint.value, chartType, unit)}
             </span>
           </div>
         ) : (
@@ -109,7 +122,7 @@ export function MiniLineChart({
               <g key={t}>
                 <line x1={PAD_L} y1={yy} x2={W - PAD_R} y2={yy} stroke="#f1f5f9" strokeWidth="1" />
                 <text x={PAD_L - 8} y={yy + 4} textAnchor="end" fontSize="10.5" fill="#94a3b8" fontWeight="500">
-                  {formatValue ? formatValue(Math.round(v)) : Math.round(v)}
+                  {formatYAxis(Math.round(v), chartType)}
                 </text>
               </g>
             )
@@ -143,11 +156,7 @@ export function MiniLineChart({
             const pt = data[hoveredIdx]
             const px = x(hoveredIdx)
             const py = y(pt.value)
-            const valStr = formatTooltipValue
-              ? formatTooltipValue(pt.value)
-              : formatValue
-              ? formatValue(pt.value)
-              : `${pt.value} ${unit ?? ''}`.trim()
+            const valStr = formatTooltip(pt.value, chartType, unit)
             const dateStr = pt.date ?? pt.label
 
             const isNearTop = py < 45

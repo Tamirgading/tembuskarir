@@ -5,48 +5,47 @@ import type { SubscriptionRow, UserRow } from '@/lib/utils'
 import { getFeatureFlags } from '@/lib/site-settings'
 import FeatureToggles from '@/components/admin/FeatureToggles'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDashboardPage() {
   const supabase = createServiceClient()
 
-  // Stats: total users
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: totalUsers } = await (supabase.from('users') as any)
-    .select('*', { count: 'exact', head: true })
+  let totalUsers = 0
+  let premiumUsers = 0
+  let totalRevenue = 0
+  let totalAttempts = 0
+  let recentUsers: UserRow[] = []
+  let subs: Pick<SubscriptionRow, 'amount' | 'plan_type' | 'paid_at'>[] = []
+  let featureFlags = {
+    feature_info_seleksi: true,
+    feature_semua_paket: true,
+    feature_portal_pln: true,
+    feature_portal_bumn: true,
+    feature_portal_antam: true,
+  }
 
-  // Stats: premium users
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: premiumUsers } = await (supabase.from('users') as any)
-    .select('*', { count: 'exact', head: true })
-    .eq('plan', 'premium')
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sb = supabase as any
+    const [uCountRes, pCountRes, paidSubsRes, attCountRes, rUsersRes, flagsRes] = await Promise.all([
+      sb.from('users').select('*', { count: 'exact', head: true }),
+      sb.from('users').select('*', { count: 'exact', head: true }).eq('plan', 'premium'),
+      sb.from('subscriptions').select('amount, plan_type, paid_at').eq('status', 'paid').order('paid_at', { ascending: false }),
+      sb.from('attempts').select('*', { count: 'exact', head: true }).eq('status', 'finished'),
+      sb.from('users').select('id, email, full_name, plan, created_at').order('created_at', { ascending: false }).limit(5),
+      getFeatureFlags(),
+    ])
 
-  // Stats: total paid subscriptions
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: paidSubs } = await (supabase.from('subscriptions') as any)
-    .select('amount, plan_type, paid_at')
-    .eq('status', 'paid')
-    .order('paid_at', { ascending: false })
-
-  type PaidSub = Pick<SubscriptionRow, 'amount' | 'plan_type' | 'paid_at'>
-  const subs = (paidSubs ?? []) as PaidSub[]
-  const totalRevenue = subs.reduce((sum, s) => sum + s.amount, 0)
-
-  // Stats: total attempts
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: totalAttempts } = await (supabase.from('attempts') as any)
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'finished')
-
-  // Recent 5 users
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: recentUsersData } = await (supabase.from('users') as any)
-    .select('id, email, full_name, plan, created_at')
-    .order('created_at', { ascending: false })
-    .limit(5)
-
-  type RecentUser = Pick<UserRow, 'id' | 'email' | 'full_name' | 'plan' | 'created_at'>
-  const recentUsers = (recentUsersData ?? []) as RecentUser[]
-
-  const featureFlags = await getFeatureFlags()
+    totalUsers = uCountRes.count ?? 0
+    premiumUsers = pCountRes.count ?? 0
+    subs = (paidSubsRes.data ?? []) as typeof subs
+    totalRevenue = subs.reduce((sum, s) => sum + (s.amount ?? 0), 0)
+    totalAttempts = attCountRes.count ?? 0
+    recentUsers = (rUsersRes.data ?? []) as UserRow[]
+    featureFlags = flagsRes
+  } catch (err) {
+    console.error('[AdminDashboard] Error loading stats:', err)
+  }
 
   function formatRupiah(amount: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount)
@@ -158,7 +157,7 @@ export default async function AdminDashboardPage() {
                 <span className="text-gray-700 capitalize">{s.plan_type}</span>
                 <span className="font-semibold text-green-600">{formatRupiah(s.amount)}</span>
                 <span className="text-gray-400 text-xs">
-                  {s.paid_at ? new Date(s.paid_at).toLocaleDateString('id-ID') : '—'}
+                  {s.paid_at ? new Date(s.paid_at).toLocaleDateString('id-ID') : '-'}
                 </span>
               </div>
             ))}

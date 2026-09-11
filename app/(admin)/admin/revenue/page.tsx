@@ -6,6 +6,8 @@ import {
   Crown, Package, BadgeCheck, CircleDollarSign, Wallet,
 } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 interface SubRow {
   id: string
   user_id: string
@@ -274,13 +276,7 @@ export default async function AdminRevenuePage({
           <MiniLineChart
             data={chartDataMap[activeChart]}
             color={activeChart === 'revenue' ? '#059669' : activeChart === 'pengunjung' ? '#0891b2' : activeChart === 'user' ? '#2563eb' : '#7c3aed'}
-            formatValue={(v) => (activeChart === 'revenue' ? `${Math.round(v / 1000)}rb` : String(v))}
-            formatTooltipValue={(v) => {
-              if (activeChart === 'revenue') return formatRupiah(v)
-              if (activeChart === 'ujian') return `${v} ujian selesai`
-              if (activeChart === 'pengunjung') return `${v} kunjungan`
-              return `${v} user baru`
-            }}
+            chartType={activeChart}
             unit={activeChart === 'ujian' ? 'ujian' : activeChart === 'pengunjung' ? 'kunjungan' : activeChart === 'user' ? 'user' : ''}
           />
         </div>
@@ -412,7 +408,7 @@ export default async function AdminRevenuePage({
                 return (
                   <tr key={s.id} className="hover:bg-gray-50">
                     <td className="px-5 py-3">
-                      <p className="font-medium text-gray-900">{buyer?.full_name ?? '—'}</p>
+                      <p className="font-medium text-gray-900">{buyer?.full_name ?? '-'}</p>
                       <p className="text-xs text-gray-400">{buyer?.email ?? s.user_id}</p>
                     </td>
                     <td className="px-5 py-3 text-gray-700">{planLabel(s, packageNameMap)}</td>

@@ -1,12 +1,14 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Flag } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { buildLeaderboard, mergeLeaderboard } from '@/lib/leaderboard'
 import type { LeaderboardDummy, LeaderboardRow } from '@/lib/leaderboard'
 import { formatDuration } from '@/lib/utils'
 import type { PackageRow } from '@/lib/utils'
 import { LeaderboardIllustration } from '@/components/ui/LeaderboardIllustration'
+
+export const dynamic = 'force-dynamic'
 
 const PAGE_SIZE = 10
 
@@ -23,8 +25,10 @@ export default async function LeaderboardPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
+  const service = createServiceClient()
+
   // Fetch paket
-  const { data: pkgData } = await supabase
+  const { data: pkgData } = await service
     .from('packages')
     .select('id, name, category, total_questions')
     .eq('id', packageId)
@@ -37,8 +41,8 @@ export default async function LeaderboardPage({
   // Kategori lain: skor terbaik (MAX).
   const isAntam = pkg.category === 'ANTAM'
 
-  // Ambil semua finished attempts, group di JS
-  const { data: attemptsData } = await supabase
+  // Ambil semua finished attempts (pakai service client agar membaca seluruh peserta)
+  const { data: attemptsData } = await service
     .from('attempts')
     .select('user_id, score, started_at, duration_seconds')
     .eq('package_id', packageId)
@@ -57,7 +61,7 @@ export default async function LeaderboardPage({
   let dummies: LeaderboardDummy[] = []
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: dummyData } = await (supabase.from('leaderboard_entries') as any)
+    const { data: dummyData } = await (service.from('leaderboard_entries') as any)
       .select('id, display_name, score, duration_seconds')
       .eq('package_id', packageId)
       .eq('is_active', true)
@@ -90,7 +94,7 @@ export default async function LeaderboardPage({
   let leaderboard: LeaderboardRow[] = topRows
   const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
   if (realTopIds.length > 0) {
-    const { data: usersData } = await supabase
+    const { data: usersData } = await service
       .from('users')
       .select('id, full_name, avatar_url')
       .in('id', realTopIds)
@@ -129,7 +133,7 @@ export default async function LeaderboardPage({
         </h1>
         <p className="text-gray-500 mt-1">
           {pkg.name}
-          {isAntam && ' — hanya skor percobaan pertama yang dihitung.'}
+          {isAntam && ' - hanya skor percobaan pertama yang dihitung.'}
         </p>
       </div>
 
@@ -210,10 +214,10 @@ export default async function LeaderboardPage({
                       </span>
                     </td>
                     <td className="px-5 py-3 text-right text-gray-500 hidden sm:table-cell font-num">
-                      {entry.duration_seconds != null ? formatDuration(entry.duration_seconds) : '—'}
+                      {entry.duration_seconds != null ? formatDuration(entry.duration_seconds) : '-'}
                     </td>
                     <td className="px-5 py-3 text-right text-gray-400 hidden md:table-cell">
-                      {entry.is_dummy ? '—' : `${entry.attempt_count}x`}
+                      {entry.is_dummy ? '-' : `${entry.attempt_count}x`}
                     </td>
                   </tr>
                 )
