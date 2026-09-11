@@ -50,19 +50,28 @@ function dayKey(d: string | Date): string {
   return `${y}-${m}-${dd}`
 }
 
-function last30Days(): { key: string; label: string }[] {
-  const out: { key: string; label: string }[] = []
+function last30Days(): { key: string; label: string; dateFormatted: string }[] {
+  const out: { key: string; label: string; dateFormatted: string }[] = []
   const today = new Date()
   for (let i = 29; i >= 0; i--) {
     const d = new Date(today)
     d.setDate(today.getDate() - i)
-    out.push({ key: dayKey(d), label: `${d.getDate()}/${d.getMonth() + 1}` })
+    const formatted = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+    out.push({
+      key: dayKey(d),
+      label: `${d.getDate()}/${d.getMonth() + 1}`,
+      dateFormatted: formatted,
+    })
   }
   return out
 }
 
-function fillSeries(days: { key: string; label: string }[], map: Record<string, number>) {
-  return days.map((d) => ({ label: d.label, value: map[d.key] ?? 0 }))
+function fillSeries(days: { key: string; label: string; dateFormatted: string }[], map: Record<string, number>) {
+  return days.map((d) => ({
+    label: d.label,
+    value: map[d.key] ?? 0,
+    date: d.dateFormatted,
+  }))
 }
 
 function planLabel(s: SubRow, packageNameMap: Record<string, string>): string {
@@ -266,6 +275,13 @@ export default async function AdminRevenuePage({
             data={chartDataMap[activeChart]}
             color={activeChart === 'revenue' ? '#059669' : activeChart === 'pengunjung' ? '#0891b2' : activeChart === 'user' ? '#2563eb' : '#7c3aed'}
             formatValue={(v) => (activeChart === 'revenue' ? `${Math.round(v / 1000)}rb` : String(v))}
+            formatTooltipValue={(v) => {
+              if (activeChart === 'revenue') return formatRupiah(v)
+              if (activeChart === 'ujian') return `${v} ujian selesai`
+              if (activeChart === 'pengunjung') return `${v} kunjungan`
+              return `${v} user baru`
+            }}
+            unit={activeChart === 'ujian' ? 'ujian' : activeChart === 'pengunjung' ? 'kunjungan' : activeChart === 'user' ? 'user' : ''}
           />
         </div>
 
@@ -285,7 +301,7 @@ export default async function AdminRevenuePage({
                     i === 0 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
                   }`}>{i + 1}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{t.user?.full_name ?? '—'}</p>
+                    <p className="text-sm font-medium text-gray-900 truncate">{t.user?.full_name ?? '-'}</p>
                     <p className="text-xs text-gray-400 truncate">{t.user?.email}</p>
                   </div>
                   <div className="text-right shrink-0">
