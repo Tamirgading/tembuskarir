@@ -44,6 +44,14 @@ export async function POST(req: NextRequest) {
 
     const voucher = voucherData as VoucherRow
 
+    // Voucher diskon (%) tidak di-redeem di sini — dipakai saat checkout pembayaran
+    if (voucher.discount_type === 'percent') {
+      return NextResponse.json(
+        { error: 'Voucher ini adalah voucher diskon. Masukkan kodenya saat checkout pembayaran.' },
+        { status: 400 }
+      )
+    }
+
     // 2. Validasi aktif
     if (!voucher.is_active) {
       return NextResponse.json({ error: 'Voucher ini sudah tidak aktif.' }, { status: 400 })

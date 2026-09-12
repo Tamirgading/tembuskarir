@@ -311,6 +311,7 @@ export default async function HargaPage({
                     <PlnBuyButton
                       planType={plan.id as 'pln_gat_monthly' | 'pln_tahap2_monthly' | 'pln_complete_monthly'}
                       planLabel={plan.requiresBidang ? 'Pilih Bidang & Berlangganan' : 'Berlangganan'}
+                      amount={plan.price}
                       highlight={isComplete}
                       preselectedBidang={plan.requiresBidang ? urlBidang : undefined}
                     />

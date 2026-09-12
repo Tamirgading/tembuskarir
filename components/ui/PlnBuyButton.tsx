@@ -1,38 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Loader2, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { AKDING_BIDANG, BIDANG_BY_SLUG, PLN_BIDANG_PLANS } from '@/lib/bidang-config'
+import { CheckoutModal } from '@/components/ui/CheckoutModal'
 
 type PlnPlanType = 'pln_gat_monthly' | 'pln_tahap2_monthly' | 'pln_complete_monthly'
 
 interface PlnBuyButtonProps {
   planType: PlnPlanType
   planLabel: string
+  amount: number
   highlight?: boolean
   preselectedBidang?: string   // dari URL ?plnBidang=...
   className?: string
   onSuccess?: () => void
-}
-
-
-function loadSnap(): Promise<void> {
-  return new Promise((resolve) => {
-    if (window.snap) { resolve(); return }
-    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ''
-    const isProd = process.env.NODE_ENV === 'production'
-    const src = isProd
-      ? 'https://app.midtrans.com/snap/snap.js'
-      : 'https://app.sandbox.midtrans.com/snap/snap.js'
-    const existing = document.querySelector(`script[src="${src}"]`)
-    if (existing) { existing.addEventListener('load', () => resolve()); return }
-    const s = document.createElement('script')
-    s.src = src
-    s.setAttribute('data-client-key', clientKey)
-    s.onload = () => resolve()
-    document.head.appendChild(s)
-  })
 }
 
 const requiresBidang = (t: PlnPlanType) =>
@@ -41,62 +23,32 @@ const requiresBidang = (t: PlnPlanType) =>
 export function PlnBuyButton({
   planType,
   planLabel,
+  amount,
   highlight = false,
   preselectedBidang,
   className,
   onSuccess,
 }: PlnBuyButtonProps) {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const [showPicker, setShowPicker] = useState(false)
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [selectedBidang, setSelectedBidang] = useState(preselectedBidang ?? '')
-
-  async function doPay(bidang: string) {
-    setLoading(true)
-    setError('')
-    setShowPicker(false)
-    try {
-      const res = await fetch('/api/payment/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planType, bidang: bidang || undefined }),
-      })
-      const data = await res.json() as { snapToken?: string; error?: string }
-      if (!res.ok || !data.snapToken) {
-        setError(data.error ?? 'Gagal membuat transaksi.')
-        setLoading(false)
-        return
-      }
-      await loadSnap()
-      if (!window.snap) {
-        setError('Gagal memuat Midtrans. Coba refresh halaman.')
-        setLoading(false)
-        return
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(window.snap as any).pay(data.snapToken, {
-        onSuccess: () => { if (onSuccess) { onSuccess() } else { router.push('/?payment=success') } },
-        onPending: () => { router.push('/?payment=pending') },
-        onError: () => { setError('Pembayaran gagal. Coba lagi.'); setLoading(false) },
-        onClose: () => { setLoading(false) },
-      })
-    } catch {
-      setError('Terjadi kesalahan. Coba lagi.')
-      setLoading(false)
-    }
-  }
 
   function handleClick() {
     if (!requiresBidang(planType)) {
-      doPay('')
+      setCheckoutOpen(true)
       return
     }
     if (selectedBidang) {
-      doPay(selectedBidang)
+      setCheckoutOpen(true)
       return
     }
     setShowPicker(true)
+  }
+
+  function chooseBidang(slug: string) {
+    setSelectedBidang(slug)
+    setShowPicker(false)
+    setCheckoutOpen(true)
   }
 
   const btnBase = highlight
@@ -108,10 +60,9 @@ export function PlnBuyButton({
       <div className="space-y-1.5">
         <button
           onClick={handleClick}
-          disabled={loading}
-          className={`w-full flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${className ?? btnBase}`}
+          className={`w-full flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-xl transition-colors ${className ?? btnBase}`}
         >
-          {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Memproses...</> : planLabel}
+          {planLabel}
         </button>
         {selectedBidang && requiresBidang(planType) && (
           <p className="text-[11px] text-center text-ink-muted">
@@ -119,7 +70,6 @@ export function PlnBuyButton({
             <button onClick={() => setSelectedBidang('')} className="ml-1 text-brand underline">ubah</button>
           </p>
         )}
-        {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
 
       {/* ── Bidang Picker Modal ── */}
@@ -144,7 +94,7 @@ export function PlnBuyButton({
                 {AKDING_BIDANG.map((b) => (
                   <button
                     key={b.slug}
-                    onClick={() => { setSelectedBidang(b.slug); doPay(b.slug) }}
+                    onClick={() => chooseBidang(b.slug)}
                     className="flex items-center gap-2.5 text-left p-3 rounded-xl border border-hairline hover:border-brand/40 hover:bg-brand/5 transition-all group"
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 border ${b.color}`}>
@@ -161,6 +111,17 @@ export function PlnBuyButton({
             </div>
           </div>
         </>
+      )}
+
+      {checkoutOpen && (
+        <CheckoutModal
+          planType={planType}
+          planLabel={planLabel}
+          amount={amount}
+          bidang={selectedBidang || undefined}
+          onClose={() => setCheckoutOpen(false)}
+          onSuccess={onSuccess}
+        />
       )}
     </>
   )

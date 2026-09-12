@@ -60,11 +60,11 @@ export async function POST(req: NextRequest) {
     // 3. Cari subscription record — sertakan bidang untuk PLN plans
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: subData } = await (supabase.from('subscriptions') as any)
-      .select('id, user_id, plan_type, status, amount, bidang')
+      .select('id, user_id, plan_type, status, amount, bidang, voucher_code')
       .eq('midtrans_order_id', order_id)
       .single()
 
-    const sub = subData as (Pick<SubscriptionRow, 'id' | 'user_id' | 'plan_type' | 'status' | 'amount'> & { bidang?: string | null }) | null
+    const sub = subData as (Pick<SubscriptionRow, 'id' | 'user_id' | 'plan_type' | 'status' | 'amount'> & { bidang?: string | null; voucher_code?: string | null }) | null
 
     if (!sub) {
       console.error('[Webhook] Subscription not found for order:', order_id)
@@ -107,6 +107,31 @@ export async function POST(req: NextRequest) {
           ...(expiresAt ? { expires_at: expiresAt.toISOString() } : {}),
         })
         .eq('id', sub.id)
+
+      // Tandai voucher diskon terpakai (idempotent via unique(voucher_id, user_id))
+      if (sub.voucher_code) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: vData } = await (supabase.from('vouchers') as any)
+            .select('id, used_count')
+            .eq('code', sub.voucher_code)
+            .maybeSingle()
+          if (vData?.id) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { error: useErr } = await (supabase.from('voucher_uses') as any)
+              .insert({ voucher_id: vData.id, user_id: sub.user_id })
+            if (!useErr) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              await (supabase.from('vouchers') as any)
+                .update({ used_count: (vData.used_count ?? 0) + 1 })
+                .eq('id', vData.id)
+              console.log('[Webhook] Voucher consumed:', sub.voucher_code, 'by user:', sub.user_id)
+            }
+          }
+        } catch (voucherErr) {
+          console.error('[Webhook] Voucher consumption error:', voucherErr)
+        }
+      }
 
       // Ambil data user untuk semua jenis pembayaran
       const { data: userData } = await supabase

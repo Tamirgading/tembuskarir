@@ -7,6 +7,35 @@ import type { UserRow } from '@/lib/utils'
 import { VALID_BIDANG_SLUGS } from '@/lib/bidang-config'
 import { getDynamicPlan } from '@/lib/plans-server'
 import { VALID_PLAN_TYPES, getSatuanPrice } from '@/lib/plans'
+import { validateVoucherForCheckout } from '@/lib/voucher'
+
+interface AppliedVoucher {
+  finalAmount: number
+  discountAmount: number
+  voucherCode: string | null
+  error?: string
+}
+
+async function applyVoucher(opts: {
+  voucherCode: string | undefined
+  userId: string
+  planType: string
+  packageId?: string
+  price: number
+}): Promise<AppliedVoucher> {
+  const { voucherCode, userId, planType, packageId, price } = opts
+  if (!voucherCode) return { finalAmount: price, discountAmount: 0, voucherCode: null }
+
+  const result = await validateVoucherForCheckout({ code: voucherCode, userId, planType, packageId, price })
+  if (!result.ok) {
+    return { finalAmount: price, discountAmount: 0, voucherCode: null, error: result.error }
+  }
+  return {
+    finalAmount: result.finalAmount!,
+    discountAmount: result.discount!,
+    voucherCode: result.voucher!.code,
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,8 +54,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json() as { planType?: string; packageId?: string; bidang?: string }
-    const { planType, packageId, bidang } = body
+    const body = await req.json() as { planType?: string; packageId?: string; bidang?: string; voucherCode?: string }
+    const { planType, packageId, bidang, voucherCode } = body
 
     if (!planType || !VALID_PLAN_TYPES.includes(planType as (typeof VALID_PLAN_TYPES)[number])) {
       return NextResponse.json({ error: 'Plan tidak valid.' }, { status: 400 })
@@ -48,6 +77,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Paket tidak ditemukan.' }, { status: 404 })
       }
       const expectedAmount = getSatuanPrice((pkgData as { slug: string }).slug)
+      const voucher = await applyVoucher({
+        voucherCode,
+        userId: user.id,
+        planType: 'package',
+        packageId,
+        price: expectedAmount,
+      })
+      if (voucher.error) {
+        return NextResponse.json({ error: voucher.error }, { status: 400 })
+      }
       const suffix = `PKG-${packageId.slice(0, 8)}`
       const orderId = `ORDER-${user.id.slice(0, 8)}-${suffix}-${Date.now()}`
 
@@ -57,7 +96,10 @@ export async function POST(req: NextRequest) {
           user_id: user.id,
           midtrans_order_id: orderId,
           plan_type: 'package',
-          amount: expectedAmount,
+          amount: voucher.finalAmount,
+          original_amount: expectedAmount,
+          discount_amount: voucher.discountAmount,
+          voucher_code: voucher.voucherCode,
           status: 'pending',
           package_id: packageId,
         })
@@ -69,7 +111,7 @@ export async function POST(req: NextRequest) {
 
       const snapData = await createSnapTransaction({
         orderId,
-        amount: expectedAmount,
+        amount: voucher.finalAmount,
         customerName: '',
         customerEmail: user.email ?? '',
         planType: 'Paket Soal',
@@ -92,6 +134,16 @@ export async function POST(req: NextRequest) {
 
     const expectedAmount = planConfig.price
 
+    const voucher = await applyVoucher({
+      voucherCode,
+      userId: user.id,
+      planType,
+      price: expectedAmount,
+    })
+    if (voucher.error) {
+      return NextResponse.json({ error: voucher.error }, { status: 400 })
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: profileData } = await (service.from('users') as any)
       .select('full_name, email')
@@ -111,7 +163,10 @@ export async function POST(req: NextRequest) {
         user_id: user.id,
         midtrans_order_id: orderId,
         plan_type: planType,
-        amount: expectedAmount,
+        amount: voucher.finalAmount,
+        original_amount: expectedAmount,
+        discount_amount: voucher.discountAmount,
+        voucher_code: voucher.voucherCode,
         status: 'pending',
         ...(bidang ? { bidang } : {}),
       })
@@ -139,7 +194,7 @@ export async function POST(req: NextRequest) {
 
     const snapData = await createSnapTransaction({
       orderId,
-      amount: expectedAmount,
+      amount: voucher.finalAmount,
       customerName,
       customerEmail,
       planType: planLabels[planType] ?? planType,
