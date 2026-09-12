@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { RotateCcw, Grid2x2, LayoutDashboard, CheckCircle2, XCircle, MinusCircle, Clock } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { isAdmin } from '@/lib/admin'
 import type { AttemptRow } from '@/lib/utils'
 import { formatDuration } from '@/lib/utils'
 import { SectionLabel } from '@/components/ui/SectionLabel'
@@ -53,14 +54,19 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  const { data: attemptData } = await supabase
+  // Admin boleh membuka rapor peserta lain (bypass RLS via service client)
+  const adminViewer = isAdmin(user.email)
+  const readClient = adminViewer ? createServiceClient() : supabase
+
+  const { data: attemptData } = await readClient
     .from('attempts').select('*').eq('id', attemptId).single()
 
   const attempt = attemptData as AttemptRow | null
-  if (!attempt || attempt.user_id !== user.id) redirect('/')
+  if (!attempt) redirect('/')
+  if (attempt.user_id !== user.id && !adminViewer) redirect('/')
   if (attempt.status === 'ongoing') redirect(`/ujian/${attempt.package_id}`)
 
-  const { data: pkgData } = await supabase
+  const { data: pkgData } = await readClient
     .from('packages').select('name, total_questions, category, is_free, slug').eq('id', attempt.package_id).single()
   const pkg = pkgData as { name: string; total_questions: number; category: string; is_free: boolean; slug: string } | null
 
@@ -70,7 +76,8 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     : undefined
 
   // Blur hasil untuk non-premium yang mengerjakan paket GRATIS (demo)
-  const premiumStatus = await getPremiumSubscriptionStatus(user.id)
+  // Gunakan status premium PEMILIK attempt (penting saat admin melihat rapor peserta lain)
+  const premiumStatus = await getPremiumSubscriptionStatus(attempt.user_id)
   const showBlur = pkg?.is_free === true && !premiumStatus.active
 
   // Konfigurasi tahap gabungan (package_sections) + evaluasi passing grade
@@ -127,13 +134,13 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     }))
     const allRows = mergeLeaderboard(realRows, antamDummies)
     antamTotal = allRows.length
-    const idx = allRows.findIndex((r) => r.user_id === user.id)
+    const idx = allRows.findIndex((r) => r.user_id === attempt.user_id)
     if (idx >= 0) antamRank = idx + 1
 
     // Top 10 + nama peserta (real user)
     const topRows = allRows.slice(0, 10)
     const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
-    const myRaw = allRows.find((r) => r.user_id === user.id) ?? null
+    const myRaw = allRows.find((r) => r.user_id === attempt.user_id) ?? null
     const myIds = Array.from(new Set([...realTopIds, ...(myRaw?.user_id ? [myRaw.user_id] : [])]))
     leaderboardRows = topRows
     if (myIds.length > 0) {
@@ -168,13 +175,13 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   // Soal + pembahasan (tidak dikirim ke non-premium pada paket gratis - anti inspect)
   let questionsData: QuestionWithAnswer[] | null = null
   if (!showBlur) {
-    const { data: qData, error: qErr } = await supabase
+    const { data: qData, error: qErr } = await readClient
       .from('questions')
       .select('id, content, options, correct_answer, explanation, explanation_image_url, category, image_url, order_index')
       .eq('package_id', attempt.package_id)
       .order('order_index', { ascending: true })
     if (qErr) {
-      const { data: qFallback } = await supabase
+      const { data: qFallback } = await readClient
         .from('questions')
         .select('id, content, options, correct_answer, explanation, category, image_url, order_index')
         .eq('package_id', attempt.package_id)
@@ -380,7 +387,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               <div className="flex-1 space-y-1 max-h-[230px] overflow-y-auto pr-1">
                 {leaderboardRows.map((entry, i) => {
                   const rank = i + 1
-                  const isMe = entry.user_id === user.id
+                  const isMe = entry.user_id === attempt.user_id
                   const medalCls =
                     rank === 1 ? 'bg-amber-100 text-amber-700'
                     : rank === 2 ? 'bg-slate-200 text-slate-700'
