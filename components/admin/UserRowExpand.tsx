@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Loader2, FileCheck, Receipt, AlertCircle } from 'lucide-react'
+import { ChevronDown, ChevronRight, Loader2, FileCheck, Receipt, AlertCircle, Repeat } from 'lucide-react'
 import { formatRupiah } from '@/lib/utils'
 
 interface UserLite {
@@ -30,6 +30,7 @@ interface DetailData {
     score: number | null
     status: string
     started_at: string
+    attempt_number?: number
   }[]
 }
 
@@ -40,12 +41,24 @@ const STATUS_BADGE: Record<string, string> = {
   expired: 'bg-gray-100 text-gray-500',
 }
 
+function formatDateTimeID(iso: string) {
+  return new Date(iso).toLocaleString('id-ID', {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+    timeZone: 'Asia/Jakarta',
+  })
+}
+
 export function UserRowExpand({
   user,
   packageNameMap,
+  attemptCount = 0,
+  totalSpending = 0,
 }: {
   user: UserLite
   packageNameMap: Record<string, string>
+  attemptCount?: number
+  totalSpending?: number
 }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -91,6 +104,12 @@ export function UserRowExpand({
             {user.plan === 'premium' ? '✦ Premium' : 'Free'}
           </span>
         </td>
+        <td className="px-5 py-3 text-center hidden md:table-cell">
+          <span className="font-semibold text-gray-900 tabular-nums">{attemptCount}</span>
+        </td>
+        <td className="px-5 py-3 text-center hidden lg:table-cell">
+          <span className="font-semibold text-gray-900 tabular-nums">{formatRupiah(totalSpending)}</span>
+        </td>
         <td className="px-5 py-3 text-center text-gray-500 text-xs hidden md:table-cell">
           {user.plan_expires_at ? new Date(user.plan_expires_at).toLocaleDateString('id-ID') : '—'}
         </td>
@@ -104,7 +123,7 @@ export function UserRowExpand({
 
       {open && (
         <tr>
-          <td colSpan={5} className="px-6 py-4 bg-gray-50/70">
+          <td colSpan={7} className="px-6 py-4 bg-gray-50/70">
             {loading ? (
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Loader2 className="w-4 h-4 animate-spin" /> Memuat detail...
@@ -147,14 +166,24 @@ export function UserRowExpand({
                   {data?.attempts.length === 0 ? (
                     <p className="text-xs text-gray-400">Belum ada ujian.</p>
                   ) : (
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
                       {data?.attempts.map((a) => (
-                        <div key={a.id} className="flex items-center justify-between bg-white rounded-lg border border-gray-100 px-3 py-2 text-xs">
-                          <span className="text-gray-600 truncate pr-2">{packageNameMap[a.package_id] ?? 'Paket'}</span>
-                          <span className="flex items-center gap-2 shrink-0">
-                            <span className="font-num font-semibold text-gray-900">{a.score ?? '—'}</span>
-                            <span className={`text-[10px] font-medium ${a.status === 'finished' ? 'text-green-600' : 'text-amber-600'}`}>{a.status}</span>
-                          </span>
+                        <div key={a.id} className="bg-white rounded-lg border border-gray-100 px-3 py-2 text-xs">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-gray-700 font-medium truncate">{packageNameMap[a.package_id] ?? 'Paket'}</span>
+                            <span className="flex items-center gap-2 shrink-0">
+                              <span className="font-num font-semibold text-gray-900">{a.score ?? '—'}</span>
+                              <span className={`text-[10px] font-medium ${a.status === 'finished' ? 'text-green-600' : 'text-amber-600'}`}>{a.status}</span>
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-1 text-[10px] text-gray-400">
+                            {a.attempt_number && (
+                              <span className="inline-flex items-center gap-0.5 text-gray-500 font-medium">
+                                <Repeat className="w-2.5 h-2.5" /> Percobaan ke-{a.attempt_number}
+                              </span>
+                            )}
+                            <span>{formatDateTimeID(a.started_at)} WIB</span>
+                          </div>
                         </div>
                       ))}
                     </div>

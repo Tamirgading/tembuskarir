@@ -5,7 +5,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import {
   ChevronDown, ChevronRight, ExternalLink, CheckCircle2, Clock,
-  Copy, Check
+  Copy, Check, Repeat
 } from 'lucide-react'
 
 export interface SessionData {
@@ -21,6 +21,7 @@ export interface SessionData {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   score_details: any
   answers_count: number
+  attempt_number: number
   user: {
     id: string
     email: string
@@ -144,6 +145,9 @@ export function SessionRowExpand({ session }: { session: SessionData }) {
               <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider ${categoryBadgeClass}`}>
                 {session.package?.category ?? 'UMUM'}
               </span>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded border bg-slate-50 text-slate-500 border-slate-200">
+                Percobaan ke-{session.attempt_number}
+              </span>
             </div>
             <p className="font-medium text-slate-900 text-xs truncate max-w-[230px]" title={session.package?.name ?? 'Paket'}>
               {session.package?.name ?? 'Paket Dihapus'}
@@ -257,6 +261,10 @@ export function SessionRowExpand({ session }: { session: SessionData }) {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-600">
+                    <Repeat className="w-3.5 h-3.5 text-slate-400" />
+                    Percobaan ke-{session.attempt_number}
+                  </span>
                   {isFinished && (
                     <Link
                       href={`/hasil/${session.id}`}

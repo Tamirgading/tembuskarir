@@ -5,7 +5,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { SessionRowExpand, type SessionData } from '@/components/admin/SessionRowExpand'
 import {
   Activity, CheckCircle2, Clock, Search, RotateCcw,
-  ChevronLeft, ChevronRight, Layers, FileText
+  ChevronLeft, ChevronRight, Layers, FileText, Repeat
 } from 'lucide-react'
 
 const PAGE_SIZE = 25
@@ -13,14 +13,26 @@ const PAGE_SIZE = 25
 export default async function AdminSessionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; category?: string; page?: string }>
+  searchParams: Promise<{ q?: string; status?: string; category?: string; page?: string; attempt?: string }>
 }) {
-  const { q, status, category, page } = await searchParams
+  const { q, status, category, page, attempt } = await searchParams
   const supabase = createServiceClient()
 
   const currentPage = Math.max(1, Number(page) || 1)
   const from = (currentPage - 1) * PAGE_SIZE
   const to = from + PAGE_SIZE - 1
+
+  // ── Nomor percobaan maksimum (untuk pilihan filter) ─────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: maxAttemptRow } = await (supabase.from('attempts') as any)
+    .select('attempt_number')
+    .not('attempt_number', 'is', null)
+    .order('attempt_number', { ascending: false })
+    .limit(1)
+  const maxAttempt: number = (maxAttemptRow?.[0]?.attempt_number as number | undefined) ?? 1
+
+  const attemptFilter =
+    attempt && attempt !== 'all' && Number(attempt) > 0 ? Number(attempt) : null
 
   // ── Hitung Statistik Ringkasan ──────────────────────────────────────────────
   const now = new Date()
@@ -95,6 +107,7 @@ export default async function AdminSessionsPage({
         duration_seconds,
         answers,
         score_details,
+        attempt_number,
         user:users(id, email, full_name, plan),
         package:packages(id, name, category, total_questions, duration_minutes, slug)
       `, { count: 'exact' })
@@ -111,6 +124,11 @@ export default async function AdminSessionsPage({
       } else {
         query = query.eq('package_id', '00000000-0000-0000-0000-000000000000')
       }
+    }
+
+    // Filter Percobaan ke-N
+    if (attemptFilter) {
+      query = query.eq('attempt_number', attemptFilter)
     }
 
     // Filter Pencarian (gabungan user dan paket)
@@ -148,6 +166,7 @@ export default async function AdminSessionsPage({
         duration_seconds: row.duration_seconds,
         score_details: row.score_details,
         answers_count: answersCount,
+        attempt_number: row.attempt_number ?? 1,
         user: row.user,
         package: row.package,
       }
@@ -157,16 +176,18 @@ export default async function AdminSessionsPage({
   const totalPages = Math.max(1, Math.ceil(filteredCount / PAGE_SIZE))
 
   // Helper untuk membangun URL filter
-  const buildHref = (overrides: { q?: string; status?: string; category?: string; page?: number }) => {
+  const buildHref = (overrides: { q?: string; status?: string; category?: string; page?: number; attempt?: string }) => {
     const params = new URLSearchParams()
     const targetQ = overrides.q !== undefined ? overrides.q : q ?? ''
     const targetStatus = overrides.status !== undefined ? overrides.status : status ?? ''
     const targetCategory = overrides.category !== undefined ? overrides.category : category ?? ''
+    const targetAttempt = overrides.attempt !== undefined ? overrides.attempt : attempt ?? ''
     const targetPage = overrides.page !== undefined ? overrides.page : 1
 
     if (targetQ) params.set('q', targetQ)
     if (targetStatus && targetStatus !== 'all') params.set('status', targetStatus)
     if (targetCategory && targetCategory !== 'all') params.set('category', targetCategory)
+    if (targetAttempt && targetAttempt !== 'all') params.set('attempt', targetAttempt)
     if (targetPage > 1) params.set('page', String(targetPage))
 
     const qs = params.toString()
@@ -246,6 +267,7 @@ export default async function AdminSessionsPage({
           <form method="GET" action="/admin/sessions" className="flex-1 max-w-md relative">
             {status && status !== 'all' && <input type="hidden" name="status" value={status} />}
             {category && category !== 'all' && <input type="hidden" name="category" value={category} />}
+            {attempt && attempt !== 'all' && <input type="hidden" name="attempt" value={attempt} />}
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
@@ -309,6 +331,59 @@ export default async function AdminSessionsPage({
             )
           })}
         </div>
+
+        {/* Filter Percobaan ke-N */}
+        <div className="flex items-center gap-2 pt-2 border-t border-gray-100 flex-wrap text-xs">
+          <span className="text-gray-400 text-[11px] font-semibold uppercase tracking-wider mr-1 flex items-center gap-1">
+            <Repeat className="w-3 h-3" /> Percobaan:
+          </span>
+          <a
+            href={buildHref({ attempt: 'all', page: 1 })}
+            className={`px-2.5 py-1 rounded-lg text-xs transition border ${
+              !attemptFilter
+                ? 'bg-blue-600 text-white border-blue-600 font-bold'
+                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 font-medium'
+            }`}
+          >
+            Semua
+          </a>
+          {Array.from({ length: Math.min(maxAttempt, 6) }, (_, i) => i + 1).map((n) => (
+            <a
+              key={n}
+              href={buildHref({ attempt: String(n), page: 1 })}
+              className={`px-2.5 py-1 rounded-lg text-xs transition border ${
+                attemptFilter === n
+                  ? 'bg-blue-600 text-white border-blue-600 font-bold'
+                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 font-medium'
+              }`}
+            >
+              ke-{n}
+            </a>
+          ))}
+          {maxAttempt > 6 && (
+            <form method="GET" action="/admin/sessions" className="flex items-center gap-1.5">
+              {q && <input type="hidden" name="q" value={q} />}
+              {status && status !== 'all' && <input type="hidden" name="status" value={status} />}
+              {category && category !== 'all' && <input type="hidden" name="category" value={category} />}
+              <select
+                name="attempt"
+                defaultValue={attemptFilter ? String(attemptFilter) : 'all'}
+                className="px-2 py-1 rounded-lg border border-gray-200 text-xs bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">Lainnya…</option>
+                {Array.from({ length: maxAttempt - 6 }, (_, i) => i + 7).map((n) => (
+                  <option key={n} value={String(n)}>ke-{n}</option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition"
+              >
+                Terapkan
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       {/* Table Sesi Ujian */}
@@ -334,11 +409,11 @@ export default async function AdminSessionsPage({
                     </div>
                     <p className="font-semibold text-gray-700 text-sm">Tidak ada sesi ujian ditemukan</p>
                     <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-                      {q || status || category
+                      {q || status || category || attemptFilter
                         ? 'Coba ubah kata kunci pencarian atau reset filter untuk melihat sesi lainnya.'
                         : 'Belum ada peserta yang memulai pengerjaan tes.'}
                     </p>
-                    {(q || status || category) && (
+                    {(q || status || category || attemptFilter) && (
                       <a
                         href="/admin/sessions"
                         className="inline-block mt-3 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition"
