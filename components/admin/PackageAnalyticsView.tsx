@@ -24,6 +24,7 @@ import {
   type QuestionItem,
   type AnalyticsFilterOptions,
 } from '@/lib/item-analysis'
+import { LatexContent } from '@/components/ui/LatexContent'
 
 interface PackageAnalyticsViewProps {
   pkg: {
@@ -622,9 +623,9 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
                               </span>
                             )}
                           </div>
-                          <p className="font-medium text-slate-900 line-clamp-2 leading-relaxed">
-                            {q.content}
-                          </p>
+                          <div className="font-medium text-slate-900 line-clamp-2 leading-relaxed">
+                            <LatexContent content={q.content} />
+                          </div>
                         </td>
 
                         {/* Kunci Jawaban */}
@@ -711,9 +712,9 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-sm font-semibold text-slate-900 mt-2 leading-relaxed">
-                                    {q.content}
-                                  </p>
+                                  <div className="text-sm font-semibold text-slate-900 mt-2 leading-relaxed">
+                                    <LatexContent content={q.content} />
+                                  </div>
                                 </div>
                                 <Link
                                   href={`/admin/packages/${pkg.id}/questions`}
@@ -763,7 +764,9 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
                                         >
                                           {opt.key}
                                         </span>
-                                        <span className="truncate">{opt.text}</span>
+                                        <span className="truncate">
+                                          <LatexContent content={opt.text} />
+                                        </span>
                                         {opt.isCorrect && (
                                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-900 shrink-0">
                                             Kunci Jawaban
@@ -831,7 +834,9 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
                                   <span className="font-bold text-slate-900 block mb-1">
                                     Pembahasan Kunci Jawaban:
                                   </span>
-                                  <p className="leading-relaxed whitespace-pre-wrap">{q.explanation}</p>
+                                  <div className="leading-relaxed text-slate-800">
+                                    <LatexContent content={q.explanation} />
+                                  </div>
                                 </div>
                               )}
                             </div>
