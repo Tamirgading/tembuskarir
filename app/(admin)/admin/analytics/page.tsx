@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { isAdmin } from '@/lib/admin'
 import { BarChart3, ArrowRight } from 'lucide-react'
+import { getPackageMaxScore } from '@/lib/item-analysis'
 
 export default async function AdminAnalyticsHubPage({
   searchParams,
@@ -109,6 +110,7 @@ export default async function AdminAnalyticsHubPage({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredPackages.map((pkg) => {
           const stats = attemptsByPackage[pkg.id] ?? { total: 0, firstScores: [] }
+          const maxScore = getPackageMaxScore(pkg, [], stats.firstScores)
           const avgFirst =
             stats.firstScores.length > 0
               ? Math.round(
@@ -116,24 +118,27 @@ export default async function AdminAnalyticsHubPage({
                 ) / 10
               : null
 
+          const avgPct =
+            avgFirst !== null && maxScore > 0 ? Math.round((avgFirst / maxScore) * 100) : 0
+
           let avgBadge = <span className="text-slate-400 text-xs">Belum ada data</span>
           if (avgFirst !== null) {
-            if (avgFirst >= 85) {
+            if (avgPct >= 85) {
               avgBadge = (
                 <span className="text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[11px] font-bold">
-                  Rata-rata: {avgFirst} (Terlalu Mudah)
+                  {avgFirst} / {maxScore} ({avgPct}%) · Terlalu Mudah
                 </span>
               )
-            } else if (avgFirst < 50) {
+            } else if (avgPct < 50) {
               avgBadge = (
                 <span className="text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[11px] font-bold">
-                  Rata-rata: {avgFirst} (Cukup Sulit)
+                  {avgFirst} / {maxScore} ({avgPct}%) · Cukup Sulit
                 </span>
               )
             } else {
               avgBadge = (
                 <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold">
-                  Rata-rata: {avgFirst} (Ideal)
+                  {avgFirst} / {maxScore} ({avgPct}%) · Ideal
                 </span>
               )
             }

@@ -78,8 +78,8 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
       minDurationSeconds: minDurationMinutes * 60,
       timeRange,
     }
-    return calculatePackageAnalytics(rawAttempts, questions, filterOpts)
-  }, [rawAttempts, questions, attemptMode, excludeZero, minDurationMinutes, timeRange])
+    return calculatePackageAnalytics(rawAttempts, questions, filterOpts, pkg)
+  }, [rawAttempts, questions, attemptMode, excludeZero, minDurationMinutes, timeRange, pkg])
 
   // ── Filter & Sort Pertanyaan untuk Tabel ──────────────────────────────────
   const filteredQuestions = useMemo(() => {
@@ -132,14 +132,14 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
     setSortBy('difficulty_desc')
   }
 
-  // Interpretasi Rata-rata Skor
-  const avg = analyticsSummary.averageScore
+  // Interpretasi Rata-rata Skor (berdasarkan persentase terhadap skala nilai paket)
+  const avgPct = analyticsSummary.averageScorePercent
   let avgStatusColor = 'text-emerald-700 bg-emerald-50 border-emerald-200'
   let avgStatusText = 'Tingkat Kesulitan Seimbang'
-  if (avg >= 85) {
+  if (avgPct >= 85) {
     avgStatusColor = 'text-amber-700 bg-amber-50 border-amber-200'
     avgStatusText = 'Cenderung Terlalu Mudah'
-  } else if (avg < 50 && analyticsSummary.totalFilteredAttempts > 0) {
+  } else if (avgPct < 50 && analyticsSummary.totalFilteredAttempts > 0) {
     avgStatusColor = 'text-rose-700 bg-rose-50 border-rose-200'
     avgStatusText = 'Cenderung Sangat Sulit'
   }
@@ -314,7 +314,10 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
             <span className="text-2xl font-black text-slate-900 font-mono">
               {analyticsSummary.averageScore}
             </span>
-            <span className="text-xs text-slate-400 ml-1">/ 100</span>
+            <span className="text-xs text-slate-400 ml-1">/ {analyticsSummary.maxScore}</span>
+            <span className="text-xs font-semibold text-slate-500 ml-1.5">
+              ({analyticsSummary.averageScorePercent}%)
+            </span>
           </div>
           <div className="mt-1">
             <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border ${avgStatusColor}`}>
@@ -333,7 +336,10 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
             <span className="text-2xl font-black text-slate-900 font-mono">
               {analyticsSummary.medianScore}
             </span>
-            <span className="text-xs text-slate-400 ml-1.5">(Med)</span>
+            <span className="text-xs text-slate-400 ml-1">/ {analyticsSummary.maxScore}</span>
+            <span className="text-xs text-slate-400 ml-1 font-medium">
+              ({analyticsSummary.medianScorePercent}%)
+            </span>
           </div>
           <p className="text-[11px] text-slate-500 mt-1 font-mono">
             Min: {analyticsSummary.lowestScore} · Max: {analyticsSummary.highestScore}
@@ -384,7 +390,7 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
               Sebaran / Distribusi Nilai Peserta (Histogram)
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Grafik rentang skor peserta yang lolos kriteria filter. Kurva ideal umumnya terdistribusi di tengah (40 - 80).
+              Grafik rentang skor peserta (skala 0 - {analyticsSummary.maxScore}). Kurva ideal umumnya terdistribusi di tengah ({Math.round(analyticsSummary.maxScore * 0.4)} - {Math.round(analyticsSummary.maxScore * 0.8)}).
             </p>
           </div>
           <div className="text-xs text-slate-500 flex items-center gap-1.5">
@@ -400,14 +406,14 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
         ) : (
           <div className="space-y-3">
             <div className="grid grid-cols-5 gap-2 sm:gap-4 items-end h-40 pt-4 border-b border-slate-100 pb-2">
-              {analyticsSummary.distributionBins.map((bin) => {
+              {analyticsSummary.distributionBins.map((bin, idx) => {
                 const maxPct = Math.max(...analyticsSummary.distributionBins.map((b) => b.percent), 1)
                 const heightPct = Math.max(8, Math.round((bin.percent / maxPct) * 100))
 
                 let barColor = 'bg-blue-500 hover:bg-blue-600'
-                if (bin.min >= 81) barColor = 'bg-amber-500 hover:bg-amber-600'
-                else if (bin.min >= 61) barColor = 'bg-emerald-500 hover:bg-emerald-600'
-                else if (bin.max <= 40) barColor = 'bg-rose-400 hover:bg-rose-500'
+                if (idx === 4) barColor = 'bg-amber-500 hover:bg-amber-600'
+                else if (idx === 3) barColor = 'bg-emerald-500 hover:bg-emerald-600'
+                else if (idx <= 1) barColor = 'bg-rose-400 hover:bg-rose-500'
 
                 return (
                   <div key={bin.range} className="flex flex-col items-center h-full justify-end group">
@@ -420,16 +426,21 @@ export function PackageAnalyticsView({ pkg, rawAttempts, questions }: PackageAna
                         style={{ height: `${heightPct}%` }}
                       />
                     </div>
-                    <span className="text-[11px] font-semibold text-slate-600 mt-2 text-center whitespace-nowrap">
-                      {bin.range}
-                    </span>
+                    <div className="flex flex-col items-center mt-2">
+                      <span className="text-[11px] font-bold text-slate-700 text-center whitespace-nowrap">
+                        {bin.range}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
+                        {bin.labelPct}
+                      </span>
+                    </div>
                   </div>
                 )
               })}
             </div>
-            <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-              <span>← Skor Rendah (Kurang Siap)</span>
-              <span>Skor Tinggi (Sangat Siap) →</span>
+            <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
+              <span>← Skor Rendah (0 - {Math.round(analyticsSummary.maxScore * 0.4)})</span>
+              <span>Skor Tinggi ({Math.round(analyticsSummary.maxScore * 0.8)} - {analyticsSummary.maxScore}) →</span>
             </div>
           </div>
         )}

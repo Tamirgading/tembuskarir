@@ -9,7 +9,7 @@ export interface QuestionItem {
   correct_answer: string
   explanation: string | null
   image_url: string | null
-  options: { key: string; text: string }[] | unknown
+  options: { key: string; text: string; point?: number }[] | unknown
 }
 
 export interface AttemptItem {
@@ -63,13 +63,19 @@ export interface QuestionAnalysisResult {
 export interface PackageAnalyticsSummary {
   totalRawAttempts: number
   totalFilteredAttempts: number
+  maxScore: number
   averageScore: number
+  averageScorePercent: number
   medianScore: number
+  medianScorePercent: number
   highestScore: number
+  highestScorePercent: number
   lowestScore: number
+  lowestScorePercent: number
   averageDurationSeconds: number
   distributionBins: {
     range: string
+    labelPct: string
     min: number
     max: number
     count: number
@@ -81,6 +87,101 @@ export interface PackageAnalyticsSummary {
     tooHard: number // < 30%
   }
   questions: QuestionAnalysisResult[]
+}
+
+/**
+ * Deteksi skor maksimal (skala nilai) sebuah paket berdasarkan kategori & total soal
+ */
+export function getPackageMaxScore(
+  pkg?: { category?: string; total_questions?: number },
+  questions: QuestionItem[] = [],
+  sampleScores: number[] = []
+): number {
+  const cat = (pkg?.category ?? '').toUpperCase()
+  const qLen = questions.length
+  const totalQ = pkg?.total_questions && pkg.total_questions > 0 ? pkg.total_questions : qLen
+
+  // 1. ANTAM & ASTRA: penilaian berbasis jumlah butir soal benar (1 benar = 1 poin)
+  if (cat === 'ANTAM' || cat === 'ASTRA') {
+    return totalQ > 0 ? totalQ : 40
+  }
+
+  // 2. BI, OJK, KEDINASAN: penilaian berbasis persentase standar (0 - 100)
+  if (cat === 'BI' || cat === 'OJK' || cat === 'KEDINASAN') {
+    return 100
+  }
+
+  // 3. PLN & BUMN: Cek apakah ada butir soal dengan poin per opsi (misal AKHLAK / LA hingga 5 poin)
+  if (cat === 'PLN' || cat === 'BUMN') {
+    let maxFromQuestions = 0
+    let hasPointBased = false
+    for (const q of questions) {
+      let opts: { key: string; text: string; point?: number }[] = []
+      if (Array.isArray(q.options)) {
+        opts = q.options as { key: string; text: string; point?: number }[]
+      }
+      const maxOptPoint = opts.reduce((m, o) => Math.max(m, o.point ?? 0), 0)
+      if (maxOptPoint > 1) {
+        hasPointBased = true
+        maxFromQuestions += maxOptPoint
+      } else {
+        maxFromQuestions += 1
+      }
+    }
+    if (hasPointBased && maxFromQuestions > 0) {
+      return maxFromQuestions
+    }
+    return totalQ > 0 ? totalQ : 100
+  }
+
+  // 4. Kategori Lainnya:
+  // Jika seluruh skor yang tercatat <= totalQ dan totalQ < 100, gunakan skala totalQ
+  const maxRecorded = sampleScores.length > 0 ? Math.max(...sampleScores) : 0
+  if (totalQ > 0 && totalQ < 100 && maxRecorded <= totalQ) {
+    return totalQ
+  }
+
+  return 100
+}
+
+/**
+ * Buat 5 bin rentang sebaran skor yang dinamis sesuai skor maksimal paket
+ */
+export function generateDistributionBins(maxScore: number) {
+  const numBins = 5
+  const bins: {
+    range: string
+    labelPct: string
+    min: number
+    max: number
+    count: number
+    percent: number
+  }[] = []
+
+  const step = Math.max(1, maxScore / numBins)
+  let prevMax = 0
+
+  for (let i = 1; i <= numBins; i++) {
+    const isFirst = i === 1
+    const isLast = i === numBins
+    const min = isFirst ? 0 : prevMax + 1
+    const max = isLast ? maxScore : Math.round(i * step)
+    prevMax = max
+
+    const pctMin = Math.round(((i - 1) / numBins) * 100)
+    const pctMax = Math.round((i / numBins) * 100)
+
+    bins.push({
+      range: `${min} - ${max}`,
+      labelPct: `${pctMin}% - ${pctMax}%`,
+      min,
+      max,
+      count: 0,
+      percent: 0,
+    })
+  }
+
+  return bins
 }
 
 /**
@@ -123,7 +224,6 @@ export function filterAttempts(
   if (options.attemptMode === 'first') {
     // Hanya percobaan pertama (attempt_number === 1 atau attempt pertama secara kronologis per user)
     const userFirstMap = new Map<string, AttemptItem>()
-    // Urutkan asc berdasarkan started_at
     const sortedAsc = [...filtered].sort(
       (a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime()
     )
@@ -156,16 +256,17 @@ export function filterAttempts(
 export function calculatePackageAnalytics(
   allRawAttempts: AttemptItem[],
   questions: QuestionItem[],
-  options: AnalyticsFilterOptions
+  options: AnalyticsFilterOptions,
+  pkg?: { category?: string; total_questions?: number }
 ): PackageAnalyticsSummary {
   const filteredAttempts = filterAttempts(allRawAttempts, options)
   const N = filteredAttempts.length
 
   // Parse questions options
   const normalizedQuestions = questions.map((q) => {
-    let opts: { key: string; text: string }[] = []
+    let opts: { key: string; text: string; point?: number }[] = []
     if (Array.isArray(q.options)) {
-      opts = q.options as { key: string; text: string }[]
+      opts = q.options as { key: string; text: string; point?: number }[]
     } else if (typeof q.options === 'string') {
       try {
         opts = JSON.parse(q.options)
@@ -179,27 +280,39 @@ export function calculatePackageAnalytics(
     }
   })
 
-  // ── 1. Hitung Makro Skor ──────────────────────────────────────────────────
+  // ── 1. Hitung Makro Skor & Skala Nilai Maksimal ────────────────────────────
   const scores = filteredAttempts.map((a) => a.score ?? 0).sort((a, b) => a - b)
   const durations = filteredAttempts
     .map((a) => a.duration_seconds ?? 0)
     .filter((d) => d > 0)
 
+  const maxScore = getPackageMaxScore(pkg, questions, scores)
+
   let averageScore = 0
+  let averageScorePercent = 0
   let medianScore = 0
+  let medianScorePercent = 0
   let highestScore = 0
+  let highestScorePercent = 0
   let lowestScore = 0
+  let lowestScorePercent = 0
   let averageDurationSeconds = 0
 
   if (N > 0) {
     const sumScore = scores.reduce((acc, s) => acc + s, 0)
     averageScore = Math.round((sumScore / N) * 10) / 10
+    averageScorePercent = maxScore > 0 ? Math.round((averageScore / maxScore) * 1000) / 10 : 0
+
     highestScore = scores[scores.length - 1]
+    highestScorePercent = maxScore > 0 ? Math.round((highestScore / maxScore) * 1000) / 10 : 0
+
     lowestScore = scores[0]
+    lowestScorePercent = maxScore > 0 ? Math.round((lowestScore / maxScore) * 1000) / 10 : 0
 
     // Median
     const mid = Math.floor(scores.length / 2)
     medianScore = scores.length % 2 !== 0 ? scores[mid] : Math.round((scores[mid - 1] + scores[mid]) / 2)
+    medianScorePercent = maxScore > 0 ? Math.round((medianScore / maxScore) * 1000) / 10 : 0
 
     // Average duration
     if (durations.length > 0) {
@@ -207,17 +320,9 @@ export function calculatePackageAnalytics(
     }
   }
 
-  // ── 2. Distribusi Skor (Histogram Bins) ────────────────────────────────────
-  // Bins: 0-20, 21-40, 41-60, 61-80, 81-100
-  const binDefs = [
-    { range: '0 - 20', min: 0, max: 20 },
-    { range: '21 - 40', min: 21, max: 40 },
-    { range: '41 - 60', min: 41, max: 60 },
-    { range: '61 - 80', min: 61, max: 80 },
-    { range: '81 - 100', min: 81, max: 100 },
-  ]
-
-  const distributionBins = binDefs.map((b) => {
+  // ── 2. Distribusi Skor Dinamis Sesuai Skala Maksimal Paket ────────────────
+  const rawBins = generateDistributionBins(maxScore)
+  const distributionBins = rawBins.map((b) => {
     const count = scores.filter((s) => s >= b.min && s <= b.max).length
     const percent = N > 0 ? Math.round((count / N) * 100) : 0
     return {
@@ -326,10 +431,15 @@ export function calculatePackageAnalytics(
   return {
     totalRawAttempts: allRawAttempts.length,
     totalFilteredAttempts: N,
+    maxScore,
     averageScore,
+    averageScorePercent,
     medianScore,
+    medianScorePercent,
     highestScore,
+    highestScorePercent,
     lowestScore,
+    lowestScorePercent,
     averageDurationSeconds,
     distributionBins,
     counts: {
