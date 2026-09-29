@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-
-async function isAdmin(): Promise<boolean> {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user?.email) return false
-  const adminEmails = (process.env.ADMIN_EMAILS ?? '').split(',').map((e) => e.trim().toLowerCase())
-  return adminEmails.includes(user.email.toLowerCase())
-}
+import { isAdmin } from '@/lib/admin'
 
 export async function POST(req: NextRequest) {
   try {
-    if (!(await isAdmin())) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user || !isAdmin(user.email)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

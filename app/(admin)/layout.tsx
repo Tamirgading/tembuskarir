@@ -40,6 +40,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin/revenue" className="text-gray-300 hover:text-white transition-colors">
               Revenue
             </Link>
+            <Link href="/admin/analytics" className="text-blue-400 hover:text-white transition-colors font-medium">
+              Analitik
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4 text-sm">

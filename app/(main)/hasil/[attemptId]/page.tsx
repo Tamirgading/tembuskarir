@@ -64,11 +64,22 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const attempt = attemptData as AttemptRow | null
   if (!attempt) redirect('/')
   if (attempt.user_id !== user.id && !adminViewer) redirect('/')
-  if (attempt.status === 'ongoing') redirect(`/ujian/${attempt.package_id}`)
+  if (attempt.status === 'ongoing' && !adminViewer) redirect(`/ujian/${attempt.package_id}`)
 
   const { data: pkgData } = await readClient
     .from('packages').select('name, total_questions, category, is_free, slug').eq('id', attempt.package_id).single()
   const pkg = pkgData as { name: string; total_questions: number; category: string; is_free: boolean; slug: string } | null
+
+  // Info peserta jika dibuka oleh admin
+  let participantInfo: { full_name: string | null; email: string | null } | null = null
+  if (adminViewer && attempt.user_id !== user.id) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: uData } = await (readClient.from('users') as any)
+      .select('full_name, email')
+      .eq('id', attempt.user_id)
+      .maybeSingle()
+    participantInfo = uData
+  }
 
   // Label sub-materi untuk paket ANTAM (ganti kode T1..Tn jadi nama topik)
   const antamLabels = pkg?.category === 'ANTAM'
@@ -76,9 +87,9 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     : undefined
 
   // Blur hasil untuk non-premium yang mengerjakan paket GRATIS (demo)
-  // Gunakan status premium PEMILIK attempt (penting saat admin melihat rapor peserta lain)
+  // Admin tidak pernah kena blur
   const premiumStatus = await getPremiumSubscriptionStatus(attempt.user_id)
-  const showBlur = pkg?.is_free === true && !premiumStatus.active
+  const showBlur = !adminViewer && pkg?.is_free === true && !premiumStatus.active
 
   // Konfigurasi tahap gabungan (package_sections) + evaluasi passing grade
   let stageSections: Awaited<ReturnType<typeof fetchStageSections>> = []
@@ -87,7 +98,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rawAttemptDetails = (attempt as any).score_details as ScoreDetails | null | undefined
   try {
-    stageSections = await fetchStageSections(supabase, attempt.package_id)
+    stageSections = await fetchStageSections(readClient, attempt.package_id)
     if (stageSections.length > 0) {
       const ev = evaluateStagePassing(stageSections, rawAttemptDetails as Record<string, unknown> | null)
       stageGroups = ev.groups
@@ -249,6 +260,31 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
   return (
     <div className="max-w-5xl mx-auto space-y-5">
+
+      {/* ══ Banner Mode Admin ══ */}
+      {adminViewer && attempt.user_id !== user.id && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:px-5 flex flex-wrap items-center justify-between gap-3 text-amber-900 shadow-xs">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold text-xs uppercase tracking-wider shrink-0">
+              Admin Mode
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-amber-950 truncate">
+                Rapor Peserta: {participantInfo?.full_name || 'Tanpa Nama'}
+              </p>
+              <p className="text-xs text-amber-700 font-mono truncate">
+                {participantInfo?.email || attempt.user_id} · Percobaan ke-{(attempt as AttemptRow & { attempt_number?: number }).attempt_number ?? 1}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/sessions"
+            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-amber-900 text-white hover:bg-black transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            ← Kembali ke Sesi Admin
+          </Link>
+        </div>
+      )}
 
       {/* ══ HERO ══ */}
       <div className="rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm">
@@ -445,9 +481,18 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
 
       {/* ══ Aksi ══ */}
       <div className="grid grid-cols-3 gap-3">
-        <Link href={`/persiapan/${attempt.package_id}`} className="flex items-center justify-center gap-2 py-3 text-white text-sm font-bold rounded-xl transition-colors" style={{ background: 'linear-gradient(to right,#00315f,#16487e)' }}>
-          <RotateCcw className="w-4 h-4" /> Coba Lagi
-        </Link>
+        {adminViewer && attempt.user_id !== user.id ? (
+          <Link
+            href="/admin/sessions"
+            className="flex items-center justify-center gap-2 py-3 text-white text-sm font-bold rounded-xl transition-colors bg-slate-900 hover:bg-slate-800"
+          >
+            ← Sesi Admin
+          </Link>
+        ) : (
+          <Link href={`/persiapan/${attempt.package_id}`} className="flex items-center justify-center gap-2 py-3 text-white text-sm font-bold rounded-xl transition-colors" style={{ background: 'linear-gradient(to right,#00315f,#16487e)' }}>
+            <RotateCcw className="w-4 h-4" /> Coba Lagi
+          </Link>
+        )}
         <Link href={pkg?.category === 'ANTAM' ? '/portal/antam' : pkg?.category === 'ASTRA' ? '/portal/astra' : '/paket'} className="flex items-center justify-center gap-2 py-3 bg-white border border-slate-200/90 text-slate-900 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors">
           <Grid2x2 className="w-4 h-4" /> Paket Lain
         </Link>

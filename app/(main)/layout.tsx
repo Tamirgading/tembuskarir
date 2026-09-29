@@ -3,13 +3,14 @@ import { AppShell } from '@/components/ui/AppShell'
 import { getEffectiveFeatureFlags } from '@/lib/site-settings'
 import { getDeviceNonce, isSingleSessionValid } from '@/lib/session-nonce'
 import { redirect } from 'next/navigation'
+import { isAdmin } from '@/lib/admin'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Anti-sharing: hanya perangkat dengan nonce terbaru yang boleh aktif
-  if (user) {
+  // Anti-sharing: hanya perangkat dengan nonce terbaru yang boleh aktif (admin dikecualikan)
+  if (user && !isAdmin(user.email)) {
     const deviceNonce = await getDeviceNonce()
     const { data: nonceRow } = await supabase
       .from('users').select('session_nonce').eq('id', user.id).single()

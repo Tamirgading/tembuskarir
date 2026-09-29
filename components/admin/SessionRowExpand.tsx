@@ -5,7 +5,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import {
   ChevronDown, ChevronRight, ExternalLink, CheckCircle2, Clock,
-  Copy, Check, Repeat
+  Copy, Check, Repeat, BarChart2
 } from 'lucide-react'
 
 export interface SessionData {
@@ -265,6 +265,16 @@ export function SessionRowExpand({ session }: { session: SessionData }) {
                     <Repeat className="w-3.5 h-3.5 text-slate-400" />
                     Percobaan ke-{session.attempt_number}
                   </span>
+                  {session.package?.id && (
+                    <Link
+                      href={`/admin/packages/${session.package.id}/analytics`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-xs font-semibold text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all shadow-xs"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <BarChart2 className="w-3.5 h-3.5" />
+                      Analisis Paket Ini
+                    </Link>
+                  )}
                   {isFinished && (
                     <Link
                       href={`/hasil/${session.id}`}

@@ -4,7 +4,7 @@
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'noreply@tembuskarir.id'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tembuskarir.id'
-const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL ?? process.env.ADMIN_EMAILS?.split(',')[0]?.trim() ?? ''
+const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL ?? process.env.ADMIN_EMAILS?.split(',')[0]?.trim() ?? 'tembuskarir@gmail.com'
 
 // ─── Warna brand TembusKarir ──────────────────────────────────────────────────
 const BLUE = '#2563EB'

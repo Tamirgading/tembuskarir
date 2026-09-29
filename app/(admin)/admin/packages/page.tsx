@@ -1,6 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Package, Lightbulb, ChevronLeft, Mountain, Car, Zap, Building2, Landmark, GraduationCap, Trophy, Plus } from 'lucide-react'
+import { Package, Lightbulb, ChevronLeft, Mountain, Car, Zap, Building2, Landmark, GraduationCap, Trophy, Plus, BarChart2 } from 'lucide-react'
 import type { PackageRow } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
 import { PackageActions } from '@/components/admin/PackageActions'
@@ -132,6 +132,12 @@ export default async function AdminPackagesPage({
                           className="text-xs text-blue-600 hover:underline font-medium flex items-center gap-1"
                         >
                           <Trophy className="w-3 h-3" /> Leaderboard
+                        </Link>
+                        <Link
+                          href={`/admin/packages/${pkg.id}/analytics`}
+                          className="text-xs text-indigo-600 hover:underline font-medium flex items-center gap-1"
+                        >
+                          <BarChart2 className="w-3 h-3" /> Analitik
                         </Link>
                         <PackageActions packageId={pkg.id} isPublished={pkg.is_published} />
                       </div>
