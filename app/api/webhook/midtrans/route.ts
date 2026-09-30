@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createServiceClient } from '@/lib/supabase/server'
 import { verifyMidtransSignature, getTransactionStatus } from '@/lib/midtrans'
 import { sendPaymentSuccessEmail, sendPackagePaymentEmail, sendAdminNotificationEmail } from '@/lib/resend'
@@ -291,6 +292,16 @@ export async function POST(req: NextRequest) {
     } else {
       // pending — tidak perlu action, tunggu settlement dari Midtrans
       console.log('[Webhook] ⏳ Payment pending for order:', order_id)
+    }
+
+    // Revalidate admin pages so revenue and dashboard update immediately
+    try {
+      revalidatePath('/admin/revenue')
+      revalidatePath('/admin')
+      revalidatePath('/admin/sessions')
+      revalidatePath('/admin/users')
+    } catch (e) {
+      console.warn('[Webhook] Revalidation error:', e)
     }
 
     return NextResponse.json({ message: 'OK' }, { status: 200 })
