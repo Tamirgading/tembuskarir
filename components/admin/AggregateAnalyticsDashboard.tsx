@@ -64,6 +64,7 @@ export function AggregateAnalyticsDashboard({
     initialCategory ? initialCategory.toUpperCase() : 'ALL'
   )
   const [attemptMode, setAttemptMode] = useState<'first' | 'all' | 'best'>('first')
+  const [excludeZeroScore, setExcludeZeroScore] = useState<boolean>(true)
   const [minAttemptsFilter, setMinAttemptsFilter] = useState<number>(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeTab, setActiveTab] = useState<'charts' | 'table' | 'cards'>('charts')
@@ -110,9 +111,14 @@ export function AggregateAnalyticsDashboard({
       })
     })
 
-    // 2. Kelompokkan seluruh attempt berdasarkan paket
+    // 2. Filter attempt jika excludeZeroScore aktif
+    let targetAttempts = [...attempts]
+    if (excludeZeroScore) {
+      targetAttempts = targetAttempts.filter((a) => (a.score ?? 0) > 0)
+    }
+
     // Urutkan asc berdasarkan waktu mulai untuk deteksi first attempt yang akurat
-    const sortedAttempts = [...attempts].sort(
+    const sortedAttempts = targetAttempts.sort(
       (a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime()
     )
 
@@ -211,13 +217,18 @@ export function AggregateAnalyticsDashboard({
         sampleCount: countScores,
       }
     })
-  }, [packages, attempts, attemptMode])
+  }, [packages, attempts, attemptMode, excludeZeroScore])
 
   // ── Global KPI Ringkasan Agregat ──────────────────────────────────────────
   const globalSummary = useMemo(() => {
-    const finishedAttempts = attempts.filter((a) => a.status === 'finished')
+    let validAttempts = [...attempts]
+    if (excludeZeroScore) {
+      validAttempts = validAttempts.filter((a) => (a.score ?? 0) > 0)
+    }
+
+    const finishedAttempts = validAttempts.filter((a) => a.status === 'finished')
     const ongoingAttempts = attempts.filter((a) => a.status === 'ongoing')
-    const uniqueParticipants = new Set(attempts.map((a) => a.user_id)).size
+    const uniqueParticipants = new Set(validAttempts.map((a) => a.user_id)).size
 
     // Paket dengan pengerjaan aktif
     const activePackages = packageAggregates.filter((p) => p.totalFinished > 0)
@@ -252,7 +263,7 @@ export function AggregateAnalyticsDashboard({
       hardest,
       totalPackagesWithAttempts: activePackages.length,
     }
-  }, [attempts, packageAggregates])
+  }, [attempts, packageAggregates, excludeZeroScore])
 
   // ── Filter & Sort Data untuk Grafik & Tabel ────────────────────────────────
   const filteredAndSorted = useMemo(() => {
@@ -496,33 +507,47 @@ export function AggregateAnalyticsDashboard({
           </div>
         </div>
 
-        {/* Baris 2: Mode Percobaan & Sorting & Search */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
-          {/* Mode Percobaan */}
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500 font-semibold flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5 text-slate-400" />
-              Mode Skor:
-            </span>
-            <div className="flex items-center gap-1">
-              {[
-                { key: 'first', label: 'Percobaan #1 (Murni)' },
-                { key: 'all', label: 'Semua Percobaan' },
-                { key: 'best', label: 'Skor Terbaik' },
-              ].map((m) => (
-                <button
-                  key={m.key}
-                  onClick={() => setAttemptMode(m.key as 'first' | 'all' | 'best')}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition border ${
-                    attemptMode === m.key
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-2xs'
-                      : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  {m.label}
-                </button>
-              ))}
+        {/* Baris 2: Mode Percobaan & Filter Skor 0 & Sorting & Search */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-slate-100">
+          {/* Mode Percobaan & Centang Abaikan Skor 0 */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-slate-500 font-semibold flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5 text-slate-400" />
+                Mode Skor:
+              </span>
+              <div className="flex items-center gap-1">
+                {[
+                  { key: 'first', label: 'Percobaan #1' },
+                  { key: 'all', label: 'Semua Percobaan' },
+                  { key: 'best', label: 'Skor Terbaik' },
+                ].map((m) => (
+                  <button
+                    key={m.key}
+                    onClick={() => setAttemptMode(m.key as 'first' | 'all' | 'best')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition border ${
+                      attemptMode === m.key
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-2xs'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Centang Abaikan Skor 0 */}
+            <label className="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 transition">
+              <input
+                type="checkbox"
+                checked={excludeZeroScore}
+                onChange={(e) => setExcludeZeroScore(e.target.checked)}
+                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5"
+              />
+              <span className="font-semibold text-slate-800">Abaikan Skor 0</span>
+              <span className="text-[10px] text-slate-400 hidden sm:inline">(hanya mulai tanpa mengisi)</span>
+            </label>
           </div>
 
           {/* Sort & Search */}
