@@ -115,7 +115,7 @@ async function createDemo(d: DemoDef) {
     timer_mode: s.timer_mode,
     timer_seconds: s.timer_seconds,
     question_count: s.count,
-    random_select: true,
+    random_select: s.kode === 'PENGETAHUAN',
     group_kode: s.group_kode ?? null,
     passing_grade: s.passing_grade ?? null,
   }))
