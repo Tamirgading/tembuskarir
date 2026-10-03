@@ -51,6 +51,12 @@ const SUBTEST_FULL: Record<string, string> = {
   PU: 'Pengetahuan Umum PLN',
   LA: 'Learning Agility',
   AKHLAK: 'AKHLAK',
+  // PLN Tahap 1
+  TKD1: 'TKD 1 — Deret Bilangan',
+  TKD2: 'TKD 2 — Silogisme & Sinonim',
+  'TKD2-SILOGISME': 'TKD 2 — Silogisme',
+  'TKD2-SINONIM': 'TKD 2 — Sinonim / Antonim',
+  PENGETAHUAN: 'Pengetahuan PLN',
   // PLN Tahap 2
   AKDING: 'Akademik Kedinasan',
   BI: 'Bahasa Inggris',
@@ -85,6 +91,12 @@ const CATEGORY_COLOR: Record<string, string> = {
   PU:     'bg-blue-100 text-blue-600 border-blue-200',
   LA:     'bg-indigo-100 text-indigo-600 border-indigo-200',
   AKHLAK: 'bg-purple-100 text-purple-600 border-purple-200',
+  // PLN Tahap 1
+  TKD1:            'bg-emerald-100 text-emerald-700 border-emerald-200',
+  TKD2:            'bg-teal-100 text-teal-700 border-teal-200',
+  'TKD2-SILOGISME':'bg-teal-100 text-teal-800 border-teal-300',
+  'TKD2-SINONIM':  'bg-cyan-100 text-cyan-800 border-cyan-300',
+  PENGETAHUAN:     'bg-blue-100 text-blue-700 border-blue-200',
   // PLN Tahap 2
   AKDING: 'bg-brand/10 text-brand-700 border-brand/30',
   BI:     'bg-sky-100 text-sky-700 border-sky-200',

@@ -124,12 +124,31 @@ async function createDemo(d: DemoDef) {
   // Salin sebagian soal dari sumber (acak per kategori)
   let total = 0
   for (const s of d.sections) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: srcQs } = await (supabase.from('questions') as any)
-      .select('content, options, correct_answer, explanation, category, difficulty, image_url')
-      .eq('package_id', srcPkg.id)
-      .eq('category', s.kode)
-    const picked = shuffle(srcQs ?? []).slice(0, s.count)
+    let picked: Record<string, unknown>[] = []
+    if (s.kode === 'TKD2') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: silQs } = await (supabase.from('questions') as any)
+        .select('content, options, correct_answer, explanation, category, difficulty, image_url')
+        .eq('package_id', srcPkg.id)
+        .eq('category', 'TKD2-SILOGISME')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: sinQs } = await (supabase.from('questions') as any)
+        .select('content, options, correct_answer, explanation, category, difficulty, image_url')
+        .eq('package_id', srcPkg.id)
+        .eq('category', 'TKD2-SINONIM')
+
+      const silPicked = shuffle(silQs ?? []).slice(0, 7)
+      const sinPicked = shuffle(sinQs ?? []).slice(0, 3)
+      picked = [...silPicked, ...sinPicked]
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: srcQs } = await (supabase.from('questions') as any)
+        .select('content, options, correct_answer, explanation, category, difficulty, image_url')
+        .eq('package_id', srcPkg.id)
+        .eq('category', s.kode)
+      picked = shuffle(srcQs ?? []).slice(0, s.count)
+    }
+
     if (picked.length === 0) { console.log(`  ${s.kode}: tidak ada soal sumber`); continue }
     const rows = picked.map((q: Record<string, unknown>, i: number) => ({
       package_id: pkgId,
@@ -137,7 +156,7 @@ async function createDemo(d: DemoDef) {
       options: q.options,
       correct_answer: q.correct_answer,
       explanation: q.explanation,
-      category: s.kode,
+      category: q.category ?? s.kode,
       difficulty: q.difficulty,
       order_index: i + 1,
       image_url: q.image_url ?? null,

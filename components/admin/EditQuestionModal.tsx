@@ -41,9 +41,11 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
   ],
   PLN: [
     // Tahap 1 (stage ├ package_sections): kode = kode seksi
-    { value: 'TKD1',        label: 'TKD 1 — Deret Bilangan (Tahap 1)' },
-    { value: 'TKD2',        label: 'TKD 2 — Silogisme & Sinonim (Tahap 1)' },
-    { value: 'PENGETAHUAN', label: 'Pengetahuan PLN (Tahap 1, bank acak)' },
+    { value: 'TKD1',            label: 'TKD 1 — Deret Bilangan (Tahap 1)' },
+    { value: 'TKD2',            label: 'TKD 2 — Silogisme & Sinonim (Umum)' },
+    { value: 'TKD2-SILOGISME',  label: 'TKD 2 — Silogisme' },
+    { value: 'TKD2-SINONIM',    label: 'TKD 2 — Sinonim / Antonim' },
+    { value: 'PENGETAHUAN',     label: 'Pengetahuan PLN (Tahap 1, bank acak)' },
     // Tahap 2
     { value: 'AKDING', label: 'AKDING — Akademik Kedinasan' },
     { value: 'BI',     label: 'BI — Bahasa Inggris' },

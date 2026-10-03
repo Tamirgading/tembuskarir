@@ -76,6 +76,7 @@ export default function StageUjianPage() {
   const [loadError, setLoadError] = useState('')
   const [submitError, setSubmitError] = useState('')
   const [pkgName, setPkgName] = useState('')
+  const [pkgCategory, setPkgCategory] = useState('')
   const [sections, setSections] = useState<StageSection[]>([])
   const [questionsByKode, setQuestionsByKode] = useState<Record<string, Question[]>>({})
   const [currentSectionIdx, setCurrentSectionIdx] = useState(0)
@@ -223,6 +224,7 @@ export default function StageUjianPage() {
         if (!pkgData) { setLoadError('Paket tidak ditemukan.'); return }
         const pkgTyped = pkgData as { name: string; slug: string; duration_minutes: number; is_free: boolean; category: string }
         setPkgName(pkgTyped.name)
+        setPkgCategory(pkgTyped.category || '')
 
         // Cek konfigurasi tahap; fallback ke runner generik jika tidak ada seksi
         const secs = await fetchStageSections(supabase, packageId)
@@ -312,12 +314,27 @@ export default function StageUjianPage() {
         if (Object.keys(byKode).length === 0) {
           const orderToStore: Record<string, string[]> = {}
           for (const sec of secs) {
-            let list = allQs.filter((q) => (q.category ?? '').toUpperCase() === sec.kode.toUpperCase())
-            if (sec.random_select && sec.question_count && sec.question_count < list.length) {
+            let list = allQs.filter((q) => {
+              const cat = (q.category ?? '').toUpperCase()
+              const target = sec.kode.toUpperCase()
+              return cat === target || cat.startsWith(target + '-') || cat.startsWith(target + '_')
+            })
+            if (sec.kode.toUpperCase() === 'TKD2') {
+              const sil = list.filter((q) => (q.category ?? '').toUpperCase().includes('SILOGISME'))
+              const sin = list.filter((q) => (q.category ?? '').toUpperCase().includes('SINONIM'))
+              if (sil.length > 0 && sin.length > 0) {
+                // Proporsi TKD 2 PLN: 26 Silogisme + 10 Sinonim (atau 7 Silogisme + 3 Sinonim untuk paket demo)
+                const targetSilCount = sec.question_count === 10 ? 7 : Math.min(26, sil.length)
+                const targetSinCount = sec.question_count === 10 ? 3 : Math.min(10, sin.length)
+                list = [...sil.slice(0, targetSilCount), ...sin.slice(0, targetSinCount)]
+              } else if (sec.question_count && sec.question_count < list.length) {
+                list = list.slice(0, sec.question_count)
+              }
+            } else if (sec.random_select && sec.question_count && sec.question_count < list.length) {
               // Sub-tes POOL SOAL (Pengetahuan PLN): ambil sampel acak sejumlah question_count
               list = shuffle(list).slice(0, sec.question_count)
             } else if (sec.question_count && sec.question_count < list.length) {
-              // Sub-tes SOAL TETAP per paket (TKD 1 & TKD 2):
+              // Sub-tes SOAL TETAP per paket (TKD 1):
               // Ambil himpunan soal tetap milik paket tersebut (urutan awal) agar tidak mengambil soal paket lain
               list = list.slice(0, sec.question_count)
             }
@@ -480,7 +497,8 @@ export default function StageUjianPage() {
   // ─── Render: in-progress ─────────────────────────────────────────────────────
   if (phase === 'in-progress' && currentSec && currentQ) {
     const isUrgent = timeLeft <= 30
-    const canPrev = currentQIdx > 0
+    const isNoBack = pkgCategory.toUpperCase() === 'PLN' || currentSec.timer_mode === 'per_question'
+    const canPrev = !isNoBack && currentQIdx > 0
     const isLastQ = currentQIdx >= currentQs.length - 1
 
     return (
@@ -544,13 +562,20 @@ export default function StageUjianPage() {
         {/* Footer nav */}
         <div className="sticky bottom-0 bg-white border-t border-hairline px-4 sm:px-6 py-3">
           <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
-            <button onClick={() => currentQIdx > 0 && setCurrentQIdx(currentQIdx - 1)}
-              disabled={!canPrev}
-              className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-colors ${
-                canPrev ? 'border-hairline text-ink hover:bg-paper-soft' : 'opacity-40 cursor-not-allowed'
-              }`}>
-              <ChevronLeft className="w-4 h-4" /> Sebelumnya
-            </button>
+            {isNoBack ? (
+              <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 animate-pulse" />
+                <span className="font-medium">Jawaban otomatis tersimpan (tidak dapat kembali ke soal sebelumnya)</span>
+              </div>
+            ) : (
+              <button onClick={() => currentQIdx > 0 && setCurrentQIdx(currentQIdx - 1)}
+                disabled={!canPrev}
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-colors ${
+                  canPrev ? 'border-hairline text-ink hover:bg-paper-soft' : 'opacity-40 cursor-not-allowed'
+                }`}>
+                <ChevronLeft className="w-4 h-4" /> Sebelumnya
+              </button>
+            )}
 
             {isLastQ ? (
               <button onClick={() => setShowFinishConfirm(true)}

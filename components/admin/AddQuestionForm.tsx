@@ -27,9 +27,11 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
   ],
   PLN: [
     // Tahap 1 (stage ├ package_sections): kode = kode seksi
-    { value: 'TKD1',        label: 'TKD 1 — Deret Bilangan (Tahap 1)' },
-    { value: 'TKD2',        label: 'TKD 2 — Silogisme & Sinonim (Tahap 1)' },
-    { value: 'PENGETAHUAN', label: 'Pengetahuan PLN (Tahap 1, bank acak)' },
+    { value: 'TKD1',            label: 'TKD 1 — Deret Bilangan (Tahap 1)' },
+    { value: 'TKD2',            label: 'TKD 2 — Silogisme & Sinonim (Umum)' },
+    { value: 'TKD2-SILOGISME',  label: 'TKD 2 — Silogisme' },
+    { value: 'TKD2-SINONIM',    label: 'TKD 2 — Sinonim / Antonim' },
+    { value: 'PENGETAHUAN',     label: 'Pengetahuan PLN (Tahap 1, bank acak)' },
     // Tahap 2
     { value: 'AKDING', label: 'AKDING — Akademik (Tahap 2, +4/−1)' },
     { value: 'BI',     label: 'BI — Bahasa Inggris (Tahap 2)' },
@@ -435,7 +437,7 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
                 </div>
               )}
             </div>
-            {(category === 'TKD2' || category === 'SIL') && (
+            {(category === 'TKD2' || category === 'SIL' || category === 'TKD2-SILOGISME') && (
               <button
                 type="button"
                 onClick={fillSilogisme}

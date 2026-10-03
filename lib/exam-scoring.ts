@@ -151,7 +151,11 @@ export function computeScore(
 
     for (const q of questions) {
       const cat = (q.category ?? 'NUM').toUpperCase()
-      if (!catStats[cat]) catStats[cat] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
+      const baseCat = (cat.startsWith('TKD2-') || cat.startsWith('TKD2_')) ? 'TKD2' : cat
+      const catsToUpdate = baseCat !== cat ? [cat, baseCat] : [cat]
+      for (const c of catsToUpdate) {
+        if (!catStats[c]) catStats[c] = { correct: 0, wrong: 0, empty: 0, rawScore: 0 }
+      }
 
       const userAnswer = answers[q.id]
       const isPointBased = cat === 'AKHLAK' || cat === 'LA'
@@ -166,21 +170,27 @@ export function computeScore(
 
       if (!userAnswer) {
         emptyCount++
-        catStats[cat].empty++
+        for (const c of catsToUpdate) catStats[c].empty++
       } else if (isPointBased) {
         const selectedOpt = (q.options ?? []).find((o) => o.key === userAnswer)
         const point = selectedOpt?.point ?? 0
-        catStats[cat].correct++
-        catStats[cat].rawScore += point
+        for (const c of catsToUpdate) {
+          catStats[c].correct++
+          catStats[c].rawScore += point
+        }
         correctCount++
       } else if (userAnswer === q.correct_answer) {
         correctCount++
-        catStats[cat].correct++
-        catStats[cat].rawScore += negativeMarking ? 4 : 1
+        for (const c of catsToUpdate) {
+          catStats[c].correct++
+          catStats[c].rawScore += negativeMarking ? 4 : 1
+        }
       } else {
         wrongCount++
-        catStats[cat].wrong++
-        if (negativeMarking) catStats[cat].rawScore -= 1
+        for (const c of catsToUpdate) {
+          catStats[c].wrong++
+          if (negativeMarking) catStats[c].rawScore -= 1
+        }
       }
     }
 
