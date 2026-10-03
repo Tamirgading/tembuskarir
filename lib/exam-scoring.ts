@@ -109,17 +109,30 @@ export function transformPlnLaForScoring(
 }
 
 /**
+ * True jika paket memakai negative marking Tes Akademik PLN (+4/-1).
+ * Berlaku untuk paket AKDING Tahap 2 (slug `akding-*`).
+ * GAT (`gat-pln-*`) dan Bahasa Inggris (`bi-pln-*`) tetap +1/0/0.
+ */
+export function usesNegativeMarkingSlug(slug: string | null | undefined): boolean {
+  return !!slug && slug.startsWith('akding-')
+}
+
+/**
  * Hitung skor ujian berdasarkan kategori paket.
  *
  * pkgCategory:
- *   'PLN'   → GAT scoring (MCQ +1; AKHLAK & LA berbasis poin per opsi)
+ *   'PLN'   → GAT scoring (MCQ +1; AKHLAK & LA berbasis poin per opsi).
+ *             Paket AKDING (slug `akding-*`) memakai negative marking
+ *             +4 benar / -1 salah khusus Tes Akademik — aktifkan via
+ *             opts.negativeMarking.
  *   'ASTRA' → per-subtest correct count (+1 benar, 0 salah/kosong)
  *   lainnya → simple percentage (correctCount / total * 100)
  */
 export function computeScore(
   questions: QuestionForScoring[],
   answers: Record<string, string>,
-  pkgCategory: string
+  pkgCategory: string,
+  opts?: { negativeMarking?: boolean }
 ): ScoreResult {
   let correctCount = 0
   let wrongCount = 0
@@ -130,8 +143,11 @@ export function computeScore(
   if (pkgCategory === 'PLN') {
     // ── PLN GAT Scoring ───────────────────────────────────────────────────────
     // MCQ subtests (NUM/VER/SIL/DER/FIG/PU): +1 benar, 0 salah/kosong.
+    // Tahap 2 AKDING (negativeMarking): +4 benar, -1 salah, 0 kosong.
     // AKHLAK & LA: ambil nilai point dari opsi yang dipilih (sudah dinormalisasi di transformer).
+    const negativeMarking = opts?.negativeMarking === true
     const catStats: Record<string, CategoryStats> = {}
+    let maxScore = 0
 
     for (const q of questions) {
       const cat = (q.category ?? 'NUM').toUpperCase()
@@ -139,6 +155,14 @@ export function computeScore(
 
       const userAnswer = answers[q.id]
       const isPointBased = cat === 'AKHLAK' || cat === 'LA'
+      if (isPointBased) {
+        const pts = (q.options ?? []).map((o) => o.point ?? 0)
+        maxScore += Math.max(0, ...pts)
+      } else if (negativeMarking) {
+        maxScore += 4
+      } else {
+        maxScore += 1
+      }
 
       if (!userAnswer) {
         emptyCount++
@@ -152,10 +176,11 @@ export function computeScore(
       } else if (userAnswer === q.correct_answer) {
         correctCount++
         catStats[cat].correct++
-        catStats[cat].rawScore++
+        catStats[cat].rawScore += negativeMarking ? 4 : 1
       } else {
         wrongCount++
         catStats[cat].wrong++
+        if (negativeMarking) catStats[cat].rawScore -= 1
       }
     }
 
@@ -163,8 +188,10 @@ export function computeScore(
     score = Math.round(totalRaw)
     scoreDetails = {
       type: 'PLN',
+      scoring: negativeMarking ? 'plus4-minus1' : 'standard',
       categories: catStats,
       totalQuestions: questions.length,
+      maxScore,
     }
 
   } else if (pkgCategory === 'ASTRA') {

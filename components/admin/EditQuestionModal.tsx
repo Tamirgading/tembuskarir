@@ -40,18 +40,22 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
     { value: 'WM',  label: 'WM — Working Memory' },
   ],
   PLN: [
-    // GAT sub-tes
-    { value: 'NUM',    label: 'NUM — Numerik' },
-    { value: 'VER',    label: 'VER — Verbal' },
-    { value: 'SIL',    label: 'SIL — Silogisme' },
-    { value: 'DER',    label: 'DER — Deret Angka' },
-    { value: 'FIG',    label: 'FIG — Figural' },
-    { value: 'PU',     label: 'PU — Pengetahuan Umum PLN' },
-    { value: 'LA',     label: 'LA — Learning Agility' },
-    { value: 'AKHLAK', label: 'AKHLAK — Nilai AKHLAK' },
-    // Tahap 2: Akademik Kedinasan & BI
+    // Tahap 1 (stage ├ package_sections): kode = kode seksi
+    { value: 'TKD1',        label: 'TKD 1 — Deret Bilangan (Tahap 1)' },
+    { value: 'TKD2',        label: 'TKD 2 — Silogisme & Sinonim (Tahap 1)' },
+    { value: 'PENGETAHUAN', label: 'Pengetahuan PLN (Tahap 1, bank acak)' },
+    // Tahap 2
     { value: 'AKDING', label: 'AKDING — Akademik Kedinasan' },
     { value: 'BI',     label: 'BI — Bahasa Inggris' },
+    // Legacy (paket gat-pln-paket-1 lama)
+    { value: 'NUM',    label: 'NUM — Numerik (legacy)' },
+    { value: 'VER',    label: 'VER — Verbal (legacy)' },
+    { value: 'SIL',    label: 'SIL — Silogisme (legacy)' },
+    { value: 'DER',    label: 'DER — Deret Angka (legacy)' },
+    { value: 'FIG',    label: 'FIG — Figural (legacy)' },
+    { value: 'PU',     label: 'PU — Pengetahuan Umum PLN (legacy)' },
+    { value: 'LA',     label: 'LA — Learning Agility (legacy)' },
+    { value: 'AKHLAK', label: 'AKHLAK — Nilai AKHLAK (legacy)' },
   ],
   BUMN: [
     { value: 'TWK',    label: 'TWK — Tes Wawasan Kebangsaan' },
@@ -126,9 +130,11 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
     setError(null)
 
     if (!content.trim()) { setError('Pertanyaan wajib diisi.'); return }
-    // PS hanya butuh A dan B; lainnya A–D wajib (E opsional)
-    const isPS = category === 'PS'
-    const requiredKeys = isPS ? (['A', 'B'] as const) : (['A', 'B', 'C', 'D'] as const)
+    // A–B selalu wajib; C–E wajib hanya jika terisi (mendukung soal 3 opsi,
+    // mis. silogisme TKD 2). Mengosongkan opsi = menghapus opsi itu (min. A–B).
+    const requiredKeys: string[] = ['A', 'B'].concat(
+      (['C', 'D', 'E'] as string[]).filter((k) => options[k].trim() !== '')
+    )
     for (const key of requiredKeys) {
       if (!options[key].trim()) { setError(`Opsi ${key} wajib diisi.`); return }
     }
@@ -149,10 +155,14 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
       setUploadedExplImageUrl(finalExplImageUrl)
     }
 
-    // PS: sertakan hanya opsi yang diisi; lainnya: A–D selalu, E jika diisi
+    // Sertakan hanya opsi yang terisi (mendukung 2–5 opsi)
     const optionsArray = OPTION_KEYS
-      .filter((key) => isPS ? options[key].trim() !== '' : (key !== 'E' || options['E'].trim() !== ''))
+      .filter((key) => options[key].trim() !== '')
       .map((key) => ({ key, text: options[key].trim() }))
+    if (optionsArray.length < 2) { setError('Minimal 2 opsi jawaban.'); return }
+    if (!optionsArray.some((o) => o.key === correctAnswer)) {
+      setError('Jawaban benar harus salah satu opsi yang terisi.'); return
+    }
 
     setIsSaving(true)
     const res = await fetch('/api/admin/questions/update', {
@@ -270,13 +280,14 @@ export function EditQuestionModal({ question, packageId, pkgCategory, onClose }:
               </div>
             </div>
 
-            {/* Opsi A–E */}
+            {/* Opsi (2–5, kosongkan untuk menghapus opsi) */}
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-600">
                 Pilihan Jawaban <span className="text-red-500">*</span>
+                <span className="font-normal text-gray-400"> — A–B wajib, C–E boleh dikosongkan (soal 3 opsi)</span>
               </p>
               {OPTION_KEYS.map((key) => {
-                const isRequired = category === 'PS' ? (key === 'A' || key === 'B') : key !== 'E'
+                const isRequired = key === 'A' || key === 'B'
                 return (
                   <div key={key} className="flex items-center gap-2">
                     <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${

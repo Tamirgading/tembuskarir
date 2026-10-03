@@ -5,7 +5,7 @@ import type { Database } from '@/types/database'
 import type { CookieOptions } from '@supabase/ssr'
 import type { AttemptRow } from '@/lib/utils'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore, transformPlnAkhlakForScoring, transformPlnLaForScoring } from '@/lib/exam-scoring'
+import { computeScore, transformPlnAkhlakForScoring, transformPlnLaForScoring, usesNegativeMarkingSlug } from '@/lib/exam-scoring'
 import type { QuestionPointRow } from '@/lib/exam-scoring'
 import { rateLimit, getClientIp } from '@/lib/rateLimit'
 
@@ -82,14 +82,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Already processed' }, { status: 200 })
     }
 
-    // 3. Ambil kategori paket
+    // 3. Ambil kategori + slug paket (slug menentukan negative marking AKDING)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pkgData } = await (serviceClient.from('packages') as any)
-      .select('category')
+      .select('category, slug')
       .eq('id', attempt.package_id)
       .single()
 
     const pkgCategory = (pkgData as { category: string } | null)?.category ?? 'OTHER'
+    const negativeMarking = usesNegativeMarkingSlug((pkgData as { slug?: string } | null)?.slug)
 
     // 4. Ambil soal dari tabel yang sesuai berdasarkan kategori paket
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -136,7 +137,8 @@ export async function POST(request: NextRequest) {
     const { score, correctCount, wrongCount, emptyCount, scoreDetails } = computeScore(
       allQuestions,
       answers,
-      pkgCategory
+      pkgCategory,
+      { negativeMarking }
     )
 
     // 6. Hitung durasi

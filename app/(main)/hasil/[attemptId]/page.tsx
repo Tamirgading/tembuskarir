@@ -31,6 +31,7 @@ interface QuestionWithAnswer {
 interface CatStat { correct: number; wrong: number; empty: number; rawScore: number }
 interface ScoreDetails {
   type?: string
+  scoring?: string
   categories?: Record<string, CatStat>
   maxScore?: number
   totalQuestions?: number
@@ -230,10 +231,16 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const rawDetails = (attempt as any).score_details as ScoreDetails | null | undefined
   const sd: ScoreDetails | null = rawDetails && typeof rawDetails === 'object' ? rawDetails : null
 
-  // Denominator & persen ring sesuai tipe
+  // Denominator & persen ring sesuai tipe.
+  // Jika maxScore tersedia (ASTRA/ANTAM/PLN-negative), pakai skala skor mentah.
+  // Jika tidak, pakai akurasi benar/total (kompatibel hasil lama).
   let denom = '/ 100'
   let pct = Math.min(100, Math.max(0, score))
-  if (sd?.type === 'ASTRA' || sd?.type === 'ANTAM') {
+  const maxScore = typeof sd?.maxScore === 'number' && sd.maxScore > 0 ? sd.maxScore : 0
+  if (maxScore) {
+    denom = `/ ${maxScore}`
+    pct = Math.min(100, Math.max(0, Math.round((score / maxScore) * 100)))
+  } else if (sd?.type === 'ASTRA' || sd?.type === 'ANTAM') {
     const max = sd.maxScore ?? pkg?.total_questions ?? 0
     denom = max ? `/ ${max}` : 'poin'
     pct = max ? Math.round((score / max) * 100) : 0
@@ -244,6 +251,7 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     denom = 'poin'
     pct = totalAll ? Math.round((correct / totalAll) * 100) : 0
   }
+  const isNegativeMarking = sd?.scoring === 'plus4-minus1'
 
   // Rincian per sub-tes
   const subtests = sd?.categories
@@ -328,6 +336,11 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             </div>
           ))}
         </div>
+        {isNegativeMarking && (
+          <p className="bg-white border-t border-slate-200 px-5 py-2.5 text-xs text-slate-500">
+            Sistem penilaian Akademik: <strong className="text-slate-700">Benar +4 · Salah −1 · Kosong 0</strong>
+          </p>
+        )}
       </div>
 
       {/* ══ Passing grade per seksi (paket tahap) - premium only ══ */}

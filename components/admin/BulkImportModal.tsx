@@ -27,19 +27,19 @@ interface BulkImportModalProps {
 
 const TEMPLATE_ROWS = [
   ['content', 'A', 'B', 'C', 'D', 'E', 'correct_answer', 'category', 'explanation'],
-  // Contoh soal numerik
+  // Contoh soal deret (TKD 1 PLN)
   [
-    'Jika $2x + 3 = 11$, maka nilai $x$ adalah...',
-    '3', '4', '5', '6', '7',
-    'B', 'NUM',
-    '$2x = 11 - 3 = 8$, maka $x = 4$',
+    'Lanjutkan deret: 2, 4, 8, 16, ...',
+    '24', '30', '32', '36', '40',
+    'C', 'TKD1',
+    'Deret dikali 2: 16 × 2 = 32',
   ],
-  // Contoh soal verbal
+  // Contoh soal silogisme 3 opsi (TKD 2 PLN) — D/E boleh kosong
   [
-    'Sinonim dari kata "efisien" adalah...',
-    'Boros', 'Lambat', 'Tepat guna', 'Rumit', 'Mahal',
-    'C', 'VER',
-    'Efisien berarti berdaya guna / tepat guna tanpa membuang sumber daya',
+    'Semua pegawai wajib menjaga integritas. Budi adalah pegawai. Maka...',
+    'Budi wajib menjaga integritas', 'Budi tidak wajib menjaga integritas', 'Tidak dapat disimpulkan', '', '',
+    'A', 'TKD2',
+    'Modus ponens dari premis universal.',
   ],
 ]
 
@@ -223,8 +223,9 @@ export function BulkImportModal({ packageId, startIndex, onClose }: BulkImportMo
             <p className="text-sm font-semibold text-blue-800 mb-2">Langkah 1 — Download template</p>
             <div className="text-xs text-blue-700 mb-3 space-y-1">
               <p>Kolom wajib: <strong>content, A, B, C, D, E, correct_answer, category, explanation</strong></p>
-              <p>• Isi <code className="bg-white/60 px-1 rounded">correct_answer</code> dengan salah satu A–E</p>
-              <p>• <code className="bg-white/60 px-1 rounded">category</code> = kode sub-tes (mis. NUM, VER) — boleh dikosongkan</p>
+              <p>• Isi <code className="bg-white/60 px-1 rounded">correct_answer</code> dengan salah satu opsi yang terisi</p>
+              <p>• C–E boleh kosong untuk soal 3 opsi (mis. silogisme TKD 2)</p>
+              <p>• <code className="bg-white/60 px-1 rounded">category</code> = kode sub-tes (mis. TKD1, TKD2, AKDING) — boleh dikosongkan</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <button onClick={downloadTemplate}

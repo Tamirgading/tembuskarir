@@ -19,6 +19,7 @@
 
 import { createServiceClient } from '@/lib/supabase/server'
 import { BI_DEMO_SLUG, BI_FULL_SLUG, akdingSlug } from '@/lib/bidang-config'
+import { isAdmin } from '@/lib/admin'
 
 // Plan All Access (membuka SEMUA paket)
 const ALL_ACCESS_PLANS = ['premium_monthly', 'premium_quarterly']
@@ -92,12 +93,16 @@ export async function checkPackageAccess(
   const hasPremium = activeSubs.some((s) => ALL_ACCESS_PLANS.includes(s.plan_type))
   if (hasPremium) return 'subscribed'
 
-  // Fallback: Cek tabel users jika akun berstatus premium dan belum kedaluwarsa
+  // Fallback: Cek tabel users jika akun berstatus premium atau admin
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: userProfile } = await (supabase.from('users') as any)
-    .select('plan, plan_expires_at')
+    .select('email, plan, plan_expires_at')
     .eq('id', userId)
     .maybeSingle()
+
+  if (userProfile?.email && isAdmin(userProfile.email)) {
+    return 'subscribed'
+  }
 
   if (userProfile?.plan === 'premium') {
     const isNotExpired = !userProfile.plan_expires_at || new Date(userProfile.plan_expires_at) > new Date(now)
@@ -155,9 +160,13 @@ export async function getPremiumSubscriptionStatus(userId: string): Promise<{
   // 2. Fallback: Cek tabel users
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: userProfile } = await (supabase.from('users') as any)
-    .select('plan, plan_expires_at')
+    .select('email, plan, plan_expires_at')
     .eq('id', userId)
     .maybeSingle()
+
+  if (userProfile?.email && isAdmin(userProfile.email)) {
+    return { active: true, expiresAt: null, planType: 'premium_admin' }
+  }
 
   if (userProfile?.plan === 'premium') {
     const isNotExpired = !userProfile.plan_expires_at || new Date(userProfile.plan_expires_at) > new Date(now)
@@ -180,6 +189,17 @@ export async function getPlnSubscriptionStatus(userId: string): Promise<{
 }> {
   const supabase = createServiceClient()
   const now = new Date().toISOString()
+
+  // Admin Auto-Bypass: selalu aktif untuk semua plan PLN
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: userProfile } = await (supabase.from('users') as any)
+    .select('email')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (userProfile?.email && isAdmin(userProfile.email)) {
+    return { active: true, planType: 'pln_complete_monthly', bidang: null, expiresAt: null }
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase.from('subscriptions') as any)

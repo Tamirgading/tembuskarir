@@ -26,12 +26,20 @@ const CATEGORY_OPTIONS: Record<string, { value: string; label: string }[]> = {
     { value: 'WM',  label: 'WM — Working Memory' },
   ],
   PLN: [
-    { value: 'NUM', label: 'NUM — Numerik' },
-    { value: 'VER', label: 'VER — Verbal' },
-    { value: 'SIL', label: 'SIL — Silogisme' },
-    { value: 'DER', label: 'DER — Deret Angka' },
-    { value: 'FIG', label: 'FIG — Figural' },
-    { value: 'PU',  label: 'PU — Pengetahuan Umum PLN' },
+    // Tahap 1 (stage ├ package_sections): kode = kode seksi
+    { value: 'TKD1',        label: 'TKD 1 — Deret Bilangan (Tahap 1)' },
+    { value: 'TKD2',        label: 'TKD 2 — Silogisme & Sinonim (Tahap 1)' },
+    { value: 'PENGETAHUAN', label: 'Pengetahuan PLN (Tahap 1, bank acak)' },
+    // Tahap 2
+    { value: 'AKDING', label: 'AKDING — Akademik (Tahap 2, +4/−1)' },
+    { value: 'BI',     label: 'BI — Bahasa Inggris (Tahap 2)' },
+    // Legacy (paket gat-pln-paket-1 lama)
+    { value: 'NUM', label: 'NUM — Numerik (legacy)' },
+    { value: 'VER', label: 'VER — Verbal (legacy)' },
+    { value: 'SIL', label: 'SIL — Silogisme (legacy)' },
+    { value: 'DER', label: 'DER — Deret Angka (legacy)' },
+    { value: 'FIG', label: 'FIG — Figural (legacy)' },
+    { value: 'PU',  label: 'PU — Pengetahuan Umum PLN (legacy)' },
   ],
   DEFAULT: [
     { value: 'LAINNYA', label: 'LAINNYA' },
@@ -64,6 +72,7 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
 
   const [content, setContent] = useState('')
   const [options, setOptions] = useState({ A: '', B: '', C: '', D: '', E: '' })
+  const [optionCount, setOptionCount] = useState(5)
   const [correctAnswer, setCorrectAnswer] = useState('A')
   const [explanation, setExplanation] = useState('')
   const [category, setCategory] = useState('')
@@ -84,6 +93,7 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
   function resetForm() {
     setContent('')
     setOptions({ A: '', B: '', C: '', D: '', E: '' })
+    setOptionCount(5)
     setCorrectAnswer('A')
     setExplanation('')
     setCategory('')
@@ -103,6 +113,22 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
     if (explFileInputRef.current) explFileInputRef.current.value = ''
   }
 
+  // Kunci opsi aktif sesuai jumlah opsi (mis. silogisme TKD 2 hanya A–C)
+  const activeKeys = OPTION_KEYS.slice(0, optionCount)
+
+  function changeOptionCount(n: number) {
+    setOptionCount(n)
+    if (!OPTION_KEYS.slice(0, n).includes(correctAnswer as (typeof OPTION_KEYS)[number])) {
+      setCorrectAnswer('A')
+    }
+  }
+
+  // Template jawaban silogisme: Benar / Salah / Tidak dapat disimpulkan
+  function fillSilogisme() {
+    setOptions((prev) => ({ ...prev, A: 'Benar', B: 'Salah', C: 'Tidak dapat disimpulkan' }))
+    changeOptionCount(3)
+  }
+
   function handleApplySnippet() {
     setSnippetMessage(null)
     setError(null)
@@ -111,6 +137,9 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
       const parsed = parseQuestionSnippet(snippet)
       setContent(parsed.content)
       setOptions(parsed.options)
+      // Simpulkan jumlah opsi dari kolom yang terisi (D/E boleh kosong = soal 3 opsi)
+      const inferred = parsed.options.E ? 5 : parsed.options.D ? 4 : parsed.options.C ? 3 : 2
+      setOptionCount(inferred)
       setCorrectAnswer(parsed.correctAnswer)
       setCategory(parsed.category)
       setExplanation(parsed.explanation)
@@ -156,9 +185,12 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
 
     if (!content.trim()) { setError('Pertanyaan wajib diisi.'); return }
     const isPS = category === 'PS'
-    const requiredKeys = isPS ? (['A', 'B'] as const) : OPTION_KEYS
+    const requiredKeys = isPS ? (['A', 'B'] as const) : activeKeys
     for (const key of requiredKeys) {
       if (!options[key].trim()) { setError(`Opsi ${key} wajib diisi.`); return }
+    }
+    if (!activeKeys.includes(correctAnswer as (typeof OPTION_KEYS)[number])) {
+      setError('Jawaban benar di luar jumlah opsi yang dipilih.'); return
     }
 
     let finalImageUrl: string | null = uploadedImageUrl
@@ -175,8 +207,7 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
       setUploadedExplImageUrl(finalExplImageUrl)
     }
 
-    const optionsArray = OPTION_KEYS
-      .filter((key) => isPS ? options[key].trim() !== '' : true)
+    const optionsArray = (isPS ? OPTION_KEYS.filter((key) => options[key].trim() !== '') : [...activeKeys])
       .map((key) => ({ key, text: options[key].trim() }))
 
     const res = await fetch('/api/admin/questions/create', {
@@ -238,7 +269,7 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
             )}
           </div>
           <div className="space-y-1.5">
-            {OPTION_KEYS.map((key) => {
+            {(category === 'PS' ? OPTION_KEYS : activeKeys).map((key) => {
               const isCorrect = correctAnswer === key
               return (
                 <div key={key} className={`flex items-start gap-2 px-3 py-2 rounded-lg text-sm border ${
@@ -363,7 +394,7 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
               </select>
               {pkgCategory === 'PLN' && (
                 <p className="text-[10px] text-gray-400 mt-1">
-                  AKHLAK & LA dikelola via SQL (tabel terpisah)
+                  TKD 1 = deret · TKD 2 = silogisme/sinonim-antonim (3 opsi) · AKHLAK & LA dikelola via tab terpisah
                 </p>
               )}
             </div>
@@ -378,13 +409,43 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
             </div>
           </div>
 
-          {/* Opsi A–E */}
+          {/* Opsi jawaban */}
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-gray-600">
-              Pilihan Jawaban <span className="text-red-500">*</span>
-            </p>
-            {OPTION_KEYS.map((key) => {
-              const isRequired = category === 'PS' ? (key === 'A' || key === 'B') : true
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <p className="text-xs font-semibold text-gray-600">
+                Pilihan Jawaban <span className="text-red-500">*</span>
+              </p>
+              {category !== 'PS' && (
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] text-gray-400 mr-1">Jumlah opsi:</span>
+                  {[2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => changeOptionCount(n)}
+                      className={`w-6 h-6 rounded-md text-[11px] font-bold border transition-colors ${
+                        optionCount === n
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {(category === 'TKD2' || category === 'SIL') && (
+              <button
+                type="button"
+                onClick={fillSilogisme}
+                className="text-[11px] px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 font-semibold hover:bg-amber-100 transition-colors"
+              >
+                Isi template silogisme (Benar / Salah / Tidak dapat disimpulkan)
+              </button>
+            )}
+            {(category === 'PS' ? OPTION_KEYS : activeKeys).map((key) => {
+              const isRequired = category === 'PS' ? (key === 'A' || key === 'B') : activeKeys.includes(key)
               return (
                 <div key={key} className="flex items-center gap-2">
                   <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold shrink-0 ${
@@ -410,7 +471,7 @@ export function AddQuestionForm({ packageId, pkgCategory, pkgSlug }: AddQuestion
             </label>
             <select value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-              {OPTION_KEYS.map((key) => (
+              {activeKeys.map((key) => (
                 <option key={key} value={key}>{key} — {options[key] ? options[key].substring(0, 40) : `Opsi ${key}`}</option>
               ))}
             </select>

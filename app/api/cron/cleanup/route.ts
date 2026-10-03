@@ -10,7 +10,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore, isAttemptExpired, transformPlnAkhlakForScoring, transformPlnLaForScoring } from '@/lib/exam-scoring'
+import { computeScore, isAttemptExpired, transformPlnAkhlakForScoring, transformPlnLaForScoring, usesNegativeMarkingSlug } from '@/lib/exam-scoring'
 import type { QuestionPointRow } from '@/lib/exam-scoring'
 import type { PackageRow, AttemptRow, SubscriptionRow } from '@/lib/utils'
 import { notify, hasRecentNotif } from '@/lib/notifications'
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       const packageIds = Array.from(new Set(ongoingAttempts.map((a) => a.package_id)))
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: packagesData } = await (supabase.from('packages') as any)
-        .select('id, duration_minutes, category')
+        .select('id, duration_minutes, category, slug')
         .in('id', packageIds)
 
       const packageMap = new Map(
@@ -106,8 +106,9 @@ export async function GET(request: NextRequest) {
           }
 
           const answers = (attempt.answers as Record<string, string>) ?? {}
+          const negativeMarking = usesNegativeMarkingSlug((pkg as { slug?: string } | undefined)?.slug)
           const { score, correctCount, wrongCount, emptyCount, scoreDetails } =
-            computeScore(questions, answers, pkgCategory)
+            computeScore(questions, answers, pkgCategory, { negativeMarking })
 
           const durationSeconds = Math.floor(
             (Date.now() - new Date(attempt.started_at).getTime()) / 1000

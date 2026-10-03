@@ -30,8 +30,8 @@ const SLUG = 'gat-pln-tahap-1'
 const NAME = 'Simulasi GAT PLN Tahap 1'
 
 const SECTIONS = [
-  { kode: 'TKD1', nama: 'TKD 1 — Deret Bilangan', timer_mode: 'per_question', timer_seconds: 30, question_count: 26, random_select: true, group_kode: null, passing_grade: null },
-  { kode: 'TKD2', nama: 'TKD 2 — Silogisme & Sinonim', timer_mode: 'per_question', timer_seconds: 30, question_count: 36, random_select: true, group_kode: null, passing_grade: null },
+  { kode: 'TKD1', nama: 'TKD 1 — Deret Bilangan', timer_mode: 'per_question', timer_seconds: 30, question_count: 26, random_select: false, group_kode: null, passing_grade: null },
+  { kode: 'TKD2', nama: 'TKD 2 — Silogisme & Sinonim', timer_mode: 'per_question', timer_seconds: 30, question_count: 36, random_select: false, group_kode: null, passing_grade: null },
   { kode: 'PENGETAHUAN', nama: 'Tes Pengetahuan PLN', timer_mode: 'section', timer_seconds: 12 * 60, question_count: 15, random_select: true, group_kode: null, passing_grade: null },
 ]
 

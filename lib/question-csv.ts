@@ -137,14 +137,17 @@ Output WAJIB hanya berupa CSV mentah tanpa penjelasan tambahan dan tanpa blok ko
 Gunakan urutan kolom persis berikut (9 kolom, setiap nilai dibungkus tanda petik ganda):
 "content","A","B","C","D","E","correct_answer","category","explanation"
 
-Aturan:
-- content: teks pertanyaan. Gunakan $rumus$ untuk LaTeX inline. Gunakan [[NL]] untuk ganti baris.
-- A–E: pilihan jawaban. Boleh pakai $LaTeX$.
-- correct_answer: salah satu huruf A, B, C, D, atau E (WAJIB diisi)
-- category: kode sub-tes — mis. QR, DR, RC, IR, VIZ, PS, WM untuk ASTRA; NUM, VER, SIL, DER, FIG, PU untuk PLN GAT
+ Aturan:
+ - content: teks pertanyaan. Gunakan $rumus$ untuk LaTeX inline. Gunakan [[NL]] untuk ganti baris.
+ - A–E: pilihan jawaban. Boleh pakai $LaTeX$. A dan B wajib; C–E boleh kosong untuk soal 3 opsi (mis. silogisme: Benar/Salah/Tidak dapat disimpulkan).
+ - correct_answer: salah satu huruf A, B, C, D, atau E yang opsinya terisi (WAJIB diisi)
+ - category: kode sub-tes — mis. QR, DR, RC, IR, VIZ, PS, WM untuk ASTRA; TKD1, TKD2, PENGETAHUAN, AKDING, BI untuk PLN (NUM, VER, SIL, DER, FIG, PU = legacy)
 - explanation: pembahasan singkat dan jelas. Boleh pakai $LaTeX$. [[NL]] untuk ganti baris.
 - Jika ada tanda petik dalam nilai, tulis dua kali: ""
 - TIDAK ada baris header, TIDAK ada baris kosong di antara soal.
 
 Contoh satu baris (soal numerik):
-"Jika $2x + 5 = 11$, nilai $x$ adalah...","2","3","4","5","6","C","NUM","$2x = 11 - 5 = 6$, maka $x = 3$"`
+"Jika $2x + 5 = 11$, nilai $x$ adalah...","2","3","4","5","6","C","NUM","$2x = 11 - 5 = 6$, maka $x = 3$"
+
+Contoh soal silogisme 3 opsi (TKD 2 PLN):
+"Sebagian pegawai PLN adalah insinyur. Semua insinyur wajib bersertifikat. Maka...","Benar","Salah","Tidak dapat disimpulkan","","","A","TKD2","Ikuti logika premis tanpa asumsi tambahan."`

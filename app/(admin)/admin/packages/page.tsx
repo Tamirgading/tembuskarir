@@ -1,6 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Package, Lightbulb, ChevronLeft, Mountain, Car, Zap, Building2, Landmark, GraduationCap, Trophy, Plus, BarChart2 } from 'lucide-react'
+import { Package, Lightbulb, ChevronLeft, Mountain, Car, Zap, Building2, Landmark, GraduationCap, Trophy, Plus, BarChart2, Play } from 'lucide-react'
 import type { PackageRow } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
 import { PackageActions } from '@/components/admin/PackageActions'
@@ -121,6 +121,14 @@ export default async function AdminPackagesPage({
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/persiapan/${pkg.id}`}
+                          target="_blank"
+                          className="text-xs text-emerald-600 hover:text-emerald-700 hover:underline font-semibold flex items-center gap-1"
+                          title="Buka simulasi pengerjaan paket ini"
+                        >
+                          <Play className="w-3 h-3 fill-current" /> Simulasi
+                        </Link>
                         <Link
                           href={`/admin/packages/${pkg.id}/questions`}
                           className="text-xs text-blue-600 hover:underline font-medium"

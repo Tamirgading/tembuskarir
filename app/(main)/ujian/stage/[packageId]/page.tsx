@@ -127,6 +127,10 @@ export default function StageUjianPage() {
       })
       const json = await res.json() as { data?: { attemptId: string }; error?: string }
       if (!res.ok) throw new Error(json.error ?? 'Gagal submit')
+      if (attemptIdRef.current) {
+        localStorage.removeItem(`stage_${attemptIdRef.current}`)
+        localStorage.removeItem(`stage_qorder_${attemptIdRef.current}`)
+      }
       router.push(`/hasil/${json.data?.attemptId ?? attemptIdRef.current}`)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Gagal mengirim jawaban.')
@@ -228,24 +232,6 @@ export default function StageUjianPage() {
         }
         setSections(secs)
 
-        // Ambil semua soal inline, lalu kelompokkan berdasarkan kategori (kode seksi)
-        const { data: qData } = await supabase
-          .from('questions')
-          .select('id, content, options, order_index, category, image_url')
-          .eq('package_id', packageId)
-          .order('order_index', { ascending: true })
-
-        const allQs = ((qData ?? []) as Question[]).sort((a, b) => a.order_index - b.order_index)
-        const byKode: Record<string, Question[]> = {}
-        for (const sec of secs) {
-          let list = allQs.filter((q) => (q.category ?? '').toUpperCase() === sec.kode.toUpperCase())
-          if (sec.random_select && sec.question_count && sec.question_count < list.length) {
-            list = shuffle(list).slice(0, sec.question_count)
-          }
-          byKode[sec.kode] = list.sort((a, b) => a.order_index - b.order_index)
-        }
-        setQuestionsByKode(byKode)
-
         if (!pkgTyped.is_free) {
           try {
             const accessRes = await fetch(`/api/access?packageId=${packageId}`)
@@ -291,6 +277,63 @@ export default function StageUjianPage() {
         if (lsData && Object.keys(savedAnswers).length === 0) {
           try { setAnswers(JSON.parse(lsData) as Answers) } catch { /* ignore */ }
         }
+
+        // Ambil semua butir soal paket
+        const { data: qData } = await supabase
+          .from('questions')
+          .select('id, content, options, order_index, category, image_url')
+          .eq('package_id', packageId)
+          .order('order_index', { ascending: true })
+
+        const allQs = ((qData ?? []) as Question[]).sort((a, b) => a.order_index - b.order_index)
+        const qMap = new Map(allQs.map((q) => [q.id, q]))
+
+        // Urutan soal per attempt: pulihkan dari localStorage jika attempt ongoing, atau buat urutan acak baru
+        const storedOrderKey = `stage_qorder_${currentAttemptId}`
+        const storedOrder = localStorage.getItem(storedOrderKey)
+        const byKode: Record<string, Question[]> = {}
+
+        if (ongoing && storedOrder) {
+          try {
+            const parsed = JSON.parse(storedOrder) as Record<string, string[]>
+            for (const sec of secs) {
+              const ids = parsed[sec.kode] ?? []
+              const loaded = ids.map((id) => qMap.get(id)).filter(Boolean) as Question[]
+              if (loaded.length > 0) {
+                byKode[sec.kode] = loaded
+              }
+            }
+          } catch {
+            /* ignore parse error */
+          }
+        }
+
+        // Jika belum ada urutan tersimpan (attempt baru atau stored order kosong)
+        if (Object.keys(byKode).length === 0) {
+          const orderToStore: Record<string, string[]> = {}
+          for (const sec of secs) {
+            let list = allQs.filter((q) => (q.category ?? '').toUpperCase() === sec.kode.toUpperCase())
+            if (sec.random_select && sec.question_count && sec.question_count < list.length) {
+              // Sub-tes POOL SOAL (Pengetahuan PLN): ambil sampel acak sejumlah question_count
+              list = shuffle(list).slice(0, sec.question_count)
+            } else if (sec.question_count && sec.question_count < list.length) {
+              // Sub-tes SOAL TETAP per paket (TKD 1 & TKD 2):
+              // Ambil himpunan soal tetap milik paket tersebut (urutan awal) agar tidak mengambil soal paket lain
+              list = list.slice(0, sec.question_count)
+            }
+            // Acak urutan tampilan per sub-tes untuk attempt ini (percobaan 1 dan 2 berbeda urutan)
+            const shuffled = shuffle(list)
+            byKode[sec.kode] = shuffled
+            orderToStore[sec.kode] = shuffled.map((q) => q.id)
+          }
+          try {
+            localStorage.setItem(storedOrderKey, JSON.stringify(orderToStore))
+          } catch {
+            /* ignore quota */
+          }
+        }
+
+        setQuestionsByKode(byKode)
 
         setPhase('overview')
       } catch (err) {

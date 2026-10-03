@@ -6,11 +6,12 @@ import Link from 'next/link'
 import { FileText, Clipboard, Clock, Trophy, BarChart2, Lock, Wifi, Lightbulb, Mountain, CheckCircle2, ArrowLeftRight, ShieldCheck } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { PackageRow, AttemptRow } from '@/lib/utils'
-import { computeScore, isAttemptExpired, ASTRA_SUBTESTS } from '@/lib/exam-scoring'
+import { computeScore, isAttemptExpired, ASTRA_SUBTESTS, usesNegativeMarkingSlug } from '@/lib/exam-scoring'
 import { checkPackageAccess } from '@/lib/access'
 import { PersiapanActions } from '@/components/persiapan/PersiapanActions'
 import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getStreamBySlug } from '@/lib/antam-config'
+import { isAdmin } from '@/lib/admin'
 
 interface OngoingInfo {
   id: string
@@ -36,25 +37,28 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  const { data: pkgData } = await supabase
-    .from('packages')
-    .select('*')
-    .eq('id', packageId)
-    .eq('is_published', true)
-    .single()
+  const isUserAdmin = isAdmin(user.email)
+  const service = createServiceClient()
+
+  // Admin bisa melihat paket unpublished (untuk preview pengujian sebelum rilis)
+  const pkgQuery = isUserAdmin
+    ? service.from('packages').select('*').eq('id', packageId)
+    : supabase.from('packages').select('*').eq('id', packageId).eq('is_published', true)
+
+  const { data: pkgData } = await pkgQuery.single()
 
   const pkg = pkgData as PackageRow | null
   if (!pkg) redirect('/paket')
 
   // Cek apakah paket ini ujian tahap gabungan (punya package_sections)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: sectionCount } = await (supabase.from('package_sections') as any)
+  const { count: sectionCount } = await (service.from('package_sections') as any)
     .select('*', { count: 'exact', head: true })
     .eq('package_id', packageId)
   const isStage = (sectionCount ?? 0) > 0
 
   const accessStatus = await checkPackageAccess(user.id, packageId, pkg.is_free, pkg.slug)
-  if (accessStatus === 'locked') {
+  if (accessStatus === 'locked' && !isUserAdmin) {
     if (pkg.category === 'ASTRA') redirect('/portal/astra')
     else if (pkg.category === 'ANTAM') redirect('/portal/antam')
     else redirect('/harga')
@@ -84,7 +88,8 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
         const { score, correctCount, wrongCount, emptyCount, scoreDetails } = computeScore(
           (questionsData ?? []) as { id: string; correct_answer: string; category?: string; options?: { key: string; text: string; point?: number }[] }[],
           answers,
-          pkgCategory
+          pkgCategory,
+          { negativeMarking: usesNegativeMarkingSlug(pkg!.slug) }
         )
         const durationSeconds = Math.floor((Date.now() - new Date(o.started_at).getTime()) / 1000)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -161,6 +166,11 @@ export default async function PersiapanPage({ params }: { params: Promise<{ pack
                 }`}>
                   {pkg.is_free ? 'GRATIS' : '✦ PREMIUM'}
                 </span>
+                {!pkg.is_published && (
+                  <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-purple-500 text-white shadow-sm">
+                    PREVIEW DRAFT (ADMIN)
+                  </span>
+                )}
               </div>
               <h1 className="text-2xl font-extrabold leading-snug">{pkg.name}</h1>
               {antamStream && (
