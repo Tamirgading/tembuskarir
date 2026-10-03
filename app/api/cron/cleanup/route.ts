@@ -72,83 +72,23 @@ export async function GET(request: NextRequest) {
 
       for (const attempt of expired) {
         try {
-          const pkg = packageMap.get(attempt.package_id)
-          const pkgCategory = pkg?.category ?? 'OTHER'
-
-          // Fetch soal MCQ dari tabel questions
+          // USER REQUEST: jika peserta tidak pernah kembali (melewati batas waktu paket),
+          // buat jangan dikumpulkan atau auto submit otomatis. Kita hapus attempt yang abandoned.
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data: mcqData } = await (supabase.from('questions') as any)
-            .select('id, correct_answer, category, options')
-            .eq('package_id', attempt.package_id)
-
-          type McqQuestion = { id: string; correct_answer: string; category?: string | null; options?: { key: string; text: string; point?: number }[] | null }
-          let questions: McqQuestion[] = (mcqData ?? []) as McqQuestion[]
-
-          // Untuk PLN: gabungkan soal AKHLAK & LA dari tabel terpisah
-          if (pkgCategory === 'PLN') {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: akhlakData } = await (supabase.from('questions_pln_akhlak') as any)
-              .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e')
-              .eq('package_id', attempt.package_id)
-
-            if (akhlakData && (akhlakData as QuestionPointRow[]).length > 0) {
-              questions = [...questions, ...transformPlnAkhlakForScoring(akhlakData as QuestionPointRow[])]
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: laData } = await (supabase.from('questions_pln_la') as any)
-              .select('id, opt_a, opt_b, opt_c, opt_d, opt_e, point_a, point_b, point_c, point_d, point_e, is_reverse_scored')
-              .eq('package_id', attempt.package_id)
-
-            if (laData && (laData as (QuestionPointRow & { is_reverse_scored?: boolean })[]).length > 0) {
-              questions = [...questions, ...transformPlnLaForScoring(laData as (QuestionPointRow & { is_reverse_scored?: boolean })[])]
-            }
-          }
-
-          const answers = (attempt.answers as Record<string, string>) ?? {}
-          const negativeMarking = usesNegativeMarkingSlug((pkg as { slug?: string } | undefined)?.slug)
-          const { score, correctCount, wrongCount, emptyCount, scoreDetails } =
-            computeScore(questions, answers, pkgCategory, { negativeMarking })
-
-          const durationSeconds = Math.floor(
-            (Date.now() - new Date(attempt.started_at).getTime()) / 1000
-          )
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { error: updateErr } = await (supabase.from('attempts') as any)
-            .update({
-              status: 'finished',
-              score,
-              correct_count: correctCount,
-              wrong_count: wrongCount,
-              empty_count: emptyCount,
-              duration_seconds: durationSeconds,
-              finished_at: new Date().toISOString(),
-              score_details: scoreDetails,
-            })
+          const { error: deleteErr } = await (supabase.from('attempts') as any)
+            .delete()
             .eq('id', attempt.id)
 
-          if (updateErr) {
-            // Fallback tanpa score_details jika kolom belum ada
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabase.from('attempts') as any)
-              .update({
-                status: 'finished',
-                score,
-                correct_count: correctCount,
-                wrong_count: wrongCount,
-                empty_count: emptyCount,
-                duration_seconds: durationSeconds,
-                finished_at: new Date().toISOString(),
-              })
-              .eq('id', attempt.id)
+          if (!deleteErr) {
+            results.attempts.processed++
+            console.log(`[Cron/Cleanup] Attempt ${attempt.id} auto-deleted (abandoned)`)
+          } else {
+            console.error(`[Cron/Cleanup] Error deleting attempt ${attempt.id}:`, deleteErr)
+            results.attempts.errors++
           }
-
-          results.attempts.processed++
-          console.log(`[Cron/Cleanup] ✅ Attempt ${attempt.id} auto-finished, score: ${score}`)
         } catch (err) {
           results.attempts.errors++
-          console.error(`[Cron/Cleanup] ❌ Error finishing attempt ${attempt.id}:`, err)
+          console.error(`[Cron/Cleanup] Error processing attempt ${attempt.id}:`, err)
         }
       }
     }

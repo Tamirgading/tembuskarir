@@ -107,79 +107,100 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
     }
   } catch { /* package_sections belum tersedia */ }
 
-  // Leaderboard ANTAM: posisi user berdasarkan skor percobaan PERTAMA
-  // (termasuk entri dummy yang diisi admin)
-  let antamRank = 0
-  let antamTotal = 0
-  let leaderboardRows: LeaderboardRow[] = []
-  let myRow: LeaderboardRow | null = null
-  if (pkg?.category === 'ANTAM') {
-    const service = createServiceClient()
-    const { data: antamAttempts } = await service
-      .from('attempts')
-      .select('user_id, score, started_at, duration_seconds')
+  // ─── STATASTIK GLOBAL (RANK & RATA-RATA PEER) ───
+  let globalRank = 0
+  let globalTotal = 0
+  
+  // Peer subtest stats
+  const peerSubtestStats: Record<string, { totalPct: number; count: number }> = {}
+
+  const service = createServiceClient()
+  const { data: allAttemptsData } = await service
+    .from('attempts')
+    .select('user_id, score, started_at, duration_seconds, score_details')
+    .eq('package_id', attempt.package_id)
+    .eq('status', 'finished')
+    .not('score', 'is', null)
+  
+  const allAttempts = (allAttemptsData ?? []) as (LeaderboardAttempt & { score_details?: ScoreDetails | null })[]
+  const entries = buildLeaderboard(allAttempts, 'first')
+  
+  let allDummies: LeaderboardDummy[] = []
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: dummyData } = await (service.from('leaderboard_entries') as any)
+      .select('id, display_name, score, duration_seconds')
       .eq('package_id', attempt.package_id)
-      .eq('status', 'finished')
-      .not('score', 'is', null)
-    const entries = buildLeaderboard((antamAttempts ?? []) as LeaderboardAttempt[], 'first')
+      .eq('is_active', true)
+      .order('created_at', { ascending: true })
+    allDummies = (dummyData ?? []) as LeaderboardDummy[]
+  } catch { /* tabel belum tersedia */ }
 
-    let antamDummies: LeaderboardDummy[] = []
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: dummyData } = await (service.from('leaderboard_entries') as any)
-        .select('id, display_name, score, duration_seconds')
-        .eq('package_id', attempt.package_id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: true })
-      antamDummies = (dummyData ?? []) as LeaderboardDummy[]
-    } catch { /* tabel belum tersedia */ }
+  const realRows: LeaderboardRow[] = entries.map((e) => ({
+    key: `user-${e.user_id}`,
+    user_id: e.user_id,
+    display_name: '',
+    avatar_url: null,
+    score: e.score,
+    attempt_count: e.attempt_count,
+    duration_seconds: e.duration_seconds,
+    is_dummy: false,
+  }))
+  const allRows = mergeLeaderboard(realRows, allDummies)
+  globalTotal = allRows.length
+  const idx = allRows.findIndex((r) => r.user_id === attempt.user_id)
+  if (idx >= 0) globalRank = idx + 1
 
-    const realRows: LeaderboardRow[] = entries.map((e) => ({
-      key: `user-${e.user_id}`,
-      user_id: e.user_id,
-      display_name: '',
-      avatar_url: null,
-      score: e.score,
-      attempt_count: e.attempt_count,
-      duration_seconds: e.duration_seconds,
-      is_dummy: false,
-    }))
-    const allRows = mergeLeaderboard(realRows, antamDummies)
-    antamTotal = allRows.length
-    const idx = allRows.findIndex((r) => r.user_id === attempt.user_id)
-    if (idx >= 0) antamRank = idx + 1
-
-    // Top 10 + nama peserta (real user)
-    const topRows = allRows.slice(0, 10)
-    const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
-    const myRaw = allRows.find((r) => r.user_id === attempt.user_id) ?? null
-    const myIds = Array.from(new Set([...realTopIds, ...(myRaw?.user_id ? [myRaw.user_id] : [])]))
-    leaderboardRows = topRows
-    if (myIds.length > 0) {
-      const { data: usersData } = await service
-        .from('users')
-        .select('id, full_name, avatar_url')
-        .in('id', myIds)
-      type UserEntry = { id: string; full_name: string | null; avatar_url: string | null }
-      const usersMap = new Map<string, UserEntry>(
-        ((usersData ?? []) as UserEntry[]).map((u) => [u.id, u])
-      )
-      leaderboardRows = topRows.map((r) => {
-        if (!r.user_id) return r
-        const u = usersMap.get(r.user_id)
-        return {
-          ...r,
-          display_name: u?.full_name ?? 'Anonim',
-          avatar_url: u?.avatar_url ?? null,
+  // Hitung rata-rata peer per subtest (mengabaikan nilai 0)
+  allAttempts.forEach(a => {
+    if (a.score_details?.categories) {
+      Object.entries(a.score_details.categories).forEach(([code, catStat]) => {
+        const totalItems = catStat.correct + catStat.wrong + catStat.empty
+        if (totalItems > 0) {
+          const pct = Math.round((catStat.correct / totalItems) * 100)
+          if (pct > 0) {
+            if (!peerSubtestStats[code]) peerSubtestStats[code] = { totalPct: 0, count: 0 }
+            peerSubtestStats[code].totalPct += pct
+            peerSubtestStats[code].count++
+          }
         }
       })
-      if (myRaw) {
-        const mu = usersMap.get(myRaw.user_id!)
-        myRow = {
-          ...myRaw,
-          display_name: mu?.full_name ?? 'Anonim',
-          avatar_url: mu?.avatar_url ?? null,
-        }
+    }
+  })
+
+  let leaderboardRows: LeaderboardRow[] = []
+  let myRow: LeaderboardRow | null = null
+
+  // Top 10 + nama peserta (real user)
+  const topRows = allRows.slice(0, 10)
+  const realTopIds = topRows.filter((r) => r.user_id).map((r) => r.user_id!) as string[]
+  const myRaw = allRows.find((r) => r.user_id === attempt.user_id) ?? null
+  const myIds = Array.from(new Set([...realTopIds, ...(myRaw?.user_id ? [myRaw.user_id] : [])]))
+  leaderboardRows = topRows
+  if (myIds.length > 0) {
+    const { data: usersData } = await service
+      .from('users')
+      .select('id, full_name, avatar_url')
+      .in('id', myIds)
+    type UserEntry = { id: string; full_name: string | null; avatar_url: string | null }
+    const usersMap = new Map<string, UserEntry>(
+      ((usersData ?? []) as UserEntry[]).map((u) => [u.id, u])
+    )
+    leaderboardRows = topRows.map((r) => {
+      if (!r.user_id) return r
+      const u = usersMap.get(r.user_id)
+      return {
+        ...r,
+        display_name: u?.full_name ?? 'Anonim',
+        avatar_url: u?.avatar_url ?? null,
+      }
+    })
+    if (myRaw) {
+      const mu = usersMap.get(myRaw.user_id!)
+      myRow = {
+        ...myRaw,
+        display_name: mu?.full_name ?? 'Anonim',
+        avatar_url: mu?.avatar_url ?? null,
       }
     }
   }
@@ -343,48 +364,12 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
         )}
       </div>
 
-      {/* ══ Passing grade per seksi (paket tahap) - premium only ══ */}
-      {!showBlur && stageSections.length > 0 && stageGroups.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-            <h2 className="font-bold text-slate-900">Passing Grade per Seksi</h2>
-            {stageOverall !== 'none' && (
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                stageOverall === 'lolos' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
-              }`}>
-                {stageOverall === 'lolos' ? '✓ LOLOS' : '✗ BELUM LOLOS'}
-              </span>
-            )}
-          </div>
-          <div className="divide-y divide-slate-200">
-            {stageGroups.map((g) => (
-              <div key={g.kode} className="flex items-center gap-3 px-5 py-3.5">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 truncate">{g.nama}</p>
-                  <p className="text-xs text-slate-500 tabular-nums">{g.correct}/{g.total} benar</p>
-                </div>
-                <span className="text-xs font-semibold text-slate-500 shrink-0">
-                  PG: <span className="tabular-nums">{g.passingGrade ?? '-'}</span>
-                </span>
-                {g.passed === null ? (
-                  <span className="text-[10px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full shrink-0">Tanpa PG</span>
-                ) : g.passed ? (
-                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2.5 py-1 rounded-full shrink-0">LOLOS</span>
-                ) : (
-                  <span className="text-[10px] font-bold text-red-600 bg-red-100 px-2.5 py-1 rounded-full shrink-0">BELUM</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ══ Rincian per sub-tes & Leaderboard ANTAM ══ */}
-      {(pkg?.category === 'ANTAM' || subtests.length > 0) && (
-        <div className={`grid grid-cols-1 ${pkg?.category === 'ANTAM' && subtests.length > 0 && !showBlur ? 'lg:grid-cols-4' : 'lg:grid-cols-1'} gap-5 items-stretch`}>
+      {/* ══ Rincian per sub-tes & Leaderboard (Semua Paket) ══ */}
+      {(subtests.length > 0 || leaderboardRows.length > 0) && (
+        <div className={`grid grid-cols-1 ${subtests.length > 0 && !showBlur ? 'lg:grid-cols-4' : 'lg:grid-cols-1'} gap-5 items-stretch`}>
           {/* ══ Rincian per sub-tes (premium only) - Kolom 1-3 ══ */}
           {!showBlur && subtests.length > 0 && (
-            <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${pkg?.category === 'ANTAM' ? 'lg:col-span-3' : 'w-full'}`}>
+            <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col lg:col-span-3`}>
               <div className="flex items-center justify-between mb-3">
                 <SectionLabel>Rincian per sub-tes</SectionLabel>
                 {weakest && (
@@ -395,17 +380,31 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               </div>
               <div className="flex-1 space-y-2">
                 {subtests.map((s) => {
-                  const label = antamLabels?.[s.code] ?? (SUBTEST_FULL[s.code] && SUBTEST_FULL[s.code] !== s.code ? `${s.code} - ${SUBTEST_FULL[s.code]}` : s.code)
+                  let label = antamLabels?.[s.code] ?? (SUBTEST_FULL[s.code] && SUBTEST_FULL[s.code] !== s.code ? `${s.code} - ${SUBTEST_FULL[s.code]}` : s.code)
+                  if (s.code.toUpperCase().startsWith('TKD1')) label = 'TKD 1 - Deret Bilangan'
+                  if (s.code.toUpperCase().startsWith('TKD2')) label = 'TKD 2 - Silogisme & Sinonim'
+                  const peerStats = peerSubtestStats[s.code]
+                  const peerAvg = peerStats && peerStats.count > 0 ? Math.round(peerStats.totalPct / peerStats.count) : null
+
                   return (
-                    <div key={s.code} className="flex items-center gap-2 sm:gap-3 py-0.5">
-                      <span className="flex-1 text-xs sm:text-[13px] text-slate-800 font-semibold truncate min-w-0" title={label}>
-                        {label}
-                      </span>
-                      <span className="w-24 sm:w-44 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0 border border-slate-200/60">
-                        <span className="block h-full rounded-full transition-all" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F59E0B' : '#10B981' }} />
-                      </span>
-                      <span className="w-14 text-right text-xs text-slate-500 shrink-0 tabular-nums">{s.correct}/{s.total}</span>
-                      <span className="w-10 text-right font-bold text-xs text-slate-900 shrink-0 tabular-nums">{s.pct}%</span>
+                    <div key={s.code} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 py-1.5 border-b border-slate-100 last:border-0">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs sm:text-[13px] text-slate-800 font-semibold truncate block" title={label}>
+                          {label}
+                        </span>
+                        {peerAvg !== null && (
+                          <span className="text-[10px] text-slate-500">
+                            Rata-rata peserta lain: <strong className="text-slate-700">{peerAvg}%</strong>
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <span className="w-24 sm:w-44 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0 border border-slate-200/60">
+                          <span className="block h-full rounded-full transition-all" style={{ width: `${s.pct}%`, background: s.pct < 60 ? '#F59E0B' : '#10B981' }} />
+                        </span>
+                        <span className="w-14 text-right text-xs text-slate-500 shrink-0 tabular-nums">{s.correct}/{s.total}</span>
+                        <span className="w-10 text-right font-bold text-xs text-slate-900 shrink-0 tabular-nums">{s.pct}%</span>
+                      </div>
                     </div>
                   )
                 })}
@@ -413,41 +412,40 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
             </div>
           )}
 
-          {/* ══ Leaderboard ANTAM - Kolom 4 (1 kolom paling kanan) ══ */}
-          {pkg?.category === 'ANTAM' && (
-            <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${subtests.length > 0 && !showBlur ? 'lg:col-span-1' : 'w-full'}`}>
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-green-50 border border-green-200 flex items-center justify-center shrink-0">
-                  <LeaderboardIllustration className="w-5 h-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-bold text-slate-900 leading-tight">Leaderboard</p>
-                  <p className="text-[11px] text-slate-500 truncate">
-                    {antamRank > 0 ? (
-                      <>Rank <b className="text-green-700 font-bold">#{antamRank}</b> <span className="text-slate-400">/ {antamTotal}</span></>
-                    ) : (
-                      <>Belum ada peserta</>
-                    )}
-                  </p>
-                </div>
+          {/* ══ Leaderboard Global - Kolom 4 (1 kolom paling kanan) ══ */}
+          <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 flex flex-col ${subtests.length > 0 && !showBlur ? 'lg:col-span-1' : 'w-full'}`}>
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center shrink-0">
+                <LeaderboardIllustration className="w-5 h-5" />
               </div>
+              <div className="min-w-0">
+                <p className="text-[13px] font-bold text-slate-900 leading-tight">Peringkat Nasional</p>
+                <p className="text-[11px] text-slate-500 truncate">
+                  {globalRank > 0 ? (
+                    <>Rank <b className="text-brand font-bold">#{globalRank}</b> <span className="text-slate-400">/ {globalTotal}</span></>
+                  ) : (
+                    <>Belum ada peserta</>
+                  )}
+                </p>
+              </div>
+            </div>
 
-              {/* Daftar peringkat - scrollable di dalam card tanpa pindah halaman */}
-              <div className="flex-1 space-y-1 max-h-[230px] overflow-y-auto pr-1">
-                {leaderboardRows.map((entry, i) => {
-                  const rank = i + 1
-                  const isMe = entry.user_id === attempt.user_id
-                  const medalCls =
-                    rank === 1 ? 'bg-amber-100 text-amber-700'
-                    : rank === 2 ? 'bg-slate-200 text-slate-700'
-                    : rank === 3 ? 'bg-orange-100 text-orange-700'
-                    : 'bg-slate-50 text-slate-500'
-                  return (
-                    <div
-                      key={entry.key}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs ${
-                        isMe ? 'bg-green-50 border-green-200' : 'border-transparent hover:bg-slate-50'
-                      }`}
+            {/* Daftar peringkat - scrollable di dalam card tanpa pindah halaman */}
+            <div className="flex-1 space-y-1 max-h-[230px] overflow-y-auto pr-1">
+              {leaderboardRows.map((entry, i) => {
+                const rank = i + 1
+                const isMe = entry.user_id === attempt.user_id
+                const medalCls =
+                  rank === 1 ? 'bg-amber-100 text-amber-700'
+                  : rank === 2 ? 'bg-slate-200 text-slate-700'
+                  : rank === 3 ? 'bg-orange-100 text-orange-700'
+                  : 'bg-slate-50 text-slate-500'
+                return (
+                  <div
+                    key={entry.key}
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs ${
+                      isMe ? 'bg-brand/10 border-brand/30' : 'border-transparent hover:bg-slate-50'
+                    }`}
                     >
                       <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${medalCls}`}>
                         {rank}
@@ -468,16 +466,16 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
               </div>
 
               {/* Rank kamu jika berada di luar daftar atas */}
-              {myRow && antamRank > leaderboardRows.length && (
+              {myRow && globalRank > leaderboardRows.length && (
                 <div className="mt-2 pt-2 border-t border-slate-200">
-                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-green-50 border border-green-200 text-xs">
-                    <span className="w-5 h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-                      {antamRank}
+                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-brand/10 border border-brand/20 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                      {globalRank}
                     </span>
-                    <span className="flex-1 min-w-0 truncate font-medium text-green-800">
-                      {myRow.display_name || 'Anonim'} <span className="text-[10px] text-green-600 font-semibold">(kamu)</span>
+                    <span className="flex-1 min-w-0 truncate font-medium text-brand-700">
+                      {myRow.display_name || 'Anonim'} <span className="text-[10px] text-brand-600 font-semibold">(kamu)</span>
                     </span>
-                    <span className={`font-bold text-xs shrink-0 tabular-nums ${myRow.score >= 75 ? 'text-green-600' : 'text-green-700'}`}>
+                    <span className={`font-bold text-xs shrink-0 tabular-nums ${myRow.score >= 75 ? 'text-brand-600' : 'text-brand-700'}`}>
                       {myRow.score}
                     </span>
                   </div>
@@ -488,7 +486,26 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                 Skor percobaan pertama
               </p>
             </div>
-          )}
+            
+            {/* ══ Sebaran Nilai (Bell Curve) Placeholder ══ */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5">
+              <div className="flex items-center justify-between mb-3">
+                <SectionLabel>Sebaran Nilai Nasional</SectionLabel>
+              </div>
+              <div className="h-32 bg-slate-50 border border-slate-100 rounded-xl flex items-end justify-center px-4 pb-2 pt-6 relative overflow-hidden">
+                {/* Fake Bell Curve Bars */}
+                <div className="flex items-end gap-1 w-full h-full opacity-40 justify-between">
+                  {[2, 5, 12, 25, 45, 75, 90, 100, 85, 60, 30, 15, 6, 2].map((h, idx) => (
+                    <div key={idx} className="flex-1 bg-brand/50 rounded-t-sm" style={{ height: `${h}%` }}></div>
+                  ))}
+                </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span className="text-xs font-semibold text-slate-500 mb-1">Distribusi Nilai Keseluruhan</span>
+                  <span className="text-[10px] text-slate-400 max-w-[200px] leading-tight">Grafik sebaran nilai populasi sedang dalam pengembangan (Coming Soon)</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

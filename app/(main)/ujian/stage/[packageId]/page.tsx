@@ -86,6 +86,7 @@ export default function StageUjianPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showFinishConfirm, setShowFinishConfirm] = useState(false)
   const [attemptId, setAttemptId] = useState<string | null>(null)
+  const [soundEnabled, setSoundEnabled] = useState(false)
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answersRef = useRef<Answers>({})
@@ -167,6 +168,24 @@ export default function StageUjianPage() {
     advanceToNext(answersRef.current)
   }
 
+  // ─── Timer Sound ────────────────────────────────────────────────────────────
+  const playTick = () => {
+    if (!soundEnabled) return
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(800, ctx.currentTime)
+      gain.gain.setValueAtTime(0.1, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start()
+      osc.stop(ctx.currentTime + 0.1)
+    } catch { /* ignore */ }
+  }
+
   // ─── Timer: mode seksi (per seksi) ───────────────────────────────────────────
   useEffect(() => {
     const sec = sectionsRef.current[currentSectionIdxRef.current]
@@ -175,6 +194,7 @@ export default function StageUjianPage() {
     setTimeLeft(sec.timer_seconds)
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
+        if (prev <= 10 && prev > 1) playTick() // tick when urgent
         if (prev <= 1) {
           clearInterval(timerRef.current!)
           handleSectionTimeout()
@@ -185,7 +205,7 @@ export default function StageUjianPage() {
     }, 1000)
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, currentSectionIdx])
+  }, [phase, currentSectionIdx, soundEnabled])
 
   // ─── Timer: mode per soal (reset tiap pindah soal) ──────────────────────────
   useEffect(() => {
@@ -195,6 +215,7 @@ export default function StageUjianPage() {
     setTimeLeft(sec.timer_seconds)
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
+        if (prev <= 10 && prev > 1) playTick() // tick when urgent
         if (prev <= 1) {
           clearInterval(timerRef.current!)
           handleQuestionTimeout()
@@ -205,7 +226,29 @@ export default function StageUjianPage() {
     }, 1000)
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, currentSectionIdx, currentQIdx])
+  }, [phase, currentSectionIdx, currentQIdx, soundEnabled])
+
+  // ─── Timer: mode intro seksi ────────────────────────────────────────────────
+  useEffect(() => {
+    if (phase !== 'section-intro') return
+    if (timerRef.current) clearInterval(timerRef.current)
+    const isDemo = pkgName.toLowerCase().includes('demo')
+    const introDuration = isDemo ? 60 : 300 // 1 min untuk demo, 5 min untuk normal
+    setTimeLeft(introDuration)
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 10 && prev > 1) playTick()
+        if (prev <= 1) {
+          clearInterval(timerRef.current!)
+          handleStartSection()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, pkgName, currentSectionIdx, soundEnabled])
 
   // ─── Load data ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -469,26 +512,48 @@ export default function StageUjianPage() {
   // ─── Render: intro seksi ─────────────────────────────────────────────────────
   if (phase === 'section-intro' && currentSec) {
     const qs = questionsByKode[currentSec.kode] ?? []
+    const isDemo = pkgName.toLowerCase().includes('demo')
+    
     return (
-      <div className="max-w-xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-3xl border border-hairline shadow-soft p-8 text-center space-y-4">
-          <p className="text-[11px] font-bold text-brand uppercase tracking-wider">Seksi {currentSectionIdx + 1} dari {sections.length}</p>
-          <h1 className="text-xl font-heading font-extrabold text-ink">{currentSec.nama}</h1>
-          <p className="text-sm text-ink-muted max-w-md mx-auto leading-relaxed">
-            {qs.length} soal · {timerLabel(currentSec)}
-            {currentSec.timer_mode === 'per_question' && (
-              <span className="block mt-1 text-amber-600">Timer per soal. Jawaban otomatis berpindah saat waktu habis.</span>
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <div className="bg-white rounded-3xl border border-hairline shadow-soft p-8 text-center space-y-6">
+          <div>
+            <p className="text-[11px] font-bold text-brand uppercase tracking-wider mb-2">Seksi {currentSectionIdx + 1} dari {sections.length}</p>
+            <h1 className="text-3xl font-heading font-extrabold text-ink">{currentSec.nama}</h1>
+          </div>
+          
+          <div className="bg-paper-soft rounded-2xl p-6 text-left space-y-4 max-w-lg mx-auto border border-hairline">
+            <h3 className="font-bold text-ink mb-2">Informasi Sub-tes:</h3>
+            <ul className="text-sm text-ink-muted space-y-2 list-disc pl-5">
+              <li><strong className="text-ink-soft">Jumlah Soal:</strong> {qs.length} soal (Paket {isDemo ? 'Demo' : 'Utama'})</li>
+              <li><strong className="text-ink-soft">Waktu Pengerjaan:</strong> {timerLabel(currentSec)}</li>
+              {currentSec.timer_mode === 'per_question' && (
+                <li className="text-amber-600 font-medium">Timer berlaku per soal. Anda tidak dapat kembali ke soal sebelumnya.</li>
+              )}
+              {currentSec.kode === 'TKD2' && (
+                <li>Terdiri dari soal Silogisme dan Analogi/Sinonim yang diacak.</li>
+              )}
+              <li>Jawaban yang kosong atau salah {pkgCategory.toUpperCase() === 'BUMN' ? 'bernilai 0 (tidak ada sistem minus)' : 'mungkin dikenakan aturan penilaian tertentu (sesuai paket)'}.</li>
+            </ul>
+            
+            {currentSec.passing_grade != null && (
+              <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-purple-50 border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700">
+                Target Passing Grade: {currentSec.passing_grade}
+              </div>
             )}
-          </p>
-          {currentSec.passing_grade != null && (
-            <div className="inline-flex items-center gap-2 rounded-full bg-purple-50 border border-purple-200 px-4 py-1.5 text-xs font-semibold text-purple-700">
-              Passing grade: {currentSec.passing_grade}
+          </div>
+
+          <div className="pt-2">
+            <p className="text-xs text-ink-muted mb-3">Sub-tes akan otomatis dimulai dalam:</p>
+            <div className="text-4xl font-num font-black text-brand mb-6">
+              {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
             </div>
-          )}
-          <button onClick={handleStartSection}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white font-bold text-base rounded-2xl hover:bg-brand-700 transition-all shadow-soft active:scale-[0.98]">
-            <Play className="w-4 h-4" /> Mulai Seksi
-          </button>
+            
+            <button onClick={handleStartSection}
+              className="w-full sm:w-auto sm:px-12 mx-auto flex items-center justify-center gap-2 py-4 bg-brand text-white font-bold text-base rounded-2xl hover:bg-brand-700 transition-all shadow-soft active:scale-[0.98]">
+              <Play className="w-5 h-5" /> Mulai Sekarang
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -505,26 +570,57 @@ export default function StageUjianPage() {
       <div className="min-h-screen bg-paper flex flex-col">
         {/* Header */}
         <div className="sticky top-0 z-20 bg-ink text-white px-4 sm:px-6 py-3">
-          <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
+          <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/10 shrink-0">{currentSec.kode}</span>
               <span className="text-xs text-white/60 truncate">{pkgName}</span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <span className="text-[10px] text-white/50 font-num">{currentQIdx + 1}/{currentQs.length}</span>
-              <Clock className="w-4 h-4 text-white/50" />
-              <TimerDisplay seconds={timeLeft} isUrgent={isUrgent} />
             </div>
           </div>
-          <div className="max-w-3xl mx-auto mt-2 h-1 bg-white/10 rounded-full overflow-hidden">
+          <div className="max-w-5xl mx-auto mt-2 h-1 bg-white/10 rounded-full overflow-hidden">
             <div className="h-full rounded-full bg-brand transition-all"
               style={{ width: `${((currentSectionIdx + (currentQIdx + 1) / currentQs.length) / sections.length) * 100}%` }} />
           </div>
         </div>
 
-        {/* Body */}
-        <div className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-6">
-          <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5 sm:p-6">
+        {/* Body with Sidebar */}
+        <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 flex flex-col md:flex-row gap-6 items-start">
+          
+          {/* Left Sidebar */}
+          <div className="w-full md:w-64 shrink-0 space-y-4 sticky top-20">
+            <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5 text-center">
+              <p className="text-sm font-semibold text-ink-muted mb-2">Sisa Waktu</p>
+              <div className="text-4xl bg-ink text-white rounded-xl py-4 mb-4">
+                <TimerDisplay seconds={timeLeft} isUrgent={isUrgent} />
+              </div>
+              <button 
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="w-full py-2 flex items-center justify-center gap-2 text-sm font-semibold border border-hairline rounded-xl hover:bg-paper-soft text-ink transition-colors"
+              >
+                {soundEnabled ? '🔊 Suara ON' : '🔈 Suara OFF'}
+              </button>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-hairline shadow-soft p-5">
+              <p className="text-sm font-semibold text-ink-muted mb-3 text-center">Navigasi Soal</p>
+              <div className="grid grid-cols-5 gap-2">
+                {currentQs.map((q, idx) => {
+                  const isAnswered = !!answers[q.id]
+                  const isActive = idx === currentQIdx
+                  return (
+                    <div key={q.id} className={`aspect-square rounded-lg flex items-center justify-center text-xs font-bold border ${isActive ? 'bg-brand text-white border-brand' : isAnswered ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+                      {idx + 1}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Main Question Area */}
+          <div className="flex-1 w-full bg-white rounded-2xl border border-hairline shadow-soft p-5 sm:p-6">
             <div className="text-sm text-ink-soft leading-relaxed">
               <QuestionContent content={currentQ.content} />
             </div>
@@ -561,7 +657,7 @@ export default function StageUjianPage() {
 
         {/* Footer nav */}
         <div className="sticky bottom-0 bg-white border-t border-hairline px-4 sm:px-6 py-3">
-          <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
+          <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
             {isNoBack ? (
               <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 animate-pulse" />
