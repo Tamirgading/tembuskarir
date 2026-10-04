@@ -505,7 +505,6 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
                 </div>
               </div>
             </div>
-          </div>
         </div>
       )}
 
