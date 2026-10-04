@@ -11,7 +11,7 @@ import { buildLeaderboard, mergeLeaderboard } from '@/lib/leaderboard'
 import type { LeaderboardAttempt, LeaderboardDummy, LeaderboardRow } from '@/lib/leaderboard'
 import { HasilReview } from '@/components/hasil/HasilReview'
 import { LeaderboardIllustration } from '@/components/ui/LeaderboardIllustration'
-import { fetchStageSections, evaluateStagePassing } from '@/lib/stage-config'
+import { fetchStageSections } from '@/lib/stage-config'
 import { getPremiumSubscriptionStatus } from '@/lib/access'
 import { getAntamTopicLabelMap } from '@/lib/antam-config'
 import { Lock, Sparkles } from 'lucide-react'
@@ -92,19 +92,10 @@ export default async function HasilPage({ params }: { params: Promise<{ attemptI
   const premiumStatus = await getPremiumSubscriptionStatus(attempt.user_id)
   const showBlur = !adminViewer && pkg?.is_free === true && !premiumStatus.active
 
-  // Konfigurasi tahap gabungan (package_sections) + evaluasi passing grade
+  // Konfigurasi tahap gabungan (package_sections)
   let stageSections: Awaited<ReturnType<typeof fetchStageSections>> = []
-  let stageGroups: ReturnType<typeof evaluateStagePassing>['groups'] = []
-  let stageOverall: ReturnType<typeof evaluateStagePassing>['overall'] = 'none'
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rawAttemptDetails = (attempt as any).score_details as ScoreDetails | null | undefined
   try {
     stageSections = await fetchStageSections(readClient, attempt.package_id)
-    if (stageSections.length > 0) {
-      const ev = evaluateStagePassing(stageSections, rawAttemptDetails as Record<string, unknown> | null)
-      stageGroups = ev.groups
-      stageOverall = ev.overall
-    }
   } catch { /* package_sections belum tersedia */ }
 
   // ─── STATASTIK GLOBAL (RANK & RATA-RATA PEER) ───

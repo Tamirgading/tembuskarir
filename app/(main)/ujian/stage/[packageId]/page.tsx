@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { AlertTriangle, Play, ChevronLeft, ChevronRight, Clock, Flag } from 'lucide-react'
+import { AlertTriangle, Play, ChevronLeft, ChevronRight, Flag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { LatexContent } from '@/components/ui/LatexContent'
 import { SectionLabel } from '@/components/ui/SectionLabel'
@@ -172,6 +172,7 @@ export default function StageUjianPage() {
   const playTick = () => {
     if (!soundEnabled) return
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()

@@ -10,8 +10,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { computeScore, isAttemptExpired, transformPlnAkhlakForScoring, transformPlnLaForScoring, usesNegativeMarkingSlug } from '@/lib/exam-scoring'
-import type { QuestionPointRow } from '@/lib/exam-scoring'
+import { isAttemptExpired } from '@/lib/exam-scoring'
 import type { PackageRow, AttemptRow, SubscriptionRow } from '@/lib/utils'
 import { notify, hasRecentNotif } from '@/lib/notifications'
 
